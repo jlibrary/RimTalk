@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Library</OutputType>
+		<TargetFramework>net48</TargetFramework>
+		<PlatformTarget>x64</PlatformTarget>
+
+		<!-- Names and output -->
+		<RootNamespace>RimTalk</RootNamespace>
+		<AssemblyName>RimTalk</AssemblyName>
+		<OutputPath>1.6/Assemblies</OutputPath>
+		<VersionPrefix>0.1.0.0</VersionPrefix>
+
+		<!-- Debug / release settings -->
+		<DebugType>none</DebugType>
+		<DebugSymbols>false</DebugSymbols>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<Deterministic>true</Deterministic>
+		<PublishRepositoryUrl>false</PublishRepositoryUrl>
+
+		<!-- RimWorld root folder (from environment variable or local props) -->
+		<RimWorldDir Condition=" '$(RimWorldDir)' == '' ">$(RIMWORLD_DIR)</RimWorldDir>
+	</PropertyGroup>
+
+	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+		<DebugSymbols>false</DebugSymbols>
+		<DebugType>full</DebugType>
+		<Optimize>false</Optimize>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!-- RimWorld DLLs -->
+		<Reference Include="$(RimWorldDir)/RimWorldMac.app/Contents/Resources/Data/Managed/*.dll">
+			<Private>False</Private>
+		</Reference>
+
+		<!-- Harmony and Bubbles from Mods folder -->
+		<Reference Include="$(RimWorldDir)/../../workshop/content/294100/2009463077/Current/Assemblies/0Harmony.dll">
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="$(RimWorldDir)/../../workshop/content/294100/1516158345/Assemblies/Bubbles.dll">
+			<Private>False</Private>
+		</Reference>
+
+		<!-- Standard C# reference -->
+		<Reference Include="Microsoft.CSharp" />
+	</ItemGroup>
+
+</Project>

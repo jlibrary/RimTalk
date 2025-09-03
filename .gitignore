@@ -1,0 +1,11 @@
+/.config
+/*.sln 
+/obj
+/*/Assemblies
+.idea
+.vscode
+.DS_Store
+bin
+PublishedFileId.txt
+Folder.DotSettings.user
+Directory.Build.props

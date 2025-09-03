@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+	<packageId>cj.rimtalk</packageId>
+	<name>Rimtalk</name>
+	<author>juicy</author>
+	<description>Bring your colonists to life with RimTalk! This revolutionary mod uses Google's AI to generate dynamic, context-aware dialogue for your pawns in real-time.
+
+Key Features:
+• AI-powered conversations that reflect each pawn's current mood, thoughts, and situation
+• Context-aware dialogue based on what colonists are doing and thinking
+• Multi-language support for diverse colony experiences
+• Configurable conversation frequency and message suppression options
+• Easy setup - just get a free API key from Google AI Studio
+
+Every conversation is unique and emergent, creating immersive storytelling experiences that evolve with your colony. Gone are the days of repetitive interactions - your pawns will now speak with personality and purpose!
+
+Setup: Get your free API key at aistudio.google.com, enable the mod, and paste your key in mod settings. Compatible with most other mods and respects API rate limits automatically.
+	</description>
+	<supportedVersions>
+		<li>1.6</li>
+	</supportedVersions>
+	<modDependencies>
+		<li>
+			<packageId>brrainz.harmony</packageId>
+			<displayName>Harmony</displayName>
+			<steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
+			<downloadUrl>https://github.com/pardeike/HarmonyRimWorld/releases/latest</downloadUrl>
+		</li>
+		<li>
+			<packageId>Jaxe.Bubbles</packageId>
+			<displayName>Interaction Bubbles</displayName>
+			<steamWorkshopUrl>steam://url/CommunityFilePage/1516158345</steamWorkshopUrl>
+		</li>
+	</modDependencies>
+	<loadAfter>
+		<li>brrainz.harmony</li>
+		<li>Jaxe.Bubbles</li>
+	</loadAfter>
+	<incompatibleWith>
+		<!-- <li>username.modname</li> -->
+	</incompatibleWith>
+</ModMetaData>
