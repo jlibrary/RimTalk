@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using HarmonyLib;
 using RimWorld;
 using UnityEngine;
@@ -18,7 +19,8 @@ namespace RimTalk
         private string lastSavedInstruction = "";
         private List<string> discoveredArchivableTypes = new List<string>();
         private bool archivableTypesScanned = false;
-        
+        private int _apiSettingsHash = 0;
+
         // Tab system
         private enum SettingsTab
         {
@@ -29,18 +31,7 @@ namespace RimTalk
 
         private SettingsTab currentTab = SettingsTab.Basic;
 
-        // Available model options
-        private readonly string[] modelOptions = new string[]
-        {
-            "gemini-2.5-pro",
-            "gemini-2.5-flash", 
-            "gemini-2.5-flash-lite",
-            "gemini-2.0-flash",
-            "gemini-2.0-flash-lite",
-            "gemma-3-27b-it",
-            "gemma-3-12b-it",
-            "Custom"
-        };
+        
 
         public static CurrentWorkDisplayModSettings Get() =>
             LoadedModManager.GetMod<Settings>().GetSettings<CurrentWorkDisplayModSettings>();
@@ -48,8 +39,9 @@ namespace RimTalk
         public Settings(ModContentPack content) : base(content)
         {
             var harmony = new Harmony("cj.rimtalk");
-            GetSettings<CurrentWorkDisplayModSettings>();
+            var settings = GetSettings<CurrentWorkDisplayModSettings>();
             harmony.PatchAll();
+            _apiSettingsHash = GetApiSettingsHash(settings);
         }
 
         public override string SettingsCategory() =>
@@ -117,9 +109,15 @@ namespace RimTalk
         public override void WriteSettings()
         {
             base.WriteSettings();
+            CurrentWorkDisplayModSettings settings = Get();
+            int newHash = GetApiSettingsHash(settings);
+            if (newHash != _apiSettingsHash)
+            {
+                settings.currentCloudConfigIndex = 0;
+                _apiSettingsHash = newHash;
+            }
 
             // Check if instruction changed when settings are saved (window closed)
-            CurrentWorkDisplayModSettings settings = Get();
             if (settings.customInstruction != lastSavedInstruction)
             {
                 lastSavedInstruction = settings.customInstruction;
@@ -130,6 +128,27 @@ namespace RimTalk
                     rimTalkComponent.Reset();
                 }
             }
+        }
+
+        private int GetApiSettingsHash(CurrentWorkDisplayModSettings settings)
+        {
+            // Create a string representation of the API settings and get its hash code
+            var sb = new StringBuilder();
+            
+            if (settings.cloudConfigs != null)
+            {
+                foreach (var config in settings.cloudConfigs)
+                {
+                    sb.AppendLine(config.Provider.ToString());
+                    sb.AppendLine(config.ApiKey);
+                    sb.AppendLine(config.SelectedModel);
+                    sb.AppendLine(config.CustomModelName);
+                    sb.AppendLine(config.IsEnabled.ToString());
+                    sb.AppendLine(config.BaseUrl);
+                }
+            }
+
+            return sb.ToString().GetHashCode();
         }
 
         private void DrawTabButtons(Rect rect)

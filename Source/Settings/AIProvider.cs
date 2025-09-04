@@ -4,6 +4,8 @@ namespace RimTalk
     {
         Google,
         OpenAI,
+        DeepSeek,
+        OpenRouter,
         Local,
         None
     }

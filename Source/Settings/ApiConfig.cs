@@ -11,7 +11,7 @@ namespace RimTalk
         public bool IsEnabled = true;
         public AIProvider Provider = AIProvider.Google;
         public string ApiKey = "";
-        public string SelectedModel = Constant.DefaultCloudModel;
+        public string SelectedModel = Constant.ChooseModel;
         public string CustomModelName = "";
         public string BaseUrl = "";
 

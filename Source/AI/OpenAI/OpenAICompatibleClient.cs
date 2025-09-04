@@ -3,27 +3,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RimTalk.AI.Local;
+using RimTalk.Data;
 using RimTalk.Error;
 using RimTalk.Util;
 using UnityEngine.Networking;
-using RimTalk.AI.OpenAI;
-using RimTalk.Data;
 using Verse;
-using Message = RimTalk.AI.OpenAI.Message;
 
-namespace RimTalk.AI.Local
+namespace RimTalk.AI.OpenAI
 {
-    public class LocalClient : IAIClient
+    public abstract class OpenAICompatibleClient : IAIClient
     {
-        private static string BaseUrl => Settings.Get().GetActiveConfig()?.BaseUrl;
-        private static string EndpointUrl => BaseUrl + "/v1/chat/completions";
+        protected abstract string BaseUrl { get; }
+        private string EndpointUrl => $"{BaseUrl}/v1/chat/completions";
+        private string CurrentApiKey => Settings.Get().GetActiveConfig()?.ApiKey;
+        private string CurrentModel => Settings.Get().GetCurrentModel();
 
         public async Task<string> GetChatCompletionAsync(string instruction,
             List<(Role role, string message)> messages)
         {
-            List<Message> allMessages = new List<Message>();
+            var allMessages = new List<Message>();
 
-            // Add system instruction as first message
             if (!string.IsNullOrEmpty(instruction))
             {
                 allMessages.Add(new Message
@@ -33,27 +33,26 @@ namespace RimTalk.AI.Local
                 });
             }
 
-            // Add the rest of the messages, converting Role enum to string
             allMessages.AddRange(messages.Select(m => new Message
             {
                 Role = ConvertRole(m.role),
                 Content = m.message
             }));
-            
+
             var request = new OpenAIRequest()
             {
-                Model = Settings.Get().GetActiveConfig()?.CustomModelName,
+                Model = CurrentModel,
                 Messages = allMessages
             };
 
             return await GetResponseFromApiAsync(request);
         }
 
-        public async Task<string> GetResponseFromApiAsync(OpenAIRequest request)
+        private async Task<string> GetResponseFromApiAsync(OpenAIRequest request)
         {
-            if (string.IsNullOrEmpty(BaseUrl))
+            if (string.IsNullOrEmpty(CurrentApiKey))
             {
-                Logger.Error("Endpoint URL is missing.");
+                Logger.Error("API key is missing.");
                 return null;
             }
 
@@ -62,12 +61,13 @@ namespace RimTalk.AI.Local
                 string jsonContent = JsonUtil.SerializeToJson(request);
                 Logger.Message($"API request: {EndpointUrl}\n{jsonContent}");
 
-                using (UnityWebRequest webRequest = UnityWebRequest.Post(EndpointUrl, jsonContent))
+                using (var webRequest = UnityWebRequest.Post(EndpointUrl, jsonContent))
                 {
                     byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonContent);
                     webRequest.uploadHandler = new UploadHandlerRaw(bodyRaw);
                     webRequest.downloadHandler = new DownloadHandlerBuffer();
                     webRequest.SetRequestHeader("Content-Type", "application/json");
+                    webRequest.SetRequestHeader("Authorization", $"Bearer {CurrentApiKey}");
 
                     var asyncOperation = webRequest.SendWebRequest();
 
@@ -88,9 +88,7 @@ namespace RimTalk.AI.Local
                         return null;
                     }
 
-                    OpenAIResponse response = JsonUtil.DeserializeFromJson<OpenAIResponse>(webRequest.downloadHandler.text);
-                    
-                    // Extract response text from OpenAI format
+                    var response = JsonUtil.DeserializeFromJson<OpenAIResponse>(webRequest.downloadHandler.text);
                     return response?.Choices?[0]?.Message?.Content;
                 }
             }
@@ -104,7 +102,7 @@ namespace RimTalk.AI.Local
                 return null;
             }
         }
-        
+
         private string ConvertRole(Role role)
         {
             switch (role)
@@ -112,7 +110,7 @@ namespace RimTalk.AI.Local
                 case Role.USER:
                     return "user";
                 case Role.AI:
-                    return "assistant"; 
+                    return "assistant";
                 default:
                     throw new ArgumentException($"Unknown role: {role}");
             }

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace RimTalk.AI.Local
+namespace RimTalk.AI.OpenAI
 {
     // === Request Models ===
 

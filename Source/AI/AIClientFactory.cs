@@ -1,5 +1,6 @@
 using RimTalk.AI.Gemini;
 using RimTalk.AI.Local;
+using RimTalk.AI.OpenAI;
 
 namespace RimTalk.Service
 {
@@ -29,6 +30,12 @@ namespace RimTalk.Service
         {
             if (provider == AIProvider.Google)
                 return new GeminiClient();
+            if (provider == AIProvider.OpenAI)
+                return new OpenAIClient();
+            if (provider == AIProvider.DeepSeek)
+                return new DeepSeekClient();
+            if (provider == AIProvider.OpenRouter)
+                return new OpenRouterClient();
             if (provider == AIProvider.Local)
                 return new LocalClient();
             return null;

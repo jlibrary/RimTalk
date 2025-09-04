@@ -64,6 +64,7 @@ This will influence their AI-generated dialogue.</RimTalk.PersonalityEditor.Inst
     <RimTalk.Settings.LocalProviderConfiguration>Local Provider Configuration</RimTalk.Settings.LocalProviderConfiguration>
     <RimTalk.Settings.BaseUrlLabel>Base Url:</RimTalk.Settings.BaseUrlLabel>
     <RimTalk.Settings.ModelLabel>Model:</RimTalk.Settings.ModelLabel>
+    <RimTalk.Settings.EnterApiKey>(enter valid api key to fetch models)</RimTalk.Settings.EnterApiKey>
 
 </LanguageData>
 

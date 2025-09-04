@@ -23,6 +23,12 @@ namespace RimTalk
 
         public void Reset()
         {
+            var settings = Settings.Get();
+            if (settings != null)
+            {
+                settings.currentCloudConfigIndex = 0;
+            }
+
             Counter.Tick = 0;
             Cache.Clear();
             TalkHistory.Clear();
