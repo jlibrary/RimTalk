@@ -51,9 +51,7 @@ namespace RimTalk
                 ref settings.suppressUnprocessedMessages,
                 "RimTalk.Settings.HideSkippedMessagesTooltip".Translate()
             );
-
-            GUI.enabled = oldEnabled; // Restore original GUI.enabled state
-
+            
             listingStandard.Gap(12f);
 
             // Display talk when drafted checkbox
@@ -63,6 +61,13 @@ namespace RimTalk
                 "RimTalk.Settings.DisplayTalkWhenDraftedTooltip".Translate()
             );
 
+            listingStandard.Gap(12f);
+            
+            // Bubble fade tip
+            GUI.color = Color.yellow;
+            Rect rateLimitRect = listingStandard.GetRect(Text.LineHeight);
+            Widgets.Label(rateLimitRect, "RimTalk.Settings.BubbleFadeTip".Translate());
+            GUI.color = Color.white;
             listingStandard.Gap(12f);
 
             Rect resetButtonRect = listingStandard.GetRect(30f);
@@ -80,6 +85,8 @@ namespace RimTalk
                 settings.localConfig = new ApiConfig { Provider = AIProvider.Local };
                 settings.useCloudProviders = true;
             }
+            
+            GUI.enabled = oldEnabled; // Restore original GUI.enabled state
 
             listingStandard.End();
         }

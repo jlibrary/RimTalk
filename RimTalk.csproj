@@ -46,4 +46,8 @@
 		<Reference Include="Microsoft.CSharp" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Content Include="Folder.DotSettings.user" />
+	</ItemGroup>
+
 </Project>

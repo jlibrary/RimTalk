@@ -12,17 +12,13 @@ namespace RimTalk
 {
     public partial class Settings : Mod
     {
-        private Vector2 instructionScrollPosition = Vector2.zero;
         private Vector2 mainScrollPosition = Vector2.zero;
-        private Vector2 archivableScrollPosition = Vector2.zero;
         private string textAreaBuffer = "";
         private bool textAreaInitialized = false;
         private string lastSavedInstruction = "";
         private List<string> discoveredArchivableTypes = new List<string>();
         private bool archivableTypesScanned = false;
-
         
-
         // Tab system
         private enum SettingsTab
         {
@@ -183,8 +179,10 @@ namespace RimTalk
 
             // Create scrollable area for the current tab content
             Rect viewRect = new Rect(0f, 0f, contentRect.width - 16f, contentRect.height);
-            mainScrollPosition = GUI.BeginScrollView(contentRect, mainScrollPosition, viewRect);
 
+            viewRect = new Rect(0f, 0f, contentRect.width - 16f, 800f);
+
+            mainScrollPosition = GUI.BeginScrollView(contentRect, mainScrollPosition, viewRect);
             switch (currentTab)
             {
                 case SettingsTab.Basic:

@@ -86,20 +86,8 @@ namespace RimTalk
             // Ensure minimum height
             availableHeight = Mathf.Max(availableHeight, 100f);
 
-            Rect instructionOuterRect = listingStandard.GetRect(availableHeight);
-
-            // Calculate inner rect height based on text content, but ensure it's at least as tall as the outer rect
-            float textHeight = Text.CalcHeight(textAreaBuffer, instructionOuterRect.width - 16f);
-            float innerHeight = Mathf.Max(textHeight, instructionOuterRect.height);
-
-            Rect instructionInnerRect = new Rect(0f, 0f, instructionOuterRect.width - 16f, innerHeight);
-
-            // Draw scrollable text area
-            instructionScrollPosition =
-                GUI.BeginScrollView(instructionOuterRect, instructionScrollPosition, instructionInnerRect);
-            string newInstruction =
-                GUI.TextArea(new Rect(0f, 0f, instructionInnerRect.width, instructionInnerRect.height), textAreaBuffer);
-            GUI.EndScrollView();
+            Rect textAreaRect = listingStandard.GetRect(availableHeight);
+            string newInstruction = GUI.TextArea(textAreaRect, textAreaBuffer);
 
             // Update buffer and settings logic
             textAreaBuffer = newInstruction;
