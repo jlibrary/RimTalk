@@ -91,9 +91,7 @@ namespace RimTalk
 
             // Update buffer and settings logic
             textAreaBuffer = newInstruction;
-            string newInstructionWithJson = newInstruction +
-                                            "\n\nReturn JSON array with objects containing \"name\" and \"text\" string keys.";
-            int newTokenCount = CommonUtil.EstimateTokenCount(newInstructionWithJson);
+            int newTokenCount = CommonUtil.EstimateTokenCount(textAreaBuffer);
             if (newTokenCount <= maxAllowedTokens)
             {
                 if (newInstruction == Constant.DefaultInstruction)

@@ -14,13 +14,13 @@ namespace RimTalk
             CurrentWorkDisplayModSettings settings = Get();
 
             // API Key section
-            listingStandard.Label($"{AIProvider.Google} AI API Key:");
+            listingStandard.Label("RimTalk.Settings.GoogleApiKeyLabel".Translate(AIProvider.Google.ToString()));
             settings.simpleApiKey = Widgets.TextField(listingStandard.GetRect(24), settings.simpleApiKey);
 
             // Add a button that opens the API key page
             listingStandard.Gap(6f);
             Rect getKeyButtonRect = listingStandard.GetRect(30f);
-            if (Widgets.ButtonText(getKeyButtonRect, "Get a Free API Key"))
+            if (Widgets.ButtonText(getKeyButtonRect, "RimTalk.Settings.GetFreeApiKeyButton".Translate()))
             {
                 Application.OpenURL("https://aistudio.google.com/app/apikey");
             }
@@ -29,7 +29,7 @@ namespace RimTalk
 
             // Show Advanced Settings button
             Rect advancedButtonRect = listingStandard.GetRect(30f);
-            if (Widgets.ButtonText(advancedButtonRect, "Switch to Advanced Settings"))
+            if (Widgets.ButtonText(advancedButtonRect, "RimTalk.Settings.SwitchToAdvancedSettings".Translate()))
             {
                 settings.useSimpleConfig = false;
             }
@@ -41,7 +41,7 @@ namespace RimTalk
 
             // Show Simple Settings button
             Rect simpleButtonRect = listingStandard.GetRect(30f);
-            if (Widgets.ButtonText(simpleButtonRect, "Switch to Simple Settings"))
+            if (Widgets.ButtonText(simpleButtonRect, "RimTalk.Settings.SwitchToSimpleSettings".Translate()))
             {
                 if (string.IsNullOrWhiteSpace(settings.simpleApiKey))
                 {
@@ -58,7 +58,7 @@ namespace RimTalk
 
             // Cloud providers option with description
             Rect radioRect1 = listingStandard.GetRect(24f);
-            if (Widgets.RadioButtonLabeled(radioRect1, "Cloud Providers", settings.useCloudProviders))
+            if (Widgets.RadioButtonLabeled(radioRect1, "RimTalk.Settings.CloudProviders".Translate(), settings.useCloudProviders))
             {
                 settings.useCloudProviders = true;
             }
@@ -68,7 +68,7 @@ namespace RimTalk
             GUI.color = Color.gray;
             Rect cloudDescRect = listingStandard.GetRect(Text.LineHeight);
             Widgets.Label(cloudDescRect,
-                "Use online AI services like Google AI, OpenAI, etc. Requires internet connection and API keys.");
+                "RimTalk.Settings.CloudProvidersDesc".Translate());
             GUI.color = Color.white;
             Text.Font = GameFont.Small;
 
@@ -76,7 +76,7 @@ namespace RimTalk
 
             // Local provider option with description
             Rect radioRect2 = listingStandard.GetRect(24f);
-            if (Widgets.RadioButtonLabeled(radioRect2, "Local Provider", !settings.useCloudProviders))
+            if (Widgets.RadioButtonLabeled(radioRect2, "RimTalk.Settings.LocalProvider".Translate(), !settings.useCloudProviders))
             {
                 settings.useCloudProviders = false;
                 settings.localConfig.Provider = AIProvider.Local;
@@ -87,7 +87,7 @@ namespace RimTalk
             GUI.color = Color.gray;
             Rect localDescRect = listingStandard.GetRect(Text.LineHeight);
             Widgets.Label(localDescRect,
-                "Use a local AI server running on your machine (Ollama, LM Studio, etc.). Must support OpenAPI.");
+                "RimTalk.Settings.LocalProviderDesc".Translate());
             GUI.color = Color.white;
             Text.Font = GameFont.Small;
 
@@ -112,7 +112,7 @@ namespace RimTalk
             Rect removeButtonRect = new Rect(headerRect.x + headerRect.width - 30f, headerRect.y, 30f, 24f);
             headerRect.width -= 70f;
 
-            Widgets.Label(headerRect, "Cloud API Configurations");
+            Widgets.Label(headerRect, "RimTalk.Settings.CloudApiConfigurations".Translate());
 
             // Add description for cloud providers
             Text.Font = GameFont.Tiny;
@@ -120,7 +120,7 @@ namespace RimTalk
             Rect cloudDescRect = listingStandard.GetRect(Text.LineHeight * 2);
             cloudDescRect.width -= 70f;
             Widgets.Label(cloudDescRect,
-                "If multiple APIs are enabled, the system will attempt to use them in order. If one API fails, it will automatically try the next enabled API in the list.");
+                "RimTalk.Settings.CloudApiConfigurationsDesc".Translate());
             GUI.color = Color.white;
             Text.Font = GameFont.Small;
             
@@ -152,27 +152,27 @@ namespace RimTalk
 
             // Provider Header
             Rect providerHeaderRect = new Rect(x, y, 100f, height);
-            Widgets.Label(providerHeaderRect, "Provider");
+            Widgets.Label(providerHeaderRect, "RimTalk.Settings.ProviderHeader".Translate());
             x += 105f;
 
             // API Key Header
             Rect apiKeyHeaderRect = new Rect(x, y, 300f, height);
-            Widgets.Label(apiKeyHeaderRect, "API Key");
+            Widgets.Label(apiKeyHeaderRect, "RimTalk.Settings.ApiKeyHeader".Translate());
             x += 305f;
 
             // Model Header
             Rect modelHeaderRect = new Rect(x, y, 150f, height);
-            Widgets.Label(modelHeaderRect, "Model");
+            Widgets.Label(modelHeaderRect, "RimTalk.Settings.ModelHeader".Translate());
             x += 155f;
             
             // Custom Model Header
             Rect customModelHeaderRect = new Rect(x, y, 150f, height);
-            Widgets.Label(customModelHeaderRect, "Custom Model");
+            Widgets.Label(customModelHeaderRect, "RimTalk.Settings.CustomModelHeader".Translate());
             x += 155f;
 
             // Enabled Header
             Rect enabledHeaderRect = new Rect(tableHeaderRect.xMax - 70f, y, 70f, height);
-            Widgets.Label(enabledHeaderRect, "Enabled");
+            Widgets.Label(enabledHeaderRect, "RimTalk.Settings.EnabledHeader".Translate());
             
             listingStandard.Gap(6f);
 
@@ -240,14 +240,14 @@ namespace RimTalk
             // Add tooltip for the checkbox
             if (Mouse.IsOver(toggleRect))
             {
-                TooltipHandler.TipRegion(toggleRect, "Enable or disable this API configuration");
+                TooltipHandler.TipRegion(toggleRect, "RimTalk.Settings.EnableDisableApiConfigTooltip".Translate());
             }
         }
 
 
         private void DrawLocalProviderSection(Listing_Standard listingStandard, CurrentWorkDisplayModSettings settings)
         {
-            listingStandard.Label("Local Provider Configuration");
+            listingStandard.Label("RimTalk.Settings.LocalProviderConfiguration".Translate());
             listingStandard.Gap(6f);
 
             // Ensure local config exists
@@ -268,7 +268,7 @@ namespace RimTalk
 
             // Label for Base Url
             Rect baseUrlLabelRect = new Rect(x, y, 70f, height);
-            Widgets.Label(baseUrlLabelRect, "Base Url: ");
+            Widgets.Label(baseUrlLabelRect, "RimTalk.Settings.BaseUrlLabel".Translate());
             x += 75f; // Adjust x to account for the label's width
 
             // Endpoint URL field
@@ -278,7 +278,7 @@ namespace RimTalk
 
             // Label for Model
             Rect modelLabelRect = new Rect(x, y, 70f, height);
-            Widgets.Label(modelLabelRect, "Model:");
+            Widgets.Label(modelLabelRect, "RimTalk.Settings.ModelLabel".Translate());
             x += 75f; // Adjust x to account for the label's width
 
             // Model text field (200px)

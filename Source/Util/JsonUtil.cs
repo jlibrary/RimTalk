@@ -1,6 +1,7 @@
 using System.IO;
 using System.Runtime.Serialization.Json;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace RimTalk.Util
 {
@@ -32,6 +33,15 @@ namespace RimTalk.Util
                 // Deserialize the JSON data
                 return (T)serializer.ReadObject(stream);
             }
+        }
+        
+        public static string Sanitize(string text)
+        {
+            text = Regex.Replace(text, @"[“”""]+", "\"");
+            text = Regex.Replace(text, @"\n\s*|\\", "");
+            text = Regex.Replace(text, @".*[\r\n]*\[{", "[{");
+            text = Regex.Replace(text, @"\}][\r\n]*.*", "}]");
+            return text;
         }
     }
 }

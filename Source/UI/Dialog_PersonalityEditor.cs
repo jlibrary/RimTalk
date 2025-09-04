@@ -10,6 +10,7 @@ namespace RimTalk.UI
         private Pawn pawn;
         private string editingPersonality;
         private PersonalityManager personalityManager;
+        private bool isGenerating = false;
         private static readonly int MAX_LENGTH = 300; // Reasonable limit
 
         public Dialog_PersonalityEditor(Pawn pawn)
@@ -57,7 +58,8 @@ namespace RimTalk.UI
             Color countColor = editingPersonality.Length > MAX_LENGTH * 0.9f ? Color.yellow : Color.gray;
             if (editingPersonality.Length >= MAX_LENGTH) countColor = Color.red;
             GUI.color = countColor;
-            Widgets.Label(countRect, "RimTalk.PersonalityEditor.Characters".Translate(editingPersonality.Length, MAX_LENGTH));
+            Widgets.Label(countRect,
+                "RimTalk.PersonalityEditor.Characters".Translate(editingPersonality.Length, MAX_LENGTH));
             GUI.color = Color.white;
 
             // Buttons
@@ -77,15 +79,37 @@ namespace RimTalk.UI
                     MessageTypeDefOf.TaskCompletion, false);
                 Close();
             }
-
-            if (Widgets.ButtonText(randomButton, "RimTalk.PersonalityEditor.Random".Translate()))
+            
+            if (Widgets.ButtonText(randomButton, isGenerating ? 
+                    "RimTalk.PersonalityEditor.Generating".Translate().ToString() : 
+                        "RimTalk.PersonalityEditor.Generate".Translate().ToString()))
             {
-                editingPersonality = Constant.Personalities.RandomElement();
+                if (!isGenerating)
+                {
+                    isGenerating = true;
+                    personalityManager.GeneratePersona(pawn).ContinueWith(task =>
+                    {
+                        isGenerating = false;
+                        if (task.IsCompleted)
+                        {
+                            editingPersonality = task.Result ?? "";
+                        }
+                    });
+                }
             }
 
             if (Widgets.ButtonText(clearButton, "RimTalk.PersonalityEditor.Clear".Translate()))
             {
                 editingPersonality = "";
+            }
+        }
+        
+        public override void WindowUpdate()
+        {
+            base.WindowUpdate();
+            if (isGenerating)
+            {        
+                // This will cause the window to repaint continuously while generating
             }
         }
     }

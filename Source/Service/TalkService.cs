@@ -116,7 +116,7 @@ namespace RimTalk.Service
             }
 
             // Sanitize response
-            response = Sanitize(response);
+            response = JsonUtil.Sanitize(response);
 
             List<Talk> talks = JsonUtil.DeserializeFromJson<List<Talk>>(response);
 
@@ -217,15 +217,6 @@ namespace RimTalk.Service
             pawnState.LastTalkTick = Find.TickManager.TicksGame;
             Talk talk = ConsumeTalk(pawnState);
             return talk.Text;
-        }
-
-        private static string Sanitize(string text)
-        {
-            text = Regex.Replace(text, @"[“”""]+", "\"");
-            text = Regex.Replace(text, @"\n\s*|\\", "");
-            text = Regex.Replace(text, @".*[\r\n]*\[{", "[{");
-            text = Regex.Replace(text, @"\}][\r\n]*.*", "}]");
-            return text;
         }
 
         private static Talk ConsumeTalk(PawnState pawnState)

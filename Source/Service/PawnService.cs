@@ -147,12 +147,10 @@ namespace RimTalk.Service
                 AIService.UpdateContext(context.ToString());
         }
 
-        public static string CreatePawnContext(Pawn pawn)
+        public static string CreatePawnBackstory(Pawn pawn, bool withDesc = false)
         {
-            pawn.def.hideMainDesc = true;
-
             StringBuilder sb = new StringBuilder();
-
+            
             var name = pawn.Name.ToStringShort;
             var title = pawn.story.title == null ? "" : $"({pawn.story.title})";
             var genderAndAge = Regex.Replace(pawn.MainDesc(false), @"\(\d+\)", "");
@@ -163,7 +161,8 @@ namespace RimTalk.Service
                 var xenotypeInfo = $"Race: {pawn.genes.Xenotype.LabelCap}";
                 if (!pawn.genes.Xenotype.descriptionShort.NullOrEmpty())
                     xenotypeInfo += $" - {pawn.genes.Xenotype.descriptionShort}";
-   
+                if (withDesc)
+                    xenotypeInfo += $" - {pawn.genes.Xenotype.description}";
                 sb.AppendLine(xenotypeInfo);
             }
 
@@ -171,7 +170,7 @@ namespace RimTalk.Service
             {
                 var notableGenes = pawn.genes.GenesListForReading
                     .Where(g => g.def.biostatMet != 0 || g.def.biostatCpx != 0)
-                    .Select(g => g.def.LabelCap);
+                    .Select(g => g.def.LabelCap + (withDesc ? $":{g.def.description}" : ""));
     
                 if (notableGenes.Any())
                 {
@@ -198,6 +197,7 @@ namespace RimTalk.Service
             {
                 var childHood =
                     $"Childhood: {pawn.story.Childhood.title}({pawn.story.Childhood.titleShort})";
+                if (withDesc) childHood += $":{Sanitize(pawn.story.Childhood.description, pawn)}";
                 sb.AppendLine(childHood);
             }
 
@@ -205,6 +205,7 @@ namespace RimTalk.Service
             {
                 var adulthood =
                     $"Adulthood: {pawn.story.Adulthood.title}({pawn.story.Adulthood.titleShort})";
+                if (withDesc) adulthood += $":{Sanitize(pawn.story.Adulthood.description, pawn) }";
                 sb.AppendLine(adulthood);
             }
 
@@ -215,7 +216,7 @@ namespace RimTalk.Service
                 {
                     if (degreeData.degree == trait.Degree)
                     {
-                        traits += degreeData.label + ",";
+                        traits += degreeData.label + (withDesc? $":{Sanitize(degreeData.description, pawn)}\n" : ",");
                         break;
                     }
                 }
@@ -223,6 +224,25 @@ namespace RimTalk.Service
 
             sb.AppendLine(traits);
 
+            var skills = "Skills: ";
+            foreach (SkillRecord skillRecord in pawn.skills.skills)
+            {
+                skills += $"{skillRecord.def.label}: {skillRecord.Level}, ";
+            }
+
+            sb.AppendLine(skills);
+            
+            return sb.ToString();
+        }
+
+        public static string CreatePawnContext(Pawn pawn)
+        {
+            pawn.def.hideMainDesc = true;
+
+            StringBuilder sb = new StringBuilder();
+
+            sb.Append(CreatePawnBackstory(pawn));
+            
             var relations = "";
             foreach (Pawn otherPawn in pawn.relations.PotentiallyRelatedPawns)
                 if (!otherPawn.Dead && !otherPawn.relations.hidePawnRelations)
@@ -242,14 +262,6 @@ namespace RimTalk.Service
 
             if (relations != "")
                 sb.AppendLine("Relations: " + relations);
-
-            var skills = "Skills: ";
-            foreach (SkillRecord skillRecord in pawn.skills.skills)
-            {
-                skills += $"{skillRecord.def.label}: {skillRecord.Level}, ";
-            }
-
-            sb.AppendLine(skills);
             
             var equipment = "Equipment: ";
             if (pawn.equipment?.Primary != null)

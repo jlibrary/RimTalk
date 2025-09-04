@@ -14,7 +14,8 @@ namespace RimTalk.Service
         private static bool firstInstruction = true;
         private static List<(Role role, string message)> messages = new List<(Role role, string message)>();
         private static readonly int maxMessages = 6;
-
+        
+        // Multi-turn conversation used for generating AI dialogue
         public static async Task<string> Chat(string message)
         {
             busy = true;
@@ -31,6 +32,25 @@ namespace RimTalk.Service
                 firstInstruction = false;
             }
             
+            return response;
+        }
+        
+        // One time query - used for generating persona, etc
+        public static async Task<string> Query(string query)
+        {
+            List<(Role role, string message)> message = new List<(Role role, string message)>();
+            message.Add((Role.USER, query));
+            
+            busy = true;
+            string response = "";
+            try
+            {
+                response = await AIClientFactory.GetAIClient().GetChatCompletionAsync("", message);
+            }
+            finally
+            {
+                busy = false;
+            }
             return response;
         }
 
