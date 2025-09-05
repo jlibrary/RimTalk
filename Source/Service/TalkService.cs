@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using RimTalk.Data;
 using RimTalk.Error;
@@ -19,10 +18,12 @@ namespace RimTalk.Service
 
         public static bool GenerateTalk(string prompt, Pawn initiator, Pawn recipient = null, bool force = false)
         {
-            if (!Bubbles.Settings.Activated || Settings.Get().GetActiveConfig() == null) return false;
+            var settings = Settings.Get();
+            if (!RimTalk.IsEnabledNow()) return false;
+            if (!Bubbles.Settings.Activated || settings.GetActiveConfig() == null) return false;
             if (!Cache.Contains(initiator)) return false;
             
-            if (!Settings.Get().displayTalkWhenDrafted)
+            if (!settings.displayTalkWhenDrafted)
             {
                 if (initiator.Drafted) return false;
                 if (recipient != null && recipient.Drafted) recipient = null;
@@ -64,7 +65,7 @@ namespace RimTalk.Service
                 }
                 catch (QuotaExceededException)
                 {
-                    var settings = Settings.Get();
+                    
                     int originalConfigIndex = settings.currentCloudConfigIndex; // Store original index
 
                     settings.TryNextConfig();

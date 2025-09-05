@@ -7,8 +7,6 @@ namespace RimTalk
 {
     public class CurrentWorkDisplayModSettings : ModSettings
     {
-        public string apiKey = "";
-        
         // New API configuration system
         public List<ApiConfig> cloudConfigs = new List<ApiConfig>();
         public int currentCloudConfigIndex = 0;
@@ -121,9 +119,6 @@ namespace RimTalk
         {
             base.ExposeData();
             
-            // Legacy API key handling for backward compatibility
-            Scribe_Values.Look(ref apiKey, "geminiApiKey", "");
-            
             // New API configuration system
             Scribe_Collections.Look(ref cloudConfigs, "cloudConfigs", LookMode.Deep);
             Scribe_Deep.Look(ref localConfig, "localConfig");
@@ -148,19 +143,7 @@ namespace RimTalk
                 
             if (enabledArchivableTypes == null)
                 enabledArchivableTypes = new Dictionary<string, bool>();
-
-            // Migration logic: if we have a legacy API key but no cloud configs, migrate it
-            if (!string.IsNullOrWhiteSpace(apiKey) && cloudConfigs.Count == 0)
-            {
-                cloudConfigs.Add(new ApiConfig 
-                { 
-                    ApiKey = apiKey,
-                    IsEnabled = true,
-                    Provider = AIProvider.Google,
-                    SelectedModel = Constant.DefaultCloudModel
-                });
-            }
-
+            
             // Ensure we have at least one cloud config
             if (cloudConfigs.Count == 0)
             {

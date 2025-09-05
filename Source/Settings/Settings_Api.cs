@@ -66,8 +66,17 @@ namespace RimTalk
             CurrentWorkDisplayModSettings settings = Get();
 
             // API Key section
-            listingStandard.Label("RimTalk.Settings.GoogleApiKeyLabel".Translate(AIProvider.Google.ToString()));
+            listingStandard.Label("RimTalk.Settings.GoogleApiKeyLabel".Translate());
             settings.simpleApiKey = Widgets.TextField(listingStandard.GetRect(24), settings.simpleApiKey);
+            
+            // Add description for free Google providers
+            Text.Font = GameFont.Tiny;
+            GUI.color = Color.gray;
+            Rect cloudDescRect = listingStandard.GetRect(Text.LineHeight);
+            Widgets.Label(cloudDescRect,
+                "RimTalk.Settings.GoogleApiKeyDesc".Translate());
+            GUI.color = Color.white;
+            Text.Font = GameFont.Small;
 
             // Add a button that opens the API key page
             listingStandard.Gap(6f);
@@ -215,14 +224,14 @@ namespace RimTalk
             x += 245f;
 
             // Model Header
-            Rect modelHeaderRect = new Rect(x, y, 150f, height);
+            Rect modelHeaderRect = new Rect(x, y, 200f, height);
             Widgets.Label(modelHeaderRect, "RimTalk.Settings.ModelHeader".Translate());
-            x += 155f;
+            x += 205f;
             
             // Custom Model Header
-            Rect customModelHeaderRect = new Rect(x, y, 120f, height);
+            Rect customModelHeaderRect = new Rect(x, y, 150f, height);
             Widgets.Label(customModelHeaderRect, "RimTalk.Settings.CustomModelHeader".Translate());
-            x += 125f;
+            x += 155f;
 
             // Enabled Header
             Rect enabledHeaderRect = new Rect(tableHeaderRect.xMax - 70f, y, 70f, height);
@@ -248,7 +257,7 @@ namespace RimTalk
             // Reorder buttons
             // Up button
             Rect upButtonRect = new Rect(x, y, 24f, height);
-            if (Widgets.ButtonText(upButtonRect, "↑") && index > 0)
+            if (Widgets.ButtonText(upButtonRect, "▲") && index > 0)
             {
                 var temp = configs[index];
                 configs[index] = configs[index - 1];
@@ -258,7 +267,7 @@ namespace RimTalk
 
             // Down button
             Rect downButtonRect = new Rect(x, y, 24f, height);
-            if (Widgets.ButtonText(downButtonRect, "↓") && index < configs.Count - 1)
+            if (Widgets.ButtonText(downButtonRect, "▼") && index < configs.Count - 1)
             {
                 var temp = configs[index];
                 configs[index] = configs[index + 1];
@@ -304,8 +313,8 @@ namespace RimTalk
             config.ApiKey = Widgets.TextField(apiKeyRect, config.ApiKey);
             x += 245f;
 
-            // Model dropdown (150px)
-            Rect modelRect = new Rect(x, y, 150f, height);
+            // Model dropdown (200px)
+            Rect modelRect = new Rect(x, y, 200f, height);
             if (Widgets.ButtonText(modelRect, config.SelectedModel))
             {
                 if (string.IsNullOrWhiteSpace(config.ApiKey))
@@ -365,16 +374,16 @@ namespace RimTalk
                 }
             }
 
-            x += 155f;
+            x += 205f;
 
             // Custom model name field (if Custom is selected)
             if (config.SelectedModel == "Custom")
             {
-                Rect customModelRect = new Rect(x, y, 120f, height);
+                Rect customModelRect = new Rect(x, y, 150f, height);
                 config.CustomModelName = Widgets.TextField(customModelRect, config.CustomModelName);
             }
 
-            x += 125f;
+            x += 155f;
 
             // Enable/Disable checkbox aligned to the right (70px)
             Rect toggleRect = new Rect(rowRect.xMax - 70f, y, 24f, height);

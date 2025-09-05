@@ -45,7 +45,8 @@ This will influence their AI-generated dialogue.</RimTalk.PersonalityEditor.Inst
     <RimTalk.PersonalityEditor.Clear>Clear</RimTalk.PersonalityEditor.Clear>
     
     <!-- Settings_Api.cs -->
-    <RimTalk.Settings.GoogleApiKeyLabel>{0} AI API Key:</RimTalk.Settings.GoogleApiKeyLabel>
+    <RimTalk.Settings.GoogleApiKeyLabel>Google AI API Key:</RimTalk.Settings.GoogleApiKeyLabel>
+    <RimTalk.Settings.GoogleApiKeyDesc>Uses the free Gemma3 27B model. For other models or providers, use Advanced Settings.</RimTalk.Settings.GoogleApiKeyDesc>
     <RimTalk.Settings.GetFreeApiKeyButton>Get a Free API Key</RimTalk.Settings.GetFreeApiKeyButton>
     <RimTalk.Settings.SwitchToAdvancedSettings>Switch to Advanced Settings</RimTalk.Settings.SwitchToAdvancedSettings>
     <RimTalk.Settings.SwitchToSimpleSettings>Switch to Simple Settings</RimTalk.Settings.SwitchToSimpleSettings>
@@ -66,5 +67,7 @@ This will influence their AI-generated dialogue.</RimTalk.PersonalityEditor.Inst
     <RimTalk.Settings.ModelLabel>Model:</RimTalk.Settings.ModelLabel>
     <RimTalk.Settings.EnterApiKey>(enter valid api key to fetch models)</RimTalk.Settings.EnterApiKey>
 
+    <!-- RimTalk_Toggle.cs -->
+    <RimTalk.Toggle.Tooltip>Toggle AI speech generation\n\nShift+click for settings</RimTalk.Toggle.Tooltip>
 </LanguageData>
 

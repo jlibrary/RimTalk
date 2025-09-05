@@ -22,7 +22,7 @@ namespace RimTalk.Patch
         {
             Counter.Tick++;
 
-            if (Find.CurrentMap == null) return;
+            if (!RimTalk.IsEnabledNow() || Find.CurrentMap == null) return;
 
             if (!InitialCacheRefresh || IsNow(UpdateCacheInterval))
             {

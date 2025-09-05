@@ -21,10 +21,8 @@ namespace RimTalk
                 DrawSimpleApiSettings(listingStandard);
             }
 
-            listingStandard.Gap(12f);
-            listingStandard.GapLine();
-            listingStandard.Gap(12f);
-
+            listingStandard.Gap(30f);
+            
             listingStandard.Label("RimTalk.Settings.AICooldown".Translate(settings.talkInterval));
             settings.talkInterval = (int)listingStandard.Slider(settings.talkInterval, 1, 20);
 
