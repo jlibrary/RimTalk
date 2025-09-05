@@ -301,6 +301,11 @@ namespace RimTalk
                     {
                         config.Provider = AIProvider.OpenRouter;
                         config.SelectedModel = Data.Constant.ChooseModel;
+                    }),
+                    new FloatMenuOption(AIProvider.OpenAICustom.ToString(), () =>
+                    {
+                        config.Provider = AIProvider.OpenAICustom;
+                        config.SelectedModel = "Custom";
                     })
                 };
                 Find.WindowStack.Add(new FloatMenu(providerOptions));
@@ -313,64 +318,77 @@ namespace RimTalk
             config.ApiKey = Widgets.TextField(apiKeyRect, config.ApiKey);
             x += 245f;
 
-            // Model dropdown (200px)
+            // Model or BaseUrl column (200px)
             Rect modelRect = new Rect(x, y, 200f, height);
-            if (Widgets.ButtonText(modelRect, config.SelectedModel))
+            if (config.Provider == AIProvider.OpenAICustom)
             {
-                if (string.IsNullOrWhiteSpace(config.ApiKey))
+                // For custom OpenAI-compatible provider, input Base URL here
+                config.BaseUrl = Widgets.TextField(modelRect, config.BaseUrl);
+                // Ensure model selection is Custom so the next column shows the model name textbox
+                if (config.SelectedModel != "Custom")
                 {
-                    Find.WindowStack.Add(new FloatMenu(new List<FloatMenuOption>
-                        { new FloatMenuOption("RimTalk.Settings.EnterApiKey".Translate(), null) }));
+                    config.SelectedModel = "Custom";
                 }
-                else if (config.Provider == AIProvider.Google)
+            }
+            else
+            {
+                if (Widgets.ButtonText(modelRect, config.SelectedModel))
                 {
-                    List<FloatMenuOption> options = new List<FloatMenuOption>();
-                    foreach (string model in modelOptions)
+                    if (string.IsNullOrWhiteSpace(config.ApiKey))
                     {
-                        string modelCopy = model;
-                        options.Add(new FloatMenuOption(model, () => config.SelectedModel = modelCopy));
+                        Find.WindowStack.Add(new FloatMenu(new List<FloatMenuOption>
+                            { new FloatMenuOption("RimTalk.Settings.EnterApiKey".Translate(), null) }));
                     }
-
-                    Find.WindowStack.Add(new FloatMenu(options));
-                }
-                else
-                {
-                    string url;
-                    switch (config.Provider)
+                    else if (config.Provider == AIProvider.Google)
                     {
-                        case AIProvider.OpenAI:
-                            url = "https://api.openai.com/v1/models";
-                            break;
-                        case AIProvider.DeepSeek:
-                            url = "https://api.deepseek.com/models";
-                            break;
-                        case AIProvider.OpenRouter:
-                            url = "https://openrouter.ai/api/v1/models";
-                            break;
-                        default:
-                            return;
-                    }
-
-                    FetchModels(config.ApiKey, url).ContinueWith(task =>
-                    {
-                        var models = task.Result;
                         List<FloatMenuOption> options = new List<FloatMenuOption>();
-                        if (models != null && models.Any())
+                        foreach (string model in modelOptions)
                         {
-                            foreach (string model in models)
-                            {
-                                string modelCopy = model;
-                                options.Add(new FloatMenuOption(model, () => config.SelectedModel = modelCopy));
-                            }
-                        }
-                        else
-                        {
-                            options.Add(new FloatMenuOption("(no models found - check API Key)", null));
+                            string modelCopy = model;
+                            options.Add(new FloatMenuOption(model, () => config.SelectedModel = modelCopy));
                         }
 
-                        options.Add(new FloatMenuOption("Custom", () => config.SelectedModel = "Custom"));
                         Find.WindowStack.Add(new FloatMenu(options));
-                    }, TaskScheduler.FromCurrentSynchronizationContext());
+                    }
+                    else
+                    {
+                        string url;
+                        switch (config.Provider)
+                        {
+                            case AIProvider.OpenAI:
+                                url = "https://api.openai.com/v1/models";
+                                break;
+                            case AIProvider.DeepSeek:
+                                url = "https://api.deepseek.com/models";
+                                break;
+                            case AIProvider.OpenRouter:
+                                url = "https://openrouter.ai/api/v1/models";
+                                break;
+                            default:
+                                return;
+                        }
+
+                        FetchModels(config.ApiKey, url).ContinueWith(task =>
+                        {
+                            var models = task.Result;
+                            List<FloatMenuOption> options = new List<FloatMenuOption>();
+                            if (models != null && models.Any())
+                            {
+                                foreach (string model in models)
+                                {
+                                    string modelCopy = model;
+                                    options.Add(new FloatMenuOption(model, () => config.SelectedModel = modelCopy));
+                                }
+                            }
+                            else
+                            {
+                                options.Add(new FloatMenuOption("(no models found - check API Key)", null));
+                            }
+
+                            options.Add(new FloatMenuOption("Custom", () => config.SelectedModel = "Custom"));
+                            Find.WindowStack.Add(new FloatMenu(options));
+                        }, TaskScheduler.FromCurrentSynchronizationContext());
+                    }
                 }
             }
 

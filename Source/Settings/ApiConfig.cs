@@ -30,9 +30,17 @@ namespace RimTalk
             if (!IsEnabled) return false;
             
             if (Settings.Get().useCloudProviders)
+            {
+                if (Provider == AIProvider.OpenAICustom)
+                {
+                    return !string.IsNullOrWhiteSpace(ApiKey) && !string.IsNullOrWhiteSpace(BaseUrl) && !string.IsNullOrWhiteSpace(CustomModelName);
+                }
                 return !string.IsNullOrWhiteSpace(ApiKey) && SelectedModel != Constant.ChooseModel;
+            }
             else
+            {
                 return !string.IsNullOrWhiteSpace(BaseUrl);
+            }
         }
     }
 }

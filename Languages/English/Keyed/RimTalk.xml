@@ -61,7 +61,7 @@ This will influence their AI-generated dialogue.</RimTalk.PersonalityEditor.Inst
     <RimTalk.Settings.CloudApiConfigurationsDesc>If multiple APIs are enabled, the system will attempt to use them in order. If one API fails, it will automatically try the next enabled API in the list.</RimTalk.Settings.CloudApiConfigurationsDesc>
     <RimTalk.Settings.ProviderHeader>Provider</RimTalk.Settings.ProviderHeader>
     <RimTalk.Settings.ApiKeyHeader>API Key</RimTalk.Settings.ApiKeyHeader>
-    <RimTalk.Settings.ModelHeader>Model</RimTalk.Settings.ModelHeader>
+    <RimTalk.Settings.ModelHeader>Model or Custom Url</RimTalk.Settings.ModelHeader>
     <RimTalk.Settings.CustomModelHeader>Custom Model</RimTalk.Settings.CustomModelHeader>
     <RimTalk.Settings.EnabledHeader>Enabled</RimTalk.Settings.EnabledHeader>
     <RimTalk.Settings.EnableDisableApiConfigTooltip>Enable or disable this API configuration</RimTalk.Settings.EnableDisableApiConfigTooltip>
