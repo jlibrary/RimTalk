@@ -14,6 +14,7 @@ namespace RimTalk
         public bool useCloudProviders = true;
         public bool useSimpleConfig = true;
         public string simpleApiKey = "";
+        public bool isUsingFallbackModel = false;
 
         // Other existing settings
         public int talkInterval = 7;
@@ -38,7 +39,7 @@ namespace RimTalk
                     {
                         ApiKey = simpleApiKey,
                         Provider = AIProvider.Google,
-                        SelectedModel = Constant.DefaultCloudModel,
+                        SelectedModel = isUsingFallbackModel ? Constant.FallbackCloudModel : Constant.DefaultCloudModel,
                         IsEnabled = true
                     };
                 }

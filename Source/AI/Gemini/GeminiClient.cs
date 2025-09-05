@@ -55,7 +55,7 @@ namespace RimTalk.AI.Gemini
                     if (webRequest.isNetworkError || webRequest.isHttpError)
                     {
                         Logger.Error($"Request failed: {webRequest.responseCode} - {webRequest.error}");
-                        return null;
+                        throw new Exception();
                     }
 
                     GeminiResponse response = JsonUtil.DeserializeFromJson<GeminiResponse>(webRequest.downloadHandler.text);
@@ -73,7 +73,7 @@ namespace RimTalk.AI.Gemini
             catch (Exception ex)
             {
                 Logger.Error($"Exception in API request: {ex.Message}");
-                return null;
+                throw;
             }
         }
 

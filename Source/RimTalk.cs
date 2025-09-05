@@ -1,4 +1,5 @@
 using RimTalk.Data;
+using RimTalk.Error;
 using RimTalk.Patch;
 using RimTalk.Service;
 using Verse;
@@ -44,7 +45,7 @@ namespace RimTalk
             Counter.Tick = 0;
             Cache.Clear();
             TalkHistory.Clear();
-            TalkService._quotaWarningShown = false;
+            TalkErrorHandler.QuotaWarningShown = false;
             TickManager_DoSingleTick.NoApiKeyMessageShown = false;
             TickManager_DoSingleTick.InitialCacheRefresh = false;
             AIClientFactory.Clear();

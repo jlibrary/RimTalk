@@ -7,8 +7,11 @@
     <RimTalk.TickManager.ApiKeyMissing>RimTalk: API key or Endpoint is missing.</RimTalk.TickManager.ApiKeyMissing>
 
     <!-- TalkService.cs -->
-    <RimTalk.TalkService.QuotaExceeded>API quota exceeded. Try reducing prompt size or increasing cooldown.</RimTalk.TalkService.QuotaExceeded>
-
+    <RimTalk.TalkService.QuotaReached>API quota exceeded. Try reducing prompt size or increasing cooldown.</RimTalk.TalkService.QuotaReached>
+    <RimTalk.TalkService.APIError>API error occurred</RimTalk.TalkService.APIError>
+    <RimTalk.TalkService.TryingNextAPI>Trying next API ({0})</RimTalk.TalkService.TryingNextAPI>
+    <RimTalk.TalkService.GenerationFailed>RimTalk generation failed</RimTalk.TalkService.GenerationFailed>
+    
     <!-- Settings.cs -->
     <RimTalk.Settings.BasicSettings>Basic Settings</RimTalk.Settings.BasicSettings>
     <RimTalk.Settings.AIInstruction>AI Instruction</RimTalk.Settings.AIInstruction>

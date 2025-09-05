@@ -85,7 +85,7 @@ namespace RimTalk.AI.Local
                     if (webRequest.isNetworkError || webRequest.isHttpError)
                     {
                         Logger.Error($"Request failed: {webRequest.responseCode} - {webRequest.error}");
-                        return null;
+                        throw new Exception();
                     }
 
                     OpenAIResponse response = JsonUtil.DeserializeFromJson<OpenAIResponse>(webRequest.downloadHandler.text);
@@ -101,7 +101,7 @@ namespace RimTalk.AI.Local
             catch (Exception ex)
             {
                 Logger.Error($"Exception in API request: {ex.Message}");
-                return null;
+                throw;
             }
         }
         

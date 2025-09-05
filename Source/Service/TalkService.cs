@@ -14,8 +14,6 @@ namespace RimTalk.Service
 {
     public static class TalkService
     {
-        public static bool _quotaWarningShown;
-
         public static bool GenerateTalk(string prompt, Pawn initiator, Pawn recipient = null, bool force = false)
         {
             var settings = Settings.Get();
@@ -61,36 +59,15 @@ namespace RimTalk.Service
                 {
                     response = await Generate(pawns, prompt);
                     Logger.Message($"{prompt}\n{response}");
-                    _quotaWarningShown = false;
-                }
-                catch (QuotaExceededException)
-                {
-                    
-                    int originalConfigIndex = settings.currentCloudConfigIndex; // Store original index
-
-                    settings.TryNextConfig();
-                    int newConfigIndex = settings.currentCloudConfigIndex; // Get new index
-
-                    if (newConfigIndex != originalConfigIndex) // Check if the index has changed
+                    if (response != null)
                     {
-                        Messages.Message($"API quota reached. Trying next API: {settings.GetCurrentModel()}", MessageTypeDefOf.NegativeEvent,
-                            false);
-                        response = await Generate(pawns, prompt); // Re-call Generate with new config
+                        Settings.Get().isUsingFallbackModel = false;
                     }
-                    else
-                    {
-                        if (!_quotaWarningShown)
-                        {
-                            _quotaWarningShown = true;
-                            Messages.Message("RimTalk.TalkService.QuotaExceeded".Translate(), MessageTypeDefOf.NegativeEvent, false);
-                            Logger.Warning("Quota exceeded");
-                        }
-                    }
+                    TalkErrorHandler.ResetQuotaWarning();
                 }
                 catch (Exception ex)
                 {
-                    Logger.Warning(ex.Message);
-                    Logger.Warning($"{prompt}\n{response}");
+                    response = await TalkErrorHandler.HandleGenerationException(ex, pawns, prompt);
                 }
                 finally
                 {
