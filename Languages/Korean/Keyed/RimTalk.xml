@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+  <!-- BioTabPersonalityPatch.cs -->
+  <RimTalk.BioTab.RimTalkPersona>RimTalk 페르소나</RimTalk.BioTab.RimTalkPersona>
+
+  <!-- TickManager_DoSingleTick.cs -->
+  <RimTalk.TickManager.ApiKeyMissing>RimTalk: API 키 또는 엔드포인트가 없습니다.</RimTalk.TickManager.ApiKeyMissing>
+
+  <!-- TalkService.cs -->
+  <RimTalk.TalkService.QuotaReached>API 할당량이 초과되었습니다. 프롬프트 크기를 줄이거나 재사용 대기시간을 늘려보세요.</RimTalk.TalkService.QuotaReached>
+  <RimTalk.TalkService.APIError>API 오류가 발생했습니다</RimTalk.TalkService.APIError>
+  <RimTalk.TalkService.TryingNextAPI>다음 API({0})를 시도하는 중</RimTalk.TalkService.TryingNextAPI>
+  <RimTalk.TalkService.GenerationFailed>RimTalk 생성 실패</RimTalk.TalkService.GenerationFailed>
+
+  <!-- Settings.cs -->
+  <RimTalk.Settings.BasicSettings>기본 설정</RimTalk.Settings.BasicSettings>
+  <RimTalk.Settings.AIInstruction>AI 지시사항</RimTalk.Settings.AIInstruction>
+  <RimTalk.Settings.EventFilter>이벤트 필터</RimTalk.Settings.EventFilter>
+  <RimTalk.Settings.ApiKey>클라우드 API 키</RimTalk.Settings.ApiKey>
+  <RimTalk.Settings.GetFreeApiKey>무료 API 키 받기</RimTalk.Settings.GetFreeApiKey>
+  <RimTalk.Settings.AICooldown>AI 재사용 대기시간 (초): {0}</RimTalk.Settings.AICooldown>
+  <RimTalk.Settings.OverrideInteractions>AI 대화로 모든 상호작용 덮어쓰기</RimTalk.Settings.OverrideInteractions>
+  <RimTalk.Settings.OverrideInteractionsTooltip>이 옵션을 활성화하면 AI가 바닐라 림월드 및 다른 모드를 포함한 모든 상호작용의 대화를 덮어쓰고 다시 생성할 수 있습니다. 참고: AI 대화에는 위에 설정된 재사용 대기시간이 적용됩니다. 대화를 더 자주 생성하려면 재사용 대기시간을 줄이세요.</RimTalk.Settings.OverrideInteractionsTooltip>
+  <RimTalk.Settings.HideSkippedMessages>AI 처리를 건너뛸 때 메시지 숨기기</RimTalk.Settings.HideSkippedMessages>
+  <RimTalk.Settings.HideSkippedMessagesTooltip>활성화하면 재사용 대기시간 또는 다른 이유로 AI가 처리하지 않은 상호작용 메시지가 완전히 숨겨집니다. 여기에는 원래 텍스트를 표시했을 다른 모드의 메시지도 포함됩니다.</RimTalk.Settings.HideSkippedMessagesTooltip>
+  <RimTalk.Settings.DisplayTalkWhenDrafted>소집 중일 때 대화 표시</RimTalk.Settings.DisplayTalkWhenDrafted>
+  <RimTalk.Settings.DisplayTalkWhenDraftedTooltip>정착민이 소집되었을 때도 RimTalk 말풍선을 표시합니다. 이 옵션은 대화 생성 중에 말풍선 모드 설정을 일시적으로 덮어씁니다.</RimTalk.Settings.DisplayTalkWhenDraftedTooltip>
+  <RimTalk.Settings.AIInstructionPrompt>AI 지시 프롬프트 (모델: {0})</RimTalk.Settings.AIInstructionPrompt>
+  <RimTalk.Settings.ExternalEditorTip>팁: 여러 줄을 편집하려면 외부 편집기에서 복사/붙여넣기를 사용하세요.</RimTalk.Settings.ExternalEditorTip>
+  <RimTalk.Settings.AutoIncludedTip>팁: 정착민의 세부 정보(특성, 관계, 종족, 나이 등)는 자동으로 포함됩니다. 모든 캐릭터와 정착지에 적용될 수 있는 일반적인 지시사항을 작성하세요.</RimTalk.Settings.AutoIncludedTip>
+  <RimTalk.Settings.RateLimitWarning>경고: 프롬프트가 길수록 더 많은 토큰을 소모하고 사용량 제한에 더 빨리 도달합니다. 프롬프트 캐싱은 사용되지 않습니다.</RimTalk.Settings.RateLimitWarning>
+  <RimTalk.Settings.BubbleFadeTip>팁: 게임 속도를 높였을 때 대화가 더 오래 보이도록 하려면 Interaction Bubbles 모드 설정에서 말풍선 사라짐 시간을 조절하세요.</RimTalk.Settings.BubbleFadeTip>
+  <RimTalk.Settings.TokenInfo>현재: ~{0} 토큰 | 최대 허용: {1} 토큰</RimTalk.Settings.TokenInfo>
+  <RimTalk.Settings.OverLimit> (한도 초과!)</RimTalk.Settings.OverLimit>
+  <RimTalk.Settings.ResetToDefault>기본값으로 재설정</RimTalk.Settings.ResetToDefault>
+  <RimTalk.Settings.EventFilterTip>팁: 체크된 이벤트 유형만 AI가 처리합니다. AI가 반응하지 않기를 원하는 유형은 체크 해제하세요.</RimTalk.Settings.EventFilterTip>
+  <RimTalk.Settings.NoArchivableTypes>보관 가능한 유형을 찾을 수 없습니다. 게임을 시작한 후 다시 스캔해 보세요.</RimTalk.Settings.NoArchivableTypes>
+
+  <!-- Dialog_PersonalityEditor.cs -->
+  <RimTalk.PersonalityEditor.Title>{0}의 대화 스타일</RimTalk.PersonalityEditor.Title>
+  <RimTalk.PersonalityEditor.Instruct>
+    이 정착민이 대화에서 어떻게 말하고 행동하는지 설명하세요.
+    이는 AI가 생성하는 대화에 영향을 미칩니다.
+  </RimTalk.PersonalityEditor.Instruct>
+  <RimTalk.PersonalityEditor.Characters>글자 수: {0}/{1}</RimTalk.PersonalityEditor.Characters>
+  <RimTalk.PersonalityEditor.Save>저장</RimTalk.PersonalityEditor.Save>
+  <RimTalk.PersonalityEditor.Updated>{0}의 대화 스타일을 업데이트했습니다.</RimTalk.PersonalityEditor.Updated>
+  <RimTalk.PersonalityEditor.Generating>생성 중...</RimTalk.PersonalityEditor.Generating>
+  <RimTalk.PersonalityEditor.Generate>AI로 생성</RimTalk.PersonalityEditor.Generate>
+  <RimTalk.PersonalityEditor.Clear>지우기</RimTalk.PersonalityEditor.Clear>
+
+  <!-- Settings_Api.cs -->
+  <RimTalk.Settings.GoogleApiKeyLabel>Google AI API 키:</RimTalk.Settings.GoogleApiKeyLabel>
+  <RimTalk.Settings.GoogleApiKeyDesc>무료 Gemma3 27B 모델을 사용합니다. 다른 모델이나 제공자를 사용하려면 고급 설정을 이용하세요.</RimTalk.Settings.GoogleApiKeyDesc>
+  <RimTalk.Settings.GetFreeApiKeyButton>무료 API 키 받기</RimTalk.Settings.GetFreeApiKeyButton>
+  <RimTalk.Settings.SwitchToAdvancedSettings>고급 설정으로 전환</RimTalk.Settings.SwitchToAdvancedSettings>
+  <RimTalk.Settings.SwitchToSimpleSettings>간편 설정으로 전환</RimTalk.Settings.SwitchToSimpleSettings>
+  <RimTalk.Settings.CloudProviders>클라우드 제공자</RimTalk.Settings.CloudProviders>
+  <RimTalk.Settings.CloudProvidersDesc>Google AI, OpenAI 등 온라인 AI 서비스를 사용합니다. 인터넷 연결과 API 키가 필요합니다.</RimTalk.Settings.CloudProvidersDesc>
+  <RimTalk.Settings.LocalProvider>로컬 제공자</RimTalk.Settings.LocalProvider>
+  <RimTalk.Settings.LocalProviderDesc>사용자 컴퓨터에서 실행되는 로컬 AI 서버(Ollama, LM Studio 등)를 사용합니다. OpenAPI를 지원해야 합니다.</RimTalk.Settings.LocalProviderDesc>
+  <RimTalk.Settings.CloudApiConfigurations>클라우드 API 구성</RimTalk.Settings.CloudApiConfigurations>
+  <RimTalk.Settings.CloudApiConfigurationsDesc>여러 API가 활성화된 경우, 시스템은 순서대로 사용을 시도합니다. 한 API가 실패하면 목록에서 활성화된 다음 API를 자동으로 시도합니다.</RimTalk.Settings.CloudApiConfigurationsDesc>
+  <RimTalk.Settings.ProviderHeader>제공자</RimTalk.Settings.ProviderHeader>
+  <RimTalk.Settings.ApiKeyHeader>API 키</RimTalk.Settings.ApiKeyHeader>
+  <RimTalk.Settings.ModelHeader>모델 또는 커스텀 URL</RimTalk.Settings.ModelHeader>
+  <RimTalk.Settings.CustomModelHeader>커스텀 모델</RimTalk.Settings.CustomModelHeader>
+  <RimTalk.Settings.EnabledHeader>활성화</RimTalk.Settings.EnabledHeader>
+  <RimTalk.Settings.EnableDisableApiConfigTooltip>이 API 구성을 활성화 또는 비활성화합니다.</RimTalk.Settings.EnableDisableApiConfigTooltip>
+  <RimTalk.Settings.LocalProviderConfiguration>로컬 제공자 구성</RimTalk.Settings.LocalProviderConfiguration>
+  <RimTalk.Settings.BaseUrlLabel>기본 URL:</RimTalk.Settings.BaseUrlLabel>
+  <RimTalk.Settings.ModelLabel>모델:</RimTalk.Settings.ModelLabel>
+  <RimTalk.Settings.EnterApiKey>(모델을 가져오려면 유효한 API 키를 입력하세요)</RimTalk.Settings.EnterApiKey>
+
+  <!-- RimTalk_Toggle.cs -->
+  <RimTalk.Toggle.Tooltip>AI 대화 생성 켜기/끄기\n\nShift+클릭으로 설정 열기</RimTalk.Toggle.Tooltip>
+</LanguageData>
+
