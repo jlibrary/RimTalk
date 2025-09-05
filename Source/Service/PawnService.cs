@@ -134,8 +134,9 @@ namespace RimTalk.Service
                         Cache.Get(pawn).Context = pawnContext;
                         count++;
                         context.AppendLine();
-                        context.Append($"Colonist {count}: ");
+                        context.AppendLine($"[Colonist {count} START]");
                         context.AppendLine(pawnContext);
+                        context.AppendLine($"[Colonist {count} END]");
                     }
                 }
             }
