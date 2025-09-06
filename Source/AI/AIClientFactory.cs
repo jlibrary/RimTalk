@@ -36,6 +36,8 @@ namespace RimTalk.Service
                 return new DeepSeekClient();
             if (provider == AIProvider.OpenRouter)
                 return new OpenRouterClient();
+            if (provider == AIProvider.OpenAICustom)
+                return new OpenAICustomClient();
             if (provider == AIProvider.Local)
                 return new LocalClient();
             return null;

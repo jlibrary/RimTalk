@@ -6,6 +6,7 @@ namespace RimTalk
         OpenAI,
         DeepSeek,
         OpenRouter,
+        OpenAICustom,
         Local,
         None
     }
