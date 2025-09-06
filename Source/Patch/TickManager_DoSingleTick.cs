@@ -22,7 +22,7 @@ namespace RimTalk.Patch
         {
             Counter.Tick++;
 
-            if (!RimTalk.IsEnabledNow() || Find.CurrentMap == null) return;
+            if (!RimTalk.IsEnabled || Find.CurrentMap == null) return;
 
             if (!InitialCacheRefresh || IsNow(UpdateCacheInterval))
             {
@@ -45,6 +45,8 @@ namespace RimTalk.Patch
             {
                 foreach (Pawn pawn in PawnService.GetPawnsAbleToTalk())
                 {
+                    if (!pawn.IsColonist || !pawn.IsPrisonerOfColony || !pawn.IsSlaveOfColony) continue;
+                    
                     KeyValuePair<Thought, float> thought = PawnService.GetNewThought(pawn);
                     string thoughtLabel = PawnService.GetNewThoughtLabel(thought.Key);
                     if (thoughtLabel != null)

@@ -19,7 +19,12 @@ Age/personality appropriate speech
 Skills: max 20, mood: 0-100
 Young: impulsive, respect elders
 Old: wise, formal
-Avoid repetition, improvise
+
+For non-colonist:
+Prisoner: In cell. submissive, wary, call colonist ""master"". Speak quietly, short/hesitant, mention confinement, plead or bargain.
+Visitor: polite, curious, deferential. Say ""visiting/just passing through"", ask questions, avoid assuming colony knowledge.
+Invader: aggressive, hostile. In combat use terse commands/threats; no trivial talk.
+Combat override: any role => short, urgent survival/command speech.
 
 Rules:
 Keep conversation order
@@ -28,7 +33,7 @@ Keep dialogue short, {Lang} only, 1-2 sentences
 Harsh when fighting
 Concern for sick/mental issues
 If no one nearby, monologue";
-
+        
         private const string JsonInstruction = @"
 
 Return JSON array with objects containing ""name"" and ""text"" string keys.";

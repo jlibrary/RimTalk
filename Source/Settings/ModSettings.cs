@@ -23,6 +23,10 @@ namespace RimTalk
         public string customInstruction = "";
         public Dictionary<string, bool> enabledArchivableTypes = new Dictionary<string, bool>();
         public bool displayTalkWhenDrafted = true;
+        public bool allowSlavesToTalk = true;
+        public bool allowPrisonersToTalk = true;
+        public bool allowOtherFactionsToTalk = false;
+        public bool allowEnemiesToTalk = false;
 
         /// <summary>
         /// Gets the first active and valid API configuration.
@@ -129,10 +133,14 @@ namespace RimTalk
             
             // Other existing settings
             Scribe_Values.Look(ref talkInterval, "talkInterval", 7);
-            Scribe_Values.Look(ref suppressUnprocessedMessages, "suppressUnprocessedMessages", false);
-            Scribe_Values.Look(ref processNonRimTalkInteractions, "processNonRimTalkInteractions", false);
+            Scribe_Values.Look(ref suppressUnprocessedMessages, "suppressUnprocessedMessages", true);
+            Scribe_Values.Look(ref processNonRimTalkInteractions, "processNonRimTalkInteractions", true);
             Scribe_Values.Look(ref customInstruction, "customInstruction", "");
             Scribe_Values.Look(ref displayTalkWhenDrafted, "displayTalkWhenDrafted", true);
+            Scribe_Values.Look(ref allowSlavesToTalk, "allowSlavesToTalk", true);
+            Scribe_Values.Look(ref allowPrisonersToTalk, "allowPrisonersToTalk", true);
+            Scribe_Values.Look(ref allowOtherFactionsToTalk, "allowOtherFactionsToTalk", false);
+            Scribe_Values.Look(ref allowEnemiesToTalk, "allowEnemiesToTalk", false);
             Scribe_Collections.Look(ref enabledArchivableTypes, "enabledArchivableTypes", LookMode.Value, LookMode.Value);
 
             // Initialize collections if null

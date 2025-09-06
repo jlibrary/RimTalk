@@ -4,6 +4,7 @@ using Bubbles.Core;
 using HarmonyLib;
 using RimTalk.Service;
 using RimTalk.Util;
+using RimWorld;
 using Verse;
 
 namespace RimTalk.Patch
@@ -18,7 +19,7 @@ namespace RimTalk.Patch
             // Store original value and override if needed
             CurrentWorkDisplayModSettings settings = Settings.Get();
             
-            // If Log is RimTalk or from non-colonist, display normal bubble
+            // For RimTalk interaction, display normal bubble
             if (entry is PlayLogEntry_RimTalkInteraction)
             {
                 if (settings.displayTalkWhenDrafted)
@@ -36,13 +37,14 @@ namespace RimTalk.Patch
 
             Pawn initiator = (Pawn)entry.GetConcerns().First();
 
-            // non colonist will show normal bubble
-            if (!initiator.IsFreeColonist) return true;
-
             // If the setting to process non-RimTalk interactions is disabled, show the original bubble.
             if (!settings.processNonRimTalkInteractions)
             {
                 return true;
+            }
+            if (IsHostilesOnMapForPawn(initiator))
+            {
+                return false;
             }
             
             // Otherwise, block normal bubble and generate talk
@@ -85,6 +87,14 @@ namespace RimTalk.Patch
                 }
             }
             return recipient;
+        }
+        
+        private static bool IsHostilesOnMapForPawn(Pawn pawn)
+        {
+            if (pawn?.Map == null) return false;
+
+            return pawn.Map.mapPawns.AllPawnsSpawned
+                .Any(other => other != pawn && other.HostileTo(pawn));
         }
     }
 }

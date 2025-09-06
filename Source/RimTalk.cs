@@ -8,14 +8,9 @@ namespace RimTalk
 {
     public class RimTalk : GameComponent
     {
-        public bool IsEnabled = true;
+        public static bool IsEnabled = true;
         
         public RimTalk(Game game) { }
-
-        public static bool IsEnabledNow()
-        {
-            return Current.Game.GetComponent<RimTalk>()?.IsEnabled ?? true;
-        }
 
         public override void ExposeData()
         {

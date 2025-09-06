@@ -120,10 +120,9 @@ namespace RimTalk.Error
 
         private static void ShowGenerationWarning(Exception ex)
         {
-            Logger.Warning(ex.Message);
+            Logger.Warning(ex.StackTrace);
             string message = $"{"RimTalk.TalkService.GenerationFailed".Translate()}: {ex.Message}";
             Messages.Message(message, MessageTypeDefOf.NegativeEvent, false);
         }
-
     }
 }

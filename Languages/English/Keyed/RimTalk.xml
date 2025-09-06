@@ -25,6 +25,14 @@
     <RimTalk.Settings.HideSkippedMessagesTooltip>When enabled, interaction messages that were not processed by the AI (due to cooldown or other reasons) will be completely hidden. This includes messages from other mods that would normally display their original text.</RimTalk.Settings.HideSkippedMessagesTooltip>
     <RimTalk.Settings.DisplayTalkWhenDrafted>Display talk when drafted</RimTalk.Settings.DisplayTalkWhenDrafted>
     <RimTalk.Settings.DisplayTalkWhenDraftedTooltip>Shows RimTalk bubbles even when pawns are drafted. This temporarily overrides bubble mod settings during talk generation.</RimTalk.Settings.DisplayTalkWhenDraftedTooltip>
+    <RimTalk.Settings.AllowSlavesToTalk>Allow slaves to talk</RimTalk.Settings.AllowSlavesToTalk>
+    <RimTalk.Settings.AllowSlavesToTalkTooltip>Enable this to allow slaves to have AI-generated conversations.</RimTalk.Settings.AllowSlavesToTalkTooltip>
+    <RimTalk.Settings.AllowPrisonersToTalk>Allow prisoners to talk</RimTalk.Settings.AllowPrisonersToTalk>
+    <RimTalk.Settings.AllowPrisonersToTalkTooltip>Enable this to allow prisoners to have AI-generated conversations.</RimTalk.Settings.AllowPrisonersToTalkTooltip>
+    <RimTalk.Settings.AllowOtherFactionsToTalk>Allow other factions to talk</RimTalk.Settings.AllowOtherFactionsToTalk>
+    <RimTalk.Settings.AllowOtherFactionsToTalkTooltip>Enable this to allow members of other factions to have AI-generated conversations.</RimTalk.Settings.AllowOtherFactionsToTalkTooltip>
+    <RimTalk.Settings.AllowEnemiesToTalk>Allow enemies to talk</RimTalk.Settings.AllowEnemiesToTalk>
+    <RimTalk.Settings.AllowEnemiesToTalkTooltip>Enable this to allow enemies to have AI-generated conversations.</RimTalk.Settings.AllowEnemiesToTalkTooltip>
     <RimTalk.Settings.AIInstructionPrompt>AI Instruction Prompt (Model: {0})</RimTalk.Settings.AIInstructionPrompt>
     <RimTalk.Settings.ExternalEditorTip>Tip: Use copy/paste with external editor for multiline editing</RimTalk.Settings.ExternalEditorTip>
     <RimTalk.Settings.AutoIncludedTip>Tip: Pawn details (traits, relationships, race, age, etc.) are auto-included. Write generic instructions that work across all characters and colonies.</RimTalk.Settings.AutoIncludedTip>

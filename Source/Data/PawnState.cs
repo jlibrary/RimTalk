@@ -18,7 +18,7 @@ namespace RimTalk.Data
         public JobDef CurrentJob { get; set; }
         public readonly Queue<Talk> TalkQueue = new Queue<Talk>();
         public bool IsGeneratingTalk { get; set; }
-        public int TalkInterval => Settings.Get().talkInterval;
+        public int TalkInterval;
         public int ReplyInternal { get; set; } = 2;
         public Dictionary<string, float> Thoughts { get; set; }
         public HashSet<Hediff> Hediffs { get; set; }
@@ -28,6 +28,11 @@ namespace RimTalk.Data
         public PawnState(Pawn pawn)
         {
             this.pawn = pawn;
+            TalkInterval = Settings.Get().talkInterval;
+            if (!pawn.IsFreeNonSlaveColonist)
+            {
+                TalkInterval *= 2;
+            }
             UpdateThoughts();
             Hediffs = PawnService.GetHediffs(pawn);
         }

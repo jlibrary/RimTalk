@@ -12,30 +12,20 @@ namespace RimTalk.Patch
 
         public static void Postfix(WidgetRow row, bool worldView)
         {
-            if (worldView)
-            {
+            if (worldView || row is null) 
                 return;
-            }
-
-            Toggle_Postfix(row);
-        }
-        
-        public static void Toggle_Postfix(WidgetRow row)
-        {
+            
             // Get the current setting value.
-            var rimTalk = Current.Game.GetComponent<RimTalk>();
-            if (rimTalk == null) return;
-
-            var isEnabled = rimTalk.IsEnabled;
+            var isEnabled = RimTalk.IsEnabled;
 
             row.ToggleableIcon(ref isEnabled, RimTalk_Toggle_Icon, "RimTalk.Toggle.Tooltip".Translate(),
                 SoundDefOf.Mouseover_ButtonToggle);
 
-            if (isEnabled != rimTalk.IsEnabled && Event.current.shift && Find.WindowStack.WindowOfType<Dialog_ModSettings>() == null)
+            if (isEnabled != RimTalk.IsEnabled && Event.current.shift && Find.WindowStack.WindowOfType<Dialog_ModSettings>() == null)
             {
                 Find.WindowStack.Add(new Dialog_ModSettings(LoadedModManager.GetMod<Settings>()));
             }
-            else { rimTalk.IsEnabled = isEnabled; }
+            else { RimTalk.IsEnabled = isEnabled; }
         }
     }
 }

@@ -29,9 +29,9 @@ public static class BattleLog_Add
         if (!nearbyTalkers.Any()) return;
 
         var text = entry.ToGameStringFromPOV(firstTwo[0]).StripTags();
-        if (recipient != null && recipient.Faction.HostileTo(Faction.OfPlayer))
+        if (recipient != null && PawnService.IsInvader(recipient))
         {
-            text = text.Replace(recipient.LabelShort, $"{recipient.KindLabel}(enemy)");
+            text = text.Replace(recipient.LabelShort, PawnService.GetPawnName(initiator, recipient));;
         }
         
         if (!TalkService.GenerateTalk(text, initiator, recipient))

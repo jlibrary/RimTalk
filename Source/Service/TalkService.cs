@@ -17,7 +17,7 @@ namespace RimTalk.Service
         public static bool GenerateTalk(string prompt, Pawn initiator, Pawn recipient = null, bool force = false)
         {
             var settings = Settings.Get();
-            if (!RimTalk.IsEnabledNow()) return false;
+            if (!RimTalk.IsEnabled) return false;
             if (!Bubbles.Settings.Activated || settings.GetActiveConfig() == null) return false;
             if (!Cache.Contains(initiator)) return false;
             
@@ -49,21 +49,16 @@ namespace RimTalk.Service
             pawn1.LastPrompt = prompt;
 
             List<Pawn> pawns = new List<Pawn> { initiator, recipient }.Where(p => p != null).ToList();
+            
             PawnService.BuildContext(pawns);
             prompt = DecoratePrompt(pawns, prompt);
-
+            
             string response = null;
             Task.Run(async () =>
             {
                 try
                 {
                     response = await Generate(pawns, prompt);
-                    Logger.Message($"{prompt}\n{response}");
-                    if (response != null)
-                    {
-                        Settings.Get().isUsingFallbackModel = false;
-                    }
-                    TalkErrorHandler.ResetQuotaWarning();
                 }
                 catch (Exception ex)
                 {
@@ -71,6 +66,12 @@ namespace RimTalk.Service
                 }
                 finally
                 {
+                    Logger.Message($"{prompt}\n{response}");
+                    if (response != null)
+                    {
+                        Settings.Get().isUsingFallbackModel = false;
+                    }
+                    TalkErrorHandler.ResetQuotaWarning();
                     Cache.Get(initiator).IsGeneratingTalk = false;
                 }
             });
@@ -123,9 +124,11 @@ namespace RimTalk.Service
         {
             bool isMonologue = pawns.Count == 1 || !Cache.Contains(pawns[1]);
 
-            if (pawns[0].InMentalState)
+            var specialCondition = PawnService.SpecialConditionLabel(pawns[0]);
+            
+            if (specialCondition != null)
             {
-                prompt = $"Goes crazy due to {pawns[0].MentalState.def.LabelCap}";
+                prompt = $"Goes crazy due to {specialCondition}";
             }
             else
             {
@@ -133,14 +136,14 @@ namespace RimTalk.Service
                 prompt = $"{prompt} ({CommonUtil.GetInGameHour12HString()})";
             }
 
-            int initiatorMood = (int)(pawns[0].needs.mood.CurLevelPercentage * 100) + 15;
+            int initiatorMood = (int)((pawns[0]?.needs?.mood?.CurLevelPercentage ?? 0) * 100) + 15;
             if (isMonologue)
             {
                 prompt = $"{pawns[0].Name.ToStringShort}(mood: {initiatorMood}): {prompt}";
             }
             else
             {
-                int recipientMood = (int)(pawns[1].needs.mood.CurLevelPercentage * 100) + 15;
+                int recipientMood = (int)((pawns[1]?.needs?.mood?.CurLevelPercentage ?? 0) * 100) + 15;
                 prompt = $"{pawns[0].Name.ToStringShort}(mood: {initiatorMood}) and " +
                          $"{pawns[1].Name.ToStringShort}(mood: {recipientMood}): {prompt}";
             }
@@ -152,6 +155,7 @@ namespace RimTalk.Service
         // check if async call is completed then display
         public static void DisplayTalk()
         {
+            // TODO: fix
             foreach (Pawn pawn in Cache.Keys)
             {
                 PawnState pawnState = Cache.Get(pawn);
@@ -192,8 +196,13 @@ namespace RimTalk.Service
         {
             PawnState pawnState = Cache.Get(pawn);
             if (pawnState == null) return null;
-            pawnState.LastTalkTick = Find.TickManager.TicksGame;
+    
+            pawnState.LastTalkTick = Find.TickManager.TicksGame; 
+    
             Talk talk = ConsumeTalk(pawnState);
+    
+            Cache.UpdatePawnSortPosition(pawn);
+    
             return talk.Text;
         }
 

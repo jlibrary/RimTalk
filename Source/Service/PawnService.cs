@@ -13,8 +13,8 @@ namespace RimTalk.Service
 {
     public static class PawnService
     {
-
         private const float HearingRange = 10f;
+
         public static bool IsAbleToTalk(Pawn pawn)
         {
             return pawn.Awake()
@@ -22,29 +22,23 @@ namespace RimTalk.Service
                    && pawn.CurJobDef != JobDefOf.LayDownAwake
                    && pawn.CurJobDef != JobDefOf.LayDownResting;
         }
-        
+
         public static List<Pawn> GetPawnsAbleToTalk()
         {
-            List<Pawn> list = new List<Pawn>();
-
-            // Sort the pawns by LastTalkTick (ascending)
-            IEnumerable<Pawn> sortedPawns = Cache.Keys.OrderBy(pawn => Cache.Get(pawn).LastTalkTick);
-
-            foreach (Pawn pawn in sortedPawns)
-            {
-                if (IsAbleToTalk(pawn) && pawn.Map == Find.CurrentMap)
-                {
-                    list.Add(pawn);
-                }
-            }
-
-            return list;
+            return Cache.TalkersSortedByTick
+                .Where(pawn => IsAbleToTalk(pawn) && pawn.Map == Find.CurrentMap)
+                .Take(10)
+                .ToList();
         }
 
         public static Dictionary<Thought, float> GetThoughts(Pawn pawn)
         {
             List<Thought> thoughts = new List<Thought>();
-            pawn.needs.mood.thoughts.GetAllMoodThoughts(thoughts);
+            if (pawn.needs?.mood?.thoughts != null)
+            {
+                pawn.needs.mood.thoughts.GetAllMoodThoughts(thoughts);
+            }
+
             return thoughts
                 .GroupBy(t => t.def.defName)
                 .ToDictionary(g => g.First(), g => g.Sum(t => t.MoodOffset()));
@@ -75,31 +69,101 @@ namespace RimTalk.Service
             return $"thought: {thought.LabelCap} - {thought.Description}";
         }
 
+        public static string GetHostileThreatDescription(Pawn pawn)
+        {
+            if (pawn?.Map == null) return null;
+
+            // Find the closest hostile pawn
+            Pawn closestHostile = pawn.Map.mapPawns.AllPawnsSpawned
+                .Where(other => other != pawn && other.HostileTo(pawn))
+                .OrderBy(other =>
+                    pawn.Position.DistanceToSquared(other.Position)) // Use DistanceToSquared for efficiency
+                .FirstOrDefault();
+
+            if (closestHostile == null)
+            {
+                return null; // No hostiles on the map
+            }
+
+            float distance = pawn.Position.DistanceTo(closestHostile.Position);
+
+            if (distance <= 10f)
+            {
+                return "(engaging in battle!)";
+            }
+
+            if (distance <= 20f)
+            {
+                return "(hostiles are dangerously close!)";
+            }
+
+            return "(on alert due to nearby hostiles)";
+        }
+
+        public static string SpecialConditionLabel(Pawn pawn)
+        {
+            if (pawn.health.hediffSet.PainTotal >= pawn.GetStatValue(StatDefOf.PainShockThreshold))
+            {
+                return "Downed By Pain";
+            }
+
+            // Check if the pawn is bleeding out.
+            if (pawn.health.hediffSet.BleedRateTotal > 0.01f)
+            {
+                return "Bleeding Out";
+            }
+
+            // A general check for being unable to move, if not downed by a more specific cause.
+            if (!pawn.health.capacities.CapableOf(PawnCapacityDefOf.Moving))
+            {
+                return "Incapacitated, UnableToMove";
+            }
+
+            // Check if pawn is in combat first
+            if (IsMeleeAttacking(pawn))
+                return "fighting in melee";
+            if (IsShooting(pawn))
+                return "shooting at enemies";
+            if (pawn.IsBurning())
+                return "you are Caught in fire!!";
+
+            if (pawn.InMentalState)
+                return pawn.MentalState.def.LabelCap;
+
+            return null;
+        }
+
         public static string GetTalkSubject(Pawn pawn)
         {
+            if (IsInvader(pawn))
+                return "invading user colony";
+
             var text = "";
+            // TODO:FIX
             foreach (Pawn otherPawn in Cache.Keys)
             {
-                // override talk subject to other pawn's mental state 25% of time
-                if (otherPawn.InMentalState && Rand.Chance(0.25f))
+                if (pawn != otherPawn && pawn.Position.DistanceTo(otherPawn.Position) <= 10f)
                 {
-                    text += $"{otherPawn.Name.ToStringShort} in {otherPawn.MentalState.def.LabelCap},";
+                    string specialCondition = SpecialConditionLabel(otherPawn);
+                    if (specialCondition != null && Rand.Chance(0.25f))
+                    {
+                        text += $"{otherPawn.Name.ToStringShort} in {specialCondition},";
+                    }
                 }
             }
+
+            text += GetHostileThreatDescription(pawn);
 
             if (text.NullOrEmpty())
                 text = "continue conversation if person nearby, else new topic. No repetition.";
             else
-            {
                 return $"while {text}";
-            }
 
             if (pawn.CurJobDef == JobDefOf.GotoWander || pawn.CurJobDef == JobDefOf.Wait_Wander)
                 return text;
 
             string jobString = "";
             PawnState pawnState = Cache.Get(pawn);
-            // check current job to avoid repeating
             if (pawnState != null && pawnState.CurrentJob != pawn.CurJob.def)
             {
                 pawnState.CurrentJob = pawn.CurJob.def;
@@ -109,7 +173,7 @@ namespace RimTalk.Service
             return $"{text} {jobString}";
         }
 
-        public static void BuildContext(List<Pawn> pawns = null)
+        public static void BuildContext(List<Pawn> pawns)
         {
             if (AIService.IsContextUpdating()) return;
 
@@ -120,30 +184,21 @@ namespace RimTalk.Service
             context.AppendLine(instruction).AppendLine();
 
             int count = 0;
-            
-            foreach (Map map in Find.Maps)
-            {
-                if (pawns == null)
-                    pawns = map.mapPawns.FreeColonistsSpawned.ToList();
 
-                foreach (Pawn pawn in pawns)
-                {
-                    if (pawn.IsFreeColonist)
-                    {
-                        string pawnContext = CreatePawnContext(pawn);
-                        Cache.Get(pawn).Context = pawnContext;
-                        count++;
-                        context.AppendLine();
-                        context.AppendLine($"[Colonist {count} START]");
-                        context.AppendLine(pawnContext);
-                        context.AppendLine($"[Colonist {count} END]");
-                    }
-                }
+            foreach (Pawn pawn in pawns)
+            {
+                string pawnContext = CreatePawnContext(pawn);
+                Cache.Get(pawn).Context = pawnContext;
+                count++;
+                context.AppendLine();
+                context.AppendLine($"[Person {count} START]");
+                context.AppendLine(pawnContext);
+                context.AppendLine($"[Person {count} END]");
             }
 
             if (count == 1)
                 context.AppendLine("You are alone. Speak as internal monologue.");
-            
+
             if (count != 0)
                 AIService.UpdateContext(context.ToString());
         }
@@ -151,12 +206,15 @@ namespace RimTalk.Service
         public static string CreatePawnBackstory(Pawn pawn, bool withDesc = false)
         {
             StringBuilder sb = new StringBuilder();
-            
+
             var name = pawn.Name.ToStringShort;
             var title = pawn.story.title == null ? "" : $"({pawn.story.title})";
             var genderAndAge = Regex.Replace(pawn.MainDesc(false), @"\(\d+\)", "");
             sb.AppendLine($"{name} {title} ({genderAndAge})");
-            
+
+            var role = $"Role: {GetRole(pawn)}";
+            sb.AppendLine(role);
+
             if (ModsConfig.BiotechActive && pawn.genes?.Xenotype != null)
             {
                 var xenotypeInfo = $"Race: {pawn.genes.Xenotype.LabelCap}";
@@ -172,7 +230,7 @@ namespace RimTalk.Service
                 var notableGenes = pawn.genes.GenesListForReading
                     .Where(g => g.def.biostatMet != 0 || g.def.biostatCpx != 0)
                     .Select(g => g.def.LabelCap + (withDesc ? $":{g.def.description}" : ""));
-    
+
                 if (notableGenes.Any())
                 {
                     sb.AppendLine($"Notable Genes: {string.Join(", ", notableGenes)}");
@@ -183,16 +241,24 @@ namespace RimTalk.Service
             if (ModsConfig.IdeologyActive && pawn.ideo?.Ideo != null)
             {
                 var ideo = pawn.ideo.Ideo;
-                
+
                 var ideologyInfo = $"Ideology: {ideo.name}";
                 sb.AppendLine(ideologyInfo);
-                
-                var memes = ideo.memes.Select(m => m.LabelCap.Resolve()).ToList();
-                if (memes.Any())
+
+                var memes = ideo?.memes?
+                    .Where(m => m != null)
+                    .Select(m => m.LabelCap.Resolve())
+                    .Where(label => !string.IsNullOrEmpty(label))
+                    .ToList();
+
+                if (memes != null && memes.Any())
                 {
                     sb.AppendLine($"Memes: {string.Join(", ", memes)}");
                 }
             }
+
+            if (IsInvader(pawn))
+                return sb.ToString();
 
             if (pawn.story.Childhood != null)
             {
@@ -206,7 +272,7 @@ namespace RimTalk.Service
             {
                 var adulthood =
                     $"Adulthood: {pawn.story.Adulthood.title}({pawn.story.Adulthood.titleShort})";
-                if (withDesc) adulthood += $":{Sanitize(pawn.story.Adulthood.description, pawn) }";
+                if (withDesc) adulthood += $":{Sanitize(pawn.story.Adulthood.description, pawn)}";
                 sb.AppendLine(adulthood);
             }
 
@@ -217,7 +283,7 @@ namespace RimTalk.Service
                 {
                     if (degreeData.degree == trait.Degree)
                     {
-                        traits += degreeData.label + (withDesc? $":{Sanitize(degreeData.description, pawn)}\n" : ",");
+                        traits += degreeData.label + (withDesc ? $":{Sanitize(degreeData.description, pawn)}\n" : ",");
                         break;
                     }
                 }
@@ -232,7 +298,7 @@ namespace RimTalk.Service
             }
 
             sb.AppendLine(skills);
-            
+
             return sb.ToString();
         }
 
@@ -243,38 +309,8 @@ namespace RimTalk.Service
             StringBuilder sb = new StringBuilder();
 
             sb.Append(CreatePawnBackstory(pawn));
-            
-            var relations = "";
-            foreach (Pawn otherPawn in pawn.relations.PotentiallyRelatedPawns)
-                if (!otherPawn.Dead && !otherPawn.relations.hidePawnRelations)
-                {
-                    PawnRelationDef relationDef = pawn.GetMostImportantRelation(otherPawn);
-                    if (relationDef != null)
-                        relations +=
-                            $"{relationDef.GetGenderSpecificLabel(otherPawn)}: {OpinionString(pawn, otherPawn)}, ";
-                }
 
-            foreach (Map map in Find.Maps)
-            foreach (Pawn otherPawn in map.mapPawns.SpawnedPawnsInFaction(Faction.OfPlayer))
-                if (pawn != otherPawn && otherPawn.IsFreeColonist &&
-                    !pawn.relations.PotentiallyRelatedPawns.Contains(otherPawn))
-                    if (RelationString(pawn, otherPawn) != null)
-                        relations += $"{RelationString(pawn, otherPawn)}: {OpinionString(pawn, otherPawn)}, ";
-
-            if (relations != "")
-                sb.AppendLine("Relations: " + relations);
-            
-            var equipment = "Equipment: ";
-            if (pawn.equipment?.Primary != null)
-                equipment += $"Weapon: {pawn.equipment.Primary.LabelCap}, ";
-
-            var apparel = pawn.apparel?.WornApparel?.Select(a => a.LabelCap);
-            if (apparel?.Any() == true)
-                equipment += $"Apparel: {string.Join(", ", apparel)}";
-
-            if (equipment != "Equipment: ")
-                sb.AppendLine(equipment);
-
+            // add Health
             var method = AccessTools.Method(typeof(HealthCardUtility), "VisibleHediffs");
             IEnumerable<Hediff> hediffs = (IEnumerable<Hediff>)method.Invoke(null, new object[] { pawn, false });
 
@@ -290,22 +326,55 @@ namespace RimTalk.Service
             if (healthInfo != "")
                 sb.AppendLine($"Health: {healthInfo}");
 
+            if (IsInvader(pawn))
+                return sb.ToString();
+
+            var mood = $"Mood: {pawn.needs?.mood?.MoodString ?? "N/A"}";
+            sb.AppendLine(mood);
+
             var thoughts = "Memory: ";
             foreach (Thought thought in GetThoughts(pawn).Keys)
             {
-                if (thought.def.durationDays > 0)
-                    thoughts += $"{Sanitize(thought.LabelCap)}, ";
+                thoughts += $"{Sanitize(thought.LabelCap)}, ";
             }
-
-            sb.AppendLine($"Personality: {Cache.Get(pawn).Personality}");
 
             sb.AppendLine(thoughts);
 
-            var mood = $"Mood: {pawn.needs.mood.MoodString}";
+            if (IsVisitor(pawn))
+                return sb.ToString();
 
-            sb.Append(mood);
+            sb.AppendLine(RelationsService.GetRelationsString(pawn));
+
+            var equipment = "Equipment: ";
+            if (pawn.equipment?.Primary != null)
+                equipment += $"Weapon: {pawn.equipment.Primary.LabelCap}, ";
+
+            var wornApparel = pawn.apparel?.WornApparel;
+            var apparelLabels = wornApparel != null ? wornApparel.Select(a => a.LabelCap) : Enumerable.Empty<string>();
+
+            if (apparelLabels.Any())
+            {
+                equipment += $"Apparel: {string.Join(", ", apparelLabels)}";
+            }
+
+            if (equipment != "Equipment: ")
+                sb.AppendLine(equipment);
+
+            var personality = Cache.Get(pawn).Personality;
+            if (personality != null)
+                sb.AppendLine($"Personality: {personality}");
 
             return sb.ToString();
+        }
+
+        private static string GetRole(Pawn pawn)
+        {
+            if (pawn.IsPrisoner) return "Prisoner";
+            if (pawn.IsSlave) return "Slave";
+            if (IsVisitor(pawn)) return "Visitor";
+            if (IsInvader(pawn)) return "Invader";
+            if (pawn.IsFreeColonist) return "Colonist";
+            return "Unknown";
         }
 
         private static string Sanitize(string text, Pawn pawn = null)
@@ -315,40 +384,23 @@ namespace RimTalk.Service
             return text.StripTags().RemoveLineBreaks();
         }
 
-        private static string RelationString(Pawn pawn, Pawn otherPawn)
-        {
-            var opinion = pawn.relations.OpinionOf(otherPawn);
-            if (opinion < -20)
-            {
-                return "Rival".Translate();
-            }
-
-            return opinion > 20 ? "Friend".Translate() : null;
-        }
-
-        private static string OpinionString(Pawn pawn, Pawn otherPawn)
-        {
-            var opinion = pawn.relations.OpinionOf(otherPawn).ToStringWithSign();
-            return otherPawn.RaceProps.Humanlike
-                ? $"{otherPawn.Name.ToStringShort} {opinion}"
-                : otherPawn.Name.ToStringShort;
-        }
-
         private static string GetJobString(Pawn pawn)
         {
             string jobString = pawn.GetJobReport();
-    
+
             // Replace non-colonist names with their occupation/status
             if (pawn.CurJob != null)
             {
                 Pawn targetPawn = GetTargetPawnFromJob(pawn.CurJob);
-                if (targetPawn != null && !targetPawn.IsFreeColonist)
+                if (targetPawn != null)
                 {
-                    string occupation = targetPawn.KindLabel;
-                    jobString = jobString.Replace(targetPawn.LabelShort, occupation);
+                    jobString = jobString.Replace(
+                        targetPawn.LabelShort,
+                        GetPawnName(pawn, targetPawn)
+                    );
                 }
             }
-    
+
             string currentActivity = $"(currently {jobString}";
 
             if (pawn.CurJob?.def == JobDefOf.Research)
@@ -360,39 +412,108 @@ namespace RimTalk.Service
             return currentActivity + ")";
         }
 
+
         private static Pawn GetTargetPawnFromJob(Job job)
         {
             if (job.targetA.HasThing && job.targetA.Thing is Pawn pawnA)
                 return pawnA;
-    
+
             if (job.targetB.HasThing && job.targetB.Thing is Pawn pawnB)
                 return pawnB;
-    
+
             if (job.targetC.HasThing && job.targetC.Thing is Pawn pawnC)
                 return pawnC;
-    
+
             return null;
         }
 
         public static string GetNearByPawn(Pawn pawn)
         {
-            if (pawn.Map == null || pawn.Map.mapPawns?.FreeColonistsSpawned == null)
+            if (pawn.Map == null || Cache.Get(pawn) == null)
                 return "none";
 
-            if (pawn.Map == null || pawn.Map.mapPawns?.FreeColonistsSpawned == null)
-                return "none";
-
-            var nearbyPawnNames = pawn.Map.mapPawns.FreeColonistsSpawned
-                .Where(colonist => colonist != pawn) 
-                .Where(IsAbleToTalk) 
-                .Where(colonist => colonist.health.capacities.GetLevel(PawnCapacityDefOf.Hearing) > 0.0)
-                .Where(colonist => colonist.Position.InHorDistOf
-                    (pawn.Position, HearingRange * colonist.health.capacities.GetLevel(PawnCapacityDefOf.Hearing)))
-                .Where(colonist => pawn.GetRoom() == colonist.GetRoom()) // Same room check
-                .Select(colonist => colonist.Name.ToStringShort)
+            // TODO:fix
+            var nearbyPawnNames = Cache.GetList()
+                .Where(nearbyPawn => nearbyPawn != pawn)
+                .Where(IsAbleToTalk)
+                .Where(nearbyPawn => nearbyPawn.health.capacities.GetLevel(PawnCapacityDefOf.Hearing) > 0.0)
+                .Where(nearbyPawn => pawn.GetRoom() == nearbyPawn.GetRoom()) // Same room check
+                .Where(nearbyPawn => nearbyPawn.Position.InHorDistOf(
+                    pawn.Position, HearingRange * nearbyPawn.health.capacities.GetLevel(PawnCapacityDefOf.Hearing)))
+                .OrderBy(nearbyPawn => pawn.Position.DistanceTo(nearbyPawn.Position)) // Sort by distance
+                .Take(5) // Limit to first 5 nearest
+                .Select(nearbyPawn => GetPawnName(pawn, nearbyPawn))
                 .ToList();
-            
+
             return nearbyPawnNames.Any() ? string.Join(", ", nearbyPawnNames) : "none";
+        }
+
+        public static bool IsVisitor(Pawn pawn)
+        {
+            return pawn.Faction != null && pawn.Faction != Faction.OfPlayer && !pawn.HostileTo(Faction.OfPlayer);
+        }
+
+        public static bool IsInvader(Pawn pawn)
+        {
+            return pawn.HostileTo(Faction.OfPlayer);
+        }
+
+        public static string GetPawnName(Pawn pawn, Pawn nearbyPawn)
+        {
+            // If both are same type or same faction, return the name
+            if ((pawn.IsPrisoner && nearbyPawn.IsPrisoner) ||
+                (pawn.IsSlave && nearbyPawn.IsSlave) ||
+                (pawn.Faction != null && pawn.Faction == nearbyPawn.Faction))
+            {
+                return nearbyPawn.Name.ToStringShort;
+            }
+
+            // Prisoner sees colonist as master
+            if (pawn.IsPrisoner && nearbyPawn.Faction == Faction.OfPlayer)
+                return "master";
+
+            // Slave sees colonist as master
+            if (pawn.IsSlave && nearbyPawn.Faction == Faction.OfPlayer)
+                return "master";
+
+            // Labels based on type or faction relationship
+            if (nearbyPawn.IsPrisoner) return "prisoner";
+            if (nearbyPawn.IsSlave) return "slave";
+
+            if (nearbyPawn.Faction != null)
+            {
+                if (pawn.Faction != null && pawn.Faction.HostileTo(nearbyPawn.Faction))
+                    return "invader";
+
+                // Friendly visitor or colonist
+                string typeLabel = nearbyPawn.Faction == Faction.OfPlayer ? "colonist" : "visitor";
+                return $"{nearbyPawn.Name.ToStringShort} ({typeLabel})";
+            }
+
+            // Default to name
+            return nearbyPawn.Name.ToStringShort;
+        }
+
+        public static bool IsShooting(Pawn pawn)
+        {
+            if (pawn?.stances == null)
+                return false;
+
+            if (pawn.stances.curStance is Stance_Busy busy && busy.verb != null)
+                return !busy.verb.IsMeleeAttack;
+
+            return pawn.CurJobDef == JobDefOf.AttackStatic;
+        }
+
+        public static bool IsMeleeAttacking(Pawn pawn)
+        {
+            if (pawn?.stances == null)
+                return false;
+
+            if (pawn.stances.curStance is Stance_Busy busy && busy.verb != null)
+                return busy.verb.IsMeleeAttack;
+
+            return pawn.CurJobDef == JobDefOf.AttackMelee;
         }
     }
 }

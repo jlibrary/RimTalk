@@ -60,6 +60,42 @@ namespace RimTalk
             );
 
             listingStandard.Gap(12f);
+
+            // Allow slaves to talk checkbox
+            listingStandard.CheckboxLabeled(
+                "RimTalk.Settings.AllowSlavesToTalk".Translate(),
+                ref settings.allowSlavesToTalk,
+                "RimTalk.Settings.AllowSlavesToTalkTooltip".Translate()
+            );
+
+            listingStandard.Gap(12f);
+
+            // Allow prisoners to talk checkbox
+            listingStandard.CheckboxLabeled(
+                "RimTalk.Settings.AllowPrisonersToTalk".Translate(),
+                ref settings.allowPrisonersToTalk,
+                "RimTalk.Settings.AllowPrisonersToTalkTooltip".Translate()
+            );
+
+            listingStandard.Gap(12f);
+
+            // Allow other factions to talk checkbox
+            listingStandard.CheckboxLabeled(
+                "RimTalk.Settings.AllowOtherFactionsToTalk".Translate(),
+                ref settings.allowOtherFactionsToTalk,
+                "RimTalk.Settings.AllowOtherFactionsToTalkTooltip".Translate()
+            );
+
+            listingStandard.Gap(12f);
+
+            // Allow enemies to talk checkbox
+            listingStandard.CheckboxLabeled(
+                "RimTalk.Settings.AllowEnemiesToTalk".Translate(),
+                ref settings.allowEnemiesToTalk,
+                "RimTalk.Settings.AllowEnemiesToTalkTooltip".Translate()
+            );
+
+            listingStandard.Gap(12f);
             
             // Bubble fade tip
             GUI.color = Color.yellow;
@@ -73,15 +109,14 @@ namespace RimTalk
             {
                 // Reset all basic settings to their default values
                 settings.talkInterval = 7;
-                settings.processNonRimTalkInteractions = false;
-                settings.suppressUnprocessedMessages = false;
+                settings.processNonRimTalkInteractions = true;
+                settings.suppressUnprocessedMessages = true;
                 settings.displayTalkWhenDrafted = true;
-                
-                // Reset API configurations
-                settings.cloudConfigs.Clear();
-                settings.cloudConfigs.Add(new ApiConfig());
-                settings.localConfig = new ApiConfig { Provider = AIProvider.Local };
-                settings.useCloudProviders = true;
+                settings.allowSlavesToTalk = true;
+                settings.allowPrisonersToTalk = true;
+                settings.allowOtherFactionsToTalk = false;
+                settings.allowEnemiesToTalk = false;
+                settings.useSimpleConfig = true;
             }
             
             GUI.enabled = oldEnabled; // Restore original GUI.enabled state
