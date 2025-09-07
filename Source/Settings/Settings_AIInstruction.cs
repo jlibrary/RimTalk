@@ -57,7 +57,7 @@ namespace RimTalk
             listingStandard.Gap(6f);
 
             // Token info display
-            int currentTokens = CommonUtil.EstimateTokenCount(Constant.Instruction);
+            int currentTokens = CommonUtil.EstimateTokenCount(textAreaBuffer);
             int maxAllowedTokens = CommonUtil.GetMaxAllowedTokens(settings.talkInterval);
             string tokenInfo = "RimTalk.Settings.TokenInfo".Translate(currentTokens, maxAllowedTokens);
             if (currentTokens > maxAllowedTokens)

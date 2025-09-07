@@ -95,9 +95,8 @@
 
     <!-- Dialog_PersonaEditor.cs -->
     <RimTalk.PersonaEditor.Title>{0}'s Conversation Style</RimTalk.PersonaEditor.Title>
-    <RimTalk.PersonaEditor.Instruct>Describe how this colonist talks and behaves in conversations.
-This will influence their AI-generated dialogue.</RimTalk.PersonaEditor.Instruct>
-    <RimTalk.PersonaEditor.Characters>Characters: {0}/{1}</RimTalk.PersonaEditor.Characters>
+    <RimTalk.PersonaEditor.Instruct>Describe how this colonist talks and behaves. Keep it brief (under 300 characters) for best results.</RimTalk.PersonaEditor.Instruct>
+    <RimTalk.PersonaEditor.Characters>Characters: {0}</RimTalk.PersonaEditor.Characters>
     <RimTalk.PersonaEditor.Save>Save</RimTalk.PersonaEditor.Save>
     <RimTalk.PersonaEditor.Updated>Updated conversation style for {0}</RimTalk.PersonaEditor.Updated>
     <RimTalk.PersonaEditor.TalkFrequencyDesc>Controls how often this colonist initiates talks. Even at the lowest setting, they will still reply when others speak to them. This only affects conversation initiation frequency.</RimTalk.PersonaEditor.TalkFrequencyDesc>

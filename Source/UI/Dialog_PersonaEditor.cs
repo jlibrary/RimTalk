@@ -45,21 +45,15 @@ namespace RimTalk.UI
             // Text area with character counter
             Rect textAreaRect = new Rect(inRect.x, instructRect.yMax + 10f, inRect.width, 180f);
             editingPersonality = Widgets.TextArea(textAreaRect, editingPersonality);
-
-            // Enforce character limit
-            if (editingPersonality.Length > MAX_LENGTH)
-            {
-                editingPersonality = editingPersonality.Substring(0, MAX_LENGTH);
-            }
-
+            
             // Character count
             Rect countRect = new Rect(inRect.x, textAreaRect.yMax + 2f, inRect.width, 20f);
             Text.Font = GameFont.Tiny;
-            Color countColor = editingPersonality.Length > MAX_LENGTH * 0.9f ? Color.yellow : Color.gray;
+            Color countColor = editingPersonality.Length > 300 ? Color.yellow : Color.gray;
             if (editingPersonality.Length >= MAX_LENGTH) countColor = Color.red;
             GUI.color = countColor;
             Text.Anchor = TextAnchor.MiddleRight; 
-            Widgets.Label(countRect, "RimTalk.PersonaEditor.Characters".Translate(editingPersonality.Length, MAX_LENGTH));
+            Widgets.Label(countRect, "RimTalk.PersonaEditor.Characters".Translate(editingPersonality.Length, 300));
             Text.Anchor = TextAnchor.UpperLeft; 
             GUI.color = Color.white;
             Text.Font = GameFont.Small;
