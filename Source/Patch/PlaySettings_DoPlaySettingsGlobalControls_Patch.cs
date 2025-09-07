@@ -5,6 +5,7 @@ using Verse;
 
 namespace RimTalk.Patch
 {
+    [StaticConstructorOnStartup]
     [HarmonyPatch(typeof(PlaySettings), "DoPlaySettingsGlobalControls")]
     public static class PlaySettings_DoPlaySettingsGlobalControls_Patch
     {        

@@ -1,20 +1,18 @@
 using HarmonyLib;
-using RimTalk.Service;
-using Verse;
 using RimTalk.Data;
-using RimWorld;
-using System.Collections.Generic;
+using RimTalk.Service;
 using RimTalk.Util;
+using RimWorld;
+using Verse;
 
 namespace RimTalk.Patch
 {
     [HarmonyPatch(typeof(TickManager), nameof(TickManager.DoSingleTick))]
     internal static class TickManager_DoSingleTick
     {
-        private const double DisplayInterval = 1.5; // Display every seconds
+        private const double DisplayInterval = 0.5; // Display every half second
         private const int UpdateCacheInterval = 5;    // 5 seconds
-        private static int JobTalkInterval => Settings.Get().talkInterval * 2;
-        private static int ThoughtsTalkInterval => Settings.Get().talkInterval * 2 + 2;
+        private static double TalkInterval => Settings.Get().talkInterval;
         public static bool NoApiKeyMessageShown;
         public static bool InitialCacheRefresh;
 
@@ -41,41 +39,60 @@ namespace RimTalk.Patch
                 TalkService.DisplayTalk();
             }
 
-            if (IsNow(ThoughtsTalkInterval))
+            if (IsNow(TalkInterval))
             {
-                foreach (Pawn pawn in PawnService.GetPawnsAbleToTalk())
+                var pawn = PawnSelector.SelectAvailablePawnByWeight();
+                if (pawn != null)
                 {
-                    if (!pawn.IsColonist || !pawn.IsPrisonerOfColony || !pawn.IsSlaveOfColony) continue;
-                    
-                    KeyValuePair<Thought, float> thought = PawnService.GetNewThought(pawn);
-                    string thoughtLabel = PawnService.GetNewThoughtLabel(thought.Key);
-                    if (thoughtLabel != null)
+                    var pawnState = Cache.Get(pawn);
+                    // if pawn has talk request, try generating
+                    if (pawnState.TalkRequest != null)
                     {
-                        TalkService.GenerateTalk($"{thoughtLabel} {PawnService.GetTalkSubject(pawn)}", pawn);
+                        TalkService.GenerateTalk(pawnState.TalkRequest);
                     }
-                    var pawnCache = Cache.Get(pawn);
-                    if (IsNow(ThoughtsTalkInterval * 50))  // reset thoughts occasionally
-                        pawnCache?.UpdateThoughts();
+                    // if pawn does not have any request and in good condition, try to take one from pool
+                    else if (!TalkRequestPool.IsEmpty && !PawnService.IsPawnInDanger(pawn))
+                    {
+                        TalkService.GenerateTalkFromPool(pawn);
+                    }
+                    // otherwise generate based on current context
                     else
-                        pawnCache?.UpdateThoughts(thought);
-                    break;
+                    {
+                        TalkService.GenerateTalk(null, pawn);
+                    }
                 }
             }
-
-            if (IsNow(JobTalkInterval))
+            
+            if (IsNow(TalkInterval, TalkInterval / 2))
             {
-                foreach (Pawn pawn in PawnService.GetPawnsAbleToTalk())
+                var pawn = PawnSelector.SelectAvailablePawnByWeight(true);
+                var thought = PawnService.GetNewThought(pawn);
+                var thoughtLabel = PawnService.GetNewThoughtLabel(thought.Key);
+                bool result = false;
+
+                if (thoughtLabel != null)
                 {
-                    if (TalkService.GenerateTalk(PawnService.GetTalkSubject(pawn), pawn)) break;
+                    result = TalkService.GenerateTalk(thoughtLabel, pawn);
+                }
+
+                var pawnCache = Cache.Get(pawn);
+                if (IsNow(TalkInterval * 50))  // reset thoughts occasionally
+                {
+                    pawnCache?.UpdateThoughts();
+                }
+                else if (result)
+                {
+                    pawnCache?.UpdateThoughts(thought);
                 }
             }
         }
         
-        private static bool IsNow(double interval)
+        private static bool IsNow(double interval, double offset = 0)
         {
             int ticksForDuration = CommonUtil.GetTicksForDuration(interval);
+            int offsetTicks = CommonUtil.GetTicksForDuration(offset);
             if (ticksForDuration == 0) return false;
-            return Counter.Tick % ticksForDuration == 0;
+            return Counter.Tick % ticksForDuration == offsetTicks;
         }
     }
 }

@@ -1,8 +1,7 @@
 ﻿using HarmonyLib;
+using RimTalk.Data;
 using RimWorld;
 using Verse;
-using RimTalk.Service;
-
 
 namespace RimTalk.Patch
 {
@@ -24,7 +23,7 @@ namespace RimTalk.Patch
             {
                 string prompt = $"{___pawn.Name} leveled up {__instance.def.defName} from {previousLevel} " +
                                 $"to {__instance.Level} ({__instance.LevelDescriptor})";
-                TalkService.GenerateTalk(prompt, ___pawn, null, true);
+                Cache.Get(___pawn)?.AddTalkRequest(prompt);
             }
         }
     }

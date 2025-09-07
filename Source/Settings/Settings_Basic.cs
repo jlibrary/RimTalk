@@ -36,22 +36,6 @@ namespace RimTalk
             );
             listingStandard.Gap(12f);
 
-            // Suppress unprocessed messages checkbox - only enabled if first checkbox is checked
-            bool oldEnabled = GUI.enabled;
-            GUI.enabled = settings.processNonRimTalkInteractions;
-
-            // Automatically uncheck second checkbox when first is disabled
-            if (!settings.processNonRimTalkInteractions)
-                settings.suppressUnprocessedMessages = false;
-
-            listingStandard.CheckboxLabeled(
-                "RimTalk.Settings.HideSkippedMessages".Translate(),
-                ref settings.suppressUnprocessedMessages,
-                "RimTalk.Settings.HideSkippedMessagesTooltip".Translate()
-            );
-            
-            listingStandard.Gap(12f);
-
             // Display talk when drafted checkbox
             listingStandard.CheckboxLabeled(
                 "RimTalk.Settings.DisplayTalkWhenDrafted".Translate(),
@@ -110,7 +94,6 @@ namespace RimTalk
                 // Reset all basic settings to their default values
                 settings.talkInterval = 7;
                 settings.processNonRimTalkInteractions = true;
-                settings.suppressUnprocessedMessages = true;
                 settings.displayTalkWhenDrafted = true;
                 settings.allowSlavesToTalk = true;
                 settings.allowPrisonersToTalk = true;
@@ -119,8 +102,6 @@ namespace RimTalk
                 settings.useSimpleConfig = true;
             }
             
-            GUI.enabled = oldEnabled; // Restore original GUI.enabled state
-
             listingStandard.End();
         }
     }

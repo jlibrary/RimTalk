@@ -10,24 +10,19 @@ namespace RimTalk.Data
     {
         // Main data store mapping a Pawn to its current state.
         private static readonly ConcurrentDictionary<Pawn, PawnState> _cache = new ConcurrentDictionary<Pawn, PawnState>();
-        
-        // --- Optimizations ---
-        // Provides fast O(1) lookup of a pawn by their short name string.
         private static readonly ConcurrentDictionary<string, Pawn> _nameCache = new ConcurrentDictionary<string, Pawn>();
-        // A list of all pawns, kept permanently sorted by their LastTalkTick to avoid re-sorting.
-        private static List<Pawn> _talkersSortedByTick = new List<Pawn>();
+
+        private static readonly object _weightedSelectionLock = new object();
+        private static List<Pawn> _weightedPawnList = new List<Pawn>();
+        private static List<double> _cumulativeWeights = new List<double>();
+        private static double _totalWeight = 0.0;
+        private static bool _weightsDirty = true;
 
         public static IEnumerable<Pawn> Keys => _cache.Keys;
-        public static IReadOnlyList<Pawn> TalkersSortedByTick => _talkersSortedByTick;
 
         public static PawnState Get(Pawn pawn)
         {
             return pawn == null ? null : _cache.TryGetValue(pawn, out var state) ? state : null;
-        }
-
-        public static List<Pawn> GetList()
-        {
-            return _talkersSortedByTick;
         }
 
         /// <summary>
@@ -38,39 +33,11 @@ namespace RimTalk.Data
             if (string.IsNullOrEmpty(name)) return null;
             return _nameCache.TryGetValue(name, out var pawn) ? Get(pawn) : null;
         }
-        
-        /// <summary>
-        /// Efficiently updates a pawn's position in the sorted list after its LastTalkTick changes.
-        /// </summary>
-        public static void UpdatePawnSortPosition(Pawn pawn)
-        {
-            // O(N) removal, but only for a single element.
-            _talkersSortedByTick.Remove(pawn);
 
-            var pawnState = Get(pawn);
-            if (pawnState == null) return;
-
-            // Use a binary search (O(log N)) to find the correct insertion point.
-            var comparer = Comparer<Pawn>.Create((p1, p2) => Get(p1).LastTalkTick.CompareTo(Get(p2).LastTalkTick));
-            int index = _talkersSortedByTick.BinarySearch(pawn, comparer);
-            
-            if (index < 0)
-            {
-                // If not found, the bitwise complement gives the correct sorted index.
-                index = ~index;
-            }
-
-            // O(N) insertion as elements are shifted.
-            _talkersSortedByTick.Insert(index, pawn);
-        }
-
-        /// <summary>
-        /// Refreshes the cache, removing ineligible pawns and adding new ones.
-        /// </summary>
         public static void Refresh()
         {
             var settings = Settings.Get();
-            var pawnsToRemove = new List<Pawn>();
+            var updated = false;
 
             // Identify and remove ineligible pawns from all caches.
             foreach (Pawn pawn in _cache.Keys.ToList())
@@ -79,15 +46,10 @@ namespace RimTalk.Data
                 {
                     if (_cache.TryRemove(pawn, out var removedState))
                     {
-                        _nameCache.TryRemove(removedState.pawn.Name.ToStringShort, out _);
-                        pawnsToRemove.Add(pawn);
+                        _nameCache.TryRemove(removedState.Pawn.Name.ToStringShort, out _);
+                        updated = true;
                     }
                 }
-            }
-            
-            if (pawnsToRemove.Any())
-            {
-                _talkersSortedByTick.RemoveAll(p => pawnsToRemove.Contains(p));
             }
 
             // Add new eligible pawns to all caches.
@@ -97,10 +59,29 @@ namespace RimTalk.Data
                 {
                     _cache[pawn] = new PawnState(pawn);
                     _nameCache[pawn.Name.ToStringShort] = pawn;
-                    // New pawns haven't talked, so insert at the beginning of the sorted list.
-                    _talkersSortedByTick.Insert(0, pawn);
+                    updated = true;
                 }
             }
+
+            // Mark weights as dirty when cache changes
+            if (updated)
+            {
+                lock (_weightedSelectionLock)
+                {
+                    _weightsDirty = true;
+                }
+            }
+        }
+            
+        public static IEnumerable<Pawn> GetWeightedPawns()
+        {
+            return _cache.Keys.Where(p => Get(p)?.TalkInitiationWeight > 0);
+        }
+    
+        public static IEnumerable<(Pawn pawn, double weight)> GetPawnsWithWeights()
+        {
+            return _cache.Keys.Select(p => (p, Get(p)?.TalkInitiationWeight ?? 0.0))
+                .Where(x => x.Item2 > 0);
         }
 
         public static bool Contains(Pawn pawn)
@@ -112,19 +93,44 @@ namespace RimTalk.Data
         {
             _cache.Clear();
             _nameCache.Clear();
-            _talkersSortedByTick.Clear();
         }
 
         public static bool IsEligiblePawn(Pawn pawn, CurrentWorkDisplayModSettings settings)
         {
             if (!pawn.RaceProps.Humanlike)
                 return false;
-            
+
             return !pawn.Dead && (pawn.IsFreeColonist ||
-                         (settings.allowSlavesToTalk && pawn.IsSlave) ||
-                         (settings.allowPrisonersToTalk && pawn.IsPrisoner) ||
-                         (settings.allowOtherFactionsToTalk && PawnService.IsVisitor(pawn)) ||
-                         (settings.allowEnemiesToTalk && PawnService.IsInvader(pawn)));
+                                  (settings.allowSlavesToTalk && pawn.IsSlave) ||
+                                  (settings.allowPrisonersToTalk && pawn.IsPrisoner) ||
+                                  (settings.allowOtherFactionsToTalk && PawnService.IsVisitor(pawn)) ||
+                                  (settings.allowEnemiesToTalk && PawnService.IsInvader(pawn)));
+        }
+
+        // NEW: Build weighted selection data (called once every 5 seconds)
+        private static void RebuildWeights()
+        {
+            lock (_weightedSelectionLock)
+            {
+                if (!_weightsDirty) return;
+
+                _weightedPawnList.Clear();
+                _cumulativeWeights.Clear();
+                _totalWeight = 0.0;
+
+                foreach (var pawn in _cache.Keys)
+                {
+                    var weight = Get(pawn)?.TalkInitiationWeight ?? 0.0;
+                    if (weight > 0)
+                    {
+                        _weightedPawnList.Add(pawn);
+                        _totalWeight += weight;
+                        _cumulativeWeights.Add(_totalWeight);
+                    }
+                }
+
+                _weightsDirty = false;
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using RimTalk.Data;
+using RimTalk.Error;
 using RimTalk.Util;
 
 namespace RimTalk.Service
@@ -21,18 +22,21 @@ namespace RimTalk.Service
             busy = true;
             EnsureMessageLimit();
             messages.Add((Role.USER, message));
-            string response = "";
+            
             try
             {
-                response = await AIClientFactory.GetAIClient().GetChatCompletionAsync(instruction, messages);
+                string response = await AIErrorHandler.HandleWithRetry(async () =>
+                {
+                    return await AIClientFactory.GetAIClient().GetChatCompletionAsync(instruction, messages);
+                });
+                
+                return response;
             }
             finally
             {
                 busy = false;
                 firstInstruction = false;
             }
-            
-            return response;
         }
         
         // One time query - used for generating persona, etc
@@ -42,21 +46,25 @@ namespace RimTalk.Service
             message.Add((Role.USER, query));
             
             busy = true;
-            string response = "";
+            
             try
             {
-                response = await AIClientFactory.GetAIClient().GetChatCompletionAsync("", message);
+                string response = await AIErrorHandler.HandleWithRetry(async () =>
+                {
+                    return await AIClientFactory.GetAIClient().GetChatCompletionAsync("", message);
+                });
+                
+                return response;
             }
             finally
             {
                 busy = false;
             }
-            return response;
         }
 
         public static void UpdateContext(string context)
         {
-            Logger.Message($"UpdateContext: {context}");
+            Logger.Message($"UpdateContext:\n{context}");
             instruction = context;
         }
 
@@ -64,10 +72,20 @@ namespace RimTalk.Service
         {
             return firstInstruction;
         }
-
+        
         public static void AddResposne(string text)
         {
             messages.Add((Role.AI, text));
+        }
+        
+        public static void CleanupLastRequest()
+        {
+            if (messages.Count == 0) return;
+    
+            var lastMessage = messages[messages.Count - 1];
+            string cleanedText = lastMessage.message.Replace(Constant.Prompt, "");
+    
+            messages[messages.Count - 1] = (lastMessage.role, cleanedText);
         }
 
         public static bool IsBusy()

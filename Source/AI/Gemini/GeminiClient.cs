@@ -51,6 +51,8 @@ namespace RimTalk.AI.Gemini
 
                     if (webRequest.responseCode == 429)
                         throw new QuotaExceededException("Quota exceeded");
+                    if (webRequest.responseCode == 503)
+                        throw new QuotaExceededException("Model overloaded");
 
                     if (webRequest.isNetworkError || webRequest.isHttpError)
                     {

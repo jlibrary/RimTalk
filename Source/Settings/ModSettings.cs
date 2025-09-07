@@ -18,7 +18,6 @@ namespace RimTalk
 
         // Other existing settings
         public int talkInterval = 7;
-        public bool suppressUnprocessedMessages;
         public bool processNonRimTalkInteractions;
         public string customInstruction = "";
         public Dictionary<string, bool> enabledArchivableTypes = new Dictionary<string, bool>();
@@ -133,7 +132,6 @@ namespace RimTalk
             
             // Other existing settings
             Scribe_Values.Look(ref talkInterval, "talkInterval", 7);
-            Scribe_Values.Look(ref suppressUnprocessedMessages, "suppressUnprocessedMessages", true);
             Scribe_Values.Look(ref processNonRimTalkInteractions, "processNonRimTalkInteractions", true);
             Scribe_Values.Look(ref customInstruction, "customInstruction", "");
             Scribe_Values.Look(ref displayTalkWhenDrafted, "displayTalkWhenDrafted", true);

@@ -1,43 +1,54 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using RimTalk.Data;
-using RimTalk.Service;
 using RimTalk.Util;
 using RimWorld;
 using Verse;
 
 namespace RimTalk.Error
 {
-    public static class TalkErrorHandler
+    public static class AIErrorHandler
     {
         public static bool QuotaWarningShown;
 
-        public static async Task<string> HandleGenerationException(Exception ex, List<Pawn> pawns, string prompt)
+        public static async Task<T> HandleWithRetry<T>(Func<Task<T>> operation)
         {
-            var settings = Settings.Get();
-            
-            // Check if we can try a fallback/retry
-            bool canRetry = CanRetryWithFallback(settings);
-            
-            if (canRetry)
+            try
             {
-                return await TryFallbackGeneration(ex, pawns, prompt, settings);
+                T result = await operation();
+                return result;
             }
-            else
+            catch (Exception ex)
             {
-                ShowFinalWarning(ex);
-                Logger.Warning($"{prompt}\n{null}");
-                return null;
+                var settings = Settings.Get();
+                if (CanRetryGeneration(settings))
+                {
+                    string nextModel = Settings.Get().GetCurrentModel();
+                    if (!settings.useSimpleConfig)
+                    {
+                        ShowRetryMessage(ex, nextModel);
+                    }
+
+                    try
+                    {
+                        T result = await operation();
+                        return result;
+                    }
+                    catch (Exception retryEx)
+                    {
+                        Logger.Warning($"Retry failed: {retryEx.Message}");
+                        HandleFinalFailure(ex);
+                        return default(T);
+                    }
+                }
+                else
+                {
+                    HandleFinalFailure(ex);
+                    return default(T);
+                }
             }
         }
 
-        public static void ResetQuotaWarning()
-        {
-            QuotaWarningShown = false;
-        }
-
-        private static bool CanRetryWithFallback(CurrentWorkDisplayModSettings settings)
+        private static bool CanRetryGeneration(CurrentWorkDisplayModSettings settings)
         {
             if (settings.useSimpleConfig)
             {
@@ -53,64 +64,11 @@ namespace RimTalk.Error
             return false;
         }
 
-        private static async Task<string> TryFallbackGeneration(Exception ex, List<Pawn> pawns, string prompt, CurrentWorkDisplayModSettings settings)
-        {
-            // Set fallback state for simple config
-            if (settings.useSimpleConfig)
-            {
-                settings.isUsingFallbackModel = true;
-            }
-            else
-            {
-                // Show retry message
-                ShowRetryMessage(ex, settings.GetCurrentModel());
-            }
-
-            try
-            {
-                return await GenerateWithAI(pawns, prompt);
-            }
-            catch (Exception retryEx)
-            {
-                Logger.Warning($"Retry failed: {retryEx.Message}");
-                ShowFinalWarning(ex);
-                Logger.Warning($"{prompt}\n{null}");
-                return null;
-            }
-        }
-
-        private static async Task<string> GenerateWithAI(List<Pawn> pawns, string prompt)
-        {
-            // This delegates back to TalkService.Generate - we need to make that method internal
-            // For now, we'll duplicate the AI call logic to avoid circular dependencies
-            string response;
-            if (AIService.IsFirstInstruction())
-                prompt += $" in {Constant.Lang}";
-
-            Cache.Get(pawns[0]).IsGeneratingTalk = true;
-            response = await AIService.Chat(prompt);
-            
-            return response;
-        }
-
-        private static void ShowRetryMessage(Exception ex, string nextModel)
-        {
-            string messageKey = ex is QuotaExceededException ? "RimTalk.TalkService.QuotaReached" : "RimTalk.TalkService.APIError";
-            string message = $"{messageKey.Translate()}. {"RimTalk.TalkService.TryingNextAPI".Translate(nextModel)}";
-            Messages.Message(message, MessageTypeDefOf.NegativeEvent, false);
-        }
- 
-        private static void ShowFinalWarning(Exception ex)
+        private static void HandleFinalFailure(Exception ex)
         {
             if (ex is QuotaExceededException)
             {
-                if (!QuotaWarningShown)
-                {
-                    QuotaWarningShown = true;
-                    string message = "RimTalk.TalkService.QuotaExceeded".Translate();
-                    Messages.Message(message, MessageTypeDefOf.NegativeEvent, false);
-                    Logger.Warning("Quota exceeded");
-                }
+                ShowQuotaWarning(ex);
             }
             else
             {
@@ -118,11 +76,34 @@ namespace RimTalk.Error
             }
         }
 
-        private static void ShowGenerationWarning(Exception ex)
+        public static void ResetQuotaWarning()
+        {
+            QuotaWarningShown = false;
+        }
+
+        public static void ShowQuotaWarning(Exception ex)
+        {
+            if (!QuotaWarningShown)
+            {
+                QuotaWarningShown = true;
+                string message = "RimTalk.TalkService.QuotaExceeded".Translate();
+                Messages.Message(message, MessageTypeDefOf.NeutralEvent, false);
+                Logger.Warning(ex.Message);
+            }
+        }
+
+        public static void ShowGenerationWarning(Exception ex)
         {
             Logger.Warning(ex.StackTrace);
             string message = $"{"RimTalk.TalkService.GenerationFailed".Translate()}: {ex.Message}";
-            Messages.Message(message, MessageTypeDefOf.NegativeEvent, false);
+            Messages.Message(message, MessageTypeDefOf.NeutralEvent, false);
+        }
+
+        public static void ShowRetryMessage(Exception ex, string nextModel)
+        {
+            string messageKey = ex is QuotaExceededException ? "RimTalk.TalkService.QuotaReached" : "RimTalk.TalkService.APIError";
+            string message = $"{messageKey.Translate()}. {"RimTalk.TalkService.TryingNextAPI".Translate(nextModel)}";
+            Messages.Message(message, MessageTypeDefOf.NeutralEvent, false);
         }
     }
 }

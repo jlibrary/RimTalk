@@ -17,7 +17,7 @@ namespace RimTalk.Patches
                 return;
             }
 
-            var personalityManager = Current.Game.GetComponent<PersonalityManager>();
+            var personalityManager = Current.Game.GetComponent<PersonaManager>();
             if (personalityManager == null)
             {
                 return;
@@ -39,7 +39,7 @@ namespace RimTalk.Patches
 
             if (Widgets.ButtonText(linkRect, "RimTalk.BioTab.RimTalkPersona".Translate()))
             {
-                Find.WindowStack.Add(new Dialog_PersonalityEditor(pawn));
+                Find.WindowStack.Add(new Dialog_PersonaEditor(pawn));
             }
         }
     }

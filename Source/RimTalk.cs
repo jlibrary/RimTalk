@@ -40,7 +40,7 @@ namespace RimTalk
             Counter.Tick = 0;
             Cache.Clear();
             TalkHistory.Clear();
-            TalkErrorHandler.QuotaWarningShown = false;
+            AIErrorHandler.ResetQuotaWarning();
             TickManager_DoSingleTick.NoApiKeyMessageShown = false;
             TickManager_DoSingleTick.InitialCacheRefresh = false;
             AIClientFactory.Clear();

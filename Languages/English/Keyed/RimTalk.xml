@@ -11,7 +11,58 @@
     <RimTalk.TalkService.APIError>API error occurred</RimTalk.TalkService.APIError>
     <RimTalk.TalkService.TryingNextAPI>Trying next API ({0})</RimTalk.TalkService.TryingNextAPI>
     <RimTalk.TalkService.GenerationFailed>RimTalk generation failed</RimTalk.TalkService.GenerationFailed>
-    
+
+    <!-- Persona -->
+    <RimTalk.Persona.CheerfulHelper>Cheerful Helper – Warm, upbeat, and encouraging. Always trying to lift spirits.</RimTalk.Persona.CheerfulHelper>
+    <RimTalk.Persona.CynicalRealist>Cynical Realist – Dry, sarcastic, and skeptical. Cuts straight to harsh truths.</RimTalk.Persona.CynicalRealist>
+    <RimTalk.Persona.ShyThinker>Shy Thinker – Quiet and hesitant. Uses few words but thoughtful when speaking.</RimTalk.Persona.ShyThinker>
+    <RimTalk.Persona.Hothead>Hothead – Short-tempered, loud, and impulsive. Snaps easily with fiery language.</RimTalk.Persona.Hothead>
+    <RimTalk.Persona.Philosopher>Philosopher – Reflective and abstract. Speaks in riddles or big questions.</RimTalk.Persona.Philosopher>
+    <RimTalk.Persona.DarkHumorist>Dark Humorist – Jokes about grim topics. Finds comedy in misery.</RimTalk.Persona.DarkHumorist>
+    <RimTalk.Persona.Caregiver>Caregiver – Gentle and protective. Comforting, soothing, and nurturing tone.</RimTalk.Persona.Caregiver>
+    <RimTalk.Persona.Opportunist>Opportunist – Sly and persuasive. Talks like a hustler, bargains, and twists words.</RimTalk.Persona.Opportunist>
+    <RimTalk.Persona.OptimisticDreamer>Optimistic Dreamer – Imaginative and hopeful. Excited about the future.</RimTalk.Persona.OptimisticDreamer>
+    <RimTalk.Persona.Pessimist>Pessimist – Gloomy and resigned. Expects failure and highlights risks.</RimTalk.Persona.Pessimist>
+    <RimTalk.Persona.StoicSoldier>Stoic Soldier – Calm, disciplined, and brief. Little emotion, matter-of-fact.</RimTalk.Persona.StoicSoldier>
+    <RimTalk.Persona.FreeSpirit>Free Spirit – Playful and carefree. Resists rules, shrugs off worries.</RimTalk.Persona.FreeSpirit>
+    <RimTalk.Persona.Workaholic>Workaholic – Driven and restless. Obsessed with duty and efficiency.</RimTalk.Persona.Workaholic>
+    <RimTalk.Persona.Slacker>Slacker – Lazy and casual. Complains about effort, prefers comfort.</RimTalk.Persona.Slacker>
+    <RimTalk.Persona.NobleIdealist>Noble Idealist – Formal and principled. Talks about honor and justice.</RimTalk.Persona.NobleIdealist>
+    <RimTalk.Persona.StreetwiseSurvivor>Streetwise Survivor – Rough, pragmatic, and cynical. Distrusts others, values grit.</RimTalk.Persona.StreetwiseSurvivor>
+    <RimTalk.Persona.Scholar>Scholar – Curious and intellectual. Loves explaining and correcting others.</RimTalk.Persona.Scholar>
+    <RimTalk.Persona.Jokester>Jokester – Lighthearted and silly. Constantly cracks jokes and puns.</RimTalk.Persona.Jokester>
+    <RimTalk.Persona.MelancholicPoet>Melancholic Poet – Soft-spoken and moody. Expresses feelings poetically.</RimTalk.Persona.MelancholicPoet>
+    <RimTalk.Persona.Paranoid>Paranoid – Nervous and distrustful. Assumes betrayal, always suspicious.</RimTalk.Persona.Paranoid>
+    <RimTalk.Persona.Commander>Commander – Confident and commanding. Motivates others, expects obedience.</RimTalk.Persona.Commander>
+    <RimTalk.Persona.Coward>Coward – Timid and fearful. Worries aloud, avoids confrontation.</RimTalk.Persona.Coward>
+    <RimTalk.Persona.ArrogantNoble>Arrogant Noble – Proud and condescending. Uses formal, superior language.</RimTalk.Persona.ArrogantNoble>
+    <RimTalk.Persona.LoyalCompanion>Loyal Companion – Steadfast and supportive. Talks about trust and unity.</RimTalk.Persona.LoyalCompanion>
+    <RimTalk.Persona.CuriousExplorer>Curious Explorer – Wide-eyed and eager. Asks questions with enthusiasm.</RimTalk.Persona.CuriousExplorer>
+    <RimTalk.Persona.ColdRationalist>Cold Rationalist – Detached and logical. Focused only on facts and efficiency.</RimTalk.Persona.ColdRationalist>
+    <RimTalk.Persona.FlirtatiousCharmer>Flirtatious Charmer – Playful, teasing, and bold. Enjoys witty banter.</RimTalk.Persona.FlirtatiousCharmer>
+    <RimTalk.Persona.BitterOutcast>Bitter Outcast – Resentful and sharp. Hostile, quick to recall grievances.</RimTalk.Persona.BitterOutcast>
+    <RimTalk.Persona.Zealot>Zealot – Fanatical and intense. Speaks in absolutes, condemns unbelievers.</RimTalk.Persona.Zealot>
+    <RimTalk.Persona.Trickster>Trickster – Mischievous and mocking. Teases and stirs trouble for fun.</RimTalk.Persona.Trickster>
+    <RimTalk.Persona.DeadpanRealist>Deadpan Realist – Flat, emotionless tone. Blunt facts with no exaggeration.</RimTalk.Persona.DeadpanRealist>
+    <RimTalk.Persona.ChildAtHeart>Child-at-Heart – Excitable and naive. Talks with wonder, sometimes childish.</RimTalk.Persona.ChildAtHeart>
+    <RimTalk.Persona.SkepticalScientist>Skeptical Scientist – Demands evidence, dismisses superstition, explains logically.</RimTalk.Persona.SkepticalScientist>
+    <RimTalk.Persona.Martyr>Martyr – Self-sacrificing and dramatic. Talks about burden and enduring pain.</RimTalk.Persona.Martyr>
+    <RimTalk.Persona.Manipulator>Manipulator – Charming but insincere. Uses flattery and deception.</RimTalk.Persona.Manipulator>
+    <RimTalk.Persona.Rebel>Rebel – Defiant and mocking. Challenges authority, questions rules.</RimTalk.Persona.Rebel>
+    <RimTalk.Persona.Oddball>Oddball – Quirky and strange. Uses odd metaphors and unpredictable logic.</RimTalk.Persona.Oddball>
+    <RimTalk.Persona.GreedyMerchant>Greedy Merchant – Obsessed with trade. Talks in profits, bargains, and losses.</RimTalk.Persona.GreedyMerchant>
+    <RimTalk.Persona.Romantic>Romantic – Dreamy and affectionate. Speaks in flowery language about love.</RimTalk.Persona.Romantic>
+    <RimTalk.Persona.BattleManiac>Battle Maniac – Thrives on conflict. Talks excitedly about combat and glory.</RimTalk.Persona.BattleManiac>
+    <RimTalk.Persona.GrumpyElder>Grumpy Elder – Complains constantly. Nostalgic, critical of others.</RimTalk.Persona.GrumpyElder>
+    <RimTalk.Persona.AmbitiousClimber>Ambitious Climber – Competitive and status-driven. Obsessed with rank.</RimTalk.Persona.AmbitiousClimber>
+    <RimTalk.Persona.Mediator>Mediator – Calm and fair-minded. Tries to reconcile arguments.</RimTalk.Persona.Mediator>
+    <RimTalk.Persona.Gambler>Gambler – Risk-loving and bold. Speaks in chance metaphors.</RimTalk.Persona.Gambler>
+    <RimTalk.Persona.ArtisticSoul>Artistic Soul – Talks about beauty, inspiration, and creativity.</RimTalk.Persona.ArtisticSoul>
+    <RimTalk.Persona.Drifter>Drifter – Detached and aloof. Casual tone, avoids attachment.</RimTalk.Persona.Drifter>
+    <RimTalk.Persona.Perfectionist>Perfectionist – Demanding and critical. Insists on doing things right.</RimTalk.Persona.Perfectionist>
+    <RimTalk.Persona.Vengeful>Vengeful – Grudge-holding and intense. Obsessed with revenge.</RimTalk.Persona.Vengeful>
+
+
     <!-- Settings.cs -->
     <RimTalk.Settings.BasicSettings>Basic Settings</RimTalk.Settings.BasicSettings>
     <RimTalk.Settings.AIInstruction>AI Instruction</RimTalk.Settings.AIInstruction>
@@ -21,8 +72,6 @@
     <RimTalk.Settings.AICooldown>AI Cooldown (Seconds): {0}</RimTalk.Settings.AICooldown>
     <RimTalk.Settings.OverrideInteractions>Override all interactions with AI dialogue</RimTalk.Settings.OverrideInteractions>
     <RimTalk.Settings.OverrideInteractionsTooltip>Enable this to allow AI to override and regenerate dialogue for all interactions (including vanilla RimWorld and other mods). Note: AI dialogue has a cooldown period set above. To generate dialogue more frequently, lower the cooldown.</RimTalk.Settings.OverrideInteractionsTooltip>
-    <RimTalk.Settings.HideSkippedMessages>Hide messages when AI processing is skipped</RimTalk.Settings.HideSkippedMessages>
-    <RimTalk.Settings.HideSkippedMessagesTooltip>When enabled, interaction messages that were not processed by the AI (due to cooldown or other reasons) will be completely hidden. This includes messages from other mods that would normally display their original text.</RimTalk.Settings.HideSkippedMessagesTooltip>
     <RimTalk.Settings.DisplayTalkWhenDrafted>Display talk when drafted</RimTalk.Settings.DisplayTalkWhenDrafted>
     <RimTalk.Settings.DisplayTalkWhenDraftedTooltip>Shows RimTalk bubbles even when pawns are drafted. This temporarily overrides bubble mod settings during talk generation.</RimTalk.Settings.DisplayTalkWhenDraftedTooltip>
     <RimTalk.Settings.AllowSlavesToTalk>Allow slaves to talk</RimTalk.Settings.AllowSlavesToTalk>
@@ -44,16 +93,21 @@
     <RimTalk.Settings.EventFilterTip>Tip: Only checked event types will be processed by AI. Uncheck types you don't want AI to respond to.</RimTalk.Settings.EventFilterTip>
     <RimTalk.Settings.NoArchivableTypes>No archivable types found. Try starting a game and then rescanning.</RimTalk.Settings.NoArchivableTypes>
 
-    <!-- Dialog_PersonalityEditor.cs -->
-    <RimTalk.PersonalityEditor.Title>{0}'s Conversation Style</RimTalk.PersonalityEditor.Title>
-    <RimTalk.PersonalityEditor.Instruct>Describe how this colonist talks and behaves in conversations.
-This will influence their AI-generated dialogue.</RimTalk.PersonalityEditor.Instruct>
-    <RimTalk.PersonalityEditor.Characters>Characters: {0}/{1}</RimTalk.PersonalityEditor.Characters>
-    <RimTalk.PersonalityEditor.Save>Save</RimTalk.PersonalityEditor.Save>
-    <RimTalk.PersonalityEditor.Updated>Updated conversation style for {0}</RimTalk.PersonalityEditor.Updated>
-    <RimTalk.PersonalityEditor.Generating>Generating...</RimTalk.PersonalityEditor.Generating>
-    <RimTalk.PersonalityEditor.Generate>AI Generate</RimTalk.PersonalityEditor.Generate>
-    <RimTalk.PersonalityEditor.Clear>Clear</RimTalk.PersonalityEditor.Clear>
+    <!-- Dialog_PersonaEditor.cs -->
+    <RimTalk.PersonaEditor.Title>{0}'s Conversation Style</RimTalk.PersonaEditor.Title>
+    <RimTalk.PersonaEditor.Instruct>Describe how this colonist talks and behaves in conversations.
+This will influence their AI-generated dialogue.</RimTalk.PersonaEditor.Instruct>
+    <RimTalk.PersonaEditor.Characters>Characters: {0}/{1}</RimTalk.PersonaEditor.Characters>
+    <RimTalk.PersonaEditor.Save>Save</RimTalk.PersonaEditor.Save>
+    <RimTalk.PersonaEditor.Updated>Updated conversation style for {0}</RimTalk.PersonaEditor.Updated>
+    <RimTalk.PersonaEditor.TalkFrequencyDesc>Controls how often this colonist initiates talks. Even at the lowest setting, they will still reply when others speak to them. This only affects conversation initiation frequency.</RimTalk.PersonaEditor.TalkFrequencyDesc>
+    <RimTalk.PersonaEditor.Chattiness>Chattiness</RimTalk.PersonaEditor.Chattiness>
+    <RimTalk.PersonaEditor.Quiet>Quiet</RimTalk.PersonaEditor.Quiet>
+    <RimTalk.PersonaEditor.Chatty>Chatty</RimTalk.PersonaEditor.Chatty>
+    <RimTalk.PersonaEditor.Generating>Generating...</RimTalk.PersonaEditor.Generating>
+    <RimTalk.PersonaEditor.SmartGen>Smart Gen</RimTalk.PersonaEditor.SmartGen>
+    <RimTalk.PersonaEditor.RollGen>Roll Gen</RimTalk.PersonaEditor.RollGen>
+    <RimTalk.PersonaEditor.Clear>Clear</RimTalk.PersonaEditor.Clear>
     
     <!-- Settings_Api.cs -->
     <RimTalk.Settings.GoogleApiKeyLabel>Google AI API Key:</RimTalk.Settings.GoogleApiKeyLabel>

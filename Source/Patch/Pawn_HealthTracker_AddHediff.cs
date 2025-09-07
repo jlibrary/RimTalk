@@ -15,9 +15,10 @@ namespace RimTalk.Patch
             var pawnState = Cache.Get(___pawn);
             if (pawnState != null && hediff.Visible && !pawnState.Hediffs.Contains(hediff))
             {
-                var prompt = $"{hediff.Part?.Label}-{hediff.LabelCap}";
-                TalkService.GenerateTalk(prompt, ___pawn);
                 pawnState.Hediffs = PawnService.GetHediffs(___pawn);
+                
+                var prompt = $"{hediff.Part?.Label}-{hediff.LabelCap}";
+                pawnState.AddTalkRequest(prompt);
             }
         }
     }

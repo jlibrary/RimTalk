@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using Verse;
+﻿using HarmonyLib;
+using RimTalk.Data;
 using RimWorld;
-using HarmonyLib;
-using RimTalk.Service;
-
+using Verse;
 
 namespace RimTalk.Patch
 {
@@ -36,13 +34,8 @@ namespace RimTalk.Patch
             {
                 prompt += $"(Talk about incident)\n{archivable.ArchivedTooltip.StripTags()}";
             }
-
-            prompt = prompt.RemoveLineBreaks();
-
-            List<Pawn> pawns = PawnService.GetPawnsAbleToTalk();
-
-            if (!pawns.Empty())
-                TalkService.GenerateTalk(prompt, pawns[0], null, true);
+            
+            TalkRequestPool.Add(prompt);
         }
     }
 }

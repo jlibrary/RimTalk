@@ -2,6 +2,7 @@
 using System.Linq;
 using Bubbles.Core;
 using HarmonyLib;
+using RimTalk.Data;
 using RimTalk.Service;
 using RimTalk.Util;
 using RimWorld;
@@ -36,29 +37,27 @@ namespace RimTalk.Patch
             }
 
             Pawn initiator = (Pawn)entry.GetConcerns().First();
+            Pawn recipient = GetRecipient(entry);
 
             // If the setting to process non-RimTalk interactions is disabled, show the original bubble.
             if (!settings.processNonRimTalkInteractions)
             {
                 return true;
             }
-            if (IsHostilesOnMapForPawn(initiator))
+            
+            // if in danger then stop chitchat
+            if (PawnService.IsPawnInDanger(initiator) 
+                || PawnService.HostilePawnNearBy(initiator) != null
+                || !PawnSelector.GetNearByTalkablePawns(initiator).Contains(recipient))
             {
                 return false;
             }
             
             // Otherwise, block normal bubble and generate talk
-            // if generation fails, fall back to normal bubble or suppress based on setting
-            var text = entry.ToGameStringFromPOV(initiator).StripTags();
-            bool processed = TalkService.GenerateTalk(text, initiator, GetRecipient(entry));
+            var prompt = entry.ToGameStringFromPOV(initiator).StripTags();
+            Cache.Get(initiator)?.AddTalkRequest(prompt, recipient);
             
-            // If not processed and user wants to suppress unprocessed messages, block the bubble
-            if (!processed && settings.suppressUnprocessedMessages)
-            {
-                return false; // Suppress the message completely
-            }
-            
-            return !processed; // Show original bubble only if not processed and suppression is disabled
+            return false; // Show original bubble
         }
 
         public static void Postfix()
@@ -87,14 +86,6 @@ namespace RimTalk.Patch
                 }
             }
             return recipient;
-        }
-        
-        private static bool IsHostilesOnMapForPawn(Pawn pawn)
-        {
-            if (pawn?.Map == null) return false;
-
-            return pawn.Map.mapPawns.AllPawnsSpawned
-                .Any(other => other != pawn && other.HostileTo(pawn));
         }
     }
 }
