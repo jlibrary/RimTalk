@@ -7,25 +7,23 @@ namespace RimTalk
 {
     public partial class Settings
     {
-        private void DrawAIInstructionSettings(Rect rect)
+        private void DrawAIInstructionSettings(Listing_Standard listingStandard)
         {
             CurrentWorkDisplayModSettings settings = Get();
 
             // Initialize buffer if needed
             if (!textAreaInitialized)
             {
-                textAreaBuffer = string.IsNullOrWhiteSpace(settings.customInstruction)
-                    ? Constant.DefaultInstruction
+                textAreaBuffer = string.IsNullOrWhiteSpace(settings.customInstruction) 
+                    ? Constant.DefaultInstruction 
                     : settings.customInstruction;
                 lastSavedInstruction = settings.customInstruction;
                 textAreaInitialized = true;
             }
 
-            Listing_Standard listingStandard = new Listing_Standard();
-            listingStandard.Begin(rect);
-
             var activeConfig = settings.GetActiveConfig();
             var modelName = activeConfig?.SelectedModel ?? "N/A";
+
             listingStandard.Label("RimTalk.Settings.AIInstructionPrompt".Translate(modelName));
             listingStandard.Gap(6f);
 
@@ -60,6 +58,7 @@ namespace RimTalk
             int currentTokens = CommonUtil.EstimateTokenCount(textAreaBuffer);
             int maxAllowedTokens = CommonUtil.GetMaxAllowedTokens(settings.talkInterval);
             string tokenInfo = "RimTalk.Settings.TokenInfo".Translate(currentTokens, maxAllowedTokens);
+
             if (currentTokens > maxAllowedTokens)
             {
                 GUI.color = Color.red;
@@ -77,44 +76,37 @@ namespace RimTalk
             Text.Font = GameFont.Small;
             listingStandard.Gap(6f);
 
-            // Calculate available height for text area (fill remaining space minus button)
-            float buttonHeight = 30f;
-            float buttonGap = 6f;
-            float usedHeight = listingStandard.CurHeight;
-            float availableHeight = rect.height - usedHeight - buttonHeight - buttonGap;
-
-            // Ensure minimum height
-            availableHeight = Mathf.Max(availableHeight, 100f);
-
-            Rect textAreaRect = listingStandard.GetRect(availableHeight);
-            string newInstruction = GUI.TextArea(textAreaRect, textAreaBuffer);
+            // Text area with minimum height to fill remaining space
+            float remainingHeight = listingStandard.CurHeight - 50f; // Leave space for reset button
+            float calculatedHeight = Text.CalcHeight(textAreaBuffer, listingStandard.ColumnWidth);
+            float minHeight = 360f; // Minimum height in pixels
+            
+            // Use the maximum of: minimum height, calculated height, or remaining space
+            float textHeight = Mathf.Max(minHeight, calculatedHeight, remainingHeight);
+            
+            Rect textAreaRect = listingStandard.GetRect(textHeight);
+            string newInstruction = Widgets.TextArea(textAreaRect, textAreaBuffer);
 
             // Update buffer and settings logic
             textAreaBuffer = newInstruction;
-            int newTokenCount = CommonUtil.EstimateTokenCount(textAreaBuffer);
-            if (newTokenCount <= maxAllowedTokens)
+            if (newInstruction == Constant.DefaultInstruction)
             {
-                if (newInstruction == Constant.DefaultInstruction)
-                {
-                    settings.customInstruction = "";
-                }
-                else
-                {
-                    settings.customInstruction = newInstruction;
-                }
+                settings.customInstruction = "";
+            }
+            else
+            {
+                settings.customInstruction = newInstruction;
             }
 
-            listingStandard.Gap(buttonGap);
+            listingStandard.Gap(6f);
 
             // Reset to default button
-            Rect resetButtonRect = listingStandard.GetRect(buttonHeight);
+            Rect resetButtonRect = listingStandard.GetRect(30f);
             if (Widgets.ButtonText(resetButtonRect, "RimTalk.Settings.ResetToDefault".Translate()))
             {
                 settings.customInstruction = "";
                 textAreaBuffer = Constant.DefaultInstruction;
             }
-
-            listingStandard.End();
         }
     }
 }

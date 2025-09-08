@@ -20,6 +20,7 @@ namespace RimTalk
         private List<string> discoveredArchivableTypes = new List<string>();
         private bool archivableTypesScanned = false;
         private int _apiSettingsHash = 0;
+        private Vector2 instructionScrollPosition = Vector2.zero;
 
         // Tab system
         private enum SettingsTab
@@ -189,6 +190,7 @@ namespace RimTalk
         
         public override void DoSettingsWindowContents(Rect inRect)
         {
+            CurrentWorkDisplayModSettings settings = Get();
             // Draw tab buttons at the top
             Rect tabRect = new Rect(inRect.x, inRect.y, inRect.width, 35f);
             DrawTabButtons(tabRect);
@@ -196,25 +198,50 @@ namespace RimTalk
             // Draw content area below tabs
             Rect contentRect = new Rect(inRect.x, inRect.y + 40f, inRect.width, inRect.height - 40f);
 
-            // Create scrollable area for the current tab content
-            Rect viewRect = new Rect(0f, 0f, contentRect.width - 16f, contentRect.height);
+            // --- Dynamic height calculation (off-screen) ---
+            GUI.BeginGroup(new Rect(-9999, -9999, 1, 1)); // Draw off-screen
+            Listing_Standard listing = new Listing_Standard();
+            Rect calculationRect = new Rect(0, 0, contentRect.width - 16f, 9999f);
+            listing.Begin(calculationRect);
 
-            viewRect = new Rect(0f, 0f, contentRect.width - 16f, 800f);
-
-            mainScrollPosition = GUI.BeginScrollView(contentRect, mainScrollPosition, viewRect);
             switch (currentTab)
             {
                 case SettingsTab.Basic:
-                    DrawBasicSettings(viewRect);
+                    DrawBasicSettings(listing);
                     break;
                 case SettingsTab.AIInstruction:
-                    DrawAIInstructionSettings(viewRect);
+                    DrawAIInstructionSettings(listing);
                     break;
                 case SettingsTab.EventFilter:
-                    DrawEventFilterSettings(viewRect);
+                    DrawEventFilterSettings(listing);
                     break;
             }
 
+            float contentHeight = listing.CurHeight;
+            listing.End();
+            GUI.EndGroup();
+            // --- End of height calculation ---
+
+            // Now draw for real with the correct scroll view height
+            Rect viewRect = new Rect(0f, 0f, contentRect.width - 16f, contentHeight);
+            mainScrollPosition = GUI.BeginScrollView(contentRect, mainScrollPosition, viewRect);
+
+            listing.Begin(viewRect);
+
+            switch (currentTab)
+            {
+                case SettingsTab.Basic:
+                    DrawBasicSettings(listing);
+                    break;
+                case SettingsTab.AIInstruction:
+                    DrawAIInstructionSettings(listing);
+                    break;
+                case SettingsTab.EventFilter:
+                    DrawEventFilterSettings(listing);
+                    break;
+            }
+
+            listing.End();
             GUI.EndScrollView();
         }
     }

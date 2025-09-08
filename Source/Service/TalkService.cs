@@ -94,8 +94,8 @@ namespace RimTalk.Service
         {
             try
             {
-                response = JsonUtil.Sanitize(response);
-                List<Talk> talks = JsonUtil.DeserializeFromJson<List<Talk>>(response);
+                var sanitizedResponse = JsonUtil.Sanitize(response);
+                List<Talk> talks = JsonUtil.DeserializeFromJson<List<Talk>>(sanitizedResponse);
                 
                 for (int i = 0; i < talks.Count; i++)
                 {
@@ -110,7 +110,7 @@ namespace RimTalk.Service
                 }
 
                 AIService.CleanupLastRequest();
-                AIService.AddResposne(JsonUtil.SerializeToJson(talks));
+                AIService.AddResposne(response);
             }
             catch (Exception ex)
             {

@@ -64,7 +64,7 @@ namespace RimTalk.Service
             float baseRange = HearingRange;
             PawnCapacityDef capacityDef = PawnCapacityDefOf.Sight;
             
-            return Cache.Keys
+            return Find.CurrentMap.mapPawns.AllPawnsSpawned
                 .Where(nearbyPawn => nearbyPawn != pawn)
                 .Where(nearbyPawn =>
                 {

@@ -5,11 +5,9 @@ namespace RimTalk
 {
     public partial class Settings
     {
-        private void DrawBasicSettings(Rect rect)
+        private void DrawBasicSettings(Listing_Standard listingStandard)
         {
             CurrentWorkDisplayModSettings settings = Get();
-            Listing_Standard listingStandard = new Listing_Standard();
-            listingStandard.Begin(rect);
 
             // API Configuration section
             if (!settings.useSimpleConfig)
@@ -101,8 +99,6 @@ namespace RimTalk
                 settings.allowEnemiesToTalk = false;
                 settings.useSimpleConfig = true;
             }
-            
-            listingStandard.End();
         }
     }
 }

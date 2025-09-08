@@ -170,7 +170,7 @@ namespace RimTalk.Service
                     .Select(nearbyPawn => 
                     {
                         string name = GetPawnName(pawn, nearbyPawn);
-                        if (!Cache.Get(nearbyPawn).CanDisplayTalk())
+                        if (Cache.Get(nearbyPawn) is PawnState pawnState && !pawnState.CanDisplayTalk())
                         {
                             name += "(mute)";
                         }
@@ -183,7 +183,7 @@ namespace RimTalk.Service
                         ? string.Join(", ", nearbyNames.Take(3)) + ", and others"
                         : string.Join(", ", nearbyNames);
 
-                parts.Add($"Nearby people: {nearbyText}");
+                parts.Add($"Nearby: {nearbyText}");
             }
             else
             {

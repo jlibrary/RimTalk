@@ -69,52 +69,14 @@ namespace RimTalk.Data
             return newPersona;
         }
 
-        // public override void ExposeData()
-        // {
-        //     Scribe_Collections.Look(ref _personas, "personas", LookMode.Value, LookMode.Deep);
-        //     if (_personas == null)
-        //     {
-        //         _personas = new Dictionary<int, Persona>();
-        //     }
-        // }
-        // --- BACKWARD COMPATIBILITY IMPLEMENTATION ---
         public override void ExposeData()
         {
-            // Always try to save/load the new format first.
             Scribe_Collections.Look(ref _personas, "personas", LookMode.Value, LookMode.Deep);
-
-            // The migration logic below only runs when loading a save file.
-            if (Scribe.mode == LoadSaveMode.LoadingVars)
-            {
-                // If _personas is null after the above line, it means we are on an old save.
-                if (_personas == null)
-                {
-                    _personas = new Dictionary<int, Persona>(); // Initialize our new dictionary
-
-                    // These are temporary variables to hold the OLD data format.
-                    Dictionary<int, string> oldPersonalities = null;
-
-                    // Load the old data structures from the save file.
-                    Scribe_Collections.Look(ref oldPersonalities, "pawnPersonalities", LookMode.Value, LookMode.Value);
-
-                    if (oldPersonalities != null)
-                    {
-                        // This is the migration step. Convert old data into the new structure.
-                        foreach (var entry in oldPersonalities)
-                        {
-                            var newPersona = new Persona { Personality = entry.Value };
-                            _personas[entry.Key] = newPersona;
-                        }
-                    }
-                }
-            }
-
             if (_personas == null)
             {
                 _personas = new Dictionary<int, Persona>();
             }
         }
-        // --- END OF COMPATIBILITY IMPLEMENTATION ---
 
         public async Task<PersonalityData> GeneratePersona(Pawn pawn)
         {

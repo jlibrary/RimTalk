@@ -87,8 +87,7 @@
     <RimTalk.Settings.AutoIncludedTip>Tip: Pawn details (traits, relationships, race, age, etc.) are auto-included. Write generic instructions that work across all characters and colonies.</RimTalk.Settings.AutoIncludedTip>
     <RimTalk.Settings.RateLimitWarning>Warning: Longer prompts will consume more tokens and hit rate limits faster. No prompt caching is used.</RimTalk.Settings.RateLimitWarning>
     <RimTalk.Settings.BubbleFadeTip>Tip: Adjust the bubble fade time in the Interaction Bubbles mod settings to keep dialogue visible longer during fast-forward play.</RimTalk.Settings.BubbleFadeTip>
-    <RimTalk.Settings.TokenInfo>Current: ~{0} tokens | Max allowed: {1} tokens</RimTalk.Settings.TokenInfo>
-    <RimTalk.Settings.OverLimit> (OVER LIMIT!)</RimTalk.Settings.OverLimit>
+    <RimTalk.Settings.TokenInfo>Current: ~{0} tokens | Recommended limit: {1} tokens</RimTalk.Settings.TokenInfo>
     <RimTalk.Settings.ResetToDefault>Reset to Default</RimTalk.Settings.ResetToDefault>
     <RimTalk.Settings.EventFilterTip>Tip: Only checked event types will be processed by AI. Uncheck types you don't want AI to respond to.</RimTalk.Settings.EventFilterTip>
     <RimTalk.Settings.NoArchivableTypes>No archivable types found. Try starting a game and then rescanning.</RimTalk.Settings.NoArchivableTypes>
