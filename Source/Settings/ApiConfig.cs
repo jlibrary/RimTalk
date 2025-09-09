@@ -1,7 +1,5 @@
 using RimTalk.Data;
-using UnityEngine;
 using Verse;
-using Logger = RimTalk.Util.Logger;
 
 namespace RimTalk
 {

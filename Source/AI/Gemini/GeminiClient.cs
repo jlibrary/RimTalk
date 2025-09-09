@@ -17,7 +17,7 @@ namespace RimTalk.AI.Gemini
         private readonly Random _random = new Random();
         private string CurrentApiKey => Settings.Get().GetActiveConfig()?.ApiKey;
         private string CurrentModel => Settings.Get().GetCurrentModel();
-        private string ApiUrl => $"{BaseUrl}/models/{CurrentModel}:generateContent?key={CurrentApiKey}";
+        private string EndpointUrl => $"{BaseUrl}/models/{CurrentModel}:generateContent?key={CurrentApiKey}";
 
         private async Task<string> GetCompletionAsync(GeminiRequest request)
         {
@@ -30,9 +30,9 @@ namespace RimTalk.AI.Gemini
             try
             {
                 string jsonContent = JsonUtil.SerializeToJson(request);
-                Logger.Message($"API request: {ApiUrl}\n{jsonContent}");
+                Logger.Message($"API request: {EndpointUrl}\n{jsonContent}");
 
-                using (UnityWebRequest webRequest = UnityWebRequest.Post(ApiUrl, jsonContent))
+                using (UnityWebRequest webRequest = UnityWebRequest.Post(EndpointUrl, jsonContent))
                 {
                     byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonContent);
                     webRequest.uploadHandler = new UploadHandlerRaw(bodyRaw);

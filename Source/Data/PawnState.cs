@@ -58,6 +58,7 @@ namespace RimTalk.Data
                 return false;
             
             return Pawn.Awake()
+                   && !Pawn.DeadOrDowned
                    && Pawn.CurJobDef != JobDefOf.LayDown
                    && Pawn.CurJobDef != JobDefOf.LayDownAwake
                    && Pawn.CurJobDef != JobDefOf.LayDownResting

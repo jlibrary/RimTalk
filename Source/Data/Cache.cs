@@ -70,6 +70,8 @@ namespace RimTalk.Data
                 {
                     _weightsDirty = true;
                 }
+
+                RebuildWeights();
             }
         }
             
@@ -107,7 +109,7 @@ namespace RimTalk.Data
                                   (settings.allowEnemiesToTalk && PawnService.IsInvader(pawn)));
         }
 
-        // NEW: Build weighted selection data (called once every 5 seconds)
+        // Build weighted when cache marked dirty
         private static void RebuildWeights()
         {
             lock (_weightedSelectionLock)

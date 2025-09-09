@@ -44,7 +44,7 @@ namespace RimTalk.Service
             // var offset = thought.MoodOffset();
             // var attitude = offset > 0 ? "up" : offset < 0 ? "down" : "";
 
-            return $"thought: {thought.LabelCap} - {thought.Description}";
+            return $"thought: {thought.LabelCap}({thought.Description})";
         }
         
         public static bool IsPawnInDanger(Pawn pawn)
@@ -147,6 +147,7 @@ namespace RimTalk.Service
             pawn.def.hideMainDesc = true;
             string status = pawn.GetInspectString();
             List<string> parts = new List<string>();
+            parts.Add("\n[Important]check current context");
             
             // --- 1. Nearby pawns ---
             List<Pawn> nearByPawns = PawnSelector.GetAllNearByPawns(pawn);
@@ -173,6 +174,10 @@ namespace RimTalk.Service
                         if (Cache.Get(nearbyPawn) is PawnState pawnState && !pawnState.CanDisplayTalk())
                         {
                             name += "(mute)";
+                        } 
+                        if (nearbyPawn.RaceProps.Animal)
+                        {
+                            name += $"(Animal)";
                         }
                         return name;
                     })
@@ -183,21 +188,24 @@ namespace RimTalk.Service
                         ? string.Join(", ", nearbyNames.Take(3)) + ", and others"
                         : string.Join(", ", nearbyNames);
 
-                parts.Add($"Nearby: {nearbyText}");
+                parts.Add($"\nNearby: {nearbyText}");
             }
             else
             {
-                parts.Add("Nearby people: none");
+                parts.Add("\nNearby people: none");
             }
             
             // --- 2. Add time ---
-            parts.Add($"Time: {CommonUtil.GetInGameHour12HString()}");
+            parts.Add($"\nTime: {CommonUtil.GetInGameHour12HString()}");
             
             // --- 3. Add status ---
-            parts.Add($"Currently: {status}");
-            
+            parts.Add($"\nCurrently: {status}");
+
             if (IsPawnInDanger(pawn))
+            {
                 parts.Add("\nbe dramatic");
+                isInDanger = true;
+            }
 
             if (IsInvader(pawn))
             {

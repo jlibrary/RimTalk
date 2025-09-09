@@ -7,6 +7,7 @@ namespace RimTalk
         DeepSeek,
         OpenRouter,
         Local,
+        Custom,
         None
     }
 }

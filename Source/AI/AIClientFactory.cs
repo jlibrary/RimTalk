@@ -1,5 +1,4 @@
 using RimTalk.AI.Gemini;
-using RimTalk.AI.Local;
 using RimTalk.AI.OpenAI;
 
 namespace RimTalk.Service
@@ -19,26 +18,32 @@ namespace RimTalk.Service
 
             if (_instance == null || _currentProvider != config.Provider)
             {
-                _instance = CreateServiceInstance(config.Provider);
+                _instance = CreateServiceInstance(config);
                 _currentProvider = config.Provider;
             }
 
             return _instance;
         }
 
-        private static IAIClient CreateServiceInstance(AIProvider provider)
+        private static IAIClient CreateServiceInstance(ApiConfig config)
         {
-            if (provider == AIProvider.Google)
-                return new GeminiClient();
-            if (provider == AIProvider.OpenAI)
-                return new OpenAIClient();
-            if (provider == AIProvider.DeepSeek)
-                return new DeepSeekClient();
-            if (provider == AIProvider.OpenRouter)
-                return new OpenRouterClient();
-            if (provider == AIProvider.Local)
-                return new LocalClient();
-            return null;
+            switch (config.Provider)
+            {
+                case AIProvider.Google:
+                    return new GeminiClient();
+                case AIProvider.OpenAI:
+                    return new OpenAIClient("https://api.openai.com", config.SelectedModel, config.ApiKey);
+                case AIProvider.DeepSeek:
+                    return new OpenAIClient("https://api.deepseek.com", config.SelectedModel, config.ApiKey);
+                case AIProvider.OpenRouter:
+                    return new OpenAIClient("https://openrouter.ai/api", config.SelectedModel, config.ApiKey);
+                case AIProvider.Local:
+                    return new OpenAIClient(config.BaseUrl, config.CustomModelName);
+                case AIProvider.Custom:
+                    return new OpenAIClient(config.BaseUrl, config.CustomModelName, config.ApiKey);
+                default:
+                    return null;
+            }
         }
 
         public static void Clear()

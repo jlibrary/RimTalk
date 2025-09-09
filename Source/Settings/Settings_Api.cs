@@ -210,28 +210,39 @@ namespace RimTalk
             float x = tableHeaderRect.x;
             float y = tableHeaderRect.y;
             float height = tableHeaderRect.height;
-            
+
             x += 60f; // Adjust x to account for the add/remove buttons
 
+            // Define column widths
+            float providerWidth = 100f;
+            float apiKeyWidth = 240f;
+            float modelWidth = 200f;
+            float baseUrlWidth = 355f; // New width for Base URL
+
             // Provider Header
-            Rect providerHeaderRect = new Rect(x, y, 100f, height);
+            Rect providerHeaderRect = new Rect(x, y, providerWidth, height);
             Widgets.Label(providerHeaderRect, "RimTalk.Settings.ProviderHeader".Translate());
-            x += 105f;
+            x += providerWidth + 5f;
 
             // API Key Header
-            Rect apiKeyHeaderRect = new Rect(x, y, 240f, height);
+            Rect apiKeyHeaderRect = new Rect(x, y, apiKeyWidth, height);
             Widgets.Label(apiKeyHeaderRect, "RimTalk.Settings.ApiKeyHeader".Translate());
-            x += 245f;
+            x += apiKeyWidth + 5f;
 
             // Model Header
-            Rect modelHeaderRect = new Rect(x, y, 200f, height);
+            Rect modelHeaderRect = new Rect(x, y, modelWidth, height);
             Widgets.Label(modelHeaderRect, "RimTalk.Settings.ModelHeader".Translate());
-            x += 205f;
-            
-            // Custom Model Header
-            Rect customModelHeaderRect = new Rect(x, y, 150f, height);
-            Widgets.Label(customModelHeaderRect, "RimTalk.Settings.CustomModelHeader".Translate());
-            x += 155f;
+            x += modelWidth + 5f;
+
+            // Base URL Header (for Custom provider)
+            if (settings.cloudConfigs.Any(c => c.Provider == AIProvider.Custom))
+            {
+                Rect baseUrlHeaderRect = new Rect(x, y, baseUrlWidth, height);
+                var labelText = "RimTalk.Settings.BaseUrlLabel".Translate() + " [?]";
+                Widgets.Label(baseUrlHeaderRect, labelText);
+                TooltipHandler.TipRegion(baseUrlHeaderRect, "RimTalk_Settings_Api_BaseUrlInfo".Translate());
+                x += baseUrlWidth + 5f;
+            }
 
             // Enabled Header
             Rect enabledHeaderRect = new Rect(tableHeaderRect.xMax - 70f, y, 70f, height);
@@ -253,9 +264,25 @@ namespace RimTalk
             float x = rowRect.x;
             float y = rowRect.y;
             float height = rowRect.height;
-            
-            // Reorder buttons
-            // Up button
+
+            DrawReorderButtons(ref x, y, height, index, configs);
+            DrawProviderDropdown(ref x, y, height, config);
+            DrawApiKeyInput(ref x, y, height, config);
+
+            if (config.Provider == AIProvider.Custom)
+            {
+                DrawCustomProviderRow(ref x, y, height, config);
+            }
+            else
+            {
+                DrawDefaultProviderRow(ref x, y, height, config);
+            }
+
+            DrawEnableToggle(rowRect, y, height, config);
+        }
+
+        private void DrawReorderButtons(ref float x, float y, float height, int index, List<ApiConfig> configs)
+        {
             Rect upButtonRect = new Rect(x, y, 24f, height);
             if (Widgets.ButtonText(upButtonRect, "▲") && index > 0)
             {
@@ -265,7 +292,6 @@ namespace RimTalk
             }
             x += 30f;
 
-            // Down button
             Rect downButtonRect = new Rect(x, y, 24f, height);
             if (Widgets.ButtonText(downButtonRect, "▼") && index < configs.Count - 1)
             {
@@ -273,119 +299,116 @@ namespace RimTalk
                 configs[index] = configs[index + 1];
                 configs[index + 1] = temp;
             }
-            
             x += 30f;
+        }
 
-            // Provider dropdown (100px)
+        private void DrawProviderDropdown(ref float x, float y, float height, ApiConfig config)
+        {
             Rect providerRect = new Rect(x, y, 100f, height);
             if (Widgets.ButtonText(providerRect, config.Provider.ToString()))
             {
                 List<FloatMenuOption> providerOptions = new List<FloatMenuOption>
                 {
-                    new FloatMenuOption(AIProvider.Google.ToString(), () =>
-                    {
-                        config.Provider = AIProvider.Google;
-                        config.SelectedModel = Data.Constant.ChooseModel;
-                    }),
-                    new FloatMenuOption(AIProvider.OpenAI.ToString(), () =>
-                    {
-                        config.Provider = AIProvider.OpenAI;
-                        config.SelectedModel = Data.Constant.ChooseModel;
-                    }),
-                    new FloatMenuOption(AIProvider.DeepSeek.ToString(), () =>
-                    {
-                        config.Provider = AIProvider.DeepSeek;
-                        config.SelectedModel = Data.Constant.ChooseModel;
-                    }),
-                    new FloatMenuOption(AIProvider.OpenRouter.ToString(), () =>
-                    {
-                        config.Provider = AIProvider.OpenRouter;
-                        config.SelectedModel = Data.Constant.ChooseModel;
-                    })
+                    new FloatMenuOption(AIProvider.Google.ToString(), () => { config.Provider = AIProvider.Google; config.SelectedModel = Data.Constant.ChooseModel; }),
+                    new FloatMenuOption(AIProvider.OpenAI.ToString(), () => { config.Provider = AIProvider.OpenAI; config.SelectedModel = Data.Constant.ChooseModel; }),
+                    new FloatMenuOption(AIProvider.DeepSeek.ToString(), () => { config.Provider = AIProvider.DeepSeek; config.SelectedModel = Data.Constant.ChooseModel; }),
+                    new FloatMenuOption(AIProvider.OpenRouter.ToString(), () => { config.Provider = AIProvider.OpenRouter; config.SelectedModel = Data.Constant.ChooseModel; }),
+                    new FloatMenuOption(AIProvider.Custom.ToString(), () => { config.Provider = AIProvider.Custom; config.SelectedModel = "Custom"; })
                 };
                 Find.WindowStack.Add(new FloatMenu(providerOptions));
             }
-
             x += 105f;
+        }
 
-            // API Key field (240px)
+        private void DrawApiKeyInput(ref float x, float y, float height, ApiConfig config)
+        {
             Rect apiKeyRect = new Rect(x, y, 240f, height);
             config.ApiKey = Widgets.TextField(apiKeyRect, config.ApiKey);
             x += 245f;
+        }
 
-            // Model dropdown (200px)
-            Rect modelRect = new Rect(x, y, 200f, height);
-            if (Widgets.ButtonText(modelRect, config.SelectedModel))
-            {
-                if (string.IsNullOrWhiteSpace(config.ApiKey))
-                {
-                    Find.WindowStack.Add(new FloatMenu(new List<FloatMenuOption>
-                        { new FloatMenuOption("RimTalk.Settings.EnterApiKey".Translate(), null) }));
-                }
-                else if (config.Provider == AIProvider.Google)
-                {
-                    List<FloatMenuOption> options = new List<FloatMenuOption>();
-                    foreach (string model in modelOptions)
-                    {
-                        string modelCopy = model;
-                        options.Add(new FloatMenuOption(model, () => config.SelectedModel = modelCopy));
-                    }
-
-                    Find.WindowStack.Add(new FloatMenu(options));
-                }
-                else
-                {
-                    string url;
-                    switch (config.Provider)
-                    {
-                        case AIProvider.OpenAI:
-                            url = "https://api.openai.com/v1/models";
-                            break;
-                        case AIProvider.DeepSeek:
-                            url = "https://api.deepseek.com/models";
-                            break;
-                        case AIProvider.OpenRouter:
-                            url = "https://openrouter.ai/api/v1/models";
-                            break;
-                        default:
-                            return;
-                    }
-
-                    FetchModels(config.ApiKey, url).ContinueWith(task =>
-                    {
-                        var models = task.Result;
-                        List<FloatMenuOption> options = new List<FloatMenuOption>();
-                        if (models != null && models.Any())
-                        {
-                            foreach (string model in models)
-                            {
-                                string modelCopy = model;
-                                options.Add(new FloatMenuOption(model, () => config.SelectedModel = modelCopy));
-                            }
-                        }
-                        else
-                        {
-                            options.Add(new FloatMenuOption("(no models found - check API Key)", null));
-                        }
-
-                        options.Add(new FloatMenuOption("Custom", () => config.SelectedModel = "Custom"));
-                        Find.WindowStack.Add(new FloatMenu(options));
-                    }, TaskScheduler.FromCurrentSynchronizationContext());
-                }
-            }
-
+        private void DrawCustomProviderRow(ref float x, float y, float height, ApiConfig config)
+        {
+            Rect customModelRect = new Rect(x, y, 200f, height);
+            config.CustomModelName = Widgets.TextField(customModelRect, config.CustomModelName);
             x += 205f;
 
-            // Custom model name field (if Custom is selected)
+            Rect baseUrlRect = new Rect(x, y, 150f, height);
+            config.BaseUrl = Widgets.TextField(baseUrlRect, config.BaseUrl);
+            x += 155f;
+        }
+
+        private void DrawDefaultProviderRow(ref float x, float y, float height, ApiConfig config)
+        {
+            Rect modelRect = new Rect(x, y, 200f, height);
             if (config.SelectedModel == "Custom")
             {
-                Rect customModelRect = new Rect(x, y, 150f, height);
-                config.CustomModelName = Widgets.TextField(customModelRect, config.CustomModelName);
+                config.CustomModelName = Widgets.TextField(modelRect, config.CustomModelName);
+                Rect backButton = new Rect(modelRect.xMax + 5, y, 24, height);
+                if (Widgets.ButtonText(backButton, "X"))
+                {
+                    config.SelectedModel = Data.Constant.ChooseModel;
+                }
+            }
+            else
+            {
+                if (Widgets.ButtonText(modelRect, config.SelectedModel))
+                {
+                    ShowModelSelectionMenu(config);
+                }
+            }
+            x += 205f;
+        }
+
+        private void ShowModelSelectionMenu(ApiConfig config)
+        {
+            if (string.IsNullOrWhiteSpace(config.ApiKey))
+            {
+                Find.WindowStack.Add(new FloatMenu(new List<FloatMenuOption> { new FloatMenuOption("RimTalk.Settings.EnterApiKey".Translate(), null) }));
+                return;
             }
 
-            x += 155f;
+            if (config.Provider == AIProvider.Google)
+            {
+                List<FloatMenuOption> options = modelOptions.Select(model => new FloatMenuOption(model, () => config.SelectedModel = model)).ToList();
+                Find.WindowStack.Add(new FloatMenu(options));
+            }
+            else
+            {
+                string url = GetModelApiUrl(config.Provider);
+                if (url == null) return;
 
-            // Enable/Disable checkbox aligned to the right (70px)
+                FetchModels(config.ApiKey, url).ContinueWith(task =>
+                {
+                    var models = task.Result;
+                    List<FloatMenuOption> options = new List<FloatMenuOption>();
+                    if (models != null && models.Any())
+                    {
+                        options.AddRange(models.Select(model => new FloatMenuOption(model, () => config.SelectedModel = model)));
+                    }
+                    else
+                    {
+                        options.Add(new FloatMenuOption("(no models found - check API Key)", null));
+                    }
+                    options.Add(new FloatMenuOption("Custom", () => config.SelectedModel = "Custom"));
+                    Find.WindowStack.Add(new FloatMenu(options));
+                }, TaskScheduler.FromCurrentSynchronizationContext());
+            }
+        }
+
+        private string GetModelApiUrl(AIProvider provider)
+        {
+            switch (provider)
+            {
+                case AIProvider.OpenAI: return "https://api.openai.com/v1/models";
+                case AIProvider.DeepSeek: return "https://api.deepseek.com/models";
+                case AIProvider.OpenRouter: return "https://openrouter.ai/api/v1/models";
+                default: return null;
+            }
+        }
+
+        private void DrawEnableToggle(Rect rowRect, float y, float height, ApiConfig config)
+        {
             Rect toggleRect = new Rect(rowRect.xMax - 70f, y, 24f, height);
             Widgets.Checkbox(new Vector2(toggleRect.x, toggleRect.y), ref config.IsEnabled);
             if (Mouse.IsOver(toggleRect))
@@ -417,9 +440,11 @@ namespace RimTalk
             float height = rowRect.height;
 
             // Label for Base Url
-            Rect baseUrlLabelRect = new Rect(x, y, 70f, height);
-            Widgets.Label(baseUrlLabelRect, "RimTalk.Settings.BaseUrlLabel".Translate());
-            x += 75f; // Adjust x to account for the label's width
+            Rect baseUrlLabelRect = new Rect(x, y, 80f, height);
+            var labelText = "RimTalk.Settings.BaseUrlLabel".Translate() + " [?]";
+            Widgets.Label(baseUrlLabelRect, labelText);
+            TooltipHandler.TipRegion(baseUrlLabelRect, "RimTalk_Settings_Api_BaseUrlInfo".Translate());
+            x += 85f; // Adjust x to account for the label's width
 
             // Endpoint URL field
             Rect urlRect = new Rect(x, y, 250f, height);

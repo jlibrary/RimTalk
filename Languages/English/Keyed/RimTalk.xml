@@ -129,6 +129,7 @@
     <RimTalk.Settings.BaseUrlLabel>Base Url:</RimTalk.Settings.BaseUrlLabel>
     <RimTalk.Settings.ModelLabel>Model:</RimTalk.Settings.ModelLabel>
     <RimTalk.Settings.EnterApiKey>(enter valid api key to fetch models)</RimTalk.Settings.EnterApiKey>
+    <RimTalk_Settings_Api_BaseUrlInfo>The endpoint must be compatible with OpenAI API format. Enter only the base URL; RimTalk will append /v1/chat/completions.</RimTalk_Settings_Api_BaseUrlInfo>
 
     <!-- RimTalk_Toggle.cs -->
     <RimTalk.Toggle.Tooltip>Toggle AI speech generation\n\nShift+click for settings</RimTalk.Toggle.Tooltip>
