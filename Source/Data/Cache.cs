@@ -99,6 +99,9 @@ namespace RimTalk.Data
 
         public static bool IsEligiblePawn(Pawn pawn, CurrentWorkDisplayModSettings settings)
         {
+            if (pawn.DestroyedOrNull() || !pawn.Spawned)
+                return false;
+            
             if (!pawn.RaceProps.Humanlike)
                 return false;
 
