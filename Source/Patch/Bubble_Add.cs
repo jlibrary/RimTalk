@@ -46,9 +46,10 @@ namespace RimTalk.Patch
             }
             
             // if in danger then stop chitchat
-            if (PawnService.IsPawnInDanger(initiator) 
+            if (entry is PlayLogEntry_Interaction &&
+                (PawnService.IsPawnInDanger(initiator) 
                 || PawnService.HostilePawnNearBy(initiator) != null
-                || !PawnSelector.GetNearByTalkablePawns(initiator).Contains(recipient))
+                || !PawnSelector.GetNearByTalkablePawns(initiator).Contains(recipient)))
             {
                 return false;
             }
