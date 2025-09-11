@@ -78,9 +78,10 @@ namespace RimTalk
             Text.Font = GameFont.Small;
             listingStandard.Gap(6f);
 
-            // Text area with minimum height to fill remaining space
-            float remainingHeight = listingStandard.CurHeight - 50f; // Leave space for reset button
-            float minHeight = 360f; // Minimum height in pixels
+            // Text area with safe height calculation - avoid CalcHeight for problematic text
+            float minHeight = 360f;
+            float maxHeight = 600f;
+            float textHeight;
 
             // Check if text has extremely long words that could break CalcHeight
             bool hasLongWords = false;
@@ -88,24 +89,31 @@ namespace RimTalk
             {
                 string[] words = textAreaBuffer.Split(new char[] { ' ', '\t', '\n', '\r' },
                     StringSplitOptions.RemoveEmptyEntries);
-                hasLongWords = words.Any(word => word.Length > 100);
+                hasLongWords = words.Any(word => word.Length > 100); // Arbitrary threshold
             }
 
-            float calculatedHeight;
-            if (hasLongWords)
+            if (hasLongWords || string.IsNullOrEmpty(textAreaBuffer))
             {
-                // Use simple estimation for problematic text to avoid CalcHeight issues
-                int lineCount = Mathf.Max(10, textAreaBuffer.Split('\n').Length + textAreaBuffer.Length / 80);
-                calculatedHeight = lineCount * Text.LineHeight;
+                // Use simple line-based calculation for problematic text
+                int lineCount = string.IsNullOrEmpty(textAreaBuffer)
+                    ? 10
+                    : Mathf.Max(10, textAreaBuffer.Split('\n').Length +
+                                    textAreaBuffer.Length / 80); // Estimate wrapped lines
+                textHeight = Mathf.Clamp(lineCount * Text.LineHeight, minHeight, maxHeight);
             }
             else
             {
                 // Safe to use CalcHeight for normal text
-                calculatedHeight = Text.CalcHeight(textAreaBuffer, listingStandard.ColumnWidth);
+                try
+                {
+                    float calculatedHeight = Text.CalcHeight(textAreaBuffer, listingStandard.ColumnWidth);
+                    textHeight = Mathf.Clamp(calculatedHeight, minHeight, maxHeight);
+                }
+                catch
+                {
+                    textHeight = minHeight;
+                }
             }
-
-            // Use the maximum of: minimum height, calculated height, or remaining space
-            float textHeight = Mathf.Max(minHeight, calculatedHeight, remainingHeight);
 
             Rect textAreaRect = listingStandard.GetRect(textHeight);
             string newInstruction = Widgets.TextArea(textAreaRect, textAreaBuffer);
