@@ -4,50 +4,45 @@
 		<OutputType>Library</OutputType>
 		<TargetFramework>net48</TargetFramework>
 		<PlatformTarget>x64</PlatformTarget>
-
-		<!-- Names and output -->
 		<RootNamespace>RimTalk</RootNamespace>
 		<AssemblyName>RimTalk</AssemblyName>
 		<OutputPath>1.6/Assemblies</OutputPath>
-		<VersionPrefix>0.1.0.0</VersionPrefix>
-
-		<!-- Debug / release settings -->
-		<DebugType>none</DebugType>
-		<DebugSymbols>false</DebugSymbols>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-		<Deterministic>true</Deterministic>
-		<PublishRepositoryUrl>false</PublishRepositoryUrl>
 
-		<!-- RimWorld root folder (from environment variable or local props) -->
 		<RimWorldDir Condition=" '$(RimWorldDir)' == '' ">$(RIMWORLD_DIR)</RimWorldDir>
-	</PropertyGroup>
 
-	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-		<DebugSymbols>false</DebugSymbols>
-		<DebugType>full</DebugType>
-		<Optimize>false</Optimize>
+		<ModFolderName>RimTalk</ModFolderName>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<!-- RimWorld DLLs -->
-		<Reference Include="$(RimWorldDir)/RimWorldMac.app/Contents/Resources/Data/Managed/*.dll">
+		<Reference Include="$(RimWorldDir)/Contents/Resources/Data/Managed/*.dll">
 			<Private>False</Private>
 		</Reference>
-
-		<!-- Harmony and Bubbles from Mods folder -->
-		<Reference Include="$(RimWorldDir)/../../workshop/content/294100/2009463077/Current/Assemblies/0Harmony.dll">
+		<Reference Include="$(RimWorldDir)/../../../workshop/content/294100/2009463077/Current/Assemblies/0Harmony.dll">
 			<Private>False</Private>
 		</Reference>
-		<Reference Include="$(RimWorldDir)/../../workshop/content/294100/1516158345/Assemblies/Bubbles.dll">
+		<Reference Include="$(RimWorldDir)/../../../workshop/content/294100/1516158345/Assemblies/Bubbles.dll">
 			<Private>False</Private>
 		</Reference>
-
-		<!-- Standard C# reference -->
 		<Reference Include="Microsoft.CSharp" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Content Include="Folder.DotSettings.user" />
-	</ItemGroup>
+	<Target Name="DeployToModsFolder" AfterTargets="Build">
+		<Message Text="--- Deploying Mod to RimWorld Mods folder ---" Importance="high" />
+
+		<PropertyGroup>
+			<DeployPath>$(RimWorldDir)/Mods/$(ModFolderName)/</DeployPath>
+		</PropertyGroup>
+
+		<MakeDir Directories="$(DeployPath)" />
+
+		<Exec Command="rsync -a --delete --checksum &quot;$(ProjectDir)About/&quot; &quot;$(DeployPath)About/&quot;" />
+		<Exec Command="rsync -a --delete --checksum &quot;$(ProjectDir)Defs/&quot; &quot;$(DeployPath)Defs/&quot;" />
+		<Exec Command="rsync -a --delete --checksum &quot;$(ProjectDir)Languages/&quot; &quot;$(DeployPath)Languages/&quot;" />
+		<Exec Command="rsync -a --delete --checksum &quot;$(ProjectDir)Textures/&quot; &quot;$(DeployPath)Textures/&quot;" />
+		<Exec Command="rsync -a --delete --checksum &quot;$(ProjectDir)1.6/&quot; &quot;$(DeployPath)1.6/&quot;" />
+
+		<Message Text="--- Deployment finished successfully ---" Importance="high" />
+	</Target>
 
 </Project>

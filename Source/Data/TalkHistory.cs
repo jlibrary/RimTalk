@@ -7,11 +7,11 @@ namespace RimTalk.Data
 {
     public static class TalkHistory
     {
-        private static readonly ConcurrentDictionary<Guid, int> _cache;
+        private static readonly ConcurrentDictionary<Guid, int> Cache;
             
         static TalkHistory()
         {
-            _cache = new ConcurrentDictionary<Guid, int>(new Dictionary<Guid, int>
+            Cache = new ConcurrentDictionary<Guid, int>(new Dictionary<Guid, int>
             {
                 { Guid.Empty, 0 }
             });
@@ -19,18 +19,18 @@ namespace RimTalk.Data
         // Add a new talk with the current game tick
         public static void AddTalk(Guid id)
         {
-            _cache.TryAdd(id, Find.TickManager.TicksGame);
+            Cache.TryAdd(id, Find.TickManager.TicksGame);
         }
         
         public static int Get(Guid id)
         {
-            return _cache.TryGetValue(id, -1);
+            return Cache.TryGetValue(id, -1);
         }
         
         public static void Clear()
         {
-            _cache.Clear();
-            _cache.TryAdd(Guid.Empty, 0);
+            Cache.Clear();
+            Cache.TryAdd(Guid.Empty, 0);
         }
     }
 }

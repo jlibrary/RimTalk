@@ -62,8 +62,8 @@ namespace RimTalk.Data
 
             var newPersona = new Persona
             {
-                Personality = randomPersonalityData.persona,
-                TalkInitiationWeight = randomPersonalityData.chattiness
+                Personality = randomPersonalityData.Persona,
+                TalkInitiationWeight = randomPersonalityData.Chattiness
             };
             _personas[pawn.thingIDNumber] = newPersona;
             return newPersona;
@@ -84,19 +84,17 @@ namespace RimTalk.Data
     
             try
             {
-                string response = await AIService.Query($"{Constant.PersonaGenInstruction}\n{pawnBackstory}");
-                response = response.Replace("```json", "").Replace("```", "").Trim();
-                response = JsonUtil.Sanitize(response);
+                string prompt = $"{Constant.PersonaGenInstruction}\n{pawnBackstory}";
+                var request = new TalkRequest(prompt, pawn);
+                PersonalityData personalityData = await AIService.Query<PersonalityData>(request);
                 
-                // Deserializing directly into PersonalityData.
-                var result = JsonUtil.DeserializeFromJson<PersonalityData>(response);
 
-                if (result?.persona != null)
+                if (personalityData?.Persona != null)
                 {
-                    result.persona = result.persona.Replace("**", "").Trim();
+                    personalityData.Persona = personalityData.Persona.Replace("**", "").Trim();
                 }
 
-                return result;
+                return personalityData;
             }
             catch (Exception e)
             {

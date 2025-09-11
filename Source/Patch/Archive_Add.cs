@@ -15,8 +15,8 @@ namespace RimTalk.Patch
             string typeName = archivable.GetType().FullName;
 
             // Check if this type should be processed
-            bool shouldProcess = settings.enabledArchivableTypes.ContainsKey(typeName)
-                ? settings.enabledArchivableTypes[typeName]
+            bool shouldProcess = settings.EnabledArchivableTypes.ContainsKey(typeName)
+                ? settings.EnabledArchivableTypes[typeName]
                 : false;
 
             if (!shouldProcess)

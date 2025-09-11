@@ -23,7 +23,7 @@ namespace RimTalk.Error
                 if (CanRetryGeneration(settings))
                 {
                     string nextModel = Settings.Get().GetCurrentModel();
-                    if (!settings.useSimpleConfig)
+                    if (!settings.UseSimpleConfig)
                     {
                         ShowRetryMessage(ex, nextModel);
                     }
@@ -50,15 +50,15 @@ namespace RimTalk.Error
 
         private static bool CanRetryGeneration(CurrentWorkDisplayModSettings settings)
         {
-            if (settings.useSimpleConfig)
+            if (settings.UseSimpleConfig)
             {
-                return !settings.isUsingFallbackModel;
+                return !settings.IsUsingFallbackModel;
             }
-            else if (settings.useCloudProviders)
+            else if (settings.UseCloudProviders)
             {
-                int originalIndex = settings.currentCloudConfigIndex;
+                int originalIndex = settings.CurrentCloudConfigIndex;
                 settings.TryNextConfig();
-                return settings.currentCloudConfigIndex != originalIndex;
+                return settings.CurrentCloudConfigIndex != originalIndex;
             }
             
             return false;

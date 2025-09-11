@@ -1,25 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Verse;
 
 namespace RimTalk.Data
 {
-    public class TalkRequest
-    {
-        public string Prompt { get; set; }
-        public Pawn Initiator { get; set; }
-        public Pawn Recipient { get; set; }
-        public DateTime CreatedAt { get; } = DateTime.UtcNow; // for sorting
-
-        public TalkRequest(string prompt, Pawn initiator = null, Pawn recipient = null)
-        {
-            Prompt = prompt.RemoveLineBreaks();
-            Initiator = initiator;
-            Recipient = recipient;
-        }
-    }
-
     public static class TalkRequestPool
     {
         private static readonly List<TalkRequest> Requests = new List<TalkRequest>();
@@ -28,9 +12,6 @@ namespace RimTalk.Data
         {
             var request = new TalkRequest(prompt, initiator, recipient);
             Requests.Add(request);
-
-            // Keep sorted by CreatedAt
-            Requests.Sort((a, b) => a.CreatedAt.CompareTo(b.CreatedAt));
         }
 
         // Get the first request without removing it

@@ -7,19 +7,19 @@ namespace RimTalk.UI
 {
     public class Dialog_PersonaEditor : Window
     {
-        private Pawn pawn;
-        private string editingPersonality;
-        private float talkInitiationWeight;
-        private PersonaManager _personaManager;
-        private bool isGenerating = false;
-        private static readonly int MAX_LENGTH = 500; // Reasonable limit
+        private const int MaxLength = 500; // Reasonable limit
+        private readonly PersonaManager _personaManager;
+        private readonly Pawn _pawn;
+        private string _editingPersonality;
+        private float _talkInitiationWeight;
+        private bool _isGenerating = false;
 
         public Dialog_PersonaEditor(Pawn pawn)
         {
-            this.pawn = pawn;
-            this._personaManager = Current.Game.GetComponent<PersonaManager>();
-            this.editingPersonality = _personaManager?.GetPersonality(pawn) ?? "";
-            this.talkInitiationWeight = _personaManager?.GetTalkInitiationWeight(pawn) ?? 1.0f;
+            _pawn = pawn;
+            _personaManager = Current.Game.GetComponent<PersonaManager>();
+            _editingPersonality = _personaManager?.GetPersonality(pawn) ?? "";
+            _talkInitiationWeight = _personaManager?.GetTalkInitiationWeight(pawn) ?? 1.0f;
 
             doCloseButton = false;
             doCloseX = true;
@@ -33,7 +33,7 @@ namespace RimTalk.UI
         {
             Text.Font = GameFont.Medium;
             Rect titleRect = new Rect(inRect.x, inRect.y, inRect.width, 30f);
-            Widgets.Label(titleRect, "RimTalk.PersonaEditor.Title".Translate(pawn.Name.ToStringShort));
+            Widgets.Label(titleRect, "RimTalk.PersonaEditor.Title".Translate(_pawn.Name.ToStringShort));
 
             // Instruction text
             Text.Font = GameFont.Small;
@@ -44,16 +44,16 @@ namespace RimTalk.UI
 
             // Text area with character counter
             Rect textAreaRect = new Rect(inRect.x, instructRect.yMax + 10f, inRect.width, 180f);
-            editingPersonality = Widgets.TextArea(textAreaRect, editingPersonality);
+            _editingPersonality = Widgets.TextArea(textAreaRect, _editingPersonality);
             
             // Character count
             Rect countRect = new Rect(inRect.x, textAreaRect.yMax + 2f, inRect.width, 20f);
             Text.Font = GameFont.Tiny;
-            Color countColor = editingPersonality.Length > 300 ? Color.yellow : Color.gray;
-            if (editingPersonality.Length >= MAX_LENGTH) countColor = Color.red;
+            Color countColor = _editingPersonality.Length > 300 ? Color.yellow : Color.gray;
+            if (_editingPersonality.Length >= MaxLength) countColor = Color.red;
             GUI.color = countColor;
             Text.Anchor = TextAnchor.MiddleRight; 
-            Widgets.Label(countRect, "RimTalk.PersonaEditor.Characters".Translate(editingPersonality.Length, 300));
+            Widgets.Label(countRect, "RimTalk.PersonaEditor.Characters".Translate(_editingPersonality.Length, 300));
             Text.Anchor = TextAnchor.UpperLeft; 
             GUI.color = Color.white;
             Text.Font = GameFont.Small;
@@ -89,12 +89,12 @@ namespace RimTalk.UI
 
             // Slider itself (leave room for value display)
             Rect frequencySliderRect = new Rect(sliderX, sliderRowRect.y, sliderWidth - 40f, sliderRowRect.height);
-            talkInitiationWeight = Widgets.HorizontalSlider(frequencySliderRect, talkInitiationWeight, 0f, 2.0f, true);
+            _talkInitiationWeight = Widgets.HorizontalSlider(frequencySliderRect, _talkInitiationWeight, 0f, 2.0f, true);
 
             // Value label (numeric display)
             Rect valueLabelRect = new Rect(frequencySliderRect.xMax + 5f, sliderRowRect.y, 40f, sliderRowRect.height);
             Text.Anchor = TextAnchor.MiddleLeft;
-            Widgets.Label(valueLabelRect, talkInitiationWeight.ToString("0.00"));
+            Widgets.Label(valueLabelRect, _talkInitiationWeight.ToString("0.00"));
             Text.Anchor = TextAnchor.UpperLeft;
             // ------------------------------------
 
@@ -115,27 +115,27 @@ namespace RimTalk.UI
 
             if (Widgets.ButtonText(saveButton, "RimTalk.PersonaEditor.Save".Translate()))
             {
-                _personaManager?.SetPersonality(pawn, editingPersonality.Trim());
-                _personaManager?.SetTalkInitiationWeight(pawn, talkInitiationWeight);
+                _personaManager?.SetPersonality(_pawn, _editingPersonality.Trim());
+                _personaManager?.SetTalkInitiationWeight(_pawn, _talkInitiationWeight);
 
-                Messages.Message("RimTalk.PersonaEditor.Updated".Translate(pawn.Name.ToStringShort), MessageTypeDefOf.TaskCompletion, false);
+                Messages.Message("RimTalk.PersonaEditor.Updated".Translate(_pawn.Name.ToStringShort), MessageTypeDefOf.TaskCompletion, false);
                 Close();
             }
 
-            if (Widgets.ButtonText(smartGenButton, isGenerating ?
+            if (Widgets.ButtonText(smartGenButton, _isGenerating ?
                     "RimTalk.PersonaEditor.Generating".Translate().ToString() :
                         "RimTalk.PersonaEditor.SmartGen".Translate().ToString()))
             {
-                if (!isGenerating)
+                if (!_isGenerating)
                 {
-                    isGenerating = true;
-                    _personaManager.GeneratePersona(pawn).ContinueWith(task =>
+                    _isGenerating = true;
+                    _personaManager.GeneratePersona(_pawn).ContinueWith(task =>
                     {
-                        isGenerating = false;
+                        _isGenerating = false;
                         if (task.IsCompleted)
                         {
-                            editingPersonality = task.Result.persona ?? "";
-                            talkInitiationWeight = task.Result.chattiness;
+                            _editingPersonality = task.Result.Persona ?? "";
+                            _talkInitiationWeight = task.Result.Chattiness;
                         }
                     });
                 }
@@ -144,20 +144,20 @@ namespace RimTalk.UI
             if (Widgets.ButtonText(rollGenButton, "RimTalk.PersonaEditor.RollGen".Translate()))
             {
                 PersonalityData rollGenData = Constant.Personalities.RandomElement();
-                editingPersonality = rollGenData.persona;
-                talkInitiationWeight = rollGenData.chattiness;
+                _editingPersonality = rollGenData.Persona;
+                _talkInitiationWeight = rollGenData.Chattiness;
             }
 
             if (Widgets.ButtonText(clearButton, "RimTalk.PersonaEditor.Clear".Translate()))
             {
-                editingPersonality = "";
+                _editingPersonality = "";
             }
         }
 
         public override void WindowUpdate()
         {
             base.WindowUpdate();
-            if (isGenerating)
+            if (_isGenerating)
             {
                 // This will cause the window to repaint continuously while generating
             }

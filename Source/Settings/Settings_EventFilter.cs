@@ -20,7 +20,7 @@ namespace RimTalk
             listingStandard.Gap(6f);
 
             // Group types by category for better organization
-            var groupedTypes = discoveredArchivableTypes
+            var groupedTypes = _discoveredArchivableTypes
                 .GroupBy(typeName =>
                 {
                     string simpleName = typeName.Contains(".")
@@ -35,7 +35,7 @@ namespace RimTalk
                 .ToList();
 
             // Draw archivable types with checkboxes, grouped by category
-            if (discoveredArchivableTypes.Any())
+            if (_discoveredArchivableTypes.Any())
             {
                 foreach (var group in groupedTypes)
                 {
@@ -50,8 +50,8 @@ namespace RimTalk
                     // Items in this category
                     foreach (var typeName in group.OrderBy(x => x))
                     {
-                        bool isEnabled = settings.enabledArchivableTypes.ContainsKey(typeName)
-                            ? settings.enabledArchivableTypes[typeName]
+                        bool isEnabled = settings.EnabledArchivableTypes.ContainsKey(typeName)
+                            ? settings.EnabledArchivableTypes[typeName]
                             : false;
 
                         bool newEnabled = isEnabled;
@@ -67,7 +67,7 @@ namespace RimTalk
 
                         if (newEnabled != isEnabled)
                         {
-                            settings.enabledArchivableTypes[typeName] = newEnabled;
+                            settings.EnabledArchivableTypes[typeName] = newEnabled;
                         }
                     }
 
@@ -90,11 +90,11 @@ namespace RimTalk
             if (Widgets.ButtonText(resetButtonRect, "RimTalk.Settings.ResetToDefault".Translate()))
             {
                 // Reset all archivable types to default values
-                foreach (var typeName in discoveredArchivableTypes)
+                foreach (var typeName in _discoveredArchivableTypes)
                 {
                     // Enable by default for most types, but disable Verse.Message specifically
                     bool defaultEnabled = !typeName.Equals("Verse.Message", StringComparison.OrdinalIgnoreCase);
-                    settings.enabledArchivableTypes[typeName] = defaultEnabled;
+                    settings.EnabledArchivableTypes[typeName] = defaultEnabled;
                 }
             }
         }

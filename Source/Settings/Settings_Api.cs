@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using RimTalk.AI.OpenAI;
+using RimTalk.Client.OpenAI;
 using RimTalk.Util;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -12,7 +12,7 @@ namespace RimTalk
 {
     public partial class Settings
     {
-        private static readonly string[] modelOptions = new string[]
+        private static readonly string[] ModelOptions =
         {
             "gemini-2.5-pro",
             "gemini-2.5-flash", 
@@ -23,13 +23,13 @@ namespace RimTalk
             "gemma-3-12b-it",
             "Custom"
         };
-        private static Dictionary<string, List<string>> _modelCache = new Dictionary<string, List<string>>();
+        private static readonly Dictionary<string, List<string>> ModelCache = new Dictionary<string, List<string>>();
 
         private async Task<List<string>> FetchModels(string apiKey, string url)
         {
-            if (_modelCache.ContainsKey(url))
+            if (ModelCache.ContainsKey(url))
             {
-                return _modelCache[url];
+                return ModelCache[url];
             }
 
             var models = new List<string>();
@@ -53,7 +53,7 @@ namespace RimTalk
                     if (response != null)
                     {
                         models = response.Data.Select(m => m.Id).ToList();
-                        _modelCache[url] = models;
+                        ModelCache[url] = models;
                     }
                 }
             }
@@ -67,7 +67,7 @@ namespace RimTalk
 
             // API Key section
             listingStandard.Label("RimTalk.Settings.GoogleApiKeyLabel".Translate());
-            settings.simpleApiKey = Widgets.TextField(listingStandard.GetRect(24), settings.simpleApiKey);
+            settings.SimpleApiKey = Widgets.TextField(listingStandard.GetRect(24), settings.SimpleApiKey);
             
             // Add description for free Google providers
             Text.Font = GameFont.Tiny;
@@ -92,7 +92,7 @@ namespace RimTalk
             Rect advancedButtonRect = listingStandard.GetRect(30f);
             if (Widgets.ButtonText(advancedButtonRect, "RimTalk.Settings.SwitchToAdvancedSettings".Translate()))
             {
-                settings.useSimpleConfig = false;
+                settings.UseSimpleConfig = false;
             }
         }
 
@@ -104,24 +104,24 @@ namespace RimTalk
             Rect simpleButtonRect = listingStandard.GetRect(30f);
             if (Widgets.ButtonText(simpleButtonRect, "RimTalk.Settings.SwitchToSimpleSettings".Translate()))
             {
-                if (string.IsNullOrWhiteSpace(settings.simpleApiKey))
+                if (string.IsNullOrWhiteSpace(settings.SimpleApiKey))
                 {
-                    var firstValidCloudConfig = settings.cloudConfigs.FirstOrDefault(c => c.IsValid());
+                    var firstValidCloudConfig = settings.CloudConfigs.FirstOrDefault(c => c.IsValid());
                     if (firstValidCloudConfig != null)
                     {
-                        settings.simpleApiKey = firstValidCloudConfig.ApiKey;
+                        settings.SimpleApiKey = firstValidCloudConfig.ApiKey;
                     }
                 }
-                settings.useSimpleConfig = true;
+                settings.UseSimpleConfig = true;
             }
 
             listingStandard.Gap(12f);
 
             // Cloud providers option with description
             Rect radioRect1 = listingStandard.GetRect(24f);
-            if (Widgets.RadioButtonLabeled(radioRect1, "RimTalk.Settings.CloudProviders".Translate(), settings.useCloudProviders))
+            if (Widgets.RadioButtonLabeled(radioRect1, "RimTalk.Settings.CloudProviders".Translate(), settings.UseCloudProviders))
             {
-                settings.useCloudProviders = true;
+                settings.UseCloudProviders = true;
             }
 
             // Add description for cloud providers
@@ -137,10 +137,10 @@ namespace RimTalk
 
             // Local provider option with description
             Rect radioRect2 = listingStandard.GetRect(24f);
-            if (Widgets.RadioButtonLabeled(radioRect2, "RimTalk.Settings.LocalProvider".Translate(), !settings.useCloudProviders))
+            if (Widgets.RadioButtonLabeled(radioRect2, "RimTalk.Settings.LocalProvider".Translate(), !settings.UseCloudProviders))
             {
-                settings.useCloudProviders = false;
-                settings.localConfig.Provider = AIProvider.Local;
+                settings.UseCloudProviders = false;
+                settings.LocalConfig.Provider = AIProvider.Local;
             }
 
             // Add description for local provider
@@ -155,7 +155,7 @@ namespace RimTalk
             listingStandard.Gap(12f);
 
             // Draw appropriate section based on selection
-            if (settings.useCloudProviders)
+            if (settings.UseCloudProviders)
             {
                 DrawCloudProvidersSection(listingStandard, settings);
             }
@@ -187,17 +187,17 @@ namespace RimTalk
             
             if (Widgets.ButtonText(addButtonRect, "+"))
             {
-                settings.cloudConfigs.Add(new ApiConfig());
+                settings.CloudConfigs.Add(new ApiConfig());
             }
 
             // Only show remove button if there are configs to remove and more than 1
-            GUI.enabled = settings.cloudConfigs.Count > 1;
+            GUI.enabled = settings.CloudConfigs.Count > 1;
             if (Widgets.ButtonText(removeButtonRect, "−"))
             {
                 // Remove the last configuration
-                if (settings.cloudConfigs.Count > 1)
+                if (settings.CloudConfigs.Count > 1)
                 {
-                    settings.cloudConfigs.RemoveAt(settings.cloudConfigs.Count - 1);
+                    settings.CloudConfigs.RemoveAt(settings.CloudConfigs.Count - 1);
                 }
             }
 
@@ -235,7 +235,7 @@ namespace RimTalk
             x += modelWidth + 5f;
 
             // Base URL Header (for Custom provider)
-            if (settings.cloudConfigs.Any(c => c.Provider == AIProvider.Custom))
+            if (settings.CloudConfigs.Any(c => c.Provider == AIProvider.Custom))
             {
                 Rect baseUrlHeaderRect = new Rect(x, y, baseUrlWidth, height);
                 var labelText = "RimTalk.Settings.BaseUrlLabel".Translate() + " [?]";
@@ -251,9 +251,9 @@ namespace RimTalk
             listingStandard.Gap(6f);
 
             // Draw each cloud config
-            for (int i = 0; i < settings.cloudConfigs.Count; i++)
+            for (int i = 0; i < settings.CloudConfigs.Count; i++)
             {
-                DrawCloudConfigRow(listingStandard, settings.cloudConfigs[i], i, settings.cloudConfigs);
+                DrawCloudConfigRow(listingStandard, settings.CloudConfigs[i], i, settings.CloudConfigs);
                 listingStandard.Gap(3f);
             }
         }
@@ -370,7 +370,7 @@ namespace RimTalk
 
             if (config.Provider == AIProvider.Google)
             {
-                List<FloatMenuOption> options = modelOptions.Select(model => new FloatMenuOption(model, () => config.SelectedModel = model)).ToList();
+                List<FloatMenuOption> options = ModelOptions.Select(model => new FloatMenuOption(model, () => config.SelectedModel = model)).ToList();
                 Find.WindowStack.Add(new FloatMenu(options));
             }
             else
@@ -424,12 +424,12 @@ namespace RimTalk
             listingStandard.Gap(6f);
 
             // Ensure local config exists
-            if (settings.localConfig == null)
+            if (settings.LocalConfig == null)
             {
-                settings.localConfig = new ApiConfig { Provider = AIProvider.Local };
+                settings.LocalConfig = new ApiConfig { Provider = AIProvider.Local };
             }
 
-            DrawLocalConfigRow(listingStandard, settings.localConfig);
+            DrawLocalConfigRow(listingStandard, settings.LocalConfig);
         }
 
         private void DrawLocalConfigRow(Listing_Standard listingStandard, ApiConfig config)

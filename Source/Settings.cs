@@ -13,14 +13,13 @@ namespace RimTalk
 {
     public partial class Settings : Mod
     {
-        private Vector2 mainScrollPosition = Vector2.zero;
-        private string textAreaBuffer = "";
-        private bool textAreaInitialized = false;
-        private string lastSavedInstruction = "";
-        private List<string> discoveredArchivableTypes = new List<string>();
-        private bool archivableTypesScanned = false;
+        private Vector2 _mainScrollPosition = Vector2.zero;
+        private string _textAreaBuffer = "";
+        private bool _textAreaInitialized;
+        private string _lastSavedInstruction = "";
+        private List<string> _discoveredArchivableTypes = new List<string>();
+        private bool _archivableTypesScanned;
         private int _apiSettingsHash = 0;
-        private Vector2 instructionScrollPosition = Vector2.zero;
 
         // Tab system
         private enum SettingsTab
@@ -32,10 +31,21 @@ namespace RimTalk
 
         private SettingsTab currentTab = SettingsTab.Basic;
 
-        
+        private static CurrentWorkDisplayModSettings _settings;
 
-        public static CurrentWorkDisplayModSettings Get() =>
-            LoadedModManager.GetMod<Settings>().GetSettings<CurrentWorkDisplayModSettings>();
+        public static CurrentWorkDisplayModSettings Get()
+        {
+            if (_settings == null)
+            {
+                _settings = LoadedModManager.GetMod<Settings>().GetSettings<CurrentWorkDisplayModSettings>();
+            }
+            return _settings;
+        }
+
+        public static void ClearCache()
+        {
+            _settings = null;
+        }
 
         public Settings(ModContentPack content) : base(content)
         {
@@ -50,7 +60,7 @@ namespace RimTalk
 
         private void ScanForArchivableTypes()
         {
-            if (archivableTypesScanned) return;
+            if (_archivableTypesScanned) return;
 
             var archivableTypes = new HashSet<string>();
 
@@ -89,44 +99,45 @@ namespace RimTalk
                 }
             }
 
-            discoveredArchivableTypes = archivableTypes.OrderBy(x => x).ToList();
-            archivableTypesScanned = true;
+            _discoveredArchivableTypes = archivableTypes.OrderBy(x => x).ToList();
+            _archivableTypesScanned = true;
 
             // Initialize settings for new types
             CurrentWorkDisplayModSettings settings = Get();
-            foreach (var typeName in discoveredArchivableTypes)
+            foreach (var typeName in _discoveredArchivableTypes)
             {
-                if (!settings.enabledArchivableTypes.ContainsKey(typeName))
+                if (!settings.EnabledArchivableTypes.ContainsKey(typeName))
                 {
                     // Enable by default for most types, but disable Verse.Message specifically
                     bool defaultEnabled = !typeName.Equals("Verse.Message", StringComparison.OrdinalIgnoreCase);
-                    settings.enabledArchivableTypes[typeName] = defaultEnabled;
+                    settings.EnabledArchivableTypes[typeName] = defaultEnabled;
                 }
             }
 
-            Log.Message($"[RimTalk] Discovered {discoveredArchivableTypes.Count} archivable types");
+            Log.Message($"[RimTalk] Discovered {_discoveredArchivableTypes.Count} archivable types");
         }
 
         public override void WriteSettings()
         {
             base.WriteSettings();
+            ClearCache(); // Invalidate the cache
             CurrentWorkDisplayModSettings settings = Get();
             int newHash = GetApiSettingsHash(settings);
             if (newHash != _apiSettingsHash)
             {
-                settings.currentCloudConfigIndex = 0;
+                settings.CurrentCloudConfigIndex = 0;
                 _apiSettingsHash = newHash;
             }
 
             // Check if instruction changed when settings are saved (window closed)
-            if (settings.customInstruction != lastSavedInstruction)
+            if (settings.CustomInstruction != _lastSavedInstruction)
             {
-                lastSavedInstruction = settings.customInstruction;
+                _lastSavedInstruction = settings.CustomInstruction;
                 // Find the RimTalk GameComponent and call Reset
                 var rimTalkComponent = Current.Game?.GetComponent<RimTalk>();
                 if (rimTalkComponent != null)
                 {
-                    rimTalkComponent.Reset();
+                    rimTalkComponent.Reset(true);
                 }
             }
         }
@@ -136,9 +147,9 @@ namespace RimTalk
             // Create a string representation of the API settings and get its hash code
             var sb = new StringBuilder();
             
-            if (settings.cloudConfigs != null)
+            if (settings.CloudConfigs != null)
             {
-                foreach (var config in settings.cloudConfigs)
+                foreach (var config in settings.CloudConfigs)
                 {
                     sb.AppendLine(config.Provider.ToString());
                     sb.AppendLine(config.ApiKey);
@@ -179,7 +190,7 @@ namespace RimTalk
             if (Widgets.ButtonText(filterTabRect, "RimTalk.Settings.EventFilter".Translate()))
             {
                 currentTab = SettingsTab.EventFilter;
-                if (!archivableTypesScanned)
+                if (!_archivableTypesScanned)
                 {
                     ScanForArchivableTypes();
                 }
@@ -224,7 +235,7 @@ namespace RimTalk
 
             // Now draw for real with the correct scroll view height
             Rect viewRect = new Rect(0f, 0f, contentRect.width - 16f, contentHeight);
-            mainScrollPosition = GUI.BeginScrollView(contentRect, mainScrollPosition, viewRect);
+            _mainScrollPosition = GUI.BeginScrollView(contentRect, _mainScrollPosition, viewRect);
 
             listing.Begin(viewRect);
 

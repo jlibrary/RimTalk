@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace RimTalk.AI.OpenAI
+namespace RimTalk.Client.OpenAI
 {
     [DataContract]
     public class ModelsResponse

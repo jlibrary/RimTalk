@@ -106,7 +106,7 @@
     <RimTalk.PersonaEditor.SmartGen>Smart Gen</RimTalk.PersonaEditor.SmartGen>
     <RimTalk.PersonaEditor.RollGen>Roll Gen</RimTalk.PersonaEditor.RollGen>
     <RimTalk.PersonaEditor.Clear>Clear</RimTalk.PersonaEditor.Clear>
-    
+
     <!-- Settings_Api.cs -->
     <RimTalk.Settings.GoogleApiKeyLabel>Google AI API Key:</RimTalk.Settings.GoogleApiKeyLabel>
     <RimTalk.Settings.GoogleApiKeyDesc>Uses the free Gemma3 27B model. For other models or providers, use Advanced Settings.</RimTalk.Settings.GoogleApiKeyDesc>
@@ -133,5 +133,36 @@
 
     <!-- RimTalk_Toggle.cs -->
     <RimTalk.Toggle.Tooltip>Toggle AI speech generation\n\nShift+click for settings</RimTalk.Toggle.Tooltip>
-</LanguageData>
 
+    <!-- DebugWindow.cs -->
+    <RimTalk.DebugWindow.Generating>[Generating...]</RimTalk.DebugWindow.Generating>
+    <RimTalk.DebugWindow.StatusDisabled>Disabled</RimTalk.DebugWindow.StatusDisabled>
+    <RimTalk.DebugWindow.StatusProcessing>Processing</RimTalk.DebugWindow.StatusProcessing>
+    <RimTalk.DebugWindow.StatusIdle>Idle</RimTalk.DebugWindow.StatusIdle>
+    <RimTalk.DebugWindow.GroupByPawn>Group by Pawn</RimTalk.DebugWindow.GroupByPawn>
+    <RimTalk.DebugWindow.DebugMode>Debug Mode</RimTalk.DebugWindow.DebugMode>
+    <RimTalk.DebugWindow.ModSettings>Mod Settings</RimTalk.DebugWindow.ModSettings>
+    <RimTalk.DebugWindow.EnableRimTalk>Enable RimTalk</RimTalk.DebugWindow.EnableRimTalk>
+    <RimTalk.DebugWindow.AIStatus>AI Status:</RimTalk.DebugWindow.AIStatus>
+    <RimTalk.DebugWindow.TotalCalls>Total Calls:</RimTalk.DebugWindow.TotalCalls>
+    <RimTalk.DebugWindow.TotalTokens>Total Tokens:</RimTalk.DebugWindow.TotalTokens>
+    <RimTalk.DebugWindow.AvgCallsPerMin>Avg Calls/min:</RimTalk.DebugWindow.AvgCallsPerMin>
+    <RimTalk.DebugWindow.AvgTokensPerMin>Avg Tokens/min:</RimTalk.DebugWindow.AvgTokensPerMin>
+    <RimTalk.DebugWindow.AvgTokensPerCall>Avg Tokens/Call:</RimTalk.DebugWindow.AvgTokensPerCall>
+    <RimTalk.DebugWindow.TokensPerSecond>Tokens/s</RimTalk.DebugWindow.TokensPerSecond>
+    <RimTalk.DebugWindow.SixtySecondsAgo>60s ago</RimTalk.DebugWindow.SixtySecondsAgo>
+    <RimTalk.DebugWindow.Now>Now</RimTalk.DebugWindow.Now>
+    <RimTalk.DebugWindow.StatusReady>Ready</RimTalk.DebugWindow.StatusReady>
+    <RimTalk.DebugWindow.StatusBusy>Busy</RimTalk.DebugWindow.StatusBusy>
+    <RimTalk.DebugWindow.HeaderPawn>Pawn</RimTalk.DebugWindow.HeaderPawn>
+    <RimTalk.DebugWindow.HeaderResponse>Response</RimTalk.DebugWindow.HeaderResponse>
+    <RimTalk.DebugWindow.HeaderStatus>Status</RimTalk.DebugWindow.HeaderStatus>
+    <RimTalk.DebugWindow.HeaderLastTalk>Last Talk</RimTalk.DebugWindow.HeaderLastTalk>
+    <RimTalk.DebugWindow.HeaderRequests>Requests</RimTalk.DebugWindow.HeaderRequests>
+    <RimTalk.DebugWindow.HeaderChattiness>Chattiness</RimTalk.DebugWindow.HeaderChattiness>
+    <RimTalk.DebugWindow.NoTalkLogs>No talk logs recorded yet. AI may be disabled or no colonists have spoken.</RimTalk.DebugWindow.NoTalkLogs>
+    <RimTalk.DebugWindow.HeaderTimestamp>Timestamp</RimTalk.DebugWindow.HeaderTimestamp>
+    <RimTalk.DebugWindow.HeaderTimeMs>Time(ms)</RimTalk.DebugWindow.HeaderTimeMs>
+    <RimTalk.DebugWindow.HeaderTokens>Tokens</RimTalk.DebugWindow.HeaderTokens>
+    <RimTalk.DebugWindow.TooltipPromptResponse>Prompt:\n{0}\n\nResponse:\n{1}</RimTalk.DebugWindow.TooltipPromptResponse>
+</LanguageData>

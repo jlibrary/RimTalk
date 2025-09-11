@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+    <MainButtonDef>
+        <defName>RimTalkDebug</defName>
+        <tabWindowClass>RimTalk.UI.MainTabWindow_DebugLauncher</tabWindowClass>
+        <order>79</order>
+        <minimized>True</minimized>
+        <iconPath>UI/ToggleIcon</iconPath>
+    </MainButtonDef>
+</Defs>

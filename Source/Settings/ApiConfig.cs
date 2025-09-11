@@ -27,7 +27,7 @@ namespace RimTalk
         {
             if (!IsEnabled) return false;
             
-            if (Settings.Get().useCloudProviders)
+            if (Settings.Get().UseCloudProviders)
                 return !string.IsNullOrWhiteSpace(ApiKey) && SelectedModel != Constant.ChooseModel;
             else
                 return !string.IsNullOrWhiteSpace(BaseUrl);

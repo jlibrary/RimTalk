@@ -1,3 +1,4 @@
+using RimTalk.Client;
 using RimTalk.Data;
 using RimTalk.Error;
 using RimTalk.Patch;
@@ -8,14 +9,7 @@ namespace RimTalk
 {
     public class RimTalk : GameComponent
     {
-        public static bool IsEnabled = true;
-        
         public RimTalk(Game game) { }
-
-        public override void ExposeData()
-        {
-            Scribe_Values.Look(ref IsEnabled, "IsEnabled", true);
-        }
 
         public override void StartedNewGame()
         {
@@ -29,22 +23,24 @@ namespace RimTalk
             Reset();
         }
 
-        public void Reset()
+        public void Reset(bool soft = false)
         {
             var settings = Settings.Get();
             if (settings != null)
             {
-                settings.currentCloudConfigIndex = 0;
+                settings.CurrentCloudConfigIndex = 0;
             }
-
-            Counter.Tick = 0;
-            Cache.Clear();
-            TalkHistory.Clear();
             AIErrorHandler.ResetQuotaWarning();
-            TickManager_DoSingleTick.NoApiKeyMessageShown = false;
-            TickManager_DoSingleTick.InitialCacheRefresh = false;
+            TickManager_DoSingleTick.Reset();
             AIClientFactory.Clear();
             AIService.Clear();
+
+            if (soft) return;
+            
+            Counter.Tick = 0;
+            Cache.Clear();
+            Stats.Reset();
+            TalkLogHistory.Clear();
         }
     }
 }

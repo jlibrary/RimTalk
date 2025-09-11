@@ -13,7 +13,7 @@ namespace RimTalk.Patch
     [HarmonyPatch(typeof(Bubbler), nameof(Bubbler.Add))]
     public static class Bubbler_Add
     {
-        private static bool originalDraftedValue;
+        private static bool _originalDraftedValue;
 
         public static bool Prefix(LogEntry entry)
         {
@@ -23,10 +23,10 @@ namespace RimTalk.Patch
             // For RimTalk interaction, display normal bubble
             if (entry is PlayLogEntry_RimTalkInteraction)
             {
-                if (settings.displayTalkWhenDrafted)
+                if (settings.DisplayTalkWhenDrafted)
                     try
                     {
-                        originalDraftedValue = Bubbles.Settings.DoDrafted.Value;
+                        _originalDraftedValue = Bubbles.Settings.DoDrafted.Value;
                         Bubbles.Settings.DoDrafted.Value = true;
                     }
                     catch (Exception ex)
@@ -40,7 +40,7 @@ namespace RimTalk.Patch
             Pawn recipient = GetRecipient(entry);
 
             // If the setting to process non-RimTalk interactions is disabled, show the original bubble.
-            if (!settings.processNonRimTalkInteractions)
+            if (!settings.ProcessNonRimTalkInteractions)
             {
                 return true;
             }
@@ -63,11 +63,11 @@ namespace RimTalk.Patch
 
         public static void Postfix()
         {
-            if (Settings.Get().displayTalkWhenDrafted)
+            if (Settings.Get().DisplayTalkWhenDrafted)
             {
                 try
                 {
-                    Bubbles.Settings.DoDrafted.Value = originalDraftedValue;
+                    Bubbles.Settings.DoDrafted.Value = _originalDraftedValue;
                 }
                 catch (Exception ex)
                 {

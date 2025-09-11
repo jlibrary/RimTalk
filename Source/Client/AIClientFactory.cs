@@ -1,7 +1,7 @@
-using RimTalk.AI.Gemini;
-using RimTalk.AI.OpenAI;
+using RimTalk.Client.Gemini;
+using RimTalk.Client.OpenAI;
 
-namespace RimTalk.Service
+namespace RimTalk.Client
 {
     public static class AIClientFactory
     {

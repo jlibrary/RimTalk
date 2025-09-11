@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,20 +10,20 @@ namespace RimTalk.Data
     public static class Cache
     {
         // Main data store mapping a Pawn to its current state.
-        private static readonly ConcurrentDictionary<Pawn, PawnState> _cache = new ConcurrentDictionary<Pawn, PawnState>();
-        private static readonly ConcurrentDictionary<string, Pawn> _nameCache = new ConcurrentDictionary<string, Pawn>();
+        private static readonly ConcurrentDictionary<Pawn, PawnState> PawnCache = new ConcurrentDictionary<Pawn, PawnState>();
+        private static readonly ConcurrentDictionary<string, Pawn> NameCache = new ConcurrentDictionary<string, Pawn>();
 
-        private static readonly object _weightedSelectionLock = new object();
-        private static List<Pawn> _weightedPawnList = new List<Pawn>();
-        private static List<double> _cumulativeWeights = new List<double>();
+        private static readonly object WeightedSelectionLock = new object();
+        private static readonly List<Pawn> WeightedPawnList = new List<Pawn>();
+        private static readonly List<double> CumulativeWeights = new List<double>();
         private static double _totalWeight = 0.0;
         private static bool _weightsDirty = true;
 
-        public static IEnumerable<Pawn> Keys => _cache.Keys;
+        public static IEnumerable<Pawn> Keys => PawnCache.Keys;
 
         public static PawnState Get(Pawn pawn)
         {
-            return pawn == null ? null : _cache.TryGetValue(pawn, out var state) ? state : null;
+            return pawn == null ? null : PawnCache.TryGetValue(pawn, out var state) ? state : null;
         }
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace RimTalk.Data
         public static PawnState GetByName(string name)
         {
             if (string.IsNullOrEmpty(name)) return null;
-            return _nameCache.TryGetValue(name, out var pawn) ? Get(pawn) : null;
+            return NameCache.TryGetValue(name, out var pawn) ? Get(pawn) : null;
         }
 
         public static void Refresh()
@@ -40,13 +41,13 @@ namespace RimTalk.Data
             var updated = false;
 
             // Identify and remove ineligible pawns from all caches.
-            foreach (Pawn pawn in _cache.Keys.ToList())
+            foreach (Pawn pawn in PawnCache.Keys.ToList())
             {
                 if (!IsEligiblePawn(pawn, settings))
                 {
-                    if (_cache.TryRemove(pawn, out var removedState))
+                    if (PawnCache.TryRemove(pawn, out var removedState))
                     {
-                        _nameCache.TryRemove(removedState.Pawn.Name.ToStringShort, out _);
+                        NameCache.TryRemove(removedState.Pawn.Name.ToStringShort, out _);
                         updated = true;
                     }
                 }
@@ -55,10 +56,10 @@ namespace RimTalk.Data
             // Add new eligible pawns to all caches.
             foreach (Pawn pawn in Find.CurrentMap.mapPawns.AllPawnsSpawned)
             {
-                if (IsEligiblePawn(pawn, settings) && !_cache.ContainsKey(pawn))
+                if (IsEligiblePawn(pawn, settings) && !PawnCache.ContainsKey(pawn))
                 {
-                    _cache[pawn] = new PawnState(pawn);
-                    _nameCache[pawn.Name.ToStringShort] = pawn;
+                    PawnCache[pawn] = new PawnState(pawn);
+                    NameCache[pawn.Name.ToStringShort] = pawn;
                     updated = true;
                 }
             }
@@ -66,7 +67,7 @@ namespace RimTalk.Data
             // Mark weights as dirty when cache changes
             if (updated)
             {
-                lock (_weightedSelectionLock)
+                lock (WeightedSelectionLock)
                 {
                     _weightsDirty = true;
                 }
@@ -77,24 +78,29 @@ namespace RimTalk.Data
             
         public static IEnumerable<Pawn> GetWeightedPawns()
         {
-            return _cache.Keys.Where(p => Get(p)?.TalkInitiationWeight > 0);
+            return PawnCache.Keys.Where(p => Get(p)?.TalkInitiationWeight > 0);
         }
     
         public static IEnumerable<(Pawn pawn, double weight)> GetPawnsWithWeights()
         {
-            return _cache.Keys.Select(p => (p, Get(p)?.TalkInitiationWeight ?? 0.0))
+            return PawnCache.Keys.Select(p => (p, Get(p)?.TalkInitiationWeight ?? 0.0))
                 .Where(x => x.Item2 > 0);
+        }
+
+        public static IEnumerable<PawnState> GetAll()
+        {
+            return PawnCache.Values;
         }
 
         public static bool Contains(Pawn pawn)
         {
-            return pawn != null && _cache.ContainsKey(pawn);
+            return pawn != null && PawnCache.ContainsKey(pawn);
         }
 
         public static void Clear()
         {
-            _cache.Clear();
-            _nameCache.Clear();
+            PawnCache.Clear();
+            NameCache.Clear();
         }
 
         public static bool IsEligiblePawn(Pawn pawn, CurrentWorkDisplayModSettings settings)
@@ -106,35 +112,65 @@ namespace RimTalk.Data
                 return false;
 
             return !pawn.Dead && (pawn.IsFreeColonist ||
-                                  (settings.allowSlavesToTalk && pawn.IsSlave) ||
-                                  (settings.allowPrisonersToTalk && pawn.IsPrisoner) ||
-                                  (settings.allowOtherFactionsToTalk && PawnService.IsVisitor(pawn)) ||
-                                  (settings.allowEnemiesToTalk && PawnService.IsInvader(pawn)));
+                                  (settings.AllowSlavesToTalk && pawn.IsSlave) ||
+                                  (settings.AllowPrisonersToTalk && pawn.IsPrisoner) ||
+                                  (settings.AllowOtherFactionsToTalk && PawnService.IsVisitor(pawn)) ||
+                                  (settings.AllowEnemiesToTalk && PawnService.IsInvader(pawn)));
         }
 
         // Build weighted when cache marked dirty
         private static void RebuildWeights()
         {
-            lock (_weightedSelectionLock)
+            lock (WeightedSelectionLock)
             {
                 if (!_weightsDirty) return;
 
-                _weightedPawnList.Clear();
-                _cumulativeWeights.Clear();
+                WeightedPawnList.Clear();
+                CumulativeWeights.Clear();
                 _totalWeight = 0.0;
 
-                foreach (var pawn in _cache.Keys)
+                foreach (var pawn in PawnCache.Keys)
                 {
                     var weight = Get(pawn)?.TalkInitiationWeight ?? 0.0;
                     if (weight > 0)
                     {
-                        _weightedPawnList.Add(pawn);
+                        WeightedPawnList.Add(pawn);
                         _totalWeight += weight;
-                        _cumulativeWeights.Add(_totalWeight);
+                        CumulativeWeights.Add(_totalWeight);
                     }
                 }
 
                 _weightsDirty = false;
+            }
+        }
+
+        public static Pawn GetRandomWeightedPawn()
+        {
+            lock (WeightedSelectionLock)
+            {
+                if (_weightsDirty)
+                {
+                    RebuildWeights();
+                }
+
+                if (WeightedPawnList.NullOrEmpty())
+                {
+                    return null;
+                }
+
+                var randomWeight = new Random().NextDouble() * _totalWeight;
+                var index = CumulativeWeights.BinarySearch(randomWeight);
+                if (index < 0)
+                {
+                    index = ~index;
+                }
+
+                if (index >= WeightedPawnList.Count)
+                {
+                    index = WeightedPawnList.Count - 1;
+                }
+
+                return WeightedPawnList[index];
             }
         }
     }

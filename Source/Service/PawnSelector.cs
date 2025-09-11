@@ -9,9 +9,8 @@ namespace RimTalk.Service
 {
     public class PawnSelector
     {
-        public const float HearingRange = 8f;
+        private const float HearingRange = 8f;
         private const float ViewingRange = 20f;
-        private static readonly Random _random = new Random();
 
         public enum DetectionType
         {
@@ -85,40 +84,12 @@ namespace RimTalk.Service
 
         public static Pawn SelectAvailablePawnByWeight(bool noInvader = false)
         {
-            var pawnsWithWeights = Cache.GetPawnsWithWeights().ToList();
-
-            if (!pawnsWithWeights.Any())
-                return null;
-
-            // Build cumulative weights
-            var cumulativeWeights = new List<double>();
-            var totalWeight = 0.0;
-
-            foreach (var (pawn, weight) in pawnsWithWeights)
-            {
-                totalWeight += weight;
-                cumulativeWeights.Add(totalWeight);
-            }
-
-            if (totalWeight == 0)
-                return pawnsWithWeights.FirstOrDefault(x => Cache.Get(x.pawn).CanGenerateTalk(noInvader)).pawn;
-
-            // Selection with linear probing
             for (int attempts = 0; attempts < 10; attempts++)
             {
-                var randomWeight = _random.NextDouble() * totalWeight;
-                var index = cumulativeWeights.BinarySearch(randomWeight);
-                if (index < 0) index = ~index;
-                if (index >= pawnsWithWeights.Count) index = pawnsWithWeights.Count - 1;
-
-                // Linear probe for available pawn
-                for (int i = 0; i < pawnsWithWeights.Count; i++)
+                var pawn = Cache.GetRandomWeightedPawn();
+                if (pawn != null && Cache.Get(pawn).CanGenerateTalk(noInvader))
                 {
-                    var currentIndex = (index + i) % pawnsWithWeights.Count;
-                    var pawn = pawnsWithWeights[currentIndex].pawn;
-
-                    if (Cache.Get(pawn).CanGenerateTalk(noInvader))
-                        return pawn;
+                    return pawn;
                 }
             }
 

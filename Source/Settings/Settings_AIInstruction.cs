@@ -12,13 +12,13 @@ namespace RimTalk
             CurrentWorkDisplayModSettings settings = Get();
 
             // Initialize buffer if needed
-            if (!textAreaInitialized)
+            if (!_textAreaInitialized)
             {
-                textAreaBuffer = string.IsNullOrWhiteSpace(settings.customInstruction) 
+                _textAreaBuffer = string.IsNullOrWhiteSpace(settings.CustomInstruction) 
                     ? Constant.DefaultInstruction 
-                    : settings.customInstruction;
-                lastSavedInstruction = settings.customInstruction;
-                textAreaInitialized = true;
+                    : settings.CustomInstruction;
+                _lastSavedInstruction = settings.CustomInstruction;
+                _textAreaInitialized = true;
             }
 
             var activeConfig = settings.GetActiveConfig();
@@ -55,8 +55,8 @@ namespace RimTalk
             listingStandard.Gap(6f);
 
             // Token info display
-            int currentTokens = CommonUtil.EstimateTokenCount(textAreaBuffer);
-            int maxAllowedTokens = CommonUtil.GetMaxAllowedTokens(settings.talkInterval);
+            int currentTokens = CommonUtil.EstimateTokenCount(_textAreaBuffer);
+            int maxAllowedTokens = CommonUtil.GetMaxAllowedTokens(settings.TalkInterval);
             string tokenInfo = "RimTalk.Settings.TokenInfo".Translate(currentTokens, maxAllowedTokens);
 
             if (currentTokens > maxAllowedTokens)
@@ -81,19 +81,19 @@ namespace RimTalk
             Rect textAreaRect = listingStandard.GetRect(textAreaHeight);
             
             // Draw the text area - Unity's TextArea handles its own scrolling internally
-            string newInstruction = Widgets.TextArea(textAreaRect, textAreaBuffer);
+            string newInstruction = Widgets.TextArea(textAreaRect, _textAreaBuffer);
 
             // Update buffer and settings logic
-            if (newInstruction != textAreaBuffer)
+            if (newInstruction != _textAreaBuffer)
             {
-                textAreaBuffer = newInstruction;
+                _textAreaBuffer = newInstruction;
                 if (newInstruction == Constant.DefaultInstruction)
                 {
-                    settings.customInstruction = "";
+                    settings.CustomInstruction = "";
                 }
                 else
                 {
-                    settings.customInstruction = newInstruction;
+                    settings.CustomInstruction = newInstruction;
                 }
             }
 
@@ -103,8 +103,8 @@ namespace RimTalk
             Rect resetButtonRect = listingStandard.GetRect(30f);
             if (Widgets.ButtonText(resetButtonRect, "RimTalk.Settings.ResetToDefault".Translate()))
             {
-                settings.customInstruction = "";
-                textAreaBuffer = Constant.DefaultInstruction;
+                settings.CustomInstruction = "";
+                _textAreaBuffer = Constant.DefaultInstruction;
             }
 
             // Add some extra space at the bottom to ensure everything is visible

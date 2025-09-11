@@ -3,22 +3,22 @@ using System.Linq;
 using RimTalk.Service;
 using RimTalk.Util;
 using RimWorld;
+using RimWorld.Planet;
 using Verse;
 
 namespace RimTalk.Data
 {
     public class PawnState
     {
-        public Pawn Pawn;
+        private readonly int _talkInterval = Settings.Get().TalkInterval;
 
+        public readonly Pawn Pawn;
         public string Context { get; set; }
         public int LastTalkTick { get; set; }
         public string LastStatus { get; set; }
         public int RejectCount { get; set; }
-        public JobDef CurrentJob { get; set; }
-        public readonly Queue<Talk> TalkQueue = new Queue<Talk>();
+        public readonly Queue<TalkResponse> TalkQueue = new Queue<TalkResponse>();
         public bool IsGeneratingTalk { get; set; }
-        public int TalkInterval;
         public int ReplyInterval { get; set; } = 3;
         public TalkRequest TalkRequest { get; set; }
         public Dictionary<string, float> Thoughts { get; set; }
@@ -29,8 +29,7 @@ namespace RimTalk.Data
 
         public PawnState(Pawn pawn)
         {
-            this.Pawn = pawn;
-            TalkInterval = Settings.Get().talkInterval;
+            Pawn = pawn;
             LastTalkTick = Find.TickManager.TicksGame;
             UpdateThoughts();
             Hediffs = PawnService.GetHediffs(pawn);
@@ -54,7 +53,12 @@ namespace RimTalk.Data
 
         public bool CanDisplayTalk()
         {
-            if (!Settings.Get().displayTalkWhenDrafted && Pawn.Drafted)
+            if (WorldRendererUtility.WorldSelected || Find.CurrentMap == null || Pawn.Map != Find.CurrentMap || !Pawn.Spawned)
+            {
+                return false;
+            }
+            
+            if (!Settings.Get().DisplayTalkWhenDrafted && Pawn.Drafted)
                 return false;
             
             return Pawn.Awake()
@@ -65,7 +69,7 @@ namespace RimTalk.Data
                    && !IsGeneratingTalk 
                    && TalkInitiationWeight > 0 
                    && Find.TickManager.TicksGame - LastTalkTick >
-                   CommonUtil.GetTicksForDuration(TalkInterval);
+                   CommonUtil.GetTicksForDuration(_talkInterval);
         }
         
         public bool CanGenerateTalk(bool noInvader = false)

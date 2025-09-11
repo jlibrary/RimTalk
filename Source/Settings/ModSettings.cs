@@ -8,24 +8,33 @@ namespace RimTalk
     public class CurrentWorkDisplayModSettings : ModSettings
     {
         // New API configuration system
-        public List<ApiConfig> cloudConfigs = new List<ApiConfig>();
-        public int currentCloudConfigIndex = 0;
-        public ApiConfig localConfig = new ApiConfig { Provider = AIProvider.Local };
-        public bool useCloudProviders = true;
-        public bool useSimpleConfig = true;
-        public string simpleApiKey = "";
-        public bool isUsingFallbackModel = false;
+        public List<ApiConfig> CloudConfigs = new List<ApiConfig>();
+        public int CurrentCloudConfigIndex = 0;
+        public ApiConfig LocalConfig = new ApiConfig { Provider = AIProvider.Local };
+        public bool UseCloudProviders = true;
+        public bool UseSimpleConfig = true;
+        public string SimpleApiKey = "";
+        public readonly bool IsUsingFallbackModel = false;
+
+        public bool IsEnabled = true;
 
         // Other existing settings
-        public int talkInterval = 7;
-        public bool processNonRimTalkInteractions;
-        public string customInstruction = "";
-        public Dictionary<string, bool> enabledArchivableTypes = new Dictionary<string, bool>();
-        public bool displayTalkWhenDrafted = true;
-        public bool allowSlavesToTalk = true;
-        public bool allowPrisonersToTalk = true;
-        public bool allowOtherFactionsToTalk = false;
-        public bool allowEnemiesToTalk = false;
+        public int TalkInterval = 7;
+        public bool ProcessNonRimTalkInteractions;
+        public string CustomInstruction = "";
+        public Dictionary<string, bool> EnabledArchivableTypes = new Dictionary<string, bool>();
+        public bool DisplayTalkWhenDrafted = true;
+        public bool AllowSlavesToTalk = true;
+        public bool AllowPrisonersToTalk = true;
+        public bool AllowOtherFactionsToTalk = false;
+        public bool AllowEnemiesToTalk = false;
+
+        // Debug window settings
+        public bool DebugModeEnabled = false;
+        public bool DebugGroupingEnabled = false;
+        public string DebugSortColumn;
+        public bool DebugSortAscending = true;
+        public List<string> DebugExpandedPawns = new List<string>();
 
         /// <summary>
         /// Gets the first active and valid API configuration.
@@ -34,15 +43,15 @@ namespace RimTalk
         /// <returns>The active ApiConfig, or null if no valid configuration is found.</returns>
         public ApiConfig GetActiveConfig()
         {
-            if (useSimpleConfig)
+            if (UseSimpleConfig)
             {
-                if (!string.IsNullOrWhiteSpace(simpleApiKey))
+                if (!string.IsNullOrWhiteSpace(SimpleApiKey))
                 {
                     return new ApiConfig
                     {
-                        ApiKey = simpleApiKey,
+                        ApiKey = SimpleApiKey,
                         Provider = AIProvider.Google,
-                        SelectedModel = isUsingFallbackModel ? Constant.FallbackCloudModel : Constant.DefaultCloudModel,
+                        SelectedModel = IsUsingFallbackModel ? Constant.FallbackCloudModel : Constant.DefaultCloudModel,
                         IsEnabled = true
                     };
                 }
@@ -50,18 +59,18 @@ namespace RimTalk
                 return null;
             }
 
-            if (useCloudProviders)
+            if (UseCloudProviders)
             {
-                if (cloudConfigs.Count == 0) return null;
+                if (CloudConfigs.Count == 0) return null;
 
                 // Start searching from the current index
-                for (int i = 0; i < cloudConfigs.Count; i++)
+                for (int i = 0; i < CloudConfigs.Count; i++)
                 {
-                    int index = (currentCloudConfigIndex + i) % cloudConfigs.Count;
-                    var config = cloudConfigs[index];
+                    int index = (CurrentCloudConfigIndex + i) % CloudConfigs.Count;
+                    var config = CloudConfigs[index];
                     if (config.IsValid())
                     {
-                        currentCloudConfigIndex = index; // Update the current index
+                        CurrentCloudConfigIndex = index; // Update the current index
                         return config;
                     }
                 }
@@ -70,9 +79,9 @@ namespace RimTalk
             else
             {
                 // Check local configuration
-                if (localConfig != null && localConfig.IsValid())
+                if (LocalConfig != null && LocalConfig.IsValid())
                 {
-                    return localConfig;
+                    return LocalConfig;
                 }
             }
 
@@ -84,16 +93,16 @@ namespace RimTalk
         /// </summary>
         public void TryNextConfig()
         {
-            if (cloudConfigs.Count <= 1) return; // No need to advance if 0 or 1 config
+            if (CloudConfigs.Count <= 1) return; // No need to advance if 0 or 1 config
 
-            int originalIndex = currentCloudConfigIndex;
-            for (int i = 1; i < cloudConfigs.Count; i++) // Start from the next one
+            int originalIndex = CurrentCloudConfigIndex;
+            for (int i = 1; i < CloudConfigs.Count; i++) // Start from the next one
             {
-                int nextIndex = (originalIndex + i) % cloudConfigs.Count;
-                var config = cloudConfigs[nextIndex];
+                int nextIndex = (originalIndex + i) % CloudConfigs.Count;
+                var config = CloudConfigs[nextIndex];
                 if (config.IsValid())
                 {
-                    currentCloudConfigIndex = nextIndex;
+                    CurrentCloudConfigIndex = nextIndex;
                     Write(); // Save the updated index
                     return;
                 }
@@ -124,37 +133,45 @@ namespace RimTalk
             base.ExposeData();
             
             // New API configuration system
-            Scribe_Collections.Look(ref cloudConfigs, "cloudConfigs", LookMode.Deep);
-            Scribe_Deep.Look(ref localConfig, "localConfig");
-            Scribe_Values.Look(ref useCloudProviders, "useCloudProviders", true);
-            Scribe_Values.Look(ref useSimpleConfig, "useSimpleConfig", true);
-            Scribe_Values.Look(ref simpleApiKey, "simpleApiKey", "");
+            Scribe_Collections.Look(ref CloudConfigs, "cloudConfigs", LookMode.Deep);
+            Scribe_Deep.Look(ref LocalConfig, "localConfig");
+            Scribe_Values.Look(ref UseCloudProviders, "useCloudProviders", true);
+            Scribe_Values.Look(ref UseSimpleConfig, "useSimpleConfig", true);
+            Scribe_Values.Look(ref SimpleApiKey, "simpleApiKey", "");
+            Scribe_Values.Look(ref IsEnabled, "isEnabled", true);
             
             // Other existing settings
-            Scribe_Values.Look(ref talkInterval, "talkInterval", 7);
-            Scribe_Values.Look(ref processNonRimTalkInteractions, "processNonRimTalkInteractions", true);
-            Scribe_Values.Look(ref customInstruction, "customInstruction", "");
-            Scribe_Values.Look(ref displayTalkWhenDrafted, "displayTalkWhenDrafted", true);
-            Scribe_Values.Look(ref allowSlavesToTalk, "allowSlavesToTalk", true);
-            Scribe_Values.Look(ref allowPrisonersToTalk, "allowPrisonersToTalk", true);
-            Scribe_Values.Look(ref allowOtherFactionsToTalk, "allowOtherFactionsToTalk", false);
-            Scribe_Values.Look(ref allowEnemiesToTalk, "allowEnemiesToTalk", false);
-            Scribe_Collections.Look(ref enabledArchivableTypes, "enabledArchivableTypes", LookMode.Value, LookMode.Value);
+            Scribe_Values.Look(ref TalkInterval, "talkInterval", 7);
+            Scribe_Values.Look(ref ProcessNonRimTalkInteractions, "processNonRimTalkInteractions", true);
+            Scribe_Values.Look(ref CustomInstruction, "customInstruction", "");
+            Scribe_Values.Look(ref DisplayTalkWhenDrafted, "displayTalkWhenDrafted", true);
+            Scribe_Values.Look(ref AllowSlavesToTalk, "allowSlavesToTalk", true);
+            Scribe_Values.Look(ref AllowPrisonersToTalk, "allowPrisonersToTalk", true);
+            Scribe_Values.Look(ref AllowOtherFactionsToTalk, "allowOtherFactionsToTalk", false);
+            Scribe_Values.Look(ref AllowEnemiesToTalk, "allowEnemiesToTalk", false);
+            Scribe_Collections.Look(ref EnabledArchivableTypes, "enabledArchivableTypes", LookMode.Value, LookMode.Value);
+
+            // Debug window settings
+            Scribe_Values.Look(ref DebugModeEnabled, "debugModeEnabled", false);
+            Scribe_Values.Look(ref DebugGroupingEnabled, "debugGroupingEnabled", false);
+            Scribe_Values.Look(ref DebugSortColumn, "debugSortColumn", null);
+            Scribe_Values.Look(ref DebugSortAscending, "debugSortAscending", true);
+            Scribe_Collections.Look(ref DebugExpandedPawns, "debugExpandedPawns", LookMode.Value);
 
             // Initialize collections if null
-            if (cloudConfigs == null)
-                cloudConfigs = new List<ApiConfig>();
+            if (CloudConfigs == null)
+                CloudConfigs = new List<ApiConfig>();
             
-            if (localConfig == null)
-                localConfig = new ApiConfig { Provider = AIProvider.Local };
+            if (LocalConfig == null)
+                LocalConfig = new ApiConfig { Provider = AIProvider.Local };
                 
-            if (enabledArchivableTypes == null)
-                enabledArchivableTypes = new Dictionary<string, bool>();
+            if (EnabledArchivableTypes == null)
+                EnabledArchivableTypes = new Dictionary<string, bool>();
             
             // Ensure we have at least one cloud config
-            if (cloudConfigs.Count == 0)
+            if (CloudConfigs.Count == 0)
             {
-                cloudConfigs.Add(new ApiConfig());
+                CloudConfigs.Add(new ApiConfig());
             }
         }
     }

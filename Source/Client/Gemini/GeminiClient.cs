@@ -9,17 +9,67 @@ using RimTalk.Util;
 using UnityEngine.Networking;
 using Verse;
 
-namespace RimTalk.AI.Gemini
+namespace RimTalk.Client.Gemini
 {
     public class GeminiClient : IAIClient
     {
         private const string BaseUrl = "https://generativelanguage.googleapis.com/v1beta";
+        private static string CurrentApiKey => Settings.Get().GetActiveConfig()?.ApiKey;
+        private static string CurrentModel => Settings.Get().GetCurrentModel();
+        private static string EndpointUrl => $"{BaseUrl}/models/{CurrentModel}:generateContent?key={CurrentApiKey}";
         private readonly Random _random = new Random();
-        private string CurrentApiKey => Settings.Get().GetActiveConfig()?.ApiKey;
-        private string CurrentModel => Settings.Get().GetCurrentModel();
-        private string EndpointUrl => $"{BaseUrl}/models/{CurrentModel}:generateContent?key={CurrentApiKey}";
 
-        private async Task<string> GetCompletionAsync(GeminiRequest request)
+        public async Task<Payload> GetChatCompletionAsync(string instruction,
+            List<(Role role, string message)> messages)
+        {
+            // Handle system instruction based on model type
+            SystemInstruction systemInstruction = null;
+            List<(Role role, string message)> allMessages = new List<(Role role, string message)>();
+
+            if (CurrentModel.Contains("gemma"))
+            {
+                // For Gemma models, add instruction as the first user message with random prefix
+                allMessages.Add((Role.User, _random.Next() + " " + instruction));
+            }
+            else
+            {
+                // For other models, use system_instruction field
+                systemInstruction = new SystemInstruction
+                {
+                    Parts = new List<Part> { new Part { Text = instruction } }
+                };
+            }
+
+            // Add the rest of the messages
+            allMessages.AddRange(messages);
+
+            var generationConfig = new GenerationConfig();
+
+            // Handle thinkingBudget for flash models
+            if (CurrentModel.Contains("flash"))
+            {
+                generationConfig.ThinkingConfig = new ThinkingConfig { ThinkingBudget = 0 };
+            }
+
+            var request = new GeminiRequest()
+            {
+                SystemInstruction = systemInstruction,
+                Contents = allMessages.Select(m => new Content
+                {
+                    Role = ConvertRole(m.role),
+                    Parts = new List<Part> { new Part { Text = m.message } }
+                }).ToList(),
+                GenerationConfig = generationConfig
+            };
+
+            string jsonContent = JsonUtil.SerializeToJson(request);
+            var response = await GetCompletionAsync(jsonContent);
+            var content = response?.Candidates?[0]?.Content?.Parts?[0]?.Text;
+            var tokens = response?.UsageMetadata?.TotalTokenCount ?? 0;
+            return new Payload(jsonContent, content, tokens);
+        }
+        
+        private async Task<GeminiResponse> GetCompletionAsync(string jsonContent)
         {
             if (string.IsNullOrEmpty(CurrentApiKey))
             {
@@ -29,7 +79,6 @@ namespace RimTalk.AI.Gemini
 
             try
             {
-                string jsonContent = JsonUtil.SerializeToJson(request);
                 Logger.Message($"API request: {EndpointUrl}\n{jsonContent}");
 
                 using (UnityWebRequest webRequest = UnityWebRequest.Post(EndpointUrl, jsonContent))
@@ -65,7 +114,7 @@ namespace RimTalk.AI.Gemini
                     if (response.Candidates?[0]?.FinishReason == "MAX_TOKENS")
                         throw new QuotaExceededException("Quota exceeded");
                     
-                    return response?.Candidates?[0]?.Content?.Parts?[0]?.Text;
+                    return response;
                 }
             }
             catch (QuotaExceededException)
@@ -78,59 +127,12 @@ namespace RimTalk.AI.Gemini
                 throw;
             }
         }
-
-        // Helper method for chat-style completion
-        public async Task<string> GetChatCompletionAsync(string instruction,
-            List<(Role role, string message)> messages)
-        {
-            // Handle system instruction based on model type
-            SystemInstruction systemInstruction = null;
-            List<(Role role, string message)> allMessages = new List<(Role role, string message)>();
-
-            if (CurrentModel.Contains("gemma"))
-            {
-                // For Gemma models, add instruction as the first user message with random prefix
-                allMessages.Add((Role.USER, _random.Next() + " " + instruction));
-            }
-            else
-            {
-                // For other models, use system_instruction field
-                systemInstruction = new SystemInstruction
-                {
-                    Parts = new List<Part> { new Part { Text = instruction } }
-                };
-            }
-
-            // Add the rest of the messages
-            allMessages.AddRange(messages);
-
-            var generationConfig = new GenerationConfig();
-
-            // Handle thinkingBudget for flash models
-            if (CurrentModel.Contains("flash"))
-            {
-                generationConfig.ThinkingConfig = new ThinkingConfig { ThinkingBudget = 0 };
-            }
-
-            var request = new GeminiRequest()
-            {
-                SystemInstruction = systemInstruction,
-                Contents = allMessages.Select(m => new Content
-                {
-                    Role = ConvertRole(m.role),
-                    Parts = new List<Part> { new Part { Text = m.message } }
-                }).ToList(),
-                GenerationConfig = generationConfig
-            };
-
-            return await GetCompletionAsync(request);
-        }
         
         private string ConvertRole(Role role)
         {
             switch (role)
             {
-                case Role.USER:
+                case Role.User:
                     return "user";
                 case Role.AI:
                     return "model"; 

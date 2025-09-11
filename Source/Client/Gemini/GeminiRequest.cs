@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace RimTalk.AI.Gemini
+namespace RimTalk.Client.Gemini
 {
     [DataContract]
     public class GeminiRequest
@@ -85,6 +85,9 @@ namespace RimTalk.AI.Gemini
     {
         [DataMember(Name = "candidates")]
         public List<Candidate> Candidates { get; set; } = new List<Candidate>();
+
+        [DataMember(Name = "usageMetadata")]
+        public UsageMetadata UsageMetadata { get; set; }
     }
 
     [DataContract]
@@ -98,5 +101,18 @@ namespace RimTalk.AI.Gemini
 
         [DataMember(Name = "index")]
         public int Index { get; set; }
+    }
+
+    [DataContract]
+    public class UsageMetadata
+    {
+        [DataMember(Name = "promptTokenCount")]
+        public int PromptTokenCount { get; set; }
+
+        [DataMember(Name = "candidatesTokenCount")]
+        public int CandidatesTokenCount { get; set; }
+
+        [DataMember(Name = "totalTokenCount")]
+        public int TotalTokenCount { get; set; }
     }
 }

@@ -11,17 +11,23 @@ namespace RimTalk.Patch
     internal static class TickManager_DoSingleTick
     {
         private const double DisplayInterval = 0.5; // Display every half second
+        private const double DebugStatUpdateInterval = 1;
         private const int UpdateCacheInterval = 5;    // 5 seconds
-        private static double TalkInterval => Settings.Get().talkInterval;
+        private static double TalkInterval => Settings.Get().TalkInterval;
         public static bool NoApiKeyMessageShown;
         public static bool InitialCacheRefresh;
 
         public static void Postfix()
         {
             Counter.Tick++;
+            
+            if (IsNow(DebugStatUpdateInterval))
+            {
+                Stats.Update();
+            }
 
-            if (!RimTalk.IsEnabled || Find.CurrentMap == null) return;
-
+            if (!Settings.Get().IsEnabled || Find.CurrentMap == null) return;
+            
             if (!InitialCacheRefresh || IsNow(UpdateCacheInterval))
             {
                 Cache.Refresh();
@@ -45,15 +51,15 @@ namespace RimTalk.Patch
                 if (pawn != null)
                 {
                     var pawnState = Cache.Get(pawn);
-                    // if pawn has talk request, try generating
-                    if (pawnState.TalkRequest != null)
-                    {
-                        TalkService.GenerateTalk(pawnState.TalkRequest);
-                    }
-                    // if pawn does not have any request and in good condition, try to take one from pool
-                    else if (!TalkRequestPool.IsEmpty && !PawnService.IsPawnInDanger(pawn))
+                    // if pawn not in danger, try to take one from general pool
+                    if (!TalkRequestPool.IsEmpty && !PawnService.IsPawnInDanger(pawn))
                     {
                         TalkService.GenerateTalkFromPool(pawn);
+                    }
+                    // if pawn has talk request, try generating
+                    else if (pawnState.TalkRequest != null)
+                    {
+                        TalkService.GenerateTalk(pawnState.TalkRequest);
                     }
                     // otherwise generate based on current context
                     else
@@ -93,6 +99,12 @@ namespace RimTalk.Patch
             int offsetTicks = CommonUtil.GetTicksForDuration(offset);
             if (ticksForDuration == 0) return false;
             return Counter.Tick % ticksForDuration == offsetTicks;
+        }
+        
+        public static void Reset()
+        {
+            NoApiKeyMessageShown = false;
+            InitialCacheRefresh = false;
         }
     }
 }

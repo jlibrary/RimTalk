@@ -147,7 +147,7 @@ namespace RimTalk.Service
             pawn.def.hideMainDesc = true;
             string status = pawn.GetInspectString();
             List<string> parts = new List<string>();
-            parts.Add("\n[Important]check current context");
+            parts.Add("[Important]check current context");
             
             // --- 1. Nearby pawns ---
             List<Pawn> nearByPawns = PawnSelector.GetAllNearByPawns(pawn);
@@ -162,7 +162,7 @@ namespace RimTalk.Service
 
                 if (nearbyNotableStatuses.Any())
                 {
-                    parts.Add("\nPeople in condition nearby: " + string.Join("; ", nearbyNotableStatuses));
+                    parts.Add("People in condition nearby: " + string.Join("; ", nearbyNotableStatuses));
                     isInDanger = true;
                 }
 
@@ -188,28 +188,28 @@ namespace RimTalk.Service
                         ? string.Join(", ", nearbyNames.Take(3)) + ", and others"
                         : string.Join(", ", nearbyNames);
 
-                parts.Add($"\nNearby: {nearbyText}");
+                parts.Add($"Nearby: {nearbyText}");
             }
             else
             {
-                parts.Add("\nNearby people: none");
+                parts.Add("Nearby people: none");
             }
             
             // --- 2. Add time ---
-            parts.Add($"\nTime: {CommonUtil.GetInGameHour12HString()}");
+            parts.Add($"Time: {CommonUtil.GetInGameHour12HString()}");
             
             // --- 3. Add status ---
-            parts.Add($"\nCurrently: {status}");
+            parts.Add($"Currently: {status}");
 
             if (IsPawnInDanger(pawn))
             {
-                parts.Add("\nbe dramatic");
+                parts.Add("be dramatic");
                 isInDanger = true;
             }
 
             if (IsInvader(pawn))
             {
-                parts.Add("\ninvading user colony");
+                parts.Add("invading user colony");
                 return string.Join("\n", parts);
             }
 
@@ -220,11 +220,11 @@ namespace RimTalk.Service
                 float distance = pawn.Position.DistanceTo(nearestHostile.Position);
 
                 if (distance <= 10f)
-                    parts.Add("\nThreat: Engaging in battle!");
+                    parts.Add("Threat: Engaging in battle!");
                 else if (distance <= 20f)
-                    parts.Add("\nThreat: Hostiles are dangerously close!");
+                    parts.Add("Threat: Hostiles are dangerously close!");
                 else
-                    parts.Add("\nAlert: hostiles in the area");
+                    parts.Add("Alert: hostiles in the area");
                 isInDanger = true;
             }
             

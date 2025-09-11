@@ -37,6 +37,7 @@ namespace RimTalk.Util
         
         public static string Sanitize(string text)
         {
+            text = text.Replace("```json", "").Replace("```", "").Trim();
             text = Regex.Replace(text, @"[“”""]+", "\"");
             text = Regex.Replace(text, @"\n\s*|\\", "");
             text = Regex.Replace(text, @".*[\r\n]*\[{", "[{");

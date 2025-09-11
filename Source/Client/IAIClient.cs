@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using RimTalk.Client;
 using RimTalk.Data;
 
 public interface IAIClient
@@ -9,6 +10,6 @@ public interface IAIClient
     /// </summary>
     /// <param name="instruction">System instruction or prompt</param>
     /// <param name="messages">List of conversation messages with roles</param>
-    /// <returns>AI response text</returns>
-    Task<string> GetChatCompletionAsync(string instruction, List<(Role role, string message)> messages);
+    /// <returns>AI response text and token usage</returns>
+    Task<Payload> GetChatCompletionAsync(string instruction, List<(Role role, string message)> messages);
 }

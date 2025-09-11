@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +9,7 @@ using RimTalk.Util;
 using UnityEngine.Networking;
 using Verse;
 
-namespace RimTalk.AI.OpenAI
+namespace RimTalk.Client.OpenAI
 {
     public class OpenAIClient : IAIClient
     {
@@ -27,7 +26,7 @@ namespace RimTalk.AI.OpenAI
 
         private string EndpointUrl => $"{_baseUrl}/v1/chat/completions";
 
-        public async Task<string> GetChatCompletionAsync(string instruction,
+        public async Task<Payload> GetChatCompletionAsync(string instruction,
             List<(Role role, string message)> messages)
         {
             var allMessages = new List<Message>();
@@ -53,20 +52,23 @@ namespace RimTalk.AI.OpenAI
                 Messages = allMessages
             };
 
-            return await GetResponseFromApiAsync(request);
+            string jsonContent = JsonUtil.SerializeToJson(request);
+            var response = await GetCompletionAsync(jsonContent);
+            var content = response?.Choices?[0]?.Message?.Content;
+            var tokens = response?.Usage?.TotalTokens ?? 0;
+            return new Payload(jsonContent, content, tokens);
         }
 
-        private async Task<string> GetResponseFromApiAsync(OpenAIRequest request)
+        private async Task<OpenAIResponse> GetCompletionAsync(string jsonContent)
         {
             if (string.IsNullOrEmpty(_baseUrl))
             {
                 Logger.Error("Endpoint URL is missing.");
                 return null;
             }
-            
+
             try
             {
-                string jsonContent = JsonUtil.SerializeToJson(request);
                 Logger.Message($"API request: {EndpointUrl}\n{jsonContent}");
 
                 using (var webRequest = UnityWebRequest.Post(EndpointUrl, jsonContent))
@@ -75,7 +77,7 @@ namespace RimTalk.AI.OpenAI
                     webRequest.uploadHandler = new UploadHandlerRaw(bodyRaw);
                     webRequest.downloadHandler = new DownloadHandlerBuffer();
                     webRequest.SetRequestHeader("Content-Type", "application/json");
-                    if(!string.IsNullOrEmpty(_apiKey))
+                    if (!string.IsNullOrEmpty(_apiKey))
                     {
                         webRequest.SetRequestHeader("Authorization", $"Bearer {_apiKey}");
                     }
@@ -99,8 +101,7 @@ namespace RimTalk.AI.OpenAI
                         throw new Exception();
                     }
 
-                    var response = JsonUtil.DeserializeFromJson<OpenAIResponse>(webRequest.downloadHandler.text);
-                    return response?.Choices?[0]?.Message?.Content;
+                    return JsonUtil.DeserializeFromJson<OpenAIResponse>(webRequest.downloadHandler.text);
                 }
             }
             catch (QuotaExceededException)
@@ -118,7 +119,7 @@ namespace RimTalk.AI.OpenAI
         {
             switch (role)
             {
-                case Role.USER:
+                case Role.User:
                     return "user";
                 case Role.AI:
                     return "assistant";

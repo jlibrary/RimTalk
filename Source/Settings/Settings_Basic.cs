@@ -10,7 +10,7 @@ namespace RimTalk
             CurrentWorkDisplayModSettings settings = Get();
 
             // API Configuration section
-            if (!settings.useSimpleConfig)
+            if (!settings.UseSimpleConfig)
             {
                 DrawAdvancedApiSettings(listingStandard);
             }
@@ -21,15 +21,15 @@ namespace RimTalk
 
             listingStandard.Gap(30f);
             
-            listingStandard.Label("RimTalk.Settings.AICooldown".Translate(settings.talkInterval));
-            settings.talkInterval = (int)listingStandard.Slider(settings.talkInterval, 1, 20);
+            listingStandard.Label("RimTalk.Settings.AICooldown".Translate(settings.TalkInterval));
+            settings.TalkInterval = (int)listingStandard.Slider(settings.TalkInterval, 1, 20);
 
             listingStandard.Gap(12f);
 
             // Add the checkbox below cooldown slider
             listingStandard.CheckboxLabeled(
                 "RimTalk.Settings.OverrideInteractions".Translate(),
-                ref settings.processNonRimTalkInteractions,
+                ref settings.ProcessNonRimTalkInteractions,
                 "RimTalk.Settings.OverrideInteractionsTooltip".Translate()
             );
             listingStandard.Gap(12f);
@@ -37,7 +37,7 @@ namespace RimTalk
             // Display talk when drafted checkbox
             listingStandard.CheckboxLabeled(
                 "RimTalk.Settings.DisplayTalkWhenDrafted".Translate(),
-                ref settings.displayTalkWhenDrafted,
+                ref settings.DisplayTalkWhenDrafted,
                 "RimTalk.Settings.DisplayTalkWhenDraftedTooltip".Translate()
             );
 
@@ -46,7 +46,7 @@ namespace RimTalk
             // Allow slaves to talk checkbox
             listingStandard.CheckboxLabeled(
                 "RimTalk.Settings.AllowSlavesToTalk".Translate(),
-                ref settings.allowSlavesToTalk,
+                ref settings.AllowSlavesToTalk,
                 "RimTalk.Settings.AllowSlavesToTalkTooltip".Translate()
             );
 
@@ -55,7 +55,7 @@ namespace RimTalk
             // Allow prisoners to talk checkbox
             listingStandard.CheckboxLabeled(
                 "RimTalk.Settings.AllowPrisonersToTalk".Translate(),
-                ref settings.allowPrisonersToTalk,
+                ref settings.AllowPrisonersToTalk,
                 "RimTalk.Settings.AllowPrisonersToTalkTooltip".Translate()
             );
 
@@ -64,7 +64,7 @@ namespace RimTalk
             // Allow other factions to talk checkbox
             listingStandard.CheckboxLabeled(
                 "RimTalk.Settings.AllowOtherFactionsToTalk".Translate(),
-                ref settings.allowOtherFactionsToTalk,
+                ref settings.AllowOtherFactionsToTalk,
                 "RimTalk.Settings.AllowOtherFactionsToTalkTooltip".Translate()
             );
 
@@ -73,7 +73,7 @@ namespace RimTalk
             // Allow enemies to talk checkbox
             listingStandard.CheckboxLabeled(
                 "RimTalk.Settings.AllowEnemiesToTalk".Translate(),
-                ref settings.allowEnemiesToTalk,
+                ref settings.AllowEnemiesToTalk,
                 "RimTalk.Settings.AllowEnemiesToTalkTooltip".Translate()
             );
 
@@ -90,14 +90,14 @@ namespace RimTalk
             if (Widgets.ButtonText(resetButtonRect, "RimTalk.Settings.ResetToDefault".Translate()))
             {
                 // Reset all basic settings to their default values
-                settings.talkInterval = 7;
-                settings.processNonRimTalkInteractions = true;
-                settings.displayTalkWhenDrafted = true;
-                settings.allowSlavesToTalk = true;
-                settings.allowPrisonersToTalk = true;
-                settings.allowOtherFactionsToTalk = false;
-                settings.allowEnemiesToTalk = false;
-                settings.useSimpleConfig = true;
+                settings.TalkInterval = 7;
+                settings.ProcessNonRimTalkInteractions = true;
+                settings.DisplayTalkWhenDrafted = true;
+                settings.AllowSlavesToTalk = true;
+                settings.AllowPrisonersToTalk = true;
+                settings.AllowOtherFactionsToTalk = false;
+                settings.AllowEnemiesToTalk = false;
+                settings.UseSimpleConfig = true;
             }
         }
     }
