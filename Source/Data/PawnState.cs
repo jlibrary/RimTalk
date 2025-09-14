@@ -10,8 +10,6 @@ namespace RimTalk.Data
 {
     public class PawnState
     {
-        private readonly int _talkInterval = Settings.Get().TalkInterval;
-
         public readonly Pawn Pawn;
         public string Context { get; set; }
         public int LastTalkTick { get; set; }
@@ -24,8 +22,8 @@ namespace RimTalk.Data
         public Dictionary<string, float> Thoughts { get; set; }
         public HashSet<Hediff> Hediffs { get; set; }
         
-        public string Personality => Current.Game.GetComponent<PersonaManager>()?.GetPersonality(Pawn);
-        public double TalkInitiationWeight => Current.Game.GetComponent<PersonaManager>().GetTalkInitiationWeight(Pawn);
+        public string Personality => PersonaService.GetPersonality(Pawn);
+        public double TalkInitiationWeight => PersonaService.GetTalkInitiationWeight(Pawn);
 
         public PawnState(Pawn pawn)
         {
@@ -66,17 +64,16 @@ namespace RimTalk.Data
                    && Pawn.CurJobDef != JobDefOf.LayDown
                    && Pawn.CurJobDef != JobDefOf.LayDownAwake
                    && Pawn.CurJobDef != JobDefOf.LayDownResting
-                   && !IsGeneratingTalk 
                    && TalkInitiationWeight > 0 
                    && Find.TickManager.TicksGame - LastTalkTick >
-                   CommonUtil.GetTicksForDuration(_talkInterval);
+                   CommonUtil.GetTicksForDuration(Settings.Get().ReplyInterval);
         }
         
         public bool CanGenerateTalk(bool noInvader = false)
         {
             if (noInvader && PawnService.IsInvader(Pawn))
                 return false;
-            return CanDisplayTalk() && TalkQueue.Empty();
+            return !IsGeneratingTalk && CanDisplayTalk() && TalkQueue.Empty();
         }
     }
 }

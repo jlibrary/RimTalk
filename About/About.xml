@@ -17,6 +17,7 @@ Every conversation is unique and emergent, creating immersive storytelling exper
 Setup: Get your free API key at aistudio.google.com, enable the mod, and paste your key in mod settings. Compatible with most other mods and respects API rate limits automatically.
 	</description>
 	<supportedVersions>
+		<li>1.5</li>
 		<li>1.6</li>
 	</supportedVersions>
 	<modDependencies>

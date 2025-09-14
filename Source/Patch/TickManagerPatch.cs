@@ -8,14 +8,14 @@ using Verse;
 namespace RimTalk.Patch
 {
     [HarmonyPatch(typeof(TickManager), nameof(TickManager.DoSingleTick))]
-    internal static class TickManager_DoSingleTick
+    internal static class TickManagerPatch
     {
         private const double DisplayInterval = 0.5; // Display every half second
         private const double DebugStatUpdateInterval = 1;
         private const int UpdateCacheInterval = 5;    // 5 seconds
         private static double TalkInterval => Settings.Get().TalkInterval;
-        public static bool NoApiKeyMessageShown;
-        public static bool InitialCacheRefresh;
+        private static bool _noApiKeyMessageShown;
+        private static bool _initialCacheRefresh;
 
         public static void Postfix()
         {
@@ -28,16 +28,16 @@ namespace RimTalk.Patch
 
             if (!Settings.Get().IsEnabled || Find.CurrentMap == null) return;
             
-            if (!InitialCacheRefresh || IsNow(UpdateCacheInterval))
+            if (!_initialCacheRefresh || IsNow(UpdateCacheInterval))
             {
                 Cache.Refresh();
-                InitialCacheRefresh = true;
+                _initialCacheRefresh = true;
             }
             
-            if (!NoApiKeyMessageShown && Settings.Get().GetActiveConfig() == null)
+            if (!_noApiKeyMessageShown && Settings.Get().GetActiveConfig() == null)
             {
                 Messages.Message("RimTalk.TickManager.ApiKeyMissing".Translate(), MessageTypeDefOf.NegativeEvent, false);
-                NoApiKeyMessageShown = true;
+                _noApiKeyMessageShown = true;
             }
 
             if (IsNow(DisplayInterval))
@@ -103,8 +103,8 @@ namespace RimTalk.Patch
         
         public static void Reset()
         {
-            NoApiKeyMessageShown = false;
-            InitialCacheRefresh = false;
+            _noApiKeyMessageShown = false;
+            _initialCacheRefresh = false;
         }
     }
 }

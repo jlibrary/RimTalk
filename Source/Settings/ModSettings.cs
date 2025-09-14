@@ -20,6 +20,7 @@ namespace RimTalk
 
         // Other existing settings
         public int TalkInterval = 7;
+        public readonly int ReplyInterval = 3;
         public bool ProcessNonRimTalkInteractions;
         public string CustomInstruction = "";
         public Dictionary<string, bool> EnabledArchivableTypes = new Dictionary<string, bool>();

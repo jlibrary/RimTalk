@@ -133,12 +133,7 @@ namespace RimTalk
             if (settings.CustomInstruction != _lastSavedInstruction)
             {
                 _lastSavedInstruction = settings.CustomInstruction;
-                // Find the RimTalk GameComponent and call Reset
-                var rimTalkComponent = Current.Game?.GetComponent<RimTalk>();
-                if (rimTalkComponent != null)
-                {
-                    rimTalkComponent.Reset(true);
-                }
+                RimTalk.Reset(true);
             }
         }
 

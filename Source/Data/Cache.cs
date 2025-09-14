@@ -10,10 +10,13 @@ namespace RimTalk.Data
     public static class Cache
     {
         // Main data store mapping a Pawn to its current state.
-        private static readonly ConcurrentDictionary<Pawn, PawnState> PawnCache = new ConcurrentDictionary<Pawn, PawnState>();
+        private static readonly ConcurrentDictionary<Pawn, PawnState> PawnCache =
+            new ConcurrentDictionary<Pawn, PawnState>();
+
         private static readonly ConcurrentDictionary<string, Pawn> NameCache = new ConcurrentDictionary<string, Pawn>();
 
         private static readonly object WeightedSelectionLock = new object();
+        private static readonly Random Random = new Random();
         private static readonly List<Pawn> WeightedPawnList = new List<Pawn>();
         private static readonly List<double> CumulativeWeights = new List<double>();
         private static double _totalWeight = 0.0;
@@ -75,12 +78,12 @@ namespace RimTalk.Data
                 RebuildWeights();
             }
         }
-            
+
         public static IEnumerable<Pawn> GetWeightedPawns()
         {
             return PawnCache.Keys.Where(p => Get(p)?.TalkInitiationWeight > 0);
         }
-    
+
         public static IEnumerable<(Pawn pawn, double weight)> GetPawnsWithWeights()
         {
             return PawnCache.Keys.Select(p => (p, Get(p)?.TalkInitiationWeight ?? 0.0))
@@ -107,7 +110,7 @@ namespace RimTalk.Data
         {
             if (pawn.DestroyedOrNull() || !pawn.Spawned)
                 return false;
-            
+
             if (!pawn.RaceProps.Humanlike)
                 return false;
 
@@ -144,34 +147,33 @@ namespace RimTalk.Data
             }
         }
 
-        public static Pawn GetRandomWeightedPawn()
+        public static Pawn GetRandomWeightedPawn(IEnumerable<Pawn> pawns)
         {
-            lock (WeightedSelectionLock)
+            var pawnList = pawns.ToList();
+            if (pawnList.NullOrEmpty())
             {
-                if (_weightsDirty)
-                {
-                    RebuildWeights();
-                }
-
-                if (WeightedPawnList.NullOrEmpty())
-                {
-                    return null;
-                }
-
-                var randomWeight = new Random().NextDouble() * _totalWeight;
-                var index = CumulativeWeights.BinarySearch(randomWeight);
-                if (index < 0)
-                {
-                    index = ~index;
-                }
-
-                if (index >= WeightedPawnList.Count)
-                {
-                    index = WeightedPawnList.Count - 1;
-                }
-
-                return WeightedPawnList[index];
+                return null;
             }
+
+            var totalWeight = pawnList.Sum(p => Get(p)?.TalkInitiationWeight ?? 0.0);
+            if (totalWeight <= 0)
+            {
+                return null;
+            }
+
+            var randomWeight = Random.NextDouble() * totalWeight;
+            var cumulativeWeight = 0.0;
+
+            foreach (var pawn in pawnList)
+            {
+                cumulativeWeight += Get(pawn)?.TalkInitiationWeight ?? 0.0;
+                if (randomWeight < cumulativeWeight)
+                {
+                    return pawn;
+                }
+            }
+
+            return pawnList.LastOrDefault();
         }
     }
 }

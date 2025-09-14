@@ -9,7 +9,7 @@ namespace RimTalk.Service
 {
     public class PawnSelector
     {
-        private const float HearingRange = 8f;
+        private const float HearingRange = 10f;
         private const float ViewingRange = 20f;
 
         public enum DetectionType
@@ -84,16 +84,8 @@ namespace RimTalk.Service
 
         public static Pawn SelectAvailablePawnByWeight(bool noInvader = false)
         {
-            for (int attempts = 0; attempts < 10; attempts++)
-            {
-                var pawn = Cache.GetRandomWeightedPawn();
-                if (pawn != null && Cache.Get(pawn).CanGenerateTalk(noInvader))
-                {
-                    return pawn;
-                }
-            }
-
-            return null;
+            var availablePawns = Cache.Keys.Where(pawn => Cache.Get(pawn).CanGenerateTalk(noInvader));
+            return Cache.GetRandomWeightedPawn(availablePawns);
         }
     }
 }

@@ -226,7 +226,7 @@ namespace RimTalk.Service
         public static string DecoratePrompt(string prompt, Pawn pawn1, Pawn pawn2, string status)
         {
             // add pawn status
-            prompt += status;
+            prompt += $"\n{status}";
             
             // add pawn names
             prompt = pawn1.Name.ToStringShort + (pawn2 != null ? $" and {pawn2.Name.ToStringShort}" : "") + ": " + prompt;

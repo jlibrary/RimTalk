@@ -6,7 +6,7 @@ using Verse;
 namespace RimTalk.Patch
 {
     [HarmonyPatch(typeof(Archive), nameof(Archive.Add))]
-    public static class Archive_Add
+    public static class ArchivePatch
     {
         public static void Prefix(IArchivable archivable)
         {

@@ -1,5 +1,6 @@
 using HarmonyLib;
-using RimTalk.Data;
+// You no longer need the Legacy namespace here
+// using RimTalk.Compatibility.Legacy; 
 using RimTalk.UI;
 using UnityEngine;
 using Verse;
@@ -7,21 +8,23 @@ using RimWorld;
 
 namespace RimTalk.Patches
 {
-    [HarmonyPatch(typeof(CharacterCardUtility), "DrawCharacterCard")]
+    [HarmonyPatch(typeof(CharacterCardUtility), nameof(CharacterCardUtility.DrawCharacterCard))]
     public static class BioTabPersonalityPatch
     {
         public static void Postfix(Rect rect, Pawn pawn)
         {
+            // This check is all you need.
             if (pawn?.RaceProps?.Humanlike != true || !pawn.IsFreeColonist)
             {
                 return;
             }
 
-            var personalityManager = Current.Game.GetComponent<PersonaManager>();
-            if (personalityManager == null)
-            {
-                return;
-            }
+            // REMOVE the check for the old PersonaManager.
+            // var personalityManager = Current.Game.GetComponent<PersonaManager>();
+            // if (personalityManager == null)
+            // {
+            //     return;
+            // }
 
             const float nameAreaHeight = 38f;
             const float ageAreaHeight = 24f;

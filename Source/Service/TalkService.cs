@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using RimTalk.Data;
+using RimTalk.Patch;
 using RimTalk.Util;
 using RimWorld;
 using Verse;
@@ -138,10 +139,10 @@ namespace RimTalk.Service
                     continue;
                 }
 
-                InteractionDef intDef = DefDatabase<InteractionDef>.GetNamed("RimTalkInteraction");
-
-                PlayLogEntry_Interaction playLogEntryInteraction =
-                    new PlayLogEntry_RimTalkInteraction(intDef, pawn, null, null);
+                InteractionDef intDef = InteractionDefOf.Chitchat;
+                var playLogEntryInteraction =
+                    new PlayLogEntry_Interaction(intDef, pawn, pawn, null);
+                InteractionTextPatch.SetTextFor(playLogEntryInteraction, GetTalk(pawn));
 
                 Find.PlayLog.Add(playLogEntryInteraction);
                 break;

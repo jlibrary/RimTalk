@@ -5,7 +5,6 @@ using HarmonyLib;
 using RimTalk.Data;
 using RimTalk.Service;
 using RimTalk.Util;
-using RimWorld;
 using Verse;
 
 namespace RimTalk.Patch
@@ -17,11 +16,13 @@ namespace RimTalk.Patch
 
         public static bool Prefix(LogEntry entry)
         {
-            // Store original value and override if needed
             CurrentWorkDisplayModSettings settings = Settings.Get();
             
-            // For RimTalk interaction, display normal bubble
-            if (entry is PlayLogEntry_RimTalkInteraction)
+            Pawn initiator = (Pawn)entry.GetConcerns().First();
+            Pawn recipient = GetRecipient(entry);
+            var prompt = entry.ToGameStringFromPOV(initiator).StripTags();
+            
+            if (IsRimTalkInteraction(entry))
             {
                 if (settings.DisplayTalkWhenDrafted)
                     try
@@ -35,17 +36,12 @@ namespace RimTalk.Patch
                     }
                 return true;
             }
-
-            Pawn initiator = (Pawn)entry.GetConcerns().First();
-            Pawn recipient = GetRecipient(entry);
-
-            // If the setting to process non-RimTalk interactions is disabled, show the original bubble.
+            
             if (!settings.ProcessNonRimTalkInteractions)
             {
                 return true;
             }
             
-            // if in danger then stop chitchat
             if (entry is PlayLogEntry_Interaction &&
                 (PawnService.IsPawnInDanger(initiator) 
                 || PawnService.HostilePawnNearBy(initiator) != null
@@ -54,11 +50,9 @@ namespace RimTalk.Patch
                 return false;
             }
             
-            // Otherwise, block normal bubble and generate talk
-            var prompt = entry.ToGameStringFromPOV(initiator).StripTags();
             Cache.Get(initiator)?.AddTalkRequest(prompt, recipient);
             
-            return false; // Show original bubble
+            return false;
         }
 
         public static void Postfix()
@@ -78,15 +72,13 @@ namespace RimTalk.Patch
 
         private static Pawn GetRecipient(LogEntry entry)
         {
-            Pawn recipient = null;
-            foreach (Thing thing in entry.GetConcerns().Skip(1))
-            { 
-                if (thing is Pawn) {
-                    recipient = thing as Pawn;
-                    break;
-                }
-            }
-            return recipient;
+            return entry.GetConcerns().Skip(1).OfType<Pawn>().FirstOrDefault();
+        }
+
+        private static bool IsRimTalkInteraction(LogEntry entry)
+        {
+            return entry is PlayLogEntry_Interaction interaction &&
+                InteractionTextPatch.IsRimTalkInteraction(interaction);
         }
     }
 }

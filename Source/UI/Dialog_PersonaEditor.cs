@@ -8,7 +8,6 @@ namespace RimTalk.UI
     public class Dialog_PersonaEditor : Window
     {
         private const int MaxLength = 500; // Reasonable limit
-        private readonly PersonaManager _personaManager;
         private readonly Pawn _pawn;
         private string _editingPersonality;
         private float _talkInitiationWeight;
@@ -17,9 +16,8 @@ namespace RimTalk.UI
         public Dialog_PersonaEditor(Pawn pawn)
         {
             _pawn = pawn;
-            _personaManager = Current.Game.GetComponent<PersonaManager>();
-            _editingPersonality = _personaManager?.GetPersonality(pawn) ?? "";
-            _talkInitiationWeight = _personaManager?.GetTalkInitiationWeight(pawn) ?? 1.0f;
+            _editingPersonality = Data.PersonaService.GetPersonality(pawn) ?? "";
+            _talkInitiationWeight = Data.PersonaService.GetTalkInitiationWeight(pawn);
 
             doCloseButton = false;
             doCloseX = true;
@@ -115,8 +113,8 @@ namespace RimTalk.UI
 
             if (Widgets.ButtonText(saveButton, "RimTalk.PersonaEditor.Save".Translate()))
             {
-                _personaManager?.SetPersonality(_pawn, _editingPersonality.Trim());
-                _personaManager?.SetTalkInitiationWeight(_pawn, _talkInitiationWeight);
+                Data.PersonaService.SetPersonality(_pawn, _editingPersonality.Trim());
+                Data.PersonaService.SetTalkInitiationWeight(_pawn, _talkInitiationWeight);
 
                 Messages.Message("RimTalk.PersonaEditor.Updated".Translate(_pawn.Name.ToStringShort), MessageTypeDefOf.TaskCompletion, false);
                 Close();
@@ -129,7 +127,7 @@ namespace RimTalk.UI
                 if (!_isGenerating)
                 {
                     _isGenerating = true;
-                    _personaManager.GeneratePersona(_pawn).ContinueWith(task =>
+                    Data.PersonaService.GeneratePersona(_pawn).ContinueWith(task =>
                     {
                         _isGenerating = false;
                         if (task.IsCompleted)
