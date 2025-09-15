@@ -17,9 +17,9 @@ namespace RimTalk.Service
             Hearing,
             Viewing,
         }
-        
-        public static List<Pawn> GetNearByTalkablePawns(Pawn pawn1, Pawn pawn2 = null,
-            DetectionType detectionType = DetectionType.Hearing)
+
+        private static List<Pawn> GetNearbyPawnsInternal(Pawn pawn1, Pawn pawn2 = null,
+            DetectionType detectionType = DetectionType.Hearing, bool onlyTalkable = false, int maxResults = 10)
         {
             float baseRange = detectionType == DetectionType.Hearing ? HearingRange : ViewingRange;
             PawnCapacityDef capacityDef = detectionType == DetectionType.Hearing
@@ -27,64 +27,47 @@ namespace RimTalk.Service
                 : PawnCapacityDefOf.Sight;
 
             return Cache.Keys
-                .Where(nearbyPawn => nearbyPawn != pawn1 && nearbyPawn != pawn2)
-                .Where(nearbyPawn => Cache.Get(nearbyPawn).CanGenerateTalk())
-                .Where(nearbyPawn => nearbyPawn.health.capacities.GetLevel(capacityDef) > 0.0)
-                .Where(nearbyPawn =>
+                .Where(p => p != pawn1 && p != pawn2)
+                .Where(p => !onlyTalkable || Cache.Get(p).CanGenerateTalk())
+                .Where(p => p.health.capacities.GetLevel(capacityDef) > 0.0)
+                .Where(p =>
                 {
-                    var room = nearbyPawn.GetRoom();
-                    var capacityLevel = nearbyPawn.health.capacities.GetLevel(capacityDef);
+                    var room = p.GetRoom();
+                    var capacityLevel = p.health.capacities.GetLevel(capacityDef);
                     var detectionDistance = baseRange * capacityLevel;
 
-                    // Check if nearby pawn is in range of pawn1
                     bool nearPawn1 = room == pawn1.GetRoom() &&
-                                     nearbyPawn.Position.InHorDistOf(pawn1.Position, detectionDistance);
+                                     p.Position.InHorDistOf(pawn1.Position, detectionDistance);
 
-                    // If pawn2 is null, only check pawn1
-                    if (pawn2 == null)
-                        return nearPawn1;
+                    if (pawn2 == null) return nearPawn1;
 
-                    // Check if nearby pawn is in range of pawn2
                     bool nearPawn2 = room == pawn2.GetRoom() &&
-                                     nearbyPawn.Position.InHorDistOf(pawn2.Position, detectionDistance);
+                                     p.Position.InHorDistOf(pawn2.Position, detectionDistance);
 
                     return nearPawn1 || nearPawn2;
                 })
-                .OrderBy(nearbyPawn => pawn2 == null
-                    ? pawn1.Position.DistanceTo(nearbyPawn.Position)
-                    : Math.Min(pawn1.Position.DistanceTo(nearbyPawn.Position),
-                        pawn2.Position.DistanceTo(nearbyPawn.Position)))
-                .Take(10)
+                .OrderBy(p => pawn2 == null
+                    ? pawn1.Position.DistanceTo(p.Position)
+                    : Math.Min(pawn1.Position.DistanceTo(p.Position),
+                        pawn2.Position.DistanceTo(p.Position)))
+                .Take(maxResults)
                 .ToList();
         }
-        
-        public static List<Pawn> GetAllNearByPawns(Pawn pawn)
-        {
-            float baseRange = HearingRange;
-            PawnCapacityDef capacityDef = PawnCapacityDefOf.Sight;
-            
-            return Cache.Keys
-                .Where(nearbyPawn => nearbyPawn != pawn)
-                .Where(nearbyPawn =>
-                {
-                    var room = nearbyPawn.GetRoom();
-                    var capacityLevel = nearbyPawn.health.capacities.GetLevel(capacityDef);
-                    var detectionDistance = baseRange * capacityLevel;
 
-                    // Check if nearby pawn is in range of pawn1
-                    bool nearPawn = room == pawn.GetRoom() &&
-                                     nearbyPawn.Position.InHorDistOf(pawn.Position, detectionDistance);
-                    
-                    return nearPawn;
-                })
-                .OrderBy(nearbyPawn => pawn.Position.DistanceTo(nearbyPawn.Position))
-                .Take(10)
-                .ToList();
+        public static List<Pawn> GetNearByTalkablePawns(Pawn pawn1, Pawn pawn2 = null,
+            DetectionType detectionType = DetectionType.Hearing)
+        {
+            return GetNearbyPawnsInternal(pawn1, pawn2, detectionType, onlyTalkable: true);
+        }
+
+        public static List<Pawn> GetAllNearByPawns(Pawn pawn1, Pawn pawn2 = null)
+        {
+            return GetNearbyPawnsInternal(pawn1, pawn2, DetectionType.Hearing, onlyTalkable: false);
         }
 
         public static Pawn SelectAvailablePawnByWeight(bool noInvader = false)
         {
-            var availablePawns = Cache.Keys.Where(pawn => Cache.Get(pawn).CanGenerateTalk(noInvader));
+            var availablePawns = Cache.Keys.Where(p => Cache.Get(p).CanGenerateTalk(noInvader));
             return Cache.GetRandomWeightedPawn(availablePawns);
         }
     }

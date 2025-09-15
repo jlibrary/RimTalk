@@ -36,7 +36,8 @@ namespace RimTalk.Service
                 return false;
             }
             pawn1.RejectCount = 0;
-            pawn1.LastStatus = PawnService.GetPawnStatusFull(initiator);
+            List<Pawn> nearbyPawns = PawnSelector.GetAllNearByPawns(initiator);
+            pawn1.LastStatus = PawnService.GetPawnStatusFull(initiator, nearbyPawns);
 
             List<Pawn> pawns = new List<Pawn> { initiator, recipient }.Where(p => p != null).ToList();
             
@@ -44,18 +45,19 @@ namespace RimTalk.Service
             string context = PromptService.BuildContext(pawns);
             AIService.UpdateContext(context);
             
+            
             // add current status
             prompt = PromptService.DecoratePrompt(prompt, initiator, recipient, pawn1.LastStatus);
             
-            var request = new TalkRequest(prompt, initiator, recipient);
+            var talkRequest = new TalkRequest(prompt, initiator, recipient);
             
             Task.Run(async () =>
             {
                 try
                 {
                     Cache.Get(initiator).IsGeneratingTalk = true;
-                    List<TalkResponse> talkResponses = await AIService.Chat(request);
-                    ProcessSuccessfulResponse(pawns, talkResponses);
+                    var (talkResponses, rawJson) = await AIService.Chat(talkRequest, TalkHistory.GetMessageHistory(initiator));
+                    ProcessSuccessfulResponse(pawns.Union(nearbyPawns).Distinct().ToList(), talkResponses, prompt,rawJson);
                 }
                 catch (Exception ex)
                 {
@@ -89,13 +91,13 @@ namespace RimTalk.Service
             return true;
         }
 
-        private static void ProcessSuccessfulResponse(List<Pawn> pawns, List<TalkResponse> talkResponses)
+        private static void ProcessSuccessfulResponse(List<Pawn> allInvolvedPawns, List<TalkResponse> talkResponses, string request, string response)
         {
             try
             {
                 for (int i = 0; i < talkResponses.Count; i++)
                 {
-                    PawnState pawnState = Cache.GetByName(talkResponses[i].Name) ?? Cache.Get(pawns[i]);
+                    PawnState pawnState = Cache.GetByName(talkResponses[i].Name) ?? Cache.Get(allInvolvedPawns[i]);
                     pawnState.TalkQueue.Enqueue(talkResponses[i]);
                     talkResponses[i].Id = Guid.NewGuid();
                     talkResponses[i].Name = pawnState.Pawn.Name.ToStringShort;
@@ -103,6 +105,13 @@ namespace RimTalk.Service
                     {
                         talkResponses[i].ReplyToTalkId = talkResponses[i - 1].Id;
                     }
+                }
+                
+                // Add the responses to the history of all pawns
+                string cleanedPrompt = request.Replace(Constant.Prompt, "");
+                foreach (var pawn in allInvolvedPawns)
+                {
+                    TalkHistory.AddMessageHistory(pawn, cleanedPrompt, response);;
                 }
             }
             catch (Exception ex)
@@ -128,7 +137,7 @@ namespace RimTalk.Service
                 }
 
                 // if reply, wait for ReplyInterval (3s)
-                int replyToTalkTick = TalkHistory.Get(talk.ReplyToTalkId);
+                int replyToTalkTick = TalkHistory.GetSpoken(talk.ReplyToTalkId);
                 if (replyToTalkTick == -1 || Find.TickManager.TicksGame - replyToTalkTick
                     < CommonUtil.GetTicksForDuration(pawnState.ReplyInterval)) continue;
 
@@ -164,7 +173,7 @@ namespace RimTalk.Service
         private static TalkResponse ConsumeTalk(PawnState pawnState)
         {
             TalkResponse talkResponse = pawnState.TalkQueue.Dequeue();
-            TalkHistory.AddTalk(talkResponse.Id);
+            TalkHistory.AddSpoken(talkResponse.Id);
             return talkResponse;
         }
     }

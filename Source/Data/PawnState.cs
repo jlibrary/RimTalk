@@ -24,6 +24,7 @@ namespace RimTalk.Data
         
         public string Personality => PersonaService.GetPersonality(Pawn);
         public double TalkInitiationWeight => PersonaService.GetTalkInitiationWeight(Pawn);
+        
 
         public PawnState(Pawn pawn)
         {
@@ -32,7 +33,7 @@ namespace RimTalk.Data
             UpdateThoughts();
             Hediffs = PawnService.GetHediffs(pawn);
         }
-
+        
         public void UpdateThoughts() {
             UpdateThoughts(new KeyValuePair<Thought, float>(null, 0.0f));
         }

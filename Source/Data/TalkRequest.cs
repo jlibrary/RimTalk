@@ -8,7 +8,7 @@ namespace RimTalk.Data
         public Pawn Initiator { get; set; }
         public Pawn Recipient { get; set; }
 
-        public TalkRequest(string prompt, Pawn initiator = null, Pawn recipient = null)
+        public TalkRequest(string prompt, Pawn initiator, Pawn recipient = null)
         {
             Prompt = prompt;
             Initiator = initiator;

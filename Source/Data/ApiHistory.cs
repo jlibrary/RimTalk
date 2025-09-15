@@ -5,7 +5,7 @@ using RimTalk.Client;
 
 namespace RimTalk.Data
 {
-    public class TalkLog
+    public class ApiLog
     {
         public int Id { get; }
         public string Name { get; set; }
@@ -17,7 +17,7 @@ namespace RimTalk.Data
         public DateTime Timestamp { get; }
         public int ElapsedMs;
         
-        public TalkLog(int id, string name, string prompt, string response, Payload payload, DateTime timestamp)
+        public ApiLog(int id, string name, string prompt, string response, Payload payload, DateTime timestamp)
         {
             Id = id;
             Name = name;
@@ -30,21 +30,26 @@ namespace RimTalk.Data
         }
     }
 
-    public static class TalkLogHistory
+    public static class ApiHistory
     {
-        private static readonly SortedDictionary<int, TalkLog> _history = new SortedDictionary<int, TalkLog>();
+        private static readonly SortedDictionary<int, ApiLog> History = new SortedDictionary<int, ApiLog>();
         private static int _nextId = 1;
 
         public static int AddRequest(TalkRequest request)
         {
-            var log = new TalkLog(_nextId++, request.Initiator.Name.ToStringShort, request.Prompt, null, null, DateTime.Now);
-            _history[log.Id] = log;
+            var log = new ApiLog(_nextId++, request.Initiator.Name.ToStringShort, request.Prompt, null, null, DateTime.Now);
+            History[log.Id] = log;
             return log.Id;
+        }
+        
+        public static void RemoveRequest(int id)
+        {
+            History.Remove(id);
         }
 
         public static void AddResponse(int id, string response, Payload payload, string name = null)
         {
-            if (_history.TryGetValue(id, out var log))
+            if (History.TryGetValue(id, out var log))
             {
                 // first message
                 if (log.Response == null)
@@ -58,18 +63,18 @@ namespace RimTalk.Data
                 // rest of multi-turn messages
                 else
                 {
-                    log = new TalkLog(_nextId++, name, log.Prompt, response, payload, log.Timestamp);
-                    _history[log.Id] = log;
+                    log = new ApiLog(_nextId++, name, log.Prompt, response, payload, log.Timestamp);
+                    History[log.Id] = log;
                     log.TokenCount = 0;
                     log.ElapsedMs = 0;
                 }
             }
         }
 
-        public static IEnumerable<TalkLog> GetAll()
+        public static IEnumerable<ApiLog> GetAll()
         {
             // LIFO: newest first
-            foreach (var log in _history.Reverse())
+            foreach (var log in History.Reverse())
             {
                 yield return log.Value;
             }
@@ -77,7 +82,7 @@ namespace RimTalk.Data
 
         public static void Clear()
         {
-            _history.Clear();
+            History.Clear();
             _nextId = 1;
         }
     }

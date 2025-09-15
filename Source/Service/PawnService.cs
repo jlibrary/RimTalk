@@ -140,7 +140,7 @@ namespace RimTalk.Service
             return nearbyPawn.Name?.ToStringShort ?? nearbyPawn.LabelShort;
         }
 
-        public static string GetPawnStatusFull(Pawn pawn)
+        public static string GetPawnStatusFull(Pawn pawn, List<Pawn> nearbyPawns)
         {
 
             bool isInDanger = false;
@@ -150,11 +150,10 @@ namespace RimTalk.Service
             parts.Add("[Important]check current context");
             
             // --- 1. Nearby pawns ---
-            List<Pawn> nearByPawns = PawnSelector.GetAllNearByPawns(pawn);
-            if (nearByPawns.Any())
+            if (nearbyPawns.Any())
             {
                 // Collect critical statuses of nearby pawns
-                var nearbyNotableStatuses = nearByPawns
+                var nearbyNotableStatuses = nearbyPawns
                         .Where(IsPawnInDanger)
                         .Take(2)
                         .Select(other => $"{other.Name.ToStringShort} in {other.GetInspectString().Replace("\n", "; ")}")
@@ -167,7 +166,7 @@ namespace RimTalk.Service
                 }
 
                 // Names of nearby pawns
-                var nearbyNames = nearByPawns
+                var nearbyNames = nearbyPawns
                     .Select(nearbyPawn => 
                     {
                         string name = GetPawnName(pawn, nearbyPawn);

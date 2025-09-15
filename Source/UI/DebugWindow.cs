@@ -40,14 +40,15 @@ namespace RimTalk.UI
         private double _avgTokensPerMin;
         private double _avgTokensPerCall;
         private List<PawnState> _pawnStates;
-        private List<TalkLog> _requests;
-        private readonly Dictionary<string, List<TalkLog>> _talkLogsByPawn = new Dictionary<string, List<TalkLog>>();
+        private List<ApiLog> _requests;
+        private readonly Dictionary<string, List<ApiLog>> _talkLogsByPawn = new Dictionary<string, List<ApiLog>>();
 
         private bool _groupingEnabled;
         private bool _debugModeEnabled;
         private string _sortColumn;
         private bool _sortAscending;
         private readonly List<string> _expandedPawns;
+        private int? _expandedRequestHash; // Use nullable int for exclusive expansion
 
         public DebugWindow()
         {
@@ -123,7 +124,9 @@ namespace RimTalk.UI
             if (!settings.IsEnabled)
                 _aiStatus = "RimTalk.DebugWindow.StatusDisabled".Translate();
             else
-                _aiStatus = AIService.IsBusy() ? "RimTalk.DebugWindow.StatusProcessing".Translate() : "RimTalk.DebugWindow.StatusIdle".Translate();
+                _aiStatus = AIService.IsBusy()
+                    ? "RimTalk.DebugWindow.StatusProcessing".Translate()
+                    : "RimTalk.DebugWindow.StatusIdle".Translate();
 
             _totalCalls = Stats.TotalCalls;
             _totalTokens = Stats.TotalTokens;
@@ -131,13 +134,13 @@ namespace RimTalk.UI
             _avgTokensPerMin = Stats.AvgTokensPerMinute;
             _avgTokensPerCall = Stats.AvgTokensPerCall;
             _pawnStates = Cache.GetAll().ToList();
-            _requests = TalkLogHistory.GetAll().OrderByDescending(r => r.Timestamp).ToList();
+            _requests = ApiHistory.GetAll().OrderByDescending(r => r.Timestamp).ToList();
 
             _talkLogsByPawn.Clear();
             foreach (var request in _requests.Where(r => r.Name != null))
             {
                 if (!_talkLogsByPawn.ContainsKey(request.Name))
-                    _talkLogsByPawn[request.Name] = new List<TalkLog>();
+                    _talkLogsByPawn[request.Name] = new List<ApiLog>();
                 _talkLogsByPawn[request.Name].Add(request);
             }
         }
@@ -186,7 +189,8 @@ namespace RimTalk.UI
             // "Enable AI Talk" checkbox
             bool modEnabled = settings.IsEnabled;
             var enabledCheckboxRect = new Rect(rightEdgeX - 150f, rect.y, 130f, 24f);
-            Widgets.CheckboxLabeled(enabledCheckboxRect, "RimTalk.DebugWindow.EnableRimTalk".Translate(), ref modEnabled);
+            Widgets.CheckboxLabeled(enabledCheckboxRect, "RimTalk.DebugWindow.EnableRimTalk".Translate(),
+                ref modEnabled);
             if (modEnabled != settings.IsEnabled)
             {
                 settings.IsEnabled = modEnabled;
@@ -207,18 +211,20 @@ namespace RimTalk.UI
             var contentRect = rect.AtZero().ContractedBy(10f);
 
             Color statusColor;
-            switch (_aiStatus)
+            var aiStatus = _aiStatus.Translate();
+            if (aiStatus == "RimTalk.DebugWindow.StatusProcessing".Translate())
             {
-                case "Processing":
-                    statusColor = Color.yellow;
-                    break;
-                case "Idle":
-                    statusColor = Color.green;
-                    break;
-                default:
-                    statusColor = Color.grey;
-                    break;
+                statusColor = Color.yellow;
             }
+            else if (aiStatus == "RimTalk.DebugWindow.StatusIdle".Translate())
+            {
+                statusColor = Color.green;
+            }
+            else
+            {
+                statusColor = Color.grey;
+            }
+
 
             var statusRowRect = new Rect(contentRect.x, currentY, contentRect.width, rowHeight);
             var statusLabelRect = statusRowRect.LeftPartPixels(labelWidth);
@@ -262,7 +268,8 @@ namespace RimTalk.UI
 
             var series = new[]
             {
-                (data: Stats.TokensPerSecondHistory, color: new Color(1f, 1f, 1f, 0.7f), label: "RimTalk.DebugWindow.TokensPerSecond".Translate()),
+                (data: Stats.TokensPerSecondHistory, color: new Color(1f, 1f, 1f, 0.7f),
+                    label: "RimTalk.DebugWindow.TokensPerSecond".Translate()),
             };
 
             if (!series.Any(s => s.data != null && s.data.Any())) return;
@@ -272,11 +279,12 @@ namespace RimTalk.UI
             Text.Font = GameFont.Tiny;
             GUI.color = Color.grey;
             Widgets.Label(new Rect(rect.x + 5, rect.y, 40, 20), maxVal.ToString());
-            Widgets.Label(new Rect(rect.x + 5, rect.y + rect.height - 15, 60, 20), "RimTalk.DebugWindow.SixtySecondsAgo".Translate());
-            Widgets.Label(new Rect(rect.xMax - 35, rect.y + rect.height - 15, 40, 20), "RimTalk.DebugWindow.Now".Translate());
+            Widgets.Label(new Rect(rect.x + 5, rect.y + rect.height - 15, 60, 20),
+                "RimTalk.DebugWindow.SixtySecondsAgo".Translate());
+            Widgets.Label(new Rect(rect.xMax - 35, rect.y + rect.height - 15, 40, 20),
+                "RimTalk.DebugWindow.Now".Translate());
             GUI.color = Color.white;
 
-            // --- SOLUTION: Define an inner drawing area to act as a margin ---
             Rect graphArea = rect.ContractedBy(2f);
 
             foreach (var (data, color, _) in series)
@@ -284,15 +292,12 @@ namespace RimTalk.UI
                 if (data == null || data.Count < 2) continue;
 
                 const float verticalPadding = 15f;
-                // Use graphArea.height for calculation
                 float graphHeight = graphArea.height - (2 * verticalPadding);
                 if (graphHeight <= 0) continue;
 
                 var points = new List<Vector2>();
                 for (int i = 0; i < data.Count; i++)
                 {
-                    // --- FIX: Use graphArea for all point calculations ---
-                    // Also, replaced hardcoded '59f' with the actual count for robustness
                     float x = graphArea.x + (float)i / (data.Count - 1) * graphArea.width;
                     float y = (graphArea.y + graphArea.height - verticalPadding) -
                               ((float)data[i] / maxVal * graphHeight);
@@ -369,7 +374,9 @@ namespace RimTalk.UI
                 if (_debugModeEnabled)
                 {
                     bool canTalk = pawnState.CanDisplayTalk();
-                    string statusText = canTalk ? "RimTalk.DebugWindow.StatusReady".Translate() : "RimTalk.DebugWindow.StatusBusy".Translate();
+                    string statusText = canTalk
+                        ? "RimTalk.DebugWindow.StatusReady".Translate()
+                        : "RimTalk.DebugWindow.StatusBusy".Translate();
                     GUI.color = canTalk ? Color.green : Color.yellow;
                     Widgets.Label(new Rect(currentX, rowRect.y, GroupedStatusWidth, RowHeight), statusText);
                     GUI.color = Color.white;
@@ -419,20 +426,20 @@ namespace RimTalk.UI
             GUI.color = Color.white;
 
             float currentX = GroupedExpandIconWidth;
-            DrawSortableHeader(new Rect(currentX, rect.y, GroupedPawnNameWidth, rect.height), "RimTalk.DebugWindow.HeaderPawn".Translate());
+            DrawSortableHeader(new Rect(currentX, rect.y, GroupedPawnNameWidth, rect.height), "Pawn");
             currentX += GroupedPawnNameWidth + ColumnPadding;
-            DrawSortableHeader(new Rect(currentX, rect.y, responseColumnWidth, rect.height), "RimTalk.DebugWindow.HeaderResponse".Translate());
+            DrawSortableHeader(new Rect(currentX, rect.y, responseColumnWidth, rect.height), "Response");
             currentX += responseColumnWidth + ColumnPadding;
 
             if (_debugModeEnabled)
             {
-                DrawSortableHeader(new Rect(currentX, rect.y, GroupedStatusWidth, rect.height), "RimTalk.DebugWindow.HeaderStatus".Translate());
+                DrawSortableHeader(new Rect(currentX, rect.y, GroupedStatusWidth, rect.height), "Status");
                 currentX += GroupedStatusWidth + ColumnPadding;
-                DrawSortableHeader(new Rect(currentX, rect.y, GroupedLastTalkWidth, rect.height), "RimTalk.DebugWindow.HeaderLastTalk".Translate());
+                DrawSortableHeader(new Rect(currentX, rect.y, GroupedLastTalkWidth, rect.height), "Last Talk");
                 currentX += GroupedLastTalkWidth + ColumnPadding;
-                DrawSortableHeader(new Rect(currentX, rect.y, GroupedRequestsWidth, rect.height), "RimTalk.DebugWindow.HeaderRequests".Translate());
+                DrawSortableHeader(new Rect(currentX, rect.y, GroupedRequestsWidth, rect.height), "Requests");
                 currentX += GroupedRequestsWidth + ColumnPadding;
-                DrawSortableHeader(new Rect(currentX, rect.y, GroupedChattinessWidth, rect.height), "RimTalk.DebugWindow.HeaderChattiness".Translate());
+                DrawSortableHeader(new Rect(currentX, rect.y, GroupedChattinessWidth, rect.height), "Chattiness");
             }
         }
 
@@ -448,7 +455,7 @@ namespace RimTalk.UI
                 return;
             }
 
-            float totalHeight = HeaderHeight + (_requests.Count * RowHeight) + 50f;
+            float totalHeight = CalculateUngroupedTableHeight();
             var viewRect = new Rect(0, 0, rect.width - 16f, totalHeight);
 
             Widgets.BeginScrollView(rect, ref _tableScrollPosition, viewRect);
@@ -467,26 +474,31 @@ namespace RimTalk.UI
             Text.Font = GameFont.Tiny;
             float currentX = rect.x + 5f;
 
-            Widgets.Label(new Rect(currentX, rect.y, TimestampColumnWidth, rect.height), "RimTalk.DebugWindow.HeaderTimestamp".Translate());
+            Widgets.Label(new Rect(currentX, rect.y, TimestampColumnWidth, rect.height),
+                "RimTalk.DebugWindow.HeaderTimestamp".Translate());
             currentX += TimestampColumnWidth + ColumnPadding;
             if (showPawnColumn)
             {
-                Widgets.Label(new Rect(currentX, rect.y, PawnColumnWidth, rect.height), "RimTalk.DebugWindow.HeaderPawn".Translate());
+                Widgets.Label(new Rect(currentX, rect.y, PawnColumnWidth, rect.height),
+                    "RimTalk.DebugWindow.HeaderPawn".Translate());
                 currentX += PawnColumnWidth + ColumnPadding;
             }
 
-            Widgets.Label(new Rect(currentX, rect.y, responseColumnWidth, rect.height), "RimTalk.DebugWindow.HeaderResponse".Translate());
+            Widgets.Label(new Rect(currentX, rect.y, responseColumnWidth, rect.height),
+                "RimTalk.DebugWindow.HeaderResponse".Translate());
             currentX += responseColumnWidth + ColumnPadding;
 
             if (_debugModeEnabled)
             {
-                Widgets.Label(new Rect(currentX, rect.y, TimeColumnWidth, rect.height), "RimTalk.DebugWindow.HeaderTimeMs".Translate());
+                Widgets.Label(new Rect(currentX, rect.y, TimeColumnWidth, rect.height),
+                    "RimTalk.DebugWindow.HeaderTimeMs".Translate());
                 currentX += TimeColumnWidth + ColumnPadding;
-                Widgets.Label(new Rect(currentX, rect.y, TokensColumnWidth, rect.height), "RimTalk.DebugWindow.HeaderTokens".Translate());
+                Widgets.Label(new Rect(currentX, rect.y, TokensColumnWidth, rect.height),
+                    "RimTalk.DebugWindow.HeaderTokens".Translate());
             }
         }
 
-        private void DrawRequestRows(List<TalkLog> requests, ref float currentY, float totalWidth, float xOffset,
+        private void DrawRequestRows(List<ApiLog> requests, ref float currentY, float totalWidth, float xOffset,
             float responseColumnWidth, bool showPawnColumn)
         {
             for (int i = 0; i < requests.Count; i++)
@@ -496,7 +508,7 @@ namespace RimTalk.UI
                 if (i % 2 == 0) Widgets.DrawBoxSolid(rowRect, new Color(0.15f, 0.15f, 0.15f, 0.4f));
 
                 string resp = request.Response ?? _generating;
-                int maxChars = (int)(responseColumnWidth / 8);
+                int maxChars = (int)(responseColumnWidth / 7);
                 if (resp.Length > maxChars) resp = resp.Substring(0, Math.Max(10, maxChars - 3)) + "...";
 
                 float currentX = xOffset + 5f;
@@ -539,14 +551,80 @@ namespace RimTalk.UI
                         request.TokenCount.ToString());
                 }
 
-                var copyRect = new Rect(rowRect.xMax - CopyAreaWidth, rowRect.y, CopyAreaWidth, rowRect.height);
-                if (Widgets.ButtonInvisible(copyRect)) GUIUtility.systemCopyBuffer = request.RequestPayload ?? "";
+                var actionRect = new Rect(rowRect.xMax - CopyAreaWidth, rowRect.y, CopyAreaWidth, rowRect.height);
 
                 if (_debugModeEnabled)
                 {
+                    // Add the tooltip to the main response area.
                     string tooltip = "RimTalk.DebugWindow.TooltipPromptResponse".Translate(request.Prompt, (request.Response ?? _generating));
                     TooltipHandler.TipRegion(responseRect, tooltip);
+
+                    int requestHash = request.GetHashCode();
+                    bool isExpanded = _expandedRequestHash.HasValue && _expandedRequestHash.Value == requestHash;
+
+                    if (isExpanded)
+                    {
+                        if (Widgets.ButtonInvisible(rowRect))
+                        {
+                            _expandedRequestHash = null;
+                        }
+                    }
+                    else
+                    {
+                        var expandClickRect = new Rect(rowRect.xMax - CopyAreaWidth, rowRect.y, CopyAreaWidth, rowRect.height);
+                        if (Widgets.ButtonInvisible(expandClickRect))
+                        {
+                            _expandedRequestHash = requestHash;
+                        }
+                    }
                 }
+                else
+                {
+                    var copyRect = new Rect(rowRect.xMax - CopyAreaWidth, rowRect.y, CopyAreaWidth, rowRect.height);
+                    if (Widgets.ButtonInvisible(copyRect))
+                    {
+                        GUIUtility.systemCopyBuffer = request.RequestPayload ?? "";
+                    }
+                }
+
+                currentY += RowHeight;
+
+                if (_debugModeEnabled && _expandedRequestHash.HasValue &&
+                    _expandedRequestHash.Value == request.GetHashCode())
+                {
+                    var pawn = _pawnStates.FirstOrDefault(p => p.Pawn.Name.ToStringShort == request.Name)?.Pawn;
+                    if (pawn != null)
+                    {
+                        var messageHistory = TalkHistory.GetMessageHistory(pawn);
+                        if (messageHistory != null && messageHistory.Any())
+                        {
+                            DrawMessageHistory(ref currentY, totalWidth, xOffset, messageHistory);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void DrawMessageHistory(ref float currentY, float totalWidth, float xOffset,
+            List<(Role role, string message)> messageHistory)
+        {
+            var historyContainerRect = new Rect(xOffset, currentY, totalWidth, messageHistory.Count * RowHeight);
+            Widgets.DrawBoxSolid(historyContainerRect, new Color(0.1f, 0.1f, 0.1f, 0.5f));
+
+            for (int i = 0; i < messageHistory.Count; i++)
+            {
+                var (role, message) = messageHistory[i];
+                var rowRect = new Rect(xOffset, currentY, totalWidth, RowHeight);
+                if (i % 2 != 0) Widgets.DrawBoxSolid(rowRect, new Color(0.2f, 0.2f, 0.2f, 0.5f));
+
+                var roleRect = new Rect(rowRect.x + 5f, rowRect.y, 60f, RowHeight);
+                var messageRect = new Rect(roleRect.xMax + 5f, rowRect.y, rowRect.width - roleRect.width - 15f,
+                    RowHeight);
+
+                GUI.color = role == Role.User ? new Color(0.8f, 0.8f, 1f) : new Color(1f, 0.9f, 0.8f);
+                Widgets.Label(roleRect, role.ToString());
+                GUI.color = Color.white;
+                Widgets.Label(messageRect, message);
 
                 currentY += RowHeight;
             }
@@ -648,6 +726,31 @@ namespace RimTalk.UI
             return Math.Max(150f, availableWidth);
         }
 
+        private float CalculateUngroupedTableHeight()
+        {
+            if (_requests == null) return 0f;
+            float height = HeaderHeight + (_requests.Count * RowHeight);
+
+            if (_debugModeEnabled && _expandedRequestHash.HasValue)
+            {
+                var expandedRequest = _requests.FirstOrDefault(r => r.GetHashCode() == _expandedRequestHash.Value);
+                if (expandedRequest != null)
+                {
+                    var pawn = _pawnStates.FirstOrDefault(p => p.Pawn.Name.ToStringShort == expandedRequest.Name)?.Pawn;
+                    if (pawn != null)
+                    {
+                        var history = TalkHistory.GetMessageHistory(pawn);
+                        if (history != null)
+                        {
+                            height += history.Count * RowHeight;
+                        }
+                    }
+                }
+            }
+
+            return height + 50f;
+        }
+
         private float CalculateGroupedTableHeight()
         {
             float height = HeaderHeight + (_pawnStates.Count * RowHeight);
@@ -658,6 +761,18 @@ namespace RimTalk.UI
                 {
                     height += HeaderHeight;
                     height += requests.Count * RowHeight;
+
+                    if (_debugModeEnabled && _expandedRequestHash.HasValue)
+                    {
+                        if (requests.Any(r => r.GetHashCode() == _expandedRequestHash.Value))
+                        {
+                            var history = TalkHistory.GetMessageHistory(pawnState.Pawn);
+                            if (history != null)
+                            {
+                                height += history.Count * RowHeight;
+                            }
+                        }
+                    }
                 }
             }
 
@@ -671,7 +786,7 @@ namespace RimTalk.UI
                 return logs.First().Response ?? _generating;
             }
 
-            return null;
+            return "";
         }
     }
 }

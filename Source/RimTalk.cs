@@ -42,6 +42,7 @@ namespace RimTalk
             TickManagerPatch.Reset();
             AIClientFactory.Clear();
             AIService.Clear();
+            TalkHistory.Clear();
 
             if (soft) return;
 
@@ -49,7 +50,7 @@ namespace RimTalk
             Cache.Clear();
             Stats.Reset();
             TalkRequestPool.Clear();
-            TalkLogHistory.Clear();
+            ApiHistory.Clear();
         }
     }
 }

@@ -10,10 +10,10 @@ namespace RimTalk.Data
     {
         private static Hediff_Persona GetOrAddPersonaHediff(Pawn pawn)
         {
-            var hediff = pawn.health.hediffSet.GetFirstHediffOfDef(HediffDef.Named("RimTalk_PersonaData")) as Hediff_Persona;
+            var hediff = pawn.health.hediffSet.GetFirstHediffOfDef(HediffDef.Named(Hediff_Persona.RimtalkHediff)) as Hediff_Persona;
             if (hediff == null)
             {
-                hediff = (Hediff_Persona)HediffMaker.MakeHediff(HediffDef.Named("RimTalk_PersonaData"), pawn);
+                hediff = (Hediff_Persona)HediffMaker.MakeHediff(HediffDef.Named(Hediff_Persona.RimtalkHediff), pawn);
                 
                 // Assign a random personality on creation, similar to old logic
                 PersonalityData randomPersonalityData = Constant.Personalities.RandomElement();

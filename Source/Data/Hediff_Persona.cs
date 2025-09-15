@@ -4,10 +4,11 @@ namespace RimTalk.Data
 {
     public class Hediff_Persona : Hediff, IExposable
     {
+        public static readonly string RimtalkHediff = "RimTalk_PersonaData";
         public string Personality;
         public float TalkInitiationWeight = 1.0f;
-        
-        public override string Label => "RimTalk Persona Data"; // Not visible to player
+        public override bool Visible => false;
+        public override string Label => "RimTalk Persona Data";
 
         public override void ExposeData()
         {

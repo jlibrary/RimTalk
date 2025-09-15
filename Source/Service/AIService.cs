@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using RimTalk.Client;
@@ -14,51 +13,65 @@ namespace RimTalk.Service
         private static bool _busy;
         private static bool _contextUpdating;
         private static bool _firstInstruction = true;
-        private static readonly List<(Role role, string message)> Messages = new List<(Role role, string message)>();
-        private const int MaxMessages = 6;
 
         // Multi-turn conversation used for generating AI dialogue
-        public static async Task<List<TalkResponse>> Chat(TalkRequest request)
+        public static async Task<(List<TalkResponse> Responses, string RawResponse)> Chat(TalkRequest request,
+            List<(Role role, string message)> messages)
         {
-            EnsureMessageLimit();
-            Messages.Add((Role.User, request.Prompt));
-            int talkLogId = TalkLogHistory.AddRequest(request);
+            var currentMessages = new List<(Role role, string message)>(messages);
 
-            var payload = await ExecuteAIRequest(_instruction, Messages);
+            currentMessages.Add((Role.User, request.Prompt));
+            int talkLogId = ApiHistory.AddRequest(request);
+
+            var payload = await ExecuteAIRequest(_instruction, currentMessages);
+
+            if (payload == null)
+            {
+                ApiHistory.RemoveRequest(talkLogId);
+                return (null, null);
+            }
 
             var talkResponses = JsonUtil.DeserializeFromJson<List<TalkResponse>>(payload.Response);
-            
-            foreach (var talkResponse in talkResponses)
+
+            if (talkResponses != null)
             {
-                TalkLogHistory.AddResponse(talkLogId, talkResponse.Text, payload, talkResponse.Name);
+                foreach (var talkResponse in talkResponses)
+                {
+                    talkResponse.ResponsePayload = payload.Response;
+                    ApiHistory.AddResponse(talkLogId, talkResponse.Text, payload, talkResponse.Name);
+                }
             }
 
             _firstInstruction = false;
-            
-            CleanupLastRequest();
-            AddResposne(payload.Response);
-            
-            return talkResponses;
+
+            return (talkResponses, payload.Response);
         }
 
         // One time query - used for generating persona, etc
-        public static async Task<T> Query<T>(TalkRequest request) where T : IJsonData
+        public static async Task<T> Query<T>(TalkRequest request) where T : class, IJsonData
         {
             List<(Role role, string message)> message = new List<(Role role, string message)>
                 { (Role.User, request.Prompt) };
-            
-            int talkLogId = TalkLogHistory.AddRequest(request);
+
+            int talkLogId = ApiHistory.AddRequest(request);
 
             var payload = await ExecuteAIRequest("", message);
 
+            if (payload == null)
+            {
+                ApiHistory.RemoveRequest(talkLogId);
+                return null;
+            }
+
             var jsonData = JsonUtil.DeserializeFromJson<T>(payload.Response);
-            
-            TalkLogHistory.AddResponse(talkLogId, jsonData.ToString(), payload);
-            
+
+            ApiHistory.AddResponse(talkLogId, jsonData.ToString(), payload);
+
             return jsonData;
         }
 
-        private static async Task<Payload> ExecuteAIRequest(string instruction, List<(Role role, string message)> messages)
+        private static async Task<Payload> ExecuteAIRequest(string instruction,
+            List<(Role role, string message)> messages)
         {
             _busy = true;
             try
@@ -66,6 +79,9 @@ namespace RimTalk.Service
                 var payload = await AIErrorHandler.HandleWithRetry(() =>
                     AIClientFactory.GetAIClient().GetChatCompletionAsync(instruction, messages)
                 );
+
+                if (payload == null)
+                    return null;
 
                 Stats.IncrementCalls();
                 Stats.IncrementTokens(payload.TokenCount);
@@ -90,21 +106,6 @@ namespace RimTalk.Service
             return _firstInstruction;
         }
 
-        public static void AddResposne(string text)
-        {
-            Messages.Add((Role.AI, text));
-        }
-
-        public static void CleanupLastRequest()
-        {
-            if (Messages.Count == 0) return;
-
-            var lastMessage = Messages[Messages.Count - 1];
-            string cleanedText = lastMessage.message.Replace(Constant.Prompt, "");
-
-            Messages[Messages.Count - 1] = (lastMessage.role, cleanedText);
-        }
-
         public static bool IsBusy()
         {
             return _busy || _contextUpdating;
@@ -115,32 +116,11 @@ namespace RimTalk.Service
             return _contextUpdating;
         }
 
-        private static void EnsureMessageLimit()
-        {
-            // First, ensure alternating pattern by removing consecutive duplicates
-            for (int i = Messages.Count - 1; i > 0; i--)
-            {
-                if (Messages[i].role == Messages[i - 1].role)
-                {
-                    // Remove the first occurrence (earlier message)
-                    Messages.RemoveAt(i - 1);
-                    i--; // Adjust index since we removed an element
-                }
-            }
-
-            // Then, enforce the maximum message limit
-            while (Messages.Count > MaxMessages)
-            {
-                Messages.RemoveAt(0);
-            }
-        }
-
         public static void Clear()
         {
             _busy = false;
             _contextUpdating = false;
             _firstInstruction = true;
-            Messages.Clear();
             _instruction = "";
         }
     }
