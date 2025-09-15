@@ -1,5 +1,6 @@
 using System.Linq;
 using HarmonyLib;
+using RimTalk.Data;
 using RimTalk.Service;
 using RimTalk.Util;
 using Verse;
@@ -13,9 +14,6 @@ namespace RimTalk.Patches
         {
             var firstTwo = entry.GetConcerns().Take(2).ToArray();
 
-            Logger.Message(
-                $"BattleLog.Add triggered! Entry: {entry.ToGameStringFromPOV(null).StripTags()} ::: {firstTwo.Length} ");
-
             if (firstTwo.Length == 0) return;
 
             var initiator = firstTwo[0] is Pawn p1 ? p1 : null;
@@ -26,19 +24,14 @@ namespace RimTalk.Patches
             {
                 prompt = prompt.Replace(recipient.LabelShort, PawnService.GetPawnName(initiator, recipient));
             }
-
-            Logger.Message(prompt);
-            if (!TalkService.GenerateTalk(prompt, initiator, recipient))
+            
+            Cache.Get(initiator)?.AddTalkRequest(prompt, recipient);
+            Cache.Get(recipient)?.AddTalkRequest(prompt, initiator);
+            
+            var pawns = PawnSelector.GetNearByTalkablePawns(initiator, recipient, PawnSelector.DetectionType.Viewing);
+            foreach (var pawn in pawns.Take(2))
             {
-                if (recipient != null && !TalkService.GenerateTalk(prompt, recipient, initiator))
-                {
-                    // Find talking pawns that are close to the event
-                    var nearbyTalkers =
-                        PawnSelector.GetNearByTalkablePawns(initiator, recipient, PawnSelector.DetectionType.Viewing);
-                    foreach (var pawn in nearbyTalkers)
-                        if (TalkService.GenerateTalk(prompt, pawn))
-                            break;
-                }
+                Cache.Get(pawn)?.AddTalkRequest(prompt, initiator);
             }
         }
     }
