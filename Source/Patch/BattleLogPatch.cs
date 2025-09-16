@@ -2,7 +2,6 @@ using System.Linq;
 using HarmonyLib;
 using RimTalk.Data;
 using RimTalk.Service;
-using RimTalk.Util;
 using Verse;
 
 namespace RimTalk.Patches
@@ -12,14 +11,14 @@ namespace RimTalk.Patches
     {
         private static void Postfix(LogEntry entry)
         {
-            var firstTwo = entry.GetConcerns().Take(2).ToArray();
+            var pawnsInvolved = entry.GetConcerns().OfType<Pawn>().ToList();
 
-            if (firstTwo.Length == 0) return;
+            if (pawnsInvolved.Count < 2) return;
 
-            var initiator = firstTwo[0] is Pawn p1 ? p1 : null;
-            var recipient = (firstTwo.Length > 1 && firstTwo[1] is Pawn p2) ? p2 : null;
+            var initiator = pawnsInvolved[0];
+            var recipient = pawnsInvolved[1];
 
-            var prompt = entry.ToGameStringFromPOV(firstTwo[0]).StripTags();
+            var prompt = entry.ToGameStringFromPOV(initiator).StripTags();
             if (recipient != null && PawnService.IsInvader(recipient))
             {
                 prompt = prompt.Replace(recipient.LabelShort, PawnService.GetPawnName(initiator, recipient));

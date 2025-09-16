@@ -52,7 +52,7 @@ namespace RimTalk.Data
 
         public bool CanDisplayTalk()
         {
-            if (WorldRendererUtility.WorldSelected || Find.CurrentMap == null || Pawn.Map != Find.CurrentMap || !Pawn.Spawned)
+            if (WorldRendererUtility.CurrentWorldRenderMode == WorldRenderMode.Planet || Find.CurrentMap == null || Pawn.Map != Find.CurrentMap || !Pawn.Spawned)
             {
                 return false;
             }
