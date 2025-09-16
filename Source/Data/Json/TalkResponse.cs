@@ -12,10 +12,15 @@ namespace RimTalk.Data
 
         [DataMember(Name = "text")] public string Text { get; set; }
 
-        public Guid ReplyToTalkId { get; set; }
+        public Guid ParentTalkId { get; set; }
 
         public string ResponsePayload { get; set; }
 
+        public bool IsReply()
+        {
+            return ParentTalkId != Guid.Empty;
+        }
+        
         public override string ToString()
         {
             return Text;

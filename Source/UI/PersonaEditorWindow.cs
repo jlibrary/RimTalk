@@ -5,7 +5,7 @@ using Verse;
 
 namespace RimTalk.UI
 {
-    public class Dialog_PersonaEditor : Window
+    public class PersonaEditorWindow : Window
     {
         private const int MaxLength = 500; // Reasonable limit
         private readonly Pawn _pawn;
@@ -13,16 +13,16 @@ namespace RimTalk.UI
         private float _talkInitiationWeight;
         private bool _isGenerating = false;
 
-        public Dialog_PersonaEditor(Pawn pawn)
+        public PersonaEditorWindow(Pawn pawn)
         {
             _pawn = pawn;
             _editingPersonality = Data.PersonaService.GetPersonality(pawn) ?? "";
             _talkInitiationWeight = Data.PersonaService.GetTalkInitiationWeight(pawn);
-
-            doCloseButton = false;
+            
             doCloseX = true;
-            forcePause = true;
-            absorbInputAroundWindow = true;
+            draggable = true;
+            absorbInputAroundWindow = false;
+            preventCameraMotion = false;
         }
 
         public override Vector2 InitialSize => new Vector2(520f, 440f);

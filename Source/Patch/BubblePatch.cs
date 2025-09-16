@@ -5,6 +5,7 @@ using HarmonyLib;
 using RimTalk.Data;
 using RimTalk.Service;
 using RimTalk.Util;
+using RimWorld;
 using Verse;
 
 namespace RimTalk.Patch
@@ -21,7 +22,8 @@ namespace RimTalk.Patch
             Pawn initiator = (Pawn)entry.GetConcerns().First();
             Pawn recipient = GetRecipient(entry);
             var prompt = entry.ToGameStringFromPOV(initiator).StripTags();
-            
+
+            // For RimTalk interaction, display normal bubble
             if (IsRimTalkInteraction(entry))
             {
                 if (settings.DisplayTalkWhenDrafted)
@@ -36,27 +38,39 @@ namespace RimTalk.Patch
                     }
                 return true;
             }
-            
-            if (!settings.ProcessNonRimTalkInteractions)
+      
+            // If Rimtalk disabled or  non-RimTalk interactions is disabled, show the original bubble.
+            if (!settings.IsEnabled || !settings.ProcessNonRimTalkInteractions)
             {
                 return true;
             }
             
-            if (entry is PlayLogEntry_Interaction &&
+            bool isChitchat = GetInteractionDef(entry) == InteractionDefOf.Chitchat;
+            
+            // if in danger then stop chitchat
+            if (isChitchat && 
                 (PawnService.IsPawnInDanger(initiator) 
-                || PawnService.HostilePawnNearBy(initiator) != null
-                || !PawnSelector.GetNearByTalkablePawns(initiator).Contains(recipient)))
+                 || PawnService.HostilePawnNearBy(initiator) != null
+                 || !PawnSelector.GetNearByTalkablePawns(initiator).Contains(recipient)))
             {
                 return false;
             }
+
+            PawnState pawnState = Cache.Get(initiator);
+
+            // chitchat is ignored if talkRequest exists
+            if (pawnState == null || isChitchat && pawnState.TalkRequest != null)
+                return false;
             
-            Cache.Get(initiator)?.AddTalkRequest(prompt, recipient);
-            
+            // Otherwise, block normal bubble and generate talk
+            prompt = $"{prompt} ({GetInteractionDef(entry).label})";
+            pawnState.AddTalkRequest(prompt, recipient);
             return false;
         }
 
         public static void Postfix()
         {
+            // Roll back original bubble settings for drafted
             if (Settings.Get().DisplayTalkWhenDrafted)
             {
                 try
@@ -79,6 +93,12 @@ namespace RimTalk.Patch
         {
             return entry is PlayLogEntry_Interaction interaction &&
                 InteractionTextPatch.IsRimTalkInteraction(interaction);
+        }
+
+        private static InteractionDef GetInteractionDef(LogEntry entry)
+        {
+            var field = AccessTools.Field(entry.GetType(), "intDef");
+            return (InteractionDef)field.GetValue(entry);
         }
     }
 }

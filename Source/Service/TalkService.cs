@@ -103,7 +103,7 @@ namespace RimTalk.Service
                     talkResponses[i].Name = pawnState.Pawn.Name.ToStringShort;
                     if (i > 0)
                     {
-                        talkResponses[i].ReplyToTalkId = talkResponses[i - 1].Id;
+                        talkResponses[i].ParentTalkId = talkResponses[i - 1].Id;
                     }
                 }
                 
@@ -137,8 +137,8 @@ namespace RimTalk.Service
                 }
 
                 // if reply, wait for ReplyInterval (3s)
-                int replyToTalkTick = TalkHistory.GetSpoken(talk.ReplyToTalkId);
-                if (replyToTalkTick == -1 || Find.TickManager.TicksGame - replyToTalkTick
+                int parentTalkTick = TalkHistory.GetSpokenTick(talk.ParentTalkId);
+                if (parentTalkTick == -1 || Find.TickManager.TicksGame - parentTalkTick
                     < CommonUtil.GetTicksForDuration(pawnState.ReplyInterval)) continue;
 
                 // if pawn is not able to talk, skip it
@@ -165,7 +165,8 @@ namespace RimTalk.Service
             
             TalkResponse talkResponse = ConsumeTalk(pawnState);
             
-            pawnState.LastTalkTick = Find.TickManager.TicksGame;
+            if (!talkResponse.IsReply())
+                pawnState.LastTalkTick = Find.TickManager.TicksGame;
 
             return talkResponse.Text;
         }

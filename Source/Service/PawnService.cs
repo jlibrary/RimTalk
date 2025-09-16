@@ -147,17 +147,28 @@ namespace RimTalk.Service
             pawn.def.hideMainDesc = true;
             string status = pawn.GetInspectString();
             List<string> parts = new List<string>();
-            parts.Add("[Important]check current context");
             
-            // --- 1. Nearby pawns ---
+            // --- 1. Add status ---
+            parts.Add($"Currently: {status}");
+
+            if (IsPawnInDanger(pawn))
+            {
+                parts.Add("be dramatic");
+                isInDanger = true;
+            }
+            
+            // --- 2. Add time ---
+            parts.Add($"Time: {CommonUtil.GetInGameHour12HString()}");
+            
+            // --- 3. Nearby pawns ---
             if (nearbyPawns.Any())
             {
                 // Collect critical statuses of nearby pawns
                 var nearbyNotableStatuses = nearbyPawns
-                        .Where(IsPawnInDanger)
-                        .Take(2)
-                        .Select(other => $"{other.Name.ToStringShort} in {other.GetInspectString().Replace("\n", "; ")}")
-                        .ToList();
+                    .Where(IsPawnInDanger)
+                    .Take(2)
+                    .Select(other => $"{other.Name.ToStringShort} in {other.GetInspectString().Replace("\n", "; ")}")
+                    .ToList();
 
                 if (nearbyNotableStatuses.Any())
                 {
@@ -170,11 +181,12 @@ namespace RimTalk.Service
                     .Select(nearbyPawn => 
                     {
                         string name = GetPawnName(pawn, nearbyPawn);
-                        if (Cache.Get(nearbyPawn) is PawnState pawnState && !pawnState.CanDisplayTalk())
+                        if (Cache.Get(nearbyPawn) is PawnState pawnState)
                         {
-                            name += "(mute)";
+                            nearbyPawn.def.hideMainDesc = true;
+                            name = $"{name} ({nearbyPawn.GetInspectString().StripTags()})";
                         } 
-                        if (nearbyPawn.RaceProps.Animal)
+                        else if (nearbyPawn.RaceProps.Animal)
                         {
                             name += $"(Animal)";
                         }
@@ -192,18 +204,6 @@ namespace RimTalk.Service
             else
             {
                 parts.Add("Nearby people: none");
-            }
-            
-            // --- 2. Add time ---
-            parts.Add($"Time: {CommonUtil.GetInGameHour12HString()}");
-            
-            // --- 3. Add status ---
-            parts.Add($"Currently: {status}");
-
-            if (IsPawnInDanger(pawn))
-            {
-                parts.Add("be dramatic");
-                isInDanger = true;
             }
 
             if (IsInvader(pawn))

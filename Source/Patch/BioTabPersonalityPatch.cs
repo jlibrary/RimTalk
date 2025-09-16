@@ -42,7 +42,7 @@ namespace RimTalk.Patches
 
             if (Widgets.ButtonText(linkRect, "RimTalk.BioTab.RimTalkPersona".Translate()))
             {
-                Find.WindowStack.Add(new Dialog_PersonaEditor(pawn));
+                Find.WindowStack.Add(new PersonaEditorWindow(pawn));
             }
         }
     }

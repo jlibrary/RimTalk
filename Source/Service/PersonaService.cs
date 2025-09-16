@@ -58,7 +58,7 @@ namespace RimTalk.Data
 
             try
             {
-                string prompt = $"{Constant.PersonaGenInstruction}\n{pawnBackstory}";
+                string prompt = $"{Constant.PersonaGenInstruction}\n\n[Character]\n{pawnBackstory}";
                 var request = new TalkRequest(prompt, pawn);
                 PersonalityData personalityData = await AIService.Query<PersonalityData>(request);
 

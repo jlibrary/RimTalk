@@ -54,6 +54,7 @@ namespace RimTalk.Data
                 // first message
                 if (log.Response == null)
                 {
+                    log.Name = name ?? log.Name;
                     log.Response = response;
                     log.RequestPayload = payload?.Request;
                     log.ResponsePayload = payload?.Response;

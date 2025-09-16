@@ -362,7 +362,7 @@ namespace RimTalk.UI
                 if (Widgets.ButtonText(pawnNameRect, pawnKey, drawBackground: false, doMouseoverSound: true,
                         active: true))
                 {
-                    Find.WindowStack.Add(new Dialog_InfoCard(pawnState.Pawn));
+                    CameraJumper.TryJump(pawnState.Pawn);
                 }
 
                 currentX += GroupedPawnNameWidth + ColumnPadding;
@@ -508,6 +508,9 @@ namespace RimTalk.UI
                 if (i % 2 == 0) Widgets.DrawBoxSolid(rowRect, new Color(0.15f, 0.15f, 0.15f, 0.4f));
 
                 string resp = request.Response ?? _generating;
+                
+                bool isMultiTurnChild = (request.TokenCount == 0 || request.ElapsedMs == 0) && request.Response != null;
+
                 int maxChars = (int)(responseColumnWidth / 7);
                 if (resp.Length > maxChars) resp = resp.Substring(0, Math.Max(10, maxChars - 3)) + "...";
 
@@ -527,7 +530,7 @@ namespace RimTalk.UI
                         if (Widgets.ButtonText(pawnNameRect, pawnName, drawBackground: false, doMouseoverSound: true,
                                 active: true))
                         {
-                            Find.WindowStack.Add(new Dialog_InfoCard(pawn));
+                            CameraJumper.TryJump(pawn);
                         }
                     }
                     else
@@ -544,11 +547,14 @@ namespace RimTalk.UI
 
                 if (_debugModeEnabled)
                 {
+                    string elapsedMsText = (request.Response == null) ? "" : (isMultiTurnChild ? "-" : request.ElapsedMs.ToString());
                     Widgets.Label(new Rect(currentX, rowRect.y, TimeColumnWidth, RowHeight),
-                        request.ElapsedMs.ToString());
+                        elapsedMsText);
                     currentX += TimeColumnWidth + ColumnPadding;
+                    
+                    string tokenCountText = (request.Response == null) ? "" : (isMultiTurnChild ? "-" : request.TokenCount.ToString());
                     Widgets.Label(new Rect(currentX, rowRect.y, TokensColumnWidth, RowHeight),
-                        request.TokenCount.ToString());
+                        tokenCountText);
                 }
 
                 var actionRect = new Rect(rowRect.xMax - CopyAreaWidth, rowRect.y, CopyAreaWidth, rowRect.height);

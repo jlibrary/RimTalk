@@ -9,12 +9,12 @@ namespace RimTalk.Data
     {
         private const int MaxMessages = 6;
         private static readonly ConcurrentDictionary<int, List<(Role role, string message)>> MessageHistory;
-        private static readonly ConcurrentDictionary<Guid, int> SpokenCache;
+        private static readonly ConcurrentDictionary<Guid, int> SpokenTickCache;
 
         static TalkHistory()
         {
             MessageHistory = new ConcurrentDictionary<int, List<(Role role, string message)>>();
-            SpokenCache = new ConcurrentDictionary<Guid, int>(new Dictionary<Guid, int>
+            SpokenTickCache = new ConcurrentDictionary<Guid, int>(new Dictionary<Guid, int>
             {
                 { Guid.Empty, 0 }
             });
@@ -23,12 +23,12 @@ namespace RimTalk.Data
         // Add a new talk with the current game tick
         public static void AddSpoken(Guid id)
         {
-            SpokenCache.TryAdd(id, Find.TickManager.TicksGame);
+            SpokenTickCache.TryAdd(id, Find.TickManager.TicksGame);
         }
 
-        public static int GetSpoken(Guid id)
+        public static int GetSpokenTick(Guid id)
         {
-            return SpokenCache.TryGetValue(id, out var tick) ? tick : -1;
+            return SpokenTickCache.TryGetValue(id, out var tick) ? tick : -1;
         }
 
         public static void AddMessageHistory(Pawn pawn, string request, string response)

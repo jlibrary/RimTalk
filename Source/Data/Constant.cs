@@ -46,15 +46,14 @@ Return JSON array with objects containing ""name"" and ""text"" string keys.";
                 : Settings.Get().CustomInstruction) + JsonInstruction;
 
         public const string Prompt =
-            "Act based on context: continue conversation with nearby people, show concern for nearby's critical conditions, or start new topic. Be natural, no repetition.";
+            "Act based on context. Be natural. no repetition.";
 
         public static readonly string PersonaGenInstruction =
             $@"Create a unique persona (to be used as conversation style) in {Lang}. Must be short in 1 sentence.
 Include: how they speak, their main attitude, and one weird quirk that makes them memorable.
 Be specific and bold, avoid boring traits.
 Also determine chattiness: 0.1-0.5 (quiet), 0.6-1.4 (normal), 1.5-2.0 (chatty).
-Return JSON with fields 'persona' (string) and 'chattiness' (float). 
-Character:";
+Return JSON with fields 'persona' (string) and 'chattiness' (float)";
         
         public static readonly PersonalityData[] Personalities =
         {

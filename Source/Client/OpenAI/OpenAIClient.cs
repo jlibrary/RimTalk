@@ -69,7 +69,7 @@ namespace RimTalk.Client.OpenAI
 
             try
             {
-                Logger.Message($"API request: {EndpointUrl}\n{jsonContent}");
+                // Logger.Message($"API request: {EndpointUrl}\n{jsonContent}");
 
                 using (var webRequest = UnityWebRequest.Post(EndpointUrl, jsonContent))
                 {
@@ -90,7 +90,7 @@ namespace RimTalk.Client.OpenAI
                         await Task.Delay(100);
                     }
 
-                    Logger.Message($"API response: \n{webRequest.downloadHandler.text}");
+                    // Logger.Message($"API response: \n{webRequest.downloadHandler.text}");
 
                     if (webRequest.responseCode == 429)
                         throw new QuotaExceededException("Quota exceeded");

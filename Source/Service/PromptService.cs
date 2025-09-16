@@ -64,8 +64,6 @@ namespace RimTalk.Service
                 var xenotypeInfo = $"Race: {pawn.genes.Xenotype.LabelCap}";
                 if (!pawn.genes.Xenotype.descriptionShort.NullOrEmpty())
                     xenotypeInfo += $" - {pawn.genes.Xenotype.descriptionShort}";
-                if (infoLevel == InfoLevel.Full)
-                    xenotypeInfo += $" - {pawn.genes.Xenotype.description}";
                 sb.AppendLine(xenotypeInfo);
             }
 
@@ -75,7 +73,7 @@ namespace RimTalk.Service
                 {
                     var notableGenes = pawn.genes.GenesListForReading
                         .Where(g => g.def.biostatMet != 0 || g.def.biostatCpx != 0)
-                        .Select(g => g.def.LabelCap + (infoLevel == InfoLevel.Full ? $":{g.def.description}" : ""));
+                        .Select(g => g.def.LabelCap);
 
                     if (notableGenes.Any())
                     {
@@ -231,9 +229,6 @@ namespace RimTalk.Service
             // add pawn names
             prompt = pawn1.Name.ToStringShort + (pawn2 != null ? $" and {pawn2.Name.ToStringShort}" : "") + ": " + prompt;
 
-            // add time
-            prompt += $"\nTime: {CommonUtil.GetInGameHour12HString()}";
-            
             // add language assurance
             if (AIService.IsFirstInstruction())
                 prompt += $"\nin {Constant.Lang}";
