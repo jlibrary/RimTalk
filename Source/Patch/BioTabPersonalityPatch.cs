@@ -1,6 +1,4 @@
 using HarmonyLib;
-// You no longer need the Legacy namespace here
-// using RimTalk.Compatibility.Legacy; 
 using RimTalk.UI;
 using UnityEngine;
 using Verse;
@@ -13,18 +11,11 @@ namespace RimTalk.Patches
     {
         public static void Postfix(Rect rect, Pawn pawn)
         {
-            // This check is all you need.
+            // The pawn check is all we need.
             if (pawn?.RaceProps?.Humanlike != true || !pawn.IsFreeColonist)
             {
                 return;
             }
-
-            // REMOVE the check for the old PersonaManager.
-            // var personalityManager = Current.Game.GetComponent<PersonaManager>();
-            // if (personalityManager == null)
-            // {
-            //     return;
-            // }
 
             const float nameAreaHeight = 38f;
             const float ageAreaHeight = 24f;

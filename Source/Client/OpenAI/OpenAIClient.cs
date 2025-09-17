@@ -13,18 +13,36 @@ namespace RimTalk.Client.OpenAI
 {
     public class OpenAIClient : IAIClient
     {
-        private readonly string _baseUrl;
         private readonly string _apiKey;
         private readonly string _model;
 
         public OpenAIClient(string baseUrl, string model, string apiKey = null)
         {
-            _baseUrl = baseUrl;
             _model = model;
             _apiKey = apiKey;
+            if (!string.IsNullOrEmpty(baseUrl))
+            {
+                var trimmedUrl = baseUrl.Trim().TrimEnd('/');
+
+                var uri = new Uri(trimmedUrl);
+                // Check if they provided just a base URL without a specific API path
+                if (uri.AbsolutePath == "/" || string.IsNullOrEmpty(uri.AbsolutePath.Trim('/')))
+                {
+                    EndpointUrl = trimmedUrl + "/v1/chat/completions";
+                }
+                else
+                {
+                    // They provided a full path (like /v4/chat/completions), use as-is
+                    EndpointUrl = trimmedUrl;
+                }
+            }
+            else
+            {
+                EndpointUrl = string.Empty;
+            }
         }
 
-        private string EndpointUrl => $"{_baseUrl}/v1/chat/completions";
+        private string EndpointUrl { get; }
 
         public async Task<Payload> GetChatCompletionAsync(string instruction,
             List<(Role role, string message)> messages)
@@ -61,7 +79,7 @@ namespace RimTalk.Client.OpenAI
 
         private async Task<OpenAIResponse> GetCompletionAsync(string jsonContent)
         {
-            if (string.IsNullOrEmpty(_baseUrl))
+            if (string.IsNullOrEmpty(EndpointUrl))
             {
                 Logger.Error("Endpoint URL is missing.");
                 return null;
@@ -69,7 +87,7 @@ namespace RimTalk.Client.OpenAI
 
             try
             {
-                // Logger.Message($"API request: {EndpointUrl}\n{jsonContent}");
+                Logger.Debug($"API request: {EndpointUrl}\n{jsonContent}");
 
                 using (var webRequest = UnityWebRequest.Post(EndpointUrl, jsonContent))
                 {
@@ -90,7 +108,7 @@ namespace RimTalk.Client.OpenAI
                         await Task.Delay(100);
                     }
 
-                    // Logger.Message($"API response: \n{webRequest.downloadHandler.text}");
+                    Logger.Debug($"API response: \n{webRequest.downloadHandler.text}");
 
                     if (webRequest.responseCode == 429)
                         throw new QuotaExceededException("Quota exceeded");

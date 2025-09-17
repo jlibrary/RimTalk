@@ -116,5 +116,14 @@ namespace RimTalk.Util
             return Math.Min(80 * cooldownSeconds, 800);
         }
 
+        
+        public static bool ShouldAiBeActiveOnSpeed()
+        {
+            CurrentWorkDisplayModSettings settings = Settings.Get();
+            if (settings.DisableAiAtSpeed == 0)
+                return true;
+            TimeSpeed currentGameSpeed = Find.TickManager.CurTimeSpeed;
+            return (int)currentGameSpeed < settings.DisableAiAtSpeed;
+        }
     }
 }

@@ -17,7 +17,7 @@ namespace RimTalk.Service
         public static bool GenerateTalk(string prompt, Pawn initiator, Pawn recipient = null)
         {
             var settings = Settings.Get();
-            if (!settings.IsEnabled) return false;
+            if (!settings.IsEnabled || !CommonUtil.ShouldAiBeActiveOnSpeed()) return false;
             if (!Bubbles.Settings.Activated || settings.GetActiveConfig() == null) return false;
             if (AIService.IsBusy()) return false;
 

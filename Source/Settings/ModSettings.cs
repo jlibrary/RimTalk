@@ -29,6 +29,7 @@ namespace RimTalk
         public bool AllowPrisonersToTalk = true;
         public bool AllowOtherFactionsToTalk = false;
         public bool AllowEnemiesToTalk = false;
+        public int DisableAiAtSpeed = 0;
 
         // Debug window settings
         public bool DebugModeEnabled = false;
@@ -150,6 +151,7 @@ namespace RimTalk
             Scribe_Values.Look(ref AllowPrisonersToTalk, "allowPrisonersToTalk", true);
             Scribe_Values.Look(ref AllowOtherFactionsToTalk, "allowOtherFactionsToTalk", false);
             Scribe_Values.Look(ref AllowEnemiesToTalk, "allowEnemiesToTalk", false);
+            Scribe_Values.Look(ref DisableAiAtSpeed, "DisableAiAtSpeed", 0);
             Scribe_Collections.Look(ref EnabledArchivableTypes, "enabledArchivableTypes", LookMode.Value, LookMode.Value);
 
             // Debug window settings

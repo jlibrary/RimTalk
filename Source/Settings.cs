@@ -16,7 +16,6 @@ namespace RimTalk
         private Vector2 _mainScrollPosition = Vector2.zero;
         private string _textAreaBuffer = "";
         private bool _textAreaInitialized;
-        private string _lastSavedInstruction = "";
         private List<string> _discoveredArchivableTypes = new List<string>();
         private bool _archivableTypesScanned;
         private int _apiSettingsHash = 0;
@@ -123,16 +122,12 @@ namespace RimTalk
             ClearCache(); // Invalidate the cache
             CurrentWorkDisplayModSettings settings = Get();
             int newHash = GetApiSettingsHash(settings);
+
+            // If hash changes, reset the cloud config index and trigger a full reset of RimTalk.
             if (newHash != _apiSettingsHash)
             {
                 settings.CurrentCloudConfigIndex = 0;
                 _apiSettingsHash = newHash;
-            }
-
-            // Check if instruction changed when settings are saved (window closed)
-            if (settings.CustomInstruction != _lastSavedInstruction)
-            {
-                _lastSavedInstruction = settings.CustomInstruction;
                 RimTalk.Reset(true);
             }
         }
@@ -154,6 +149,14 @@ namespace RimTalk
                     sb.AppendLine(config.BaseUrl);
                 }
             }
+            if (settings.LocalConfig != null)
+            {
+                sb.AppendLine(settings.LocalConfig.Provider.ToString());
+                sb.AppendLine(settings.LocalConfig.BaseUrl);
+                sb.AppendLine(settings.LocalConfig.CustomModelName);
+            }
+
+            sb.AppendLine(settings.CustomInstruction);
 
             return sb.ToString().GetHashCode();
         }

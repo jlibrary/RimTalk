@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Runtime.Serialization.Json;
 using System.Text;
@@ -25,13 +26,21 @@ namespace RimTalk.Util
 
         public static T DeserializeFromJson<T>(string json)
         {
-            using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(json)))
+            try
             {
-                // Create an instance of DataContractJsonSerializer
-                var serializer = new DataContractJsonSerializer(typeof(T));
+                using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(json)))
+                {
+                    // Create an instance of DataContractJsonSerializer
+                    var serializer = new DataContractJsonSerializer(typeof(T));
 
-                // Deserialize the JSON data
-                return (T)serializer.ReadObject(stream);
+                    // Deserialize the JSON data
+                    return (T)serializer.ReadObject(stream);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Json deserialization failed for {typeof(T).Name}\n{json}");
+                throw;
             }
         }
         

@@ -10,6 +10,12 @@ namespace RimTalk.Util
             Log.Message($"{Constant.ModTag} {message}\n\n");
         }
         
+        public static void Debug(string message)
+        {
+            if (Prefs.LogVerbose)
+                Log.Message($"{Constant.ModTag} {message}\n\n");
+        }
+        
         public static void Warning(string message)
         {
             Log.Warning($"{Constant.ModTag} {message}\n\n");

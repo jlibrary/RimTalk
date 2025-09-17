@@ -17,7 +17,6 @@ namespace RimTalk
                 _textAreaBuffer = string.IsNullOrWhiteSpace(settings.CustomInstruction) 
                     ? Constant.DefaultInstruction 
                     : settings.CustomInstruction;
-                _lastSavedInstruction = settings.CustomInstruction;
                 _textAreaInitialized = true;
             }
 

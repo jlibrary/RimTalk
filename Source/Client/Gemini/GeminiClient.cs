@@ -79,7 +79,7 @@ namespace RimTalk.Client.Gemini
 
             try
             {
-                // Logger.Message($"API request: {EndpointUrl}\n{jsonContent}");
+                Logger.Debug($"API request: {EndpointUrl}\n{jsonContent}");
 
                 using (UnityWebRequest webRequest = UnityWebRequest.Post(EndpointUrl, jsonContent))
                 {
@@ -96,7 +96,7 @@ namespace RimTalk.Client.Gemini
                         await Task.Delay(100);
                     }
                     
-                    // Logger.Message($"API response: \n{webRequest.downloadHandler.text}");
+                    Logger.Debug($"API response: \n{webRequest.downloadHandler.text}");
 
                     if (webRequest.responseCode == 429)
                         throw new QuotaExceededException("Quota exceeded");

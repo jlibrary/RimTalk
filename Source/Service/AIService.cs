@@ -97,7 +97,7 @@ namespace RimTalk.Service
 
         public static void UpdateContext(string context)
         {
-            // Logger.Message($"UpdateContext:\n{context}");
+            Logger.Debug($"UpdateContext:\n{context}");
             _instruction = context;
         }
 
