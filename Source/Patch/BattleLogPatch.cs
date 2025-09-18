@@ -1,6 +1,9 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using RimTalk.Service;
+using RimTalk.Util;
 using Verse;
 using Cache = RimTalk.Data.Cache;
 
@@ -12,23 +15,16 @@ namespace RimTalk.Patches
         private static void Postfix(LogEntry entry)
         {
             var pawnsInvolved = entry.GetConcerns().OfType<Pawn>().ToList();
-
             if (pawnsInvolved.Count < 2) return;
-
+            
             var initiator = pawnsInvolved[0];
             var recipient = pawnsInvolved[1];
-
-            if (!initiator.RaceProps.Humanlike) return;
             
-            var prompt = entry.ToGameStringFromPOV(initiator).StripTags();
-            if (recipient != null && PawnService.IsInvader(recipient))
-            {
-                string name = PawnService.GetPawnName(initiator, recipient);
-                if (name != null)
-                {
-                    prompt = prompt.Replace(recipient.LabelShort, name);
-                }
-            }
+            if (Cache.Get(initiator) == null && Cache.Get(recipient) == null) return; 
+            
+            string prompt = GenerateDirectPrompt(entry, initiator, recipient);
+
+            if (string.IsNullOrEmpty(prompt)) return;
             
             Cache.Get(initiator)?.AddTalkRequest(prompt, recipient);
             Cache.Get(recipient)?.AddTalkRequest(prompt, initiator);
@@ -38,6 +34,76 @@ namespace RimTalk.Patches
             {
                 Cache.Get(pawn)?.AddTalkRequest(prompt, initiator);
             }
+        }
+
+        /// <summary>
+        /// Generates a prompt for the LLM. It first tries a high-performance, direct-access method.
+        /// If that fails (e.g., due to a game update), it logs the error and falls back to the
+        /// slower, more stable vanilla game method.
+        /// </summary>
+        private static string GenerateDirectPrompt(LogEntry entry, Pawn initiator, Pawn recipient)
+        {
+            try
+            {
+                string initiatorLabel = initiator.LabelShort;
+                string recipientLabel = recipient.LabelShort;
+                if (PawnService.IsInvader(recipient))
+                {
+                    string invaderName = PawnService.GetPawnName(initiator, recipient);
+                    if (!string.IsNullOrEmpty(invaderName))
+                    {
+                        recipientLabel = invaderName;
+                    }
+                }
+                
+                if (entry is BattleLogEntry_RangedImpact impactEntry)
+                {
+                    var traverse = Traverse.Create(impactEntry);
+                    var weaponDef = traverse.Field<ThingDef>("weaponDef").Value;
+                    var projectileDef = traverse.Field<ThingDef>("projectileDef").Value;
+                    string weaponLabel = weaponDef?.label ?? projectileDef?.label ?? "a projectile";
+
+                    var deflected = traverse.Field<bool>("deflected").Value;
+                    var damagedParts = traverse.Field<List<BodyPartRecord>>("damagedParts").Value;
+
+                    if (deflected)
+                    {
+                        return $"{initiatorLabel}'s shot with {weaponLabel} at {recipientLabel} was deflected.";
+                    }
+                    if (damagedParts == null || damagedParts.Count == 0)
+                    {
+                        return $"{initiatorLabel} missed {recipientLabel} with {weaponLabel}.";
+                    }
+                    return $"{initiatorLabel} hit {recipientLabel} with {weaponLabel}.";
+                }
+
+                if (entry is BattleLogEntry_MeleeCombat meleeEntry)
+                {
+                    var traverse = Traverse.Create(meleeEntry);
+                    var ruleDef = traverse.Field<RulePackDef>("ruleDef").Value;
+                    if (ruleDef == null) return null;
+
+                    string ruleDefName = ruleDef.defName;
+                    string toolLabel = traverse.Field<string>("toolLabel").Value;
+
+                    if (ruleDefName == "Combat_MeleeBite") return $"{initiatorLabel} bit {recipientLabel}.";
+                    if (ruleDefName == "Combat_MeleeScratch") return $"{initiatorLabel} scratched {recipientLabel}.";
+                    if (!string.IsNullOrEmpty(toolLabel)) return $"{initiatorLabel} hit {recipientLabel} with their {toolLabel}.";
+
+                    return $"{initiatorLabel} attacked {recipientLabel} in melee.";
+                }
+            }
+            catch (Exception ex)
+            {
+                // --- Fallback Path ---
+                // The fast path failed, likely due to a game update. 
+                Logger.ErrorOnce($"RimTalk: Battle prompt generation failed.\n {ex.Message}", entry.GetHashCode());
+                
+                // Use the original slow method and strip out any rich text tags.
+                return entry.ToGameStringFromPOV(initiator).StripTags();
+            }
+
+            return null;
         }
     }
 }

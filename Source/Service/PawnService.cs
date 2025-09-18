@@ -106,38 +106,44 @@ namespace RimTalk.Service
 
         public static string GetPawnName(Pawn pawn, Pawn nearbyPawn)
         {
-            // If both are same type or same faction, return the name
+            string shortName = nearbyPawn.Name?.ToStringShort ?? nearbyPawn.LabelShort;
+
+            // Same group: prisoners, slaves, or same faction
             if ((pawn.IsPrisoner && nearbyPawn.IsPrisoner) ||
                 (pawn.IsSlave && nearbyPawn.IsSlave) ||
                 (pawn.Faction != null && pawn.Faction == nearbyPawn.Faction))
             {
-                return nearbyPawn.Name?.ToStringShort;
+                return shortName;
             }
 
-            // Prisoner sees colonist as master
-            if (pawn.IsPrisoner && nearbyPawn.Faction == Faction.OfPlayer)
-                return $"{nearbyPawn.Name.ToStringShort}(master)";
+            // Master relationships
+            if ((pawn.IsPrisoner || pawn.IsSlave) && nearbyPawn.Faction == Faction.OfPlayer)
+            {
+                return $"{shortName}(master)";
+            }
 
-            // Slave sees colonist as master
-            if (pawn.IsSlave && nearbyPawn.Faction == Faction.OfPlayer)
-                return $"{nearbyPawn.Name.ToStringShort}(master)";
+            // Prisoner or slave labels
+            if (nearbyPawn.IsPrisoner) return $"{shortName}(prisoner)";
+            if (nearbyPawn.IsSlave) return $"{shortName}(slave)";
 
-            // Labels based on type or faction relationship
-            if (nearbyPawn.IsPrisoner) return "prisoner";
-            if (nearbyPawn.IsSlave) return "slave";
-
+            // Faction-based labels
             if (nearbyPawn.Faction != null)
             {
                 if (pawn.Faction != null && pawn.Faction.HostileTo(nearbyPawn.Faction))
-                    return "invader";
+                {
+                    return $"{shortName}(enemy)";
+                }
 
-                // Friendly visitor or colonist
-                string typeLabel = nearbyPawn.Faction == Faction.OfPlayer ? $"{nearbyPawn.Name.ToStringShort}(colonist)" : "visitor";
-                return $"{nearbyPawn.Name.ToStringShort} ({typeLabel})";
+                if (nearbyPawn.Faction == Faction.OfPlayer)
+                {
+                    return $"{shortName}(colonist)";
+                }
+
+                return $"{shortName}(visitor)";
             }
 
-            // Default to name
-            return nearbyPawn.Name?.ToStringShort ?? nearbyPawn.LabelShort;
+            // Fallback
+            return shortName;
         }
 
         public static string GetPawnStatusFull(Pawn pawn, List<Pawn> nearbyPawns)
@@ -165,7 +171,7 @@ namespace RimTalk.Service
             {
                 // Collect critical statuses of nearby pawns
                 var nearbyNotableStatuses = nearbyPawns
-                    .Where(IsPawnInDanger)
+                    .Where(nearbyPawn => nearbyPawn.Faction == pawn.Faction && IsPawnInDanger(nearbyPawn))
                     .Take(2)
                     .Select(other => $"{other.Name.ToStringShort} in {other.GetInspectString().Replace("\n", "; ")}")
                     .ToList();
@@ -185,10 +191,6 @@ namespace RimTalk.Service
                         {
                             nearbyPawn.def.hideMainDesc = true;
                             name = $"{name} ({nearbyPawn.GetInspectString().StripTags()})";
-                        } 
-                        else if (nearbyPawn.RaceProps.Animal)
-                        {
-                            name += $"(Animal)";
                         }
                         return name;
                     })

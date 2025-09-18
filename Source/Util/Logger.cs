@@ -25,5 +25,10 @@ namespace RimTalk.Util
         {
             Log.Error($"{Constant.ModTag} {message}\n\n");
         }
+
+        public static void ErrorOnce(string text, int key)
+        {
+            Log.ErrorOnce($"{Constant.ModTag} {text}\n\n", key);
+        }
     }
 }

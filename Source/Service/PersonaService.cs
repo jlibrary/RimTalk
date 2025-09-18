@@ -18,7 +18,15 @@ namespace RimTalk.Data
                 // Assign a random personality on creation, similar to old logic
                 PersonalityData randomPersonalityData = Constant.Personalities.RandomElement();
                 hediff.Personality = randomPersonalityData.Persona;
-                hediff.TalkInitiationWeight = randomPersonalityData.Chattiness;
+                
+                if (pawn.IsSlave || pawn.IsPrisoner || PawnService.IsVisitor(pawn) || PawnService.IsInvader(pawn))
+                {
+                    hediff.TalkInitiationWeight = 0.3f;
+                }
+                else
+                {
+                    hediff.TalkInitiationWeight = randomPersonalityData.Chattiness;
+                }
                 
                 pawn.health.AddHediff(hediff);
             }
@@ -37,13 +45,6 @@ namespace RimTalk.Data
 
         public static float GetTalkInitiationWeight(Pawn pawn)
         {
-            if (pawn.IsSlave || pawn.IsPrisoner)
-                return 0.3f;
-            if (PawnService.IsVisitor(pawn))
-                return 0.3f;
-            if (PawnService.IsInvader(pawn))
-                return 0.3f;
-
             return GetOrAddPersonaHediff(pawn).TalkInitiationWeight;
         }
 
