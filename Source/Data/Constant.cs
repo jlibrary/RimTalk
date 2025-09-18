@@ -37,7 +37,7 @@ If no one nearby, ONLY generate monologue";
         
         private const string JsonInstruction = @"
 
-Return JSON array with objects containing ""name"" and ""text"" string keys.";
+Must return JSON array only, with objects containing ""name"" (string) and ""text"" (string).";
 
         // Get the current instruction from settings or fallback to default, always append JSON instruction
         public static string Instruction =>
@@ -53,7 +53,7 @@ Return JSON array with objects containing ""name"" and ""text"" string keys.";
 Include: how they speak, their main attitude, and one weird quirk that makes them memorable.
 Be specific and bold, avoid boring traits.
 Also determine chattiness: 0.1-0.5 (quiet), 0.6-1.4 (normal), 1.5-2.0 (chatty).
-Return JSON with fields 'persona' (string) and 'chattiness' (float)";
+Must return JSON only, with fields 'persona' (string) and 'chattiness' (float).";
         
         public static readonly PersonalityData[] Personalities =
         {
