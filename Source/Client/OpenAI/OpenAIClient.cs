@@ -13,6 +13,7 @@ namespace RimTalk.Client.OpenAI
 {
     public class OpenAIClient : IAIClient
     {
+        public const string OpenAIPath = "/v1/chat/completions";
         private readonly string _apiKey;
         private readonly string _model;
 
@@ -28,11 +29,11 @@ namespace RimTalk.Client.OpenAI
                 // Check if they provided just a base URL without a specific API path
                 if (uri.AbsolutePath == "/" || string.IsNullOrEmpty(uri.AbsolutePath.Trim('/')))
                 {
-                    EndpointUrl = trimmedUrl + "/v1/chat/completions";
+                    EndpointUrl = trimmedUrl + OpenAIPath;
                 }
                 else
                 {
-                    // They provided a full path (like /v4/chat/completions), use as-is
+                    // They provided a full path, use as-is
                     EndpointUrl = trimmedUrl;
                 }
             }

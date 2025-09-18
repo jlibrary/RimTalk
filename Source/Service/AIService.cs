@@ -15,7 +15,7 @@ namespace RimTalk.Service
         private static bool _firstInstruction = true;
 
         // Multi-turn conversation used for generating AI dialogue
-        public static async Task<(List<TalkResponse> Responses, string RawResponse)> Chat(TalkRequest request,
+        public static async Task<List<TalkResponse>> Chat(TalkRequest request,
             List<(Role role, string message)> messages)
         {
             var currentMessages = new List<(Role role, string message)>(messages);
@@ -28,7 +28,7 @@ namespace RimTalk.Service
             if (payload == null)
             {
                 ApiHistory.RemoveRequest(talkLogId);
-                return (null, null);
+                return null;
             }
 
             var talkResponses = JsonUtil.DeserializeFromJson<List<TalkResponse>>(payload.Response);
@@ -44,7 +44,7 @@ namespace RimTalk.Service
 
             _firstInstruction = false;
 
-            return (talkResponses, payload.Response);
+            return talkResponses;
         }
 
         // One time query - used for generating persona, etc

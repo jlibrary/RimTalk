@@ -56,8 +56,8 @@ namespace RimTalk.Service
                 try
                 {
                     Cache.Get(initiator).IsGeneratingTalk = true;
-                    var (talkResponses, rawJson) = await AIService.Chat(talkRequest, TalkHistory.GetMessageHistory(initiator));
-                    ProcessSuccessfulResponse(pawns.Union(nearbyPawns).Distinct().ToList(), talkResponses, prompt,rawJson);
+                    var talkResponses = await AIService.Chat(talkRequest, TalkHistory.GetMessageHistory(initiator));
+                    ProcessSuccessfulResponse(pawns.Union(nearbyPawns).Distinct().ToList(), talkResponses, prompt);
                 }
                 catch (Exception ex)
                 {
@@ -91,7 +91,7 @@ namespace RimTalk.Service
             return true;
         }
 
-        private static void ProcessSuccessfulResponse(List<Pawn> allInvolvedPawns, List<TalkResponse> talkResponses, string request, string response)
+        private static void ProcessSuccessfulResponse(List<Pawn> allInvolvedPawns, List<TalkResponse> talkResponses, string request)
         {
             try
             {
@@ -111,7 +111,7 @@ namespace RimTalk.Service
                 string cleanedPrompt = request.Replace(Constant.Prompt, "");
                 foreach (var pawn in allInvolvedPawns)
                 {
-                    TalkHistory.AddMessageHistory(pawn, cleanedPrompt, response);;
+                    TalkHistory.AddMessageHistory(pawn, cleanedPrompt, JsonUtil.SerializeToJson(talkResponses));;
                 }
             }
             catch (Exception ex)

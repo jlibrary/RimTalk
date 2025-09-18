@@ -14,7 +14,9 @@ namespace RimTalk
             // Instructions
             Text.Font = GameFont.Tiny;
             GUI.color = Color.cyan;
-            listingStandard.Label("RimTalk.Settings.EventFilterTip".Translate());
+            var eventFilterTip = "RimTalk.Settings.EventFilterTip".Translate();
+            var eventFilterTipRect = listingStandard.GetRect(Text.CalcHeight(eventFilterTip, listingStandard.ColumnWidth));
+            Widgets.Label(eventFilterTipRect, eventFilterTip);
             GUI.color = Color.white;
             Text.Font = GameFont.Small;
             listingStandard.Gap(6f);
@@ -42,7 +44,9 @@ namespace RimTalk
                     // Category header
                     Text.Font = GameFont.Small;
                     GUI.color = Color.yellow;
-                    listingStandard.Label($"━━ {group.Key} ({group.Count()}) ━━");
+                    var categoryHeader = $"━━ {group.Key} ({group.Count()}) ━━";
+                    var categoryHeaderRect = listingStandard.GetRect(Text.CalcHeight(categoryHeader, listingStandard.ColumnWidth));
+                    Widgets.Label(categoryHeaderRect, categoryHeader);
                     GUI.color = Color.white;
                     Text.Font = GameFont.Small;
                     listingStandard.Gap(6f);
@@ -78,7 +82,9 @@ namespace RimTalk
             {
                 Text.Font = GameFont.Tiny;
                 GUI.color = Color.yellow;
-                listingStandard.Label("RimTalk.Settings.NoArchivableTypes".Translate());
+                var noArchivableTypes = "RimTalk.Settings.NoArchivableTypes".Translate();
+                var noArchivableTypesRect = listingStandard.GetRect(Text.CalcHeight(noArchivableTypes, listingStandard.ColumnWidth));
+                Widgets.Label(noArchivableTypesRect, noArchivableTypes);
                 GUI.color = Color.white;
                 Text.Font = GameFont.Small;
             }

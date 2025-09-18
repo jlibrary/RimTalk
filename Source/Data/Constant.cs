@@ -37,7 +37,7 @@ If no one nearby, ONLY generate monologue";
         
         private const string JsonInstruction = @"
 
-Must return JSON array only, with objects containing ""name"" (string) and ""text"" (string).";
+Return JSON array only, with objects containing ""name"" and ""text"" string keys.";
 
         // Get the current instruction from settings or fallback to default, always append JSON instruction
         public static string Instruction =>

@@ -40,7 +40,9 @@ namespace RimTalk
             listingStandard.Gap(30f);
 
             // AI Cooldown
-            listingStandard.Label("RimTalk.Settings.AICooldown".Translate(settings.TalkInterval).ToString());
+            var cooldownLabel = "RimTalk.Settings.AICooldown".Translate(settings.TalkInterval).ToString();
+            var cooldownLabelRect = listingStandard.GetRect(Text.CalcHeight(cooldownLabel, listingStandard.ColumnWidth));
+            Widgets.Label(cooldownLabelRect, cooldownLabel);
             settings.TalkInterval = (int)listingStandard.Slider(settings.TalkInterval, 1, 20);
 
             listingStandard.Gap(12f);
@@ -100,7 +102,9 @@ namespace RimTalk
 
             // --- Footer ---
             GUI.color = Color.yellow;
-            listingStandard.Label("RimTalk.Settings.BubbleFadeTip".Translate().ToString());
+            var bubbleFadeTip = "RimTalk.Settings.BubbleFadeTip".Translate().ToString();
+            var bubbleFadeTipRect = listingStandard.GetRect(Text.CalcHeight(bubbleFadeTip, listingStandard.ColumnWidth));
+            Widgets.Label(bubbleFadeTipRect, bubbleFadeTip);
             GUI.color = Color.white;
             listingStandard.Gap(12f);
 

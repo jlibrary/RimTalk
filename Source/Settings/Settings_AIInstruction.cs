@@ -23,7 +23,9 @@ namespace RimTalk
             var activeConfig = settings.GetActiveConfig();
             var modelName = activeConfig?.SelectedModel ?? "N/A";
 
-            listingStandard.Label("RimTalk.Settings.AIInstructionPrompt".Translate(modelName));
+            var aiInstructionPrompt = "RimTalk.Settings.AIInstructionPrompt".Translate(modelName);
+            var aiInstructionPromptRect = listingStandard.GetRect(Text.CalcHeight(aiInstructionPrompt, listingStandard.ColumnWidth));
+            Widgets.Label(aiInstructionPromptRect, aiInstructionPrompt);
             listingStandard.Gap(6f);
 
             // Instructions for external editor

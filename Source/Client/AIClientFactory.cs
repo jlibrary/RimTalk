@@ -32,11 +32,11 @@ namespace RimTalk.Client
                 case AIProvider.Google:
                     return new GeminiClient();
                 case AIProvider.OpenAI:
-                    return new OpenAIClient("https://api.openai.com", config.SelectedModel, config.ApiKey);
+                    return new OpenAIClient("https://api.openai.com" + OpenAIClient.OpenAIPath, config.SelectedModel, config.ApiKey);
                 case AIProvider.DeepSeek:
-                    return new OpenAIClient("https://api.deepseek.com", config.SelectedModel, config.ApiKey);
+                    return new OpenAIClient("https://api.deepseek.com" + OpenAIClient.OpenAIPath, config.SelectedModel, config.ApiKey);
                 case AIProvider.OpenRouter:
-                    return new OpenAIClient("https://openrouter.ai/api", config.SelectedModel, config.ApiKey);
+                    return new OpenAIClient("https://openrouter.ai/api" + OpenAIClient.OpenAIPath, config.SelectedModel, config.ApiKey);
                 case AIProvider.Local:
                     return new OpenAIClient(config.BaseUrl, config.CustomModelName);
                 case AIProvider.Custom:
