@@ -1,8 +1,8 @@
 using System.Linq;
 using HarmonyLib;
-using RimTalk.Data;
 using RimTalk.Service;
 using Verse;
+using Cache = RimTalk.Data.Cache;
 
 namespace RimTalk.Patches
 {
@@ -18,10 +18,16 @@ namespace RimTalk.Patches
             var initiator = pawnsInvolved[0];
             var recipient = pawnsInvolved[1];
 
+            if (!initiator.RaceProps.Humanlike) return;
+            
             var prompt = entry.ToGameStringFromPOV(initiator).StripTags();
             if (recipient != null && PawnService.IsInvader(recipient))
             {
-                prompt = prompt.Replace(recipient.LabelShort, PawnService.GetPawnName(initiator, recipient));
+                string name = PawnService.GetPawnName(initiator, recipient);
+                if (name != null)
+                {
+                    prompt = prompt.Replace(recipient.LabelShort, name);
+                }
             }
             
             Cache.Get(initiator)?.AddTalkRequest(prompt, recipient);

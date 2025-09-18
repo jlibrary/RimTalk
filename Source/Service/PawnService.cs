@@ -111,7 +111,7 @@ namespace RimTalk.Service
                 (pawn.IsSlave && nearbyPawn.IsSlave) ||
                 (pawn.Faction != null && pawn.Faction == nearbyPawn.Faction))
             {
-                return nearbyPawn.Name.ToStringShort;
+                return nearbyPawn.Name?.ToStringShort;
             }
 
             // Prisoner sees colonist as master
