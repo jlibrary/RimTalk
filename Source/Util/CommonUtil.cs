@@ -1,4 +1,5 @@
 using System;
+using System.Text.RegularExpressions;
 using RimWorld;
 using Verse;
 
@@ -33,11 +34,18 @@ namespace RimTalk.Util
         
         public static int? GetInGameHour()
         {
-            if (Find.CurrentMap?.Tile == null)
-                return null;
-    
-            return GenDate.HourOfDay(Find.TickManager.TicksAbs, 
-                Find.WorldGrid.LongLatOf(Find.CurrentMap.Tile).x);
+            try
+            {
+                if (Find.CurrentMap?.Tile == null)
+                    return null;
+        
+                return GenDate.HourOfDay(Find.TickManager.TicksAbs, 
+                    Find.WorldGrid.LongLatOf(Find.CurrentMap.Tile).x);
+            }
+            catch (Exception)
+            {
+               return null;
+            }
         }
 
         public static string GetInGameHour12HString()
@@ -64,11 +72,11 @@ namespace RimTalk.Util
             // Modern tokenizers use subword tokenization (BPE/SentencePiece)
 
             // Remove extra whitespace and normalize
-            string normalizedText = System.Text.RegularExpressions.Regex.Replace(text.Trim(), @"\s+", " ");
+            string normalizedText = Regex.Replace(text.Trim(), @"\s+", " ");
             
             double totalTokens = 0.0;
             string[] words = normalizedText.Split(new char[] { ' ' }, 
-                System.StringSplitOptions.RemoveEmptyEntries);
+                StringSplitOptions.RemoveEmptyEntries);
 
             foreach (string word in words)
             {

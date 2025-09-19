@@ -98,7 +98,7 @@ namespace RimTalk.Patch
         private static InteractionDef GetInteractionDef(LogEntry entry)
         {
             var field = AccessTools.Field(entry.GetType(), "intDef");
-            return (InteractionDef)field.GetValue(entry);
+            return field?.GetValue(entry) as InteractionDef;
         }
     }
 }

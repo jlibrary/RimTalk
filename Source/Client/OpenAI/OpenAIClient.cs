@@ -117,7 +117,7 @@ namespace RimTalk.Client.OpenAI
                     if (webRequest.isNetworkError || webRequest.isHttpError)
                     {
                         Logger.Error($"Request failed: {webRequest.responseCode} - {webRequest.error}");
-                        throw new Exception();
+                        throw new Exception(webRequest.error);
                     }
 
                     return JsonUtil.DeserializeFromJson<OpenAIResponse>(webRequest.downloadHandler.text);

@@ -106,7 +106,7 @@ namespace RimTalk.Client.Gemini
                     if (webRequest.isNetworkError || webRequest.isHttpError)
                     {
                         Logger.Error($"Request failed: {webRequest.responseCode} - {webRequest.error}");
-                        throw new Exception();
+                        throw new Exception(webRequest.error);
                     }
 
                     GeminiResponse response = JsonUtil.DeserializeFromJson<GeminiResponse>(webRequest.downloadHandler.text);
