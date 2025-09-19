@@ -49,7 +49,7 @@ Return JSON array only, with objects containing ""name"" and ""text"" string key
             "Act based on context. Be natural. no repetition.";
 
         public static readonly string PersonaGenInstruction =
-            $@"Create a unique persona (to be used as conversation style) in {Lang}. Must be short in 1 sentence.
+            $@"Create a funny persona (to be used as conversation style) in {Lang}. Must be short in 1 sentence.
 Include: how they speak, their main attitude, and one weird quirk that makes them memorable.
 Be specific and bold, avoid boring traits.
 Also determine chattiness: 0.1-0.5 (quiet), 0.6-1.4 (normal), 1.5-2.0 (chatty).

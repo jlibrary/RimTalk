@@ -59,8 +59,8 @@ namespace RimTalk.Data
 
             try
             {
-                string prompt = $"{Constant.PersonaGenInstruction}\n\n[Character]\n{pawnBackstory}";
-                var request = new TalkRequest(prompt, pawn);
+                AIService.UpdateContext($"[Character]\n{pawnBackstory}");
+                var request = new TalkRequest(Constant.PersonaGenInstruction, pawn);
                 PersonalityData personalityData = await AIService.Query<PersonalityData>(request);
 
                 if (personalityData?.Persona != null)
@@ -75,11 +75,6 @@ namespace RimTalk.Data
                 Logger.Error(e.Message);
                 return null;
             }
-        }
-        
-        public class PersonaResponse 
-        { 
-            public string persona { get; set; } 
         }
     }
 }

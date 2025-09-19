@@ -55,7 +55,7 @@ namespace RimTalk.Service
 
             int talkLogId = ApiHistory.AddRequest(request);
 
-            var payload = await ExecuteAIRequest("", message);
+            var payload = await ExecuteAIRequest(_instruction, message);
 
             if (payload == null)
             {
