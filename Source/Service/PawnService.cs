@@ -148,14 +148,12 @@ namespace RimTalk.Service
 
         public static string GetPawnStatusFull(Pawn pawn, List<Pawn> nearbyPawns)
         {
-
             bool isInDanger = false;
-            pawn.def.hideMainDesc = true;
-            string status = pawn.GetInspectString();
+            
             List<string> parts = new List<string>();
             
             // --- 1. Add status ---
-            parts.Add($"Currently: {status}");
+            parts.Add($"Currently: {GetStatus(pawn)}");
 
             if (IsPawnInDanger(pawn))
             {
@@ -173,7 +171,7 @@ namespace RimTalk.Service
                 var nearbyNotableStatuses = nearbyPawns
                     .Where(nearbyPawn => nearbyPawn.Faction == pawn.Faction && IsPawnInDanger(nearbyPawn))
                     .Take(2)
-                    .Select(other => $"{other.Name.ToStringShort} in {other.GetInspectString().Replace("\n", "; ")}")
+                    .Select(other => $"{other.Name.ToStringShort} in {GetStatus(other).Replace("\n", "; ")}")
                     .ToList();
 
                 if (nearbyNotableStatuses.Any())
@@ -189,8 +187,7 @@ namespace RimTalk.Service
                         string name = GetPawnName(pawn, nearbyPawn);
                         if (Cache.Get(nearbyPawn) is PawnState pawnState)
                         {
-                            nearbyPawn.def.hideMainDesc = true;
-                            name = $"{name} ({nearbyPawn.GetInspectString().StripTags()})";
+                            name = $"{name} ({GetStatus(nearbyPawn).StripTags()})";
                         }
                         return name;
                     })
@@ -254,6 +251,18 @@ namespace RimTalk.Service
                 PathEndMode.OnCell,
                 TraverseParms.For(pawn),
                 9999f) as Pawn;
+        }
+        
+        public static string GetStatus(Pawn pawn)
+        {
+            pawn.def.hideMainDesc = true;
+            string status = pawn.GetInspectString();
+            if (pawn.CurJob?.def == JobDefOf.Research)
+            {
+                ResearchProjectDef project = Find.ResearchManager.GetProject();
+                status += $" ({project.label})";
+            }
+            return status;
         }
     }
 }
