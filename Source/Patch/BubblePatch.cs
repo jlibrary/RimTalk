@@ -3,6 +3,7 @@ using System.Linq;
 using Bubbles.Core;
 using HarmonyLib;
 using RimTalk.Data;
+using RimTalk.Patches;
 using RimTalk.Service;
 using RimTalk.Util;
 using RimWorld;
@@ -18,7 +19,7 @@ namespace RimTalk.Patch
         public static bool Prefix(LogEntry entry)
         {
             CurrentWorkDisplayModSettings settings = Settings.Get();
-            
+
             Pawn initiator = (Pawn)entry.GetConcerns().First();
             Pawn recipient = GetRecipient(entry);
             var prompt = entry.ToGameStringFromPOV(initiator).StripTags();
@@ -36,20 +37,21 @@ namespace RimTalk.Patch
                     {
                         Logger.Warning($"Failed to override bubble drafted setting: {ex.Message}");
                     }
+
                 return true;
             }
-      
+
             // If Rimtalk disabled or  non-RimTalk interactions is disabled, show the original bubble.
             if (!settings.IsEnabled || !settings.ProcessNonRimTalkInteractions)
             {
                 return true;
             }
-            
+
             bool isChitchat = GetInteractionDef(entry) == InteractionDefOf.Chitchat;
-            
+
             // if in danger then stop chitchat
-            if (isChitchat && 
-                (PawnService.IsPawnInDanger(initiator) 
+            if (isChitchat &&
+                (PawnService.IsPawnInDanger(initiator)
                  || PawnService.HostilePawnNearBy(initiator) != null
                  || !PawnSelector.GetNearByTalkablePawns(initiator).Contains(recipient)))
             {
@@ -61,7 +63,7 @@ namespace RimTalk.Patch
             // chitchat is ignored if talkRequest exists
             if (pawnState == null || isChitchat && pawnState.TalkRequest != null)
                 return false;
-            
+
             // Otherwise, block normal bubble and generate talk
             prompt = $"{prompt} ({GetInteractionDef(entry).label})";
             pawnState.AddTalkRequest(prompt, recipient);
@@ -91,8 +93,9 @@ namespace RimTalk.Patch
 
         private static bool IsRimTalkInteraction(LogEntry entry)
         {
-            return entry is PlayLogEntry_Interaction interaction &&
-                InteractionTextPatch.IsRimTalkInteraction(interaction);
+            return entry is PlayLogEntry_RimTalkInteraction ||
+                   (entry is PlayLogEntry_Interaction interaction &&
+                    InteractionTextPatch.IsRimTalkInteraction(interaction));
         }
 
         private static InteractionDef GetInteractionDef(LogEntry entry)

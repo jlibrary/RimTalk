@@ -1,5 +1,4 @@
 using RimTalk.Client;
-using RimTalk.Compatibility;
 using RimTalk.Data;
 using RimTalk.Error;
 using RimTalk.Patch;
@@ -17,16 +16,12 @@ namespace RimTalk
         public override void StartedNewGame()
         {
             base.StartedNewGame();
-            var migrator = SaveDataMigrator.EnsureMigrationComponent();
-            migrator.MarkAsMigrated();
             Reset();
         }
 
         public override void LoadedGame()
         {
             base.LoadedGame();
-            SaveDataMigrator.EnsureMigrationComponent();
-
             Reset();
         }
 
