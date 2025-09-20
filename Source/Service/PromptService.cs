@@ -19,7 +19,7 @@ namespace RimTalk.Service
         public static string BuildContext(List<Pawn> pawns)
         {
             // build context with 2 other nearby pawns
-            IEnumerable<Pawn> nearbyPawns = PawnSelector.GetNearByTalkablePawns(pawns[0]).Take(2);
+            List<Pawn> nearbyPawns = PawnSelector.GetNearByTalkablePawns(pawns[0]).Take(2).ToList();
 
             // Create a new list with nearby pawns
             List<Pawn> mergedPawns = pawns.Concat(nearbyPawns).Distinct().ToList();
@@ -35,7 +35,7 @@ namespace RimTalk.Service
             {
                 // Main pawn gets more detail, others get basic info
                 InfoLevel infoLevel = pawn == pawns[0] ? InfoLevel.Normal : InfoLevel.Short;
-                string pawnContext = CreatePawnContext(pawn, infoLevel);
+                string pawnContext = CreatePawnContext(pawn, nearbyPawns, infoLevel);
                 Cache.Get(pawn).Context = pawnContext;
                 count++;
                 context.AppendLine();
@@ -122,7 +122,7 @@ namespace RimTalk.Service
                 sb.AppendLine(adulthood);
             }
 
-            var traits = "Traits: \n";
+            var traits = "Traits: ";
             foreach (Trait trait in pawn.story.traits.TraitsSorted)
             {
                 foreach (TraitDegreeData degreeData in trait.def.degreeDatas)
@@ -150,7 +150,7 @@ namespace RimTalk.Service
             return sb.ToString();
         }
         
-        public static string CreatePawnContext(Pawn pawn, InfoLevel infoLevel = InfoLevel.Normal)
+        public static string CreatePawnContext(Pawn pawn, List<Pawn> nearbyPawns, InfoLevel infoLevel = InfoLevel.Normal)
         {
             StringBuilder sb = new StringBuilder();
 
@@ -197,7 +197,7 @@ namespace RimTalk.Service
             if (PawnService.IsVisitor(pawn))
                 return sb.ToString();
 
-            sb.AppendLine(RelationsService.GetRelationsString(pawn));
+            sb.AppendLine(RelationsService.GetRelationsString(pawn, nearbyPawns));
 
             if (infoLevel != InfoLevel.Short)
             {

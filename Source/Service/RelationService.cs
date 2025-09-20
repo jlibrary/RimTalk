@@ -3,58 +3,69 @@ using System.Text;
 using RimWorld;
 using Verse;
 
-public static class RelationsService
+namespace RimTalk.Service
 {
-    private const float FriendOpinionThreshold = 20f;
-
-    public static string GetRelationsString(Pawn pawn)
+    public static class RelationsService
     {
-        if (pawn?.relations == null) return "";
+        private const float FriendOpinionThreshold = 20f;
+        private const float RivalOpinionThreshold = -20f;
 
-        StringBuilder relationsSb = new StringBuilder();
-        HashSet<Pawn> processedPawns = new HashSet<Pawn>();
-
-        // --- Loop 1: Important Family Relationships (Very Fast) ---
-        // Iterates a small pre-filtered list of relatives.
-        foreach (Pawn relative in pawn.relations.PotentiallyRelatedPawns)
+        public static string GetRelationsString(Pawn pawn, List<Pawn> nearbyPawns)
         {
-            if (relative.Dead || relative.relations.hidePawnRelations) continue;
+            if (pawn?.relations == null) return "";
 
-            PawnRelationDef mostImportantRelation = pawn.GetMostImportantRelation(relative);
-            if (mostImportantRelation != null && mostImportantRelation.familyByBloodRelation)
+            StringBuilder relationsSb = new StringBuilder();
+
+            foreach (Pawn otherPawn in nearbyPawns)
             {
-                relationsSb.Append($"{mostImportantRelation.GetGenderSpecificLabel(relative)}: {OpinionString(pawn, relative)}, ");
-                processedPawns.Add(relative);
+                if (otherPawn == pawn || !otherPawn.RaceProps.Humanlike || otherPawn.Dead || otherPawn.relations.hidePawnRelations) continue;
+
+                string label = null;
+
+                // --- Step 1: Check for the most important direct or family relationship ---
+                PawnRelationDef mostImportantRelation = pawn.GetMostImportantRelation(otherPawn);
+
+                if (mostImportantRelation != null)
+                {
+                    // If a specific relation exists (e.g., Son, Father, Lover), use its label.
+                    label = mostImportantRelation.GetGenderSpecificLabelCap(otherPawn);
+                }
+                else
+                {
+                    // --- Step 2: If no specific relation, check for opinion-based ones ---
+                    float opinion = pawn.relations.OpinionOf(otherPawn);
+
+                    if (opinion >= FriendOpinionThreshold)
+                    {
+                        label = "Friend".Translate();
+                    }
+                    else if (opinion <= RivalOpinionThreshold)
+                    {
+                        label = "Rival".Translate();
+                    }
+                    else
+                    {
+                        label = "Acquaintance".Translate();
+                    }
+                }
+                
+                // If we found any relevant relationship, add it to the string in the new format.
+                if (!string.IsNullOrEmpty(label))
+                {
+                    string pawnName = otherPawn.Name.ToStringShort;
+                    string opinion = pawn.relations.OpinionOf(otherPawn).ToStringWithSign();
+                    relationsSb.Append($"{pawnName}({label}) {opinion}, ");
+                }
             }
+            
+            if (relationsSb.Length > 0)
+            {
+                // Remove the trailing comma and space
+                relationsSb.Length -= 2;
+                return "Relations: " + relationsSb;
+            }
+
+            return "";
         }
-
-        // --- Loop 2: Direct Social Relations and Friendships (Also Fast) ---
-        // Iterates a small list of lovers, rivals, etc.
-        foreach (DirectPawnRelation relation in pawn.relations.DirectRelations)
-        {
-            Pawn otherPawn = relation.otherPawn;
-            if (processedPawns.Contains(otherPawn) || otherPawn.Dead || otherPawn.relations.hidePawnRelations) continue;
-
-            string relationLabel = relation.def.GetGenderSpecificLabel(otherPawn);
-            relationsSb.Append($"{relationLabel}: {OpinionString(pawn, otherPawn)}, ");
-            processedPawns.Add(otherPawn);
-        }
-
-        if (relationsSb.Length > 0)
-        {
-            // Remove the trailing comma and space
-            relationsSb.Length -= 2;
-            return "Relations: " + relationsSb.ToString();
-        }
-
-        return "";
-    }
-
-    private static string OpinionString(Pawn pawn, Pawn otherPawn)
-    {
-        var opinion = pawn.relations.OpinionOf(otherPawn).ToStringWithSign();
-        return otherPawn.RaceProps.Humanlike
-            ? $"{otherPawn.Name.ToStringShort} {opinion}"
-            : $"{otherPawn.Name.ToStringShort}(Animal)";
     }
 }
