@@ -9,7 +9,7 @@ namespace RimTalk
     {
         private void DrawEventFilterSettings(Listing_Standard listingStandard)
         {
-            CurrentWorkDisplayModSettings settings = Get();
+            RimTalkSettings settings = Get();
 
             // Instructions
             Text.Font = GameFont.Tiny;

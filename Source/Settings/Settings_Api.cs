@@ -63,7 +63,7 @@ namespace RimTalk
 
         private void DrawSimpleApiSettings(Listing_Standard listingStandard)
         {
-            CurrentWorkDisplayModSettings settings = Get();
+            RimTalkSettings settings = Get();
 
             // API Key section
             listingStandard.Label("RimTalk.Settings.GoogleApiKeyLabel".Translate());
@@ -98,7 +98,7 @@ namespace RimTalk
 
         private void DrawAdvancedApiSettings(Listing_Standard listingStandard)
         {
-            CurrentWorkDisplayModSettings settings = Get();
+            RimTalkSettings settings = Get();
 
             // Show Simple Settings button
             Rect simpleButtonRect = listingStandard.GetRect(30f);
@@ -165,7 +165,7 @@ namespace RimTalk
             }
         }
 
-        private void DrawCloudProvidersSection(Listing_Standard listingStandard, CurrentWorkDisplayModSettings settings)
+        private void DrawCloudProvidersSection(Listing_Standard listingStandard, RimTalkSettings settings)
         {
             // Header with add/remove buttons
             Rect headerRect = listingStandard.GetRect(24f);
@@ -418,7 +418,7 @@ namespace RimTalk
         }
 
 
-        private void DrawLocalProviderSection(Listing_Standard listingStandard, CurrentWorkDisplayModSettings settings)
+        private void DrawLocalProviderSection(Listing_Standard listingStandard, RimTalkSettings settings)
         {
             listingStandard.Label("RimTalk.Settings.LocalProviderConfiguration".Translate());
             listingStandard.Gap(6f);

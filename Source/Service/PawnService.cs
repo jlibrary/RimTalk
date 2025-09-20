@@ -234,23 +234,30 @@ namespace RimTalk.Service
 
         public static Pawn HostilePawnNearBy(Pawn pawn)
         {
-            return GenClosest.ClosestThing_Global_Reachable(
-                pawn.Position,
-                Find.CurrentMap,
-                Find.CurrentMap.mapPawns.AllPawnsSpawned
-                    .Where(p =>
-                        p.HostileTo(Faction.OfPlayer) &&
-                        p.Spawned &&
-                        p.Awake() &&
-                        p.health.capacities.CapableOf(PawnCapacityDefOf.Moving) &&
-                        p.CurJobDef != null &&            // must have an active job
-                        p.GetLord() != null &&            // belongs to a raid/siege lord
-                        (p.GetLord().LordJob is LordJob_AssaultColony ||
-                         p.GetLord().LordJob is LordJob_Siege))
-                    .Cast<Thing>(),
-                PathEndMode.OnCell,
-                TraverseParms.For(pawn),
-                9999f) as Pawn;
+            //GenHostility.AnyHostileActiveThreatToPlayer
+            var hostileTargets = pawn.Map.attackTargetsCache.TargetsHostileToFaction(Faction.OfPlayer);
+
+            Pawn closestPawn = null;
+            float closestDistSq = float.MaxValue;
+
+            foreach (IAttackTarget target in hostileTargets)
+            {
+                if (GenHostility.IsActiveThreatTo(target, Faction.OfPlayer))
+                {
+                    if (target.Thing is Pawn threatPawn)
+                    {
+                        float distSq = pawn.Position.DistanceToSquared(threatPawn.Position);
+
+                        if (distSq < closestDistSq)
+                        {
+                            closestDistSq = distSq;
+                            closestPawn = threatPawn;
+                        }
+                    }
+                }
+            }
+
+            return closestPawn;
         }
         
         public static string GetStatus(Pawn pawn)

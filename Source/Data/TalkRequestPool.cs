@@ -8,10 +8,36 @@ namespace RimTalk.Data
     {
         private static readonly List<TalkRequest> Requests = new List<TalkRequest>();
 
-        public static void Add(string prompt, Pawn initiator = null, Pawn recipient = null)
+        public static void Add(string prompt, Pawn initiator = null, Pawn recipient = null, int mapId = -1)
         {
-            var request = new TalkRequest(prompt, initiator, recipient);
+            var request = new TalkRequest(prompt, initiator, recipient)
+            {
+                MapId = mapId,
+            };
             Requests.Add(request);
+        }
+
+        public static TalkRequest GetRequestFromPool(Pawn pawn)
+        {
+            var requests = Requests
+                .Where(r => r.MapId == pawn.Map.uniqueID)
+                .OrderBy(r => r.CreatedTick)
+                .ToList();
+
+            foreach (var request in requests)
+            {
+                if (request.IsExpired())
+                {
+                    Requests.Remove(request);
+                }
+                else
+                {
+                    request.Initiator = pawn;
+                    return request;
+                }
+            }
+
+            return null;
         }
 
         // Get the first request without removing it
@@ -22,8 +48,7 @@ namespace RimTalk.Data
 
         // Remove a specific request
         public static bool Remove(TalkRequest request)
-        {
-            return Requests.Remove(request);
+        {            return Requests.Remove(request);
         }
 
         public static IEnumerable<TalkRequest> GetAll()

@@ -81,10 +81,8 @@ namespace RimTalk.Service
             return false;
         }
 
-        public static bool GenerateTalkFromPool(Pawn pawn)
+        public static bool GenerateTalkFromPool(TalkRequest talkRequest)
         {
-            var talkRequest = TalkRequestPool.Peek();
-            talkRequest.Initiator = pawn;
             if (!GenerateTalk(talkRequest)) return false;
             TalkRequestPool.Remove(talkRequest);
             return true;
@@ -137,7 +135,7 @@ namespace RimTalk.Service
 
                 // if reply, wait for ReplyInterval (3s)
                 int parentTalkTick = TalkHistory.GetSpokenTick(talk.ParentTalkId);
-                if (parentTalkTick == -1 || Find.TickManager.TicksGame - parentTalkTick
+                if (parentTalkTick == -1 || GenTicks.TicksGame - parentTalkTick
                     < CommonUtil.GetTicksForDuration(pawnState.ReplyInterval)) continue;
 
                 // if pawn is not able to talk, skip it
@@ -164,7 +162,7 @@ namespace RimTalk.Service
             TalkResponse talkResponse = ConsumeTalk(pawnState);
             
             if (!talkResponse.IsReply())
-                pawnState.LastTalkTick = Find.TickManager.TicksGame;
+                pawnState.LastTalkTick = GenTicks.TicksGame;
 
             return talkResponse.Text;
         }

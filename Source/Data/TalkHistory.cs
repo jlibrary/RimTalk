@@ -23,7 +23,7 @@ namespace RimTalk.Data
         // Add a new talk with the current game tick
         public static void AddSpoken(Guid id)
         {
-            SpokenTickCache.TryAdd(id, Find.TickManager.TicksGame);
+            SpokenTickCache.TryAdd(id, GenTicks.TicksGame);
         }
 
         public static int GetSpokenTick(Guid id)

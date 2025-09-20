@@ -17,7 +17,7 @@ namespace RimTalk.Data
         public int RejectCount { get; set; }
         public readonly Queue<TalkResponse> TalkQueue = new Queue<TalkResponse>();
         public bool IsGeneratingTalk { get; set; }
-        public int ReplyInterval { get; set; } = 3;
+        public int ReplyInterval { get; set; }
         public TalkRequest TalkRequest { get; set; }
         public Dictionary<string, float> Thoughts { get; set; }
         public HashSet<Hediff> Hediffs { get; set; }
@@ -29,7 +29,7 @@ namespace RimTalk.Data
         public PawnState(Pawn pawn)
         {
             Pawn = pawn;
-            LastTalkTick = Find.TickManager.TicksGame;
+            LastTalkTick = 0;
             UpdateThoughts();
             Hediffs = PawnService.GetHediffs(pawn);
         }
@@ -66,8 +66,8 @@ namespace RimTalk.Data
                    && Pawn.CurJobDef != JobDefOf.LayDownAwake
                    && Pawn.CurJobDef != JobDefOf.LayDownResting
                    && TalkInitiationWeight > 0 
-                   && Find.TickManager.TicksGame - LastTalkTick >
-                   CommonUtil.GetTicksForDuration(Settings.Get().ReplyInterval);
+                   && GenTicks.TicksGame - LastTalkTick >
+                   CommonUtil.GetTicksForDuration(RimTalkSettings.ReplyInterval);
         }
         
         public bool CanGenerateTalk(bool noInvader = false)

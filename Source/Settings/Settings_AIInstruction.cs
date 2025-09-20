@@ -9,7 +9,7 @@ namespace RimTalk
     {
         private void DrawAIInstructionSettings(Listing_Standard listingStandard)
         {
-            CurrentWorkDisplayModSettings settings = Get();
+            RimTalkSettings settings = Get();
 
             // Initialize buffer if needed
             if (!_textAreaInitialized)

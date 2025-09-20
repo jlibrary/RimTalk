@@ -59,7 +59,7 @@ namespace RimTalk.UI
             closeOnClickedOutside = false;
             preventCameraMotion = false;
 
-            var settings = LoadedModManager.GetMod<Settings>().GetSettings<CurrentWorkDisplayModSettings>();
+            var settings = LoadedModManager.GetMod<Settings>().GetSettings<RimTalkSettings>();
             _groupingEnabled = settings.DebugGroupingEnabled;
             _debugModeEnabled = settings.DebugModeEnabled;
             _sortColumn = settings.DebugSortColumn;
@@ -72,7 +72,7 @@ namespace RimTalk.UI
         public override void PreClose()
         {
             base.PreClose();
-            var settings = LoadedModManager.GetMod<Settings>().GetSettings<CurrentWorkDisplayModSettings>();
+            var settings = LoadedModManager.GetMod<Settings>().GetSettings<RimTalkSettings>();
             settings.DebugGroupingEnabled = _groupingEnabled;
             settings.DebugModeEnabled = _debugModeEnabled;
             settings.DebugSortColumn = _sortColumn;
@@ -120,7 +120,7 @@ namespace RimTalk.UI
 
         private void UpdateData()
         {
-            var settings = LoadedModManager.GetMod<Settings>().GetSettings<CurrentWorkDisplayModSettings>();
+            var settings = LoadedModManager.GetMod<Settings>().GetSettings<RimTalkSettings>();
             if (!settings.IsEnabled)
                 _aiStatus = "RimTalk.DebugWindow.StatusDisabled".Translate();
             else
@@ -147,7 +147,7 @@ namespace RimTalk.UI
 
         private void DrawOptionsBar(Rect rect)
         {
-            var settings = LoadedModManager.GetMod<Settings>().GetSettings<CurrentWorkDisplayModSettings>();
+            var settings = LoadedModManager.GetMod<Settings>().GetSettings<RimTalkSettings>();
 
             // --- Left-aligned controls (View Options) ---
             float currentX = rect.x;
@@ -649,7 +649,7 @@ namespace RimTalk.UI
                     _sortAscending = true;
                 }
 
-                var settings = LoadedModManager.GetMod<Settings>().GetSettings<CurrentWorkDisplayModSettings>();
+                var settings = LoadedModManager.GetMod<Settings>().GetSettings<RimTalkSettings>();
                 settings.DebugSortColumn = _sortColumn;
                 settings.DebugSortAscending = _sortAscending;
             }

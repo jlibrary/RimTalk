@@ -1,11 +1,10 @@
-using System;
 using System.Collections.Generic;
 using RimTalk.Data;
 using Verse;
 
 namespace RimTalk
 {
-    public class CurrentWorkDisplayModSettings : ModSettings
+    public class RimTalkSettings : ModSettings
     {
         // New API configuration system
         public List<ApiConfig> CloudConfigs = new List<ApiConfig>();
@@ -20,7 +19,7 @@ namespace RimTalk
 
         // Other existing settings
         public int TalkInterval = 7;
-        public readonly int ReplyInterval = 3;
+        public const int ReplyInterval = 3;
         public bool ProcessNonRimTalkInteractions;
         public string CustomInstruction = "";
         public Dictionary<string, bool> EnabledArchivableTypes = new Dictionary<string, bool>();

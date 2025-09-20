@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using RimTalk.Data;
 using RimWorld;
+using System.Linq;
 using Verse;
 
 namespace RimTalk.Patch
@@ -23,9 +24,21 @@ namespace RimTalk.Patch
             {
                 return;
             }
-
+            
+            Map eventMap = null;
+            
+            if (archivable.LookTargets != null)
+            {
+                eventMap = archivable.LookTargets.PrimaryTarget.Map;
+                if (eventMap == null)
+                {
+                    eventMap = archivable.LookTargets.targets
+                        .Select(t => t.Map)
+                        .FirstOrDefault(m => m != null);
+                }
+            }
+            
             var prompt = "";
-
             if (archivable is ChoiceLetter choiceLetter && choiceLetter.quest != null)
             {
                 prompt += $"(Talk if you want to accept quest)\n{choiceLetter.quest.description.ToString().StripTags()}";
@@ -35,7 +48,8 @@ namespace RimTalk.Patch
                 prompt += $"(Talk about incident)\n{archivable.ArchivedTooltip.StripTags()}";
             }
             
-            TalkRequestPool.Add(prompt);
+            // Use the correctly determined map's unique ID
+            TalkRequestPool.Add(prompt, mapId: eventMap?.uniqueID ?? -1);
         }
     }
 }

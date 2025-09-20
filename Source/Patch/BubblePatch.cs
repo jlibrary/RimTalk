@@ -18,7 +18,7 @@ namespace RimTalk.Patch
 
         public static bool Prefix(LogEntry entry)
         {
-            CurrentWorkDisplayModSettings settings = Settings.Get();
+            RimTalkSettings settings = Settings.Get();
 
             Pawn initiator = (Pawn)entry.GetConcerns().First();
             Pawn recipient = GetRecipient(entry);
@@ -46,14 +46,16 @@ namespace RimTalk.Patch
             {
                 return true;
             }
-
-            bool isChitchat = GetInteractionDef(entry) == InteractionDefOf.Chitchat;
+            
+            InteractionDef interactionDef = GetInteractionDef(entry);
+            bool isChitchat = interactionDef == InteractionDefOf.Chitchat ||
+                              interactionDef == InteractionDefOf.DeepTalk;
 
             // if in danger then stop chitchat
-            if (isChitchat &&
-                (PawnService.IsPawnInDanger(initiator)
-                 || PawnService.HostilePawnNearBy(initiator) != null
-                 || !PawnSelector.GetNearByTalkablePawns(initiator).Contains(recipient)))
+            if (isChitchat
+                && (PawnService.IsPawnInDanger(initiator)
+                    || PawnService.HostilePawnNearBy(initiator) != null
+                    || !PawnSelector.GetNearByTalkablePawns(initiator).Contains(recipient)))
             {
                 return false;
             }

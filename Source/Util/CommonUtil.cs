@@ -127,7 +127,7 @@ namespace RimTalk.Util
         
         public static bool ShouldAiBeActiveOnSpeed()
         {
-            CurrentWorkDisplayModSettings settings = Settings.Get();
+            RimTalkSettings settings = Settings.Get();
             if (settings.DisableAiAtSpeed == 0)
                 return true;
             TimeSpeed currentGameSpeed = Find.TickManager.CurTimeSpeed;

@@ -30,13 +30,13 @@ namespace RimTalk
 
         private SettingsTab currentTab = SettingsTab.Basic;
 
-        private static CurrentWorkDisplayModSettings _settings;
+        private static RimTalkSettings _settings;
 
-        public static CurrentWorkDisplayModSettings Get()
+        public static RimTalkSettings Get()
         {
             if (_settings == null)
             {
-                _settings = LoadedModManager.GetMod<Settings>().GetSettings<CurrentWorkDisplayModSettings>();
+                _settings = LoadedModManager.GetMod<Settings>().GetSettings<RimTalkSettings>();
             }
             return _settings;
         }
@@ -49,7 +49,7 @@ namespace RimTalk
         public Settings(ModContentPack content) : base(content)
         {
             var harmony = new Harmony("cj.rimtalk");
-            var settings = GetSettings<CurrentWorkDisplayModSettings>();
+            var settings = GetSettings<RimTalkSettings>();
             harmony.PatchAll();
             _apiSettingsHash = GetApiSettingsHash(settings);
         }
@@ -102,7 +102,7 @@ namespace RimTalk
             _archivableTypesScanned = true;
 
             // Initialize settings for new types
-            CurrentWorkDisplayModSettings settings = Get();
+            RimTalkSettings settings = Get();
             foreach (var typeName in _discoveredArchivableTypes)
             {
                 if (!settings.EnabledArchivableTypes.ContainsKey(typeName))
@@ -120,7 +120,7 @@ namespace RimTalk
         {
             base.WriteSettings();
             ClearCache(); // Invalidate the cache
-            CurrentWorkDisplayModSettings settings = Get();
+            RimTalkSettings settings = Get();
             int newHash = GetApiSettingsHash(settings);
 
             // If hash changes, reset the cloud config index and trigger a full reset of RimTalk.
@@ -132,7 +132,7 @@ namespace RimTalk
             }
         }
 
-        private int GetApiSettingsHash(CurrentWorkDisplayModSettings settings)
+        private int GetApiSettingsHash(RimTalkSettings settings)
         {
             // Create a string representation of the API settings and get its hash code
             var sb = new StringBuilder();
@@ -199,7 +199,7 @@ namespace RimTalk
         
         public override void DoSettingsWindowContents(Rect inRect)
         {
-            CurrentWorkDisplayModSettings settings = Get();
+            RimTalkSettings settings = Get();
             // Draw tab buttons at the top
             Rect tabRect = new Rect(inRect.x, inRect.y, inRect.width, 35f);
             DrawTabButtons(tabRect);

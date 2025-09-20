@@ -48,7 +48,7 @@ namespace RimTalk.Error
             }
         }
 
-        private static bool CanRetryGeneration(CurrentWorkDisplayModSettings settings)
+        private static bool CanRetryGeneration(RimTalkSettings settings)
         {
             if (settings.UseSimpleConfig)
             {

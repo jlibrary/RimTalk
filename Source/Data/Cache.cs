@@ -1,9 +1,10 @@
-using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using RimTalk.Service;
+using RimWorld;
 using Verse;
+using Random = System.Random;
 
 namespace RimTalk.Data
 {
@@ -15,12 +16,8 @@ namespace RimTalk.Data
 
         private static readonly ConcurrentDictionary<string, Pawn> NameCache = new ConcurrentDictionary<string, Pawn>();
 
-        private static readonly object WeightedSelectionLock = new object();
+        // This Random instance is still needed for the weighted selection method.
         private static readonly Random Random = new Random();
-        private static readonly List<Pawn> WeightedPawnList = new List<Pawn>();
-        private static readonly List<double> CumulativeWeights = new List<double>();
-        private static double _totalWeight = 0.0;
-        private static bool _weightsDirty = true;
 
         public static IEnumerable<Pawn> Keys => PawnCache.Keys;
 
@@ -41,8 +38,7 @@ namespace RimTalk.Data
         public static void Refresh()
         {
             var settings = Settings.Get();
-            var updated = false;
-
+            
             // Identify and remove ineligible pawns from all caches.
             foreach (Pawn pawn in PawnCache.Keys.ToList())
             {
@@ -51,7 +47,6 @@ namespace RimTalk.Data
                     if (PawnCache.TryRemove(pawn, out var removedState))
                     {
                         NameCache.TryRemove(removedState.Pawn.Name.ToStringShort, out _);
-                        updated = true;
                     }
                 }
             }
@@ -63,41 +58,13 @@ namespace RimTalk.Data
                 {
                     PawnCache[pawn] = new PawnState(pawn);
                     NameCache[pawn.Name.ToStringShort] = pawn;
-                    updated = true;
                 }
             }
-
-            // Mark weights as dirty when cache changes
-            if (updated)
-            {
-                lock (WeightedSelectionLock)
-                {
-                    _weightsDirty = true;
-                }
-
-                RebuildWeights();
-            }
-        }
-
-        public static IEnumerable<Pawn> GetWeightedPawns()
-        {
-            return PawnCache.Keys.Where(p => Get(p)?.TalkInitiationWeight > 0);
-        }
-
-        public static IEnumerable<(Pawn pawn, double weight)> GetPawnsWithWeights()
-        {
-            return PawnCache.Keys.Select(p => (p, Get(p)?.TalkInitiationWeight ?? 0.0))
-                .Where(x => x.Item2 > 0);
         }
 
         public static IEnumerable<PawnState> GetAll()
         {
             return PawnCache.Values;
-        }
-
-        public static bool Contains(Pawn pawn)
-        {
-            return pawn != null && PawnCache.ContainsKey(pawn);
         }
 
         public static void Clear()
@@ -106,47 +73,35 @@ namespace RimTalk.Data
             NameCache.Clear();
         }
 
-        public static bool IsEligiblePawn(Pawn pawn, CurrentWorkDisplayModSettings settings)
+        public static bool IsEligiblePawn(Pawn pawn, RimTalkSettings settings)
         {
-            if (pawn.DestroyedOrNull() || !pawn.Spawned)
+            if (pawn.DestroyedOrNull() || !pawn.Spawned || pawn.Dead)
                 return false;
 
             if (!pawn.RaceProps.Humanlike)
                 return false;
 
-            return !pawn.Dead && (pawn.IsFreeColonist ||
-                                  (settings.AllowSlavesToTalk && pawn.IsSlave) ||
-                                  (settings.AllowPrisonersToTalk && pawn.IsPrisoner) ||
-                                  (settings.AllowOtherFactionsToTalk && PawnService.IsVisitor(pawn)) ||
-                                  (settings.AllowEnemiesToTalk && PawnService.IsInvader(pawn)));
+            if (pawn.RaceProps.intelligence < Intelligence.Humanlike)
+                return false;
+            
+            if (!pawn.health.capacities.CapableOf(PawnCapacityDefOf.Talking))
+                return false;
+
+            if (pawn.skills?.GetSkill(SkillDefOf.Social) == null)
+                return false;
+
+            return (pawn.IsFreeColonist ||
+                    (settings.AllowSlavesToTalk && pawn.IsSlave) ||
+                    (settings.AllowPrisonersToTalk && pawn.IsPrisoner) ||
+                    (settings.AllowOtherFactionsToTalk && PawnService.IsVisitor(pawn)) ||
+                    (settings.AllowEnemiesToTalk && PawnService.IsInvader(pawn)));
         }
 
-        // Build weighted when cache marked dirty
-        private static void RebuildWeights()
-        {
-            lock (WeightedSelectionLock)
-            {
-                if (!_weightsDirty) return;
-
-                WeightedPawnList.Clear();
-                CumulativeWeights.Clear();
-                _totalWeight = 0.0;
-
-                foreach (var pawn in PawnCache.Keys)
-                {
-                    var weight = Get(pawn)?.TalkInitiationWeight ?? 0.0;
-                    if (weight > 0)
-                    {
-                        WeightedPawnList.Add(pawn);
-                        _totalWeight += weight;
-                        CumulativeWeights.Add(_totalWeight);
-                    }
-                }
-
-                _weightsDirty = false;
-            }
-        }
-
+        /// <summary>
+        /// Selects a random pawn from the provided list, with selection chance proportional to their TalkInitiationWeight.
+        /// </summary>
+        /// <param name="pawns">The collection of pawns to select from.</param>
+        /// <returns>A single pawn, or null if the list is empty or no pawn has a weight > 0.</returns>
         public static Pawn GetRandomWeightedPawn(IEnumerable<Pawn> pawns)
         {
             var pawnList = pawns.ToList();
@@ -156,6 +111,10 @@ namespace RimTalk.Data
             }
 
             var totalWeight = pawnList.Sum(p => Get(p)?.TalkInitiationWeight ?? 0.0);
+            
+            // If total weight is 0, it means no pawn in the list has a positive weight (chattiness).
+            // Based on the rule that weight=0 means "doesn't talk", we must return null
+            // as no one is eligible to be selected.
             if (totalWeight <= 0)
             {
                 return null;
@@ -173,7 +132,8 @@ namespace RimTalk.Data
                 }
             }
 
-            return pawnList.LastOrDefault();
+            // Fallback in case of floating point inaccuracies, though it should rarely be hit.
+            return pawnList.LastOrDefault(p => (Get(p)?.TalkInitiationWeight ?? 0.0) > 0);
         }
     }
 }

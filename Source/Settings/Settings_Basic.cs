@@ -25,7 +25,7 @@ namespace RimTalk
 
         private void DrawBasicSettings(Listing_Standard listingStandard)
         {
-            CurrentWorkDisplayModSettings settings = Get();
+            RimTalkSettings settings = Get();
 
             // API Configuration section
             if (!settings.UseSimpleConfig)
