@@ -62,6 +62,8 @@
     <RimTalk.Persona.Perfectionist>Perfectionist – Demanding and critical. Insists on doing things right.</RimTalk.Persona.Perfectionist>
     <RimTalk.Persona.Vengeful>Vengeful – Grudge-holding and intense. Obsessed with revenge.</RimTalk.Persona.Vengeful>
 
+    <!-- RimTalk_Toggle.cs -->
+    <RimTalk.Toggle.Tooltip>Toggle AI speech generation\nShift+click for settings\nCtrl+click for debug window</RimTalk.Toggle.Tooltip>
 
     <!-- Settings.cs -->
     <RimTalk.Settings.BasicSettings>Basic Settings</RimTalk.Settings.BasicSettings>
@@ -85,6 +87,8 @@
     <RimTalk.Settings.PauseAtSpeed>Pause AI on high speed</RimTalk.Settings.PauseAtSpeed>
     <RimTalk.Settings.DisableAiAtSpeedTooltip>To reduce API calls, the AI will be paused when game speed is set to this level or higher.</RimTalk.Settings.DisableAiAtSpeedTooltip>
     <RimTalk.Settings.Disabled>Disabled</RimTalk.Settings.Disabled>
+    <RimTalk.Settings.ButtonDisplay>RimTalk Button Display</RimTalk.Settings.ButtonDisplay>
+    <RimTalk.Settings.ButtonDisplayTooltip>Controls how the debug interface is accessed. 'Tab' adds a main tab, 'Toggle' shows an icon on the bottom bar, and 'None' hides it.</RimTalk.Settings.ButtonDisplayTooltip>
     
     <RimTalk.Settings.AIInstructionPrompt>AI Instruction Prompt (Model: {0})</RimTalk.Settings.AIInstructionPrompt>
     <RimTalk.Settings.ExternalEditorTip>Tip: Use copy/paste with external editor for multiline editing</RimTalk.Settings.ExternalEditorTip>

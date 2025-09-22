@@ -98,6 +98,30 @@ namespace RimTalk
             }
             TooltipHandler.TipRegion(pauseLineRect, "RimTalk.Settings.DisableAiAtSpeedTooltip".Translate().ToString());
 
+            listingStandard.Gap(12f);
+
+            // --- Dropdown for Button Display Mode ---
+            var buttonDisplayRect = listingStandard.GetRect(30f);
+            var buttonDisplayLabelRect = new Rect(buttonDisplayRect.x, buttonDisplayRect.y, buttonDisplayRect.width - dropdownWidth - 10f, buttonDisplayRect.height);
+            Text.Anchor = TextAnchor.MiddleLeft;
+            Widgets.Label(buttonDisplayLabelRect, "RimTalk.Settings.ButtonDisplay".Translate().ToString());
+            Text.Anchor = originalAnchor;
+
+            var buttonDisplayDropdownRect = new Rect(buttonDisplayLabelRect.xMax + 10f, buttonDisplayRect.y, dropdownWidth, buttonDisplayRect.height);
+
+            if (Widgets.ButtonText(buttonDisplayDropdownRect, settings.ButtonDisplay.ToString()))
+            {
+                var options = new List<FloatMenuOption>();
+                foreach (ButtonDisplayMode mode in System.Enum.GetValues(typeof(ButtonDisplayMode)))
+                {
+                    var currentMode = mode;
+                    options.Add(new FloatMenuOption(currentMode.ToString(), () => settings.ButtonDisplay = currentMode));
+                }
+                Find.WindowStack.Add(new FloatMenu(options));
+            }
+            TooltipHandler.TipRegion(buttonDisplayRect, "RimTalk.Settings.ButtonDisplayTooltip".Translate().ToString());
+
+
             listingStandard.Gap(24f);
 
             // --- Footer ---
@@ -119,6 +143,7 @@ namespace RimTalk
                 settings.AllowEnemiesToTalk = false;
                 settings.UseSimpleConfig = true;
                 settings.DisableAiAtSpeed = 0;
+                settings.ButtonDisplay = ButtonDisplayMode.Tab;
             }
         }
     }

@@ -6,7 +6,6 @@ namespace RimTalk
 {
     public class RimTalkSettings : ModSettings
     {
-        // New API configuration system
         public List<ApiConfig> CloudConfigs = new List<ApiConfig>();
         public int CurrentCloudConfigIndex = 0;
         public ApiConfig LocalConfig = new ApiConfig { Provider = AIProvider.Local };
@@ -14,10 +13,7 @@ namespace RimTalk
         public bool UseSimpleConfig = true;
         public string SimpleApiKey = "";
         public readonly bool IsUsingFallbackModel = false;
-
         public bool IsEnabled = true;
-
-        // Other existing settings
         public int TalkInterval = 7;
         public const int ReplyInterval = 3;
         public bool ProcessNonRimTalkInteractions;
@@ -29,6 +25,7 @@ namespace RimTalk
         public bool AllowOtherFactionsToTalk = false;
         public bool AllowEnemiesToTalk = false;
         public int DisableAiAtSpeed = 0;
+        public ButtonDisplayMode ButtonDisplay = ButtonDisplayMode.Tab;
 
         // Debug window settings
         public bool DebugModeEnabled = false;
@@ -133,15 +130,12 @@ namespace RimTalk
         {
             base.ExposeData();
             
-            // New API configuration system
             Scribe_Collections.Look(ref CloudConfigs, "cloudConfigs", LookMode.Deep);
             Scribe_Deep.Look(ref LocalConfig, "localConfig");
             Scribe_Values.Look(ref UseCloudProviders, "useCloudProviders", true);
             Scribe_Values.Look(ref UseSimpleConfig, "useSimpleConfig", true);
             Scribe_Values.Look(ref SimpleApiKey, "simpleApiKey", "");
             Scribe_Values.Look(ref IsEnabled, "isEnabled", true);
-            
-            // Other existing settings
             Scribe_Values.Look(ref TalkInterval, "talkInterval", 7);
             Scribe_Values.Look(ref ProcessNonRimTalkInteractions, "processNonRimTalkInteractions", true);
             Scribe_Values.Look(ref CustomInstruction, "customInstruction", "");
@@ -154,6 +148,7 @@ namespace RimTalk
             Scribe_Collections.Look(ref EnabledArchivableTypes, "enabledArchivableTypes", LookMode.Value, LookMode.Value);
 
             // Debug window settings
+            Scribe_Values.Look(ref ButtonDisplay, "buttonDisplay", ButtonDisplayMode.Tab, true);
             Scribe_Values.Look(ref DebugModeEnabled, "debugModeEnabled", false);
             Scribe_Values.Look(ref DebugGroupingEnabled, "debugGroupingEnabled", false);
             Scribe_Values.Look(ref DebugSortColumn, "debugSortColumn", null);

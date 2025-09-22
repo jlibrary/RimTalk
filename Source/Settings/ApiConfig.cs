@@ -3,7 +3,6 @@ using Verse;
 
 namespace RimTalk
 {
-    // New data class for API configurations
     public class ApiConfig : IExposable
     {
         public bool IsEnabled = true;

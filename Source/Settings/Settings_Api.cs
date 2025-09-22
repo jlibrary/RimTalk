@@ -67,7 +67,20 @@ namespace RimTalk
 
             // API Key section
             listingStandard.Label("RimTalk.Settings.GoogleApiKeyLabel".Translate());
-            settings.SimpleApiKey = Widgets.TextField(listingStandard.GetRect(24), settings.SimpleApiKey);
+            
+            const float buttonWidth = 150f;
+            const float spacing = 5f;
+
+            Rect rowRect = listingStandard.GetRect(30f);
+            rowRect.width -= buttonWidth + spacing;
+
+            settings.SimpleApiKey = Widgets.TextField(rowRect, settings.SimpleApiKey);
+
+            Rect buttonRect = new Rect(rowRect.xMax + spacing, rowRect.y, buttonWidth, rowRect.height);
+            if (Widgets.ButtonText(buttonRect, "RimTalk.Settings.GetFreeApiKeyButton".Translate()))
+            {
+                Application.OpenURL("https://aistudio.google.com/app/apikey");
+            }
             
             // Add description for free Google providers
             Text.Font = GameFont.Tiny;
@@ -77,14 +90,6 @@ namespace RimTalk
                 "RimTalk.Settings.GoogleApiKeyDesc".Translate());
             GUI.color = Color.white;
             Text.Font = GameFont.Small;
-
-            // Add a button that opens the API key page
-            listingStandard.Gap(6f);
-            Rect getKeyButtonRect = listingStandard.GetRect(30f);
-            if (Widgets.ButtonText(getKeyButtonRect, "RimTalk.Settings.GetFreeApiKeyButton".Translate()))
-            {
-                Application.OpenURL("https://aistudio.google.com/app/apikey");
-            }
 
             listingStandard.Gap(12f);
 
@@ -217,7 +222,7 @@ namespace RimTalk
             float providerWidth = 100f;
             float apiKeyWidth = 240f;
             float modelWidth = 200f;
-            float baseUrlWidth = 355f; // New width for Base URL
+            float baseUrlWidth = 355f;
 
             // Provider Header
             Rect providerHeaderRect = new Rect(x, y, providerWidth, height);

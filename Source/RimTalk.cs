@@ -7,6 +7,13 @@ using Verse;
 
 namespace RimTalk
 {
+    public enum ButtonDisplayMode
+    {
+        Tab,
+        Toggle,
+        None
+    }
+
     public class RimTalk : GameComponent
     {
         public RimTalk(Game game)
