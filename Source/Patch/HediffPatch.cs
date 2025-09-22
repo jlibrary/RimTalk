@@ -18,7 +18,7 @@ namespace RimTalk.Patch
                 pawnState.Hediffs = PawnService.GetHediffs(___pawn);
                 
                 var prompt = $"{hediff.Part?.Label}-{hediff.LabelCap}";
-                pawnState.AddTalkRequest(prompt);
+                pawnState.AddTalkRequest(prompt, type: TalkRequest.Type.Hediff);
             }
         }
     }

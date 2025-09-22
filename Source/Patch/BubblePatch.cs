@@ -68,7 +68,7 @@ namespace RimTalk.Patch
 
             // Otherwise, block normal bubble and generate talk
             prompt = $"{prompt} ({GetInteractionDef(entry).label})";
-            pawnState.AddTalkRequest(prompt, recipient);
+            pawnState.AddTalkRequest(prompt, recipient, TalkRequest.Type.Chitchat);
             return false;
         }
 

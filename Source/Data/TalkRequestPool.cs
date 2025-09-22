@@ -8,12 +8,13 @@ namespace RimTalk.Data
     {
         private static readonly List<TalkRequest> Requests = new List<TalkRequest>();
 
-        public static void Add(string prompt, Pawn initiator = null, Pawn recipient = null, int mapId = -1)
+        public static void Add(string prompt, Pawn initiator = null, Pawn recipient = null, int mapId = 0)
         {
-            var request = new TalkRequest(prompt, initiator, recipient)
+            var request = new TalkRequest(prompt, initiator, recipient, TalkRequest.Type.Event)
             {
                 MapId = mapId,
             };
+
             Requests.Add(request);
         }
 

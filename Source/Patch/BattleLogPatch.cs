@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
+using RimTalk.Data;
 using RimTalk.Service;
 using RimTalk.Util;
 using Verse;
@@ -26,13 +27,13 @@ namespace RimTalk.Patches
 
             if (string.IsNullOrEmpty(prompt)) return;
             
-            Cache.Get(initiator)?.AddTalkRequest(prompt, recipient);
-            Cache.Get(recipient)?.AddTalkRequest(prompt, initiator);
+            Cache.Get(initiator)?.AddTalkRequest(prompt, recipient, TalkRequest.Type.Battle);
+            Cache.Get(recipient)?.AddTalkRequest(prompt, initiator, TalkRequest.Type.Battle);
             
             var pawns = PawnSelector.GetNearByTalkablePawns(initiator, recipient, PawnSelector.DetectionType.Viewing);
             foreach (var pawn in pawns.Take(2))
             {
-                Cache.Get(pawn)?.AddTalkRequest(prompt, initiator);
+                Cache.Get(pawn)?.AddTalkRequest(prompt, initiator, TalkRequest.Type.Battle);
             }
         }
 

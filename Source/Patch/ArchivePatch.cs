@@ -1,7 +1,7 @@
-﻿using HarmonyLib;
+﻿using System.Linq;
+using HarmonyLib;
 using RimTalk.Data;
 using RimWorld;
-using System.Linq;
 using Verse;
 
 namespace RimTalk.Patch
@@ -49,7 +49,7 @@ namespace RimTalk.Patch
             }
             
             // Use the correctly determined map's unique ID
-            TalkRequestPool.Add(prompt, mapId: eventMap?.uniqueID ?? -1);
+            TalkRequestPool.Add(prompt, mapId: eventMap?.uniqueID ?? 0);
         }
     }
 }

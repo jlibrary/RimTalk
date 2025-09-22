@@ -65,9 +65,9 @@ namespace RimTalk.Service
             return GetNearbyPawnsInternal(pawn1, pawn2, DetectionType.Hearing, onlyTalkable: false);
         }
 
-        public static Pawn SelectAvailablePawnByWeight(bool noInvader = false)
+        public static Pawn SelectAvailablePawnByWeight()
         {
-            var availablePawns = Cache.Keys.Where(p => Cache.Get(p).CanGenerateTalk(noInvader));
+            var availablePawns = Cache.Keys.Where(p => Cache.Get(p).CanGenerateTalk());
             return Cache.GetRandomWeightedPawn(availablePawns);
         }
     }

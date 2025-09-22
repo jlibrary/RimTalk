@@ -18,17 +18,17 @@ namespace RimTalk.Util
             switch (Find.TickManager.CurTimeSpeed)
             {
                 case TimeSpeed.Paused:
-                    return 0; // No ticks when paused
+                    return 0;
                 case TimeSpeed.Normal:
-                    return 1 * 100; // 1x speed
+                    return 60;
                 case TimeSpeed.Fast:
-                    return 2 * 100; // 2x speed
+                    return 180;
                 case TimeSpeed.Superfast:
-                    return 4 * 100; // 3x speed
+                    return 360;
                 case TimeSpeed.Ultrafast:
-                    return 12 * 100; // 4x speed
+                    return 1500;
                 default:
-                    return 100; // Default to normal speed if unknown
+                    return 60; // Default to normal speed if unknown
             }
         }
         

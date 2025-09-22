@@ -28,15 +28,17 @@ namespace RimTalk.Service
             if (pawn2 == null || recipient?.Name == null || !pawn2.CanGenerateTalk())
                 recipient = null;
             
+            List<Pawn> nearbyPawns = PawnSelector.GetAllNearByPawns(initiator);
+            var status = PawnService.GetPawnStatusFull(initiator, nearbyPawns);
+            
             // avoid generation if pawn status did not change
-            if (prompt == pawn1.LastStatus && pawn1.RejectCount < 2)
+            if (status == pawn1.LastStatus && pawn1.RejectCount < 2)
             {
                 pawn1.RejectCount++;
                 return false;
             }
             pawn1.RejectCount = 0;
-            List<Pawn> nearbyPawns = PawnSelector.GetAllNearByPawns(initiator);
-            pawn1.LastStatus = PawnService.GetPawnStatusFull(initiator, nearbyPawns);
+            pawn1.LastStatus = status;
 
             List<Pawn> pawns = new List<Pawn> { initiator, recipient }.Where(p => p != null).ToList();
             
@@ -44,9 +46,8 @@ namespace RimTalk.Service
             string context = PromptService.BuildContext(pawns);
             AIService.UpdateContext(context);
             
-            
             // add current status
-            prompt = PromptService.DecoratePrompt(prompt, initiator, recipient, pawn1.LastStatus);
+            prompt = PromptService.DecoratePrompt(prompt, initiator, recipient, status);
             
             var talkRequest = new TalkRequest(prompt, initiator, recipient);
             
@@ -79,13 +80,6 @@ namespace RimTalk.Service
                 return true;
             }
             return false;
-        }
-
-        public static bool GenerateTalkFromPool(TalkRequest talkRequest)
-        {
-            if (!GenerateTalk(talkRequest)) return false;
-            TalkRequestPool.Remove(talkRequest);
-            return true;
         }
 
         private static void ProcessSuccessfulResponse(List<Pawn> allInvolvedPawns, List<TalkResponse> talkResponses, string request)

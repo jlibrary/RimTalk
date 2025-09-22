@@ -48,7 +48,6 @@ namespace RimTalk.UI
         private string _sortColumn;
         private bool _sortAscending;
         private readonly List<string> _expandedPawns;
-        private int? _expandedRequestHash; // Use nullable int for exclusive expansion
 
         public DebugWindow()
         {
@@ -557,32 +556,11 @@ namespace RimTalk.UI
                         tokenCountText);
                 }
 
-                var actionRect = new Rect(rowRect.xMax - CopyAreaWidth, rowRect.y, CopyAreaWidth, rowRect.height);
-
                 if (_debugModeEnabled)
                 {
                     // Add the tooltip to the main response area.
                     string tooltip = "RimTalk.DebugWindow.TooltipPromptResponse".Translate(request.Prompt, (request.Response ?? _generating));
                     TooltipHandler.TipRegion(responseRect, tooltip);
-
-                    int requestHash = request.GetHashCode();
-                    bool isExpanded = _expandedRequestHash.HasValue && _expandedRequestHash.Value == requestHash;
-
-                    if (isExpanded)
-                    {
-                        if (Widgets.ButtonInvisible(rowRect))
-                        {
-                            _expandedRequestHash = null;
-                        }
-                    }
-                    else
-                    {
-                        var expandClickRect = new Rect(rowRect.xMax - CopyAreaWidth, rowRect.y, CopyAreaWidth, rowRect.height);
-                        if (Widgets.ButtonInvisible(expandClickRect))
-                        {
-                            _expandedRequestHash = requestHash;
-                        }
-                    }
                 }
                 else
                 {
@@ -592,45 +570,6 @@ namespace RimTalk.UI
                         GUIUtility.systemCopyBuffer = request.RequestPayload ?? "";
                     }
                 }
-
-                currentY += RowHeight;
-
-                if (_debugModeEnabled && _expandedRequestHash.HasValue &&
-                    _expandedRequestHash.Value == request.GetHashCode())
-                {
-                    var pawn = _pawnStates.FirstOrDefault(p => p.Pawn.Name.ToStringShort == request.Name)?.Pawn;
-                    if (pawn != null)
-                    {
-                        var messageHistory = TalkHistory.GetMessageHistory(pawn);
-                        if (messageHistory != null && messageHistory.Any())
-                        {
-                            DrawMessageHistory(ref currentY, totalWidth, xOffset, messageHistory);
-                        }
-                    }
-                }
-            }
-        }
-
-        private void DrawMessageHistory(ref float currentY, float totalWidth, float xOffset,
-            List<(Role role, string message)> messageHistory)
-        {
-            var historyContainerRect = new Rect(xOffset, currentY, totalWidth, messageHistory.Count * RowHeight);
-            Widgets.DrawBoxSolid(historyContainerRect, new Color(0.1f, 0.1f, 0.1f, 0.5f));
-
-            for (int i = 0; i < messageHistory.Count; i++)
-            {
-                var (role, message) = messageHistory[i];
-                var rowRect = new Rect(xOffset, currentY, totalWidth, RowHeight);
-                if (i % 2 != 0) Widgets.DrawBoxSolid(rowRect, new Color(0.2f, 0.2f, 0.2f, 0.5f));
-
-                var roleRect = new Rect(rowRect.x + 5f, rowRect.y, 60f, RowHeight);
-                var messageRect = new Rect(roleRect.xMax + 5f, rowRect.y, rowRect.width - roleRect.width - 15f,
-                    RowHeight);
-
-                GUI.color = role == Role.User ? new Color(0.8f, 0.8f, 1f) : new Color(1f, 0.9f, 0.8f);
-                Widgets.Label(roleRect, role.ToString());
-                GUI.color = Color.white;
-                Widgets.Label(messageRect, message);
 
                 currentY += RowHeight;
             }
@@ -736,24 +675,6 @@ namespace RimTalk.UI
         {
             if (_requests == null) return 0f;
             float height = HeaderHeight + (_requests.Count * RowHeight);
-
-            if (_debugModeEnabled && _expandedRequestHash.HasValue)
-            {
-                var expandedRequest = _requests.FirstOrDefault(r => r.GetHashCode() == _expandedRequestHash.Value);
-                if (expandedRequest != null)
-                {
-                    var pawn = _pawnStates.FirstOrDefault(p => p.Pawn.Name.ToStringShort == expandedRequest.Name)?.Pawn;
-                    if (pawn != null)
-                    {
-                        var history = TalkHistory.GetMessageHistory(pawn);
-                        if (history != null)
-                        {
-                            height += history.Count * RowHeight;
-                        }
-                    }
-                }
-            }
-
             return height + 50f;
         }
 
@@ -767,18 +688,6 @@ namespace RimTalk.UI
                 {
                     height += HeaderHeight;
                     height += requests.Count * RowHeight;
-
-                    if (_debugModeEnabled && _expandedRequestHash.HasValue)
-                    {
-                        if (requests.Any(r => r.GetHashCode() == _expandedRequestHash.Value))
-                        {
-                            var history = TalkHistory.GetMessageHistory(pawnState.Pawn);
-                            if (history != null)
-                            {
-                                height += history.Count * RowHeight;
-                            }
-                        }
-                    }
                 }
             }
 

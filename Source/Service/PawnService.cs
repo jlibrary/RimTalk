@@ -161,10 +161,7 @@ namespace RimTalk.Service
                 isInDanger = true;
             }
             
-            // --- 2. Add time ---
-            parts.Add($"Time: {CommonUtil.GetInGameHour12HString()}");
-            
-            // --- 3. Nearby pawns ---
+            // --- 2. Nearby pawns ---
             if (nearbyPawns.Any())
             {
                 // Collect critical statuses of nearby pawns
@@ -211,7 +208,7 @@ namespace RimTalk.Service
                 return string.Join("\n", parts);
             }
 
-            // --- 4. Enemy proximity / combat info ---
+            // --- 3. Enemy proximity / combat info ---
             Pawn nearestHostile = HostilePawnNearBy(pawn);
             if (nearestHostile != null)
             {

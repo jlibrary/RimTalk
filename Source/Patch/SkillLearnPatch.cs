@@ -23,7 +23,7 @@ namespace RimTalk.Patch
             {
                 string prompt = $"{___pawn.Name} leveled up {__instance.def.defName} from {_previousLevel} " +
                                 $"to {__instance.Level} ({__instance.LevelDescriptor})";
-                Cache.Get(___pawn)?.AddTalkRequest(prompt);
+                Cache.Get(___pawn)?.AddTalkRequest(prompt, type: TalkRequest.Type.LevelUp);
             }
         }
     }

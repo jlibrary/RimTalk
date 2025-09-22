@@ -226,6 +226,9 @@ namespace RimTalk.Service
             // add pawn status
             prompt += $"\n{status}";
             
+            // add time
+            prompt += $"\nTime: {CommonUtil.GetInGameHour12HString()}";
+            
             // add pawn names
             prompt = pawn1.Name.ToStringShort + (pawn2 != null ? $" and {pawn2.Name.ToStringShort}" : "") + ": " + prompt;
 

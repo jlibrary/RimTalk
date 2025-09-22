@@ -13,7 +13,7 @@ namespace RimTalk.Data
         public readonly Pawn Pawn;
         public string Context { get; set; }
         public int LastTalkTick { get; set; }
-        public string LastStatus { get; set; }
+        public string LastStatus { get; set; } = "";
         public int RejectCount { get; set; }
         public readonly Queue<TalkResponse> TalkQueue = new Queue<TalkResponse>();
         public bool IsGeneratingTalk { get; set; }
@@ -45,9 +45,9 @@ namespace RimTalk.Data
                 Thoughts = PawnService.GetThoughts(Pawn).ToDictionary(kvp => kvp.Key.def.defName, kvp => kvp.Value);
         }
 
-        public void AddTalkRequest(string prompt, Pawn recipient = null)
+        public void AddTalkRequest(string prompt, Pawn recipient = null, TalkRequest.Type type = TalkRequest.Type.Other)
         {
-            TalkRequest = new TalkRequest(prompt, Pawn, recipient);
+            TalkRequest = new TalkRequest(prompt, Pawn, recipient, type);
         }
 
         public bool CanDisplayTalk()
@@ -70,10 +70,8 @@ namespace RimTalk.Data
                    CommonUtil.GetTicksForDuration(RimTalkSettings.ReplyInterval);
         }
         
-        public bool CanGenerateTalk(bool noInvader = false)
+        public bool CanGenerateTalk()
         {
-            if (noInvader && PawnService.IsInvader(Pawn))
-                return false;
             return !IsGeneratingTalk && CanDisplayTalk() && TalkQueue.Empty();
         }
     }
