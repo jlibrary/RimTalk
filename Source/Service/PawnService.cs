@@ -257,14 +257,27 @@ namespace RimTalk.Service
             return closestPawn;
         }
         
+        // Using a HashSet for better readability and maintainability.
+        private static readonly HashSet<string> ResearchJobDefNames = new HashSet<string>
+        {
+            "Research",                 
+            // MOD: Research Reinvented
+            "RR_Analyse",               
+            "RR_AnalyseInPlace",
+            "RR_AnalyseTerrain",
+            "RR_Research",
+            "RR_InterrogatePrisoner",
+            "RR_LearnRemotely"
+        };
+        
         public static string GetStatus(Pawn pawn)
         {
             pawn.def.hideMainDesc = true;
             string status = pawn.GetInspectString();
-            if (pawn.CurJob?.def == JobDefOf.Research)
+            if (ResearchJobDefNames.Contains(pawn.CurJob?.def.defName)) // The job is compared against its defined name.
             {
                 ResearchProjectDef project = Find.ResearchManager.GetProject();
-                status += $" ({project.label})";
+                status += $" (Project: {project.label})"; // Adding 'Project:' seems to work better for dialogue generation!
             }
             return status;
         }
