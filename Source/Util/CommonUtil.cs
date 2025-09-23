@@ -63,6 +63,22 @@ namespace RimTalk.Util
             return $"{hour12}{ampm}";
         }
         
+        // Returns the year, quarter, and day.
+        public static string GetInGameDateString()
+        {
+            try
+            {
+                if (Find.CurrentMap?.Tile == null)
+                    return "N/A";
+                
+                return GenDate.DateFullStringAt(Find.TickManager.TicksAbs, Find.WorldGrid.LongLatOf(Find.CurrentMap.Tile));
+            }
+            catch (Exception)
+            {
+                return "N/A";
+            }
+        }
+        
         // Simple token estimation algorithm (approximate)
         public static int EstimateTokenCount(string text)
         {
