@@ -230,7 +230,7 @@ namespace RimTalk.Service
             prompt += $"\nTime: {CommonUtil.GetInGameHour12HString()}";
             
             // add date
-            prompt += $"\nDate: {CommonUtil.GetInGameDateString()}";
+            prompt += $"\nToday: {CommonUtil.GetInGameDateString()}";
             
             // add pawn names
             prompt = pawn1.Name.ToStringShort + (pawn2 != null ? $" and {pawn2.Name.ToStringShort}" : "") + ": " + prompt;
