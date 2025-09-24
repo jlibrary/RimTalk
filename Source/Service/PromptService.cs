@@ -224,23 +224,40 @@ namespace RimTalk.Service
 
         public static string DecoratePrompt(string prompt, Pawn pawn1, Pawn pawn2, string status)
         {
-            // add pawn status
-            prompt += $"\n{status}";
-            
-            // add time
-            prompt += $"\nTime: {CommonUtil.GetInGameHour12HString()}";
-            
-            // add date
-            prompt += $"\nToday: {CommonUtil.GetInGameDateString()}";
+            var sb = new StringBuilder();
+            CommonUtil.InGameData gameData = CommonUtil.GetInGameData();
             
             // add pawn names
-            prompt = pawn1.LabelShort + (pawn2 != null ? $" and {pawn2.LabelShort}" : "") + ": " + prompt;
+            sb.Append(pawn1.LabelShort);
+            if (pawn2 != null)
+            {
+                sb.Append($" and {pawn2.LabelShort}");
+            }
+            sb.Append(": ");
+            
+            // add prompt
+            sb.Append(prompt);
+            
+            // add pawn status
+            sb.Append($"\n{status}");
+            
+            // add time
+            sb.Append($"\nTime: {gameData.Hour12HString}");
+            
+            // add date
+            sb.Append($"\nToday: {gameData.DateString}");
+            
+            // add season
+            sb.Append($"\nSeason: {gameData.SeasonString}");
+            
+            // add weather
+            sb.Append($"\nWeather: {gameData.WeatherString}");
 
             // add language assurance
             if (AIService.IsFirstInstruction())
-                prompt += $"\nin {Constant.Lang}";
+                sb.Append($"\nin {Constant.Lang}");
 
-            return prompt;
+            return sb.ToString();
         }
         
         private static string Sanitize(string text, Pawn pawn = null)
