@@ -91,7 +91,7 @@ namespace RimTalk.Service
                     PawnState pawnState = Cache.GetByName(talkResponses[i].Name) ?? Cache.Get(allInvolvedPawns[i]);
                     pawnState.TalkQueue.Enqueue(talkResponses[i]);
                     talkResponses[i].Id = Guid.NewGuid();
-                    talkResponses[i].Name = pawnState.Pawn.Name.ToStringShort;
+                    talkResponses[i].Name = pawnState.Pawn.LabelShort;
                     if (i > 0)
                     {
                         talkResponses[i].ParentTalkId = talkResponses[i - 1].Id;
@@ -130,7 +130,7 @@ namespace RimTalk.Service
                 // if reply, wait for ReplyInterval (3s)
                 int parentTalkTick = TalkHistory.GetSpokenTick(talk.ParentTalkId);
                 if (parentTalkTick == -1 || GenTicks.TicksGame - parentTalkTick
-                    < CommonUtil.GetTicksForDuration(pawnState.ReplyInterval)) continue;
+                    < CommonUtil.GetTicksForDuration(RimTalkSettings.ReplyInterval)) continue;
 
                 // if pawn is not able to talk, skip it
                 if (!pawnState.CanDisplayTalk())

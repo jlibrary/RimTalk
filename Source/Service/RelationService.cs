@@ -52,7 +52,7 @@ namespace RimTalk.Service
                 // If we found any relevant relationship, add it to the string in the new format.
                 if (!string.IsNullOrEmpty(label))
                 {
-                    string pawnName = otherPawn.Name.ToStringShort;
+                    string pawnName = otherPawn.LabelShort;
                     string opinion = pawn.relations.OpinionOf(otherPawn).ToStringWithSign();
                     relationsSb.Append($"{pawnName}({label}) {opinion}, ");
                 }

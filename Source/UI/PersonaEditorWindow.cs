@@ -31,7 +31,7 @@ namespace RimTalk.UI
         {
             Text.Font = GameFont.Medium;
             Rect titleRect = new Rect(inRect.x, inRect.y, inRect.width, 30f);
-            Widgets.Label(titleRect, "RimTalk.PersonaEditor.Title".Translate(_pawn.Name.ToStringShort));
+            Widgets.Label(titleRect, "RimTalk.PersonaEditor.Title".Translate(_pawn.LabelShort));
 
             // Instruction text
             Text.Font = GameFont.Small;
@@ -116,7 +116,7 @@ namespace RimTalk.UI
                 Data.PersonaService.SetPersonality(_pawn, _editingPersonality.Trim());
                 Data.PersonaService.SetTalkInitiationWeight(_pawn, _talkInitiationWeight);
 
-                Messages.Message("RimTalk.PersonaEditor.Updated".Translate(_pawn.Name.ToStringShort), MessageTypeDefOf.TaskCompletion, false);
+                Messages.Message("RimTalk.PersonaEditor.Updated".Translate(_pawn.LabelShort), MessageTypeDefOf.TaskCompletion, false);
                 Close();
             }
 

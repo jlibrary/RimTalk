@@ -46,7 +46,7 @@ namespace RimTalk.Data
                 {
                     if (PawnCache.TryRemove(pawn, out var removedState))
                     {
-                        NameCache.TryRemove(removedState.Pawn.Name.ToStringShort, out _);
+                        NameCache.TryRemove(removedState.Pawn.LabelShort, out _);
                     }
                 }
             }
@@ -57,7 +57,7 @@ namespace RimTalk.Data
                 if (IsEligiblePawn(pawn, settings) && !PawnCache.ContainsKey(pawn))
                 {
                     PawnCache[pawn] = new PawnState(pawn);
-                    NameCache[pawn.Name.ToStringShort] = pawn;
+                    NameCache[pawn.LabelShort] = pawn;
                 }
             }
         }

@@ -19,10 +19,10 @@ namespace RimTalk.Service
         public static string BuildContext(List<Pawn> pawns)
         {
             // build context with 2 other nearby pawns
-            List<Pawn> nearbyPawns = PawnSelector.GetNearByTalkablePawns(pawns[0]).Take(2).ToList();
+            List<Pawn> nearbyPawns = PawnSelector.GetNearByTalkablePawns(pawns[0]);
 
             // Create a new list with nearby pawns
-            List<Pawn> mergedPawns = pawns.Concat(nearbyPawns).Distinct().ToList();
+            List<Pawn> mergedPawns = pawns.Concat(nearbyPawns).Distinct().Take(3).ToList();
             
             StringBuilder context = new StringBuilder();
             var instruction = Regex.Replace(Constant.Instruction, @"\r\n", "\n");
@@ -51,7 +51,7 @@ namespace RimTalk.Service
         {
             StringBuilder sb = new StringBuilder();
 
-            var name = pawn.Name.ToStringShort;
+            var name = pawn.LabelShort;
             var title = pawn.story.title == null ? "" : $"({pawn.story.title})";
             var genderAndAge = Regex.Replace(pawn.MainDesc(false), @"\(\d+\)", "");
             sb.AppendLine($"{name} {title} ({genderAndAge})");
@@ -154,7 +154,8 @@ namespace RimTalk.Service
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.Append(CreatePawnBackstory(pawn, infoLevel));
+            if (pawn.RaceProps.Humanlike)
+                sb.Append(CreatePawnBackstory(pawn, infoLevel));
 
             // add Health
             var method = AccessTools.Method(typeof(HealthCardUtility), "VisibleHediffs");
@@ -233,7 +234,7 @@ namespace RimTalk.Service
             prompt += $"\nToday: {CommonUtil.GetInGameDateString()}";
             
             // add pawn names
-            prompt = pawn1.Name.ToStringShort + (pawn2 != null ? $" and {pawn2.Name.ToStringShort}" : "") + ": " + prompt;
+            prompt = pawn1.LabelShort + (pawn2 != null ? $" and {pawn2.LabelShort}" : "") + ": " + prompt;
 
             // add language assurance
             if (AIService.IsFirstInstruction())

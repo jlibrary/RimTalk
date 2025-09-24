@@ -37,7 +37,7 @@ namespace RimTalk.Data
 
         public static int AddRequest(TalkRequest request)
         {
-            var log = new ApiLog(_nextId++, request.Initiator.Name.ToStringShort, request.Prompt, null, null, DateTime.Now);
+            var log = new ApiLog(_nextId++, request.Initiator.LabelShort, request.Prompt, null, null, DateTime.Now);
             History[log.Id] = log;
             return log.Id;
         }

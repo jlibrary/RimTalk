@@ -346,7 +346,7 @@ namespace RimTalk.UI
             for (int i = 0; i < sortedPawns.Count; i++)
             {
                 var pawnState = sortedPawns[i];
-                string pawnKey = pawnState.Pawn.Name.ToStringShort;
+                string pawnKey = pawnState.Pawn.LabelShort;
                 bool isExpanded = _expandedPawns.Contains(pawnKey);
 
                 var rowRect = new Rect(0, currentY, viewRect.width, RowHeight);
@@ -522,7 +522,7 @@ namespace RimTalk.UI
                 {
                     string pawnName = request.Name ?? "-";
                     var pawnNameRect = new Rect(currentX, rowRect.y, PawnColumnWidth, RowHeight);
-                    var pawn = _pawnStates.FirstOrDefault(p => p.Pawn.Name.ToStringShort == pawnName)?.Pawn;
+                    var pawn = _pawnStates.FirstOrDefault(p => p.Pawn.LabelShort == pawnName)?.Pawn;
 
                     if (pawn != null)
                     {
@@ -602,22 +602,22 @@ namespace RimTalk.UI
             {
                 case "Pawn":
                     return _sortAscending
-                        ? _pawnStates.OrderBy(p => p.Pawn.Name.ToStringShort)
-                        : _pawnStates.OrderByDescending(p => p.Pawn.Name.ToStringShort);
+                        ? _pawnStates.OrderBy(p => p.Pawn.LabelShort)
+                        : _pawnStates.OrderByDescending(p => p.Pawn.LabelShort);
                 case "Requests":
                     return _sortAscending
                         ? _pawnStates.OrderBy(p =>
-                            _talkLogsByPawn.ContainsKey(p.Pawn.Name.ToStringShort)
-                                ? _talkLogsByPawn[p.Pawn.Name.ToStringShort].Count
+                            _talkLogsByPawn.ContainsKey(p.Pawn.LabelShort)
+                                ? _talkLogsByPawn[p.Pawn.LabelShort].Count
                                 : 0)
                         : _pawnStates.OrderByDescending(p =>
-                            _talkLogsByPawn.ContainsKey(p.Pawn.Name.ToStringShort)
-                                ? _talkLogsByPawn[p.Pawn.Name.ToStringShort].Count
+                            _talkLogsByPawn.ContainsKey(p.Pawn.LabelShort)
+                                ? _talkLogsByPawn[p.Pawn.LabelShort].Count
                                 : 0);
                 case "Response":
                     return _sortAscending
-                        ? _pawnStates.OrderBy(p => GetLastResponseForPawn(p.Pawn.Name.ToStringShort))
-                        : _pawnStates.OrderByDescending(p => GetLastResponseForPawn(p.Pawn.Name.ToStringShort));
+                        ? _pawnStates.OrderBy(p => GetLastResponseForPawn(p.Pawn.LabelShort))
+                        : _pawnStates.OrderByDescending(p => GetLastResponseForPawn(p.Pawn.LabelShort));
                 case "Status":
                     return _sortAscending
                         ? _pawnStates.OrderBy(p => p.CanDisplayTalk())
@@ -683,7 +683,7 @@ namespace RimTalk.UI
             float height = HeaderHeight + (_pawnStates.Count * RowHeight);
             foreach (var pawnState in _pawnStates)
             {
-                var pawnKey = pawnState.Pawn.Name.ToStringShort;
+                var pawnKey = pawnState.Pawn.LabelShort;
                 if (_expandedPawns.Contains(pawnKey) && _talkLogsByPawn.TryGetValue(pawnKey, out var requests))
                 {
                     height += HeaderHeight;

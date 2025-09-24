@@ -106,7 +106,7 @@ namespace RimTalk.Service
 
         public static string GetPawnName(Pawn pawn, Pawn nearbyPawn)
         {
-            string shortName = nearbyPawn.Name?.ToStringShort ?? nearbyPawn.LabelShort;
+            string shortName = nearbyPawn.LabelShort;
 
             // Same group: prisoners, slaves, or same faction
             if ((pawn.IsPrisoner && nearbyPawn.IsPrisoner) ||
@@ -168,7 +168,7 @@ namespace RimTalk.Service
                 var nearbyNotableStatuses = nearbyPawns
                     .Where(nearbyPawn => nearbyPawn.Faction == pawn.Faction && IsPawnInDanger(nearbyPawn))
                     .Take(2)
-                    .Select(other => $"{other.Name.ToStringShort} in {GetStatus(other).Replace("\n", "; ")}")
+                    .Select(other => $"{other.LabelShort} in {GetStatus(other).Replace("\n", "; ")}")
                     .ToList();
 
                 if (nearbyNotableStatuses.Any())
@@ -228,10 +228,10 @@ namespace RimTalk.Service
 
             return string.Join("\n", parts);
         }
-
+        
         public static Pawn HostilePawnNearBy(Pawn pawn)
         {
-            //GenHostility.AnyHostileActiveThreatToPlayer
+            // Get all targets on the map that are hostile to the player faction
             var hostileTargets = pawn.Map.attackTargetsCache.TargetsHostileToFaction(Faction.OfPlayer);
 
             Pawn closestPawn = null;
@@ -239,10 +239,26 @@ namespace RimTalk.Service
 
             foreach (IAttackTarget target in hostileTargets)
             {
+                // First, check if the target is considered an active threat by the game's logic
                 if (GenHostility.IsActiveThreatTo(target, Faction.OfPlayer))
                 {
                     if (target.Thing is Pawn threatPawn)
                     {
+                        Lord lord = threatPawn.GetLord();
+                        
+                        // === 1. EXCLUDE TACTICALLY RETREATING PAWNS ===
+                        if (lord != null && (lord.CurLordToil is LordToil_ExitMapFighting || lord.CurLordToil is LordToil_ExitMap))
+                        {
+                            continue;
+                        }
+
+                        // === 2. EXCLUDE ROAMING MECH CLUSTER PAWNS ===
+                        if (threatPawn.RaceProps.IsMechanoid && lord != null && lord.CurLordToil is LordToil_DefendPoint)
+                        {
+                            continue;
+                        }
+
+                        // === 3. CALCULATE DISTANCE FOR VALID THREATS ===
                         float distSq = pawn.Position.DistanceToSquared(threatPawn.Position);
 
                         if (distSq < closestDistSq)

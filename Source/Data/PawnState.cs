@@ -17,7 +17,6 @@ namespace RimTalk.Data
         public int RejectCount { get; set; }
         public readonly Queue<TalkResponse> TalkQueue = new Queue<TalkResponse>();
         public bool IsGeneratingTalk { get; set; }
-        public int ReplyInterval { get; set; }
         public TalkRequest TalkRequest { get; set; }
         public Dictionary<string, float> Thoughts { get; set; }
         public HashSet<Hediff> Hediffs { get; set; }
