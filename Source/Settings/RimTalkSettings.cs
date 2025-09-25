@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using RimTalk.Data;
+using UnityEngine;
 using Verse;
 
 namespace RimTalk
@@ -27,12 +28,20 @@ namespace RimTalk
         public int DisableAiAtSpeed = 0;
         public ButtonDisplayMode ButtonDisplay = ButtonDisplayMode.Tab;
 
-        // Debug window settings
+        // Debug mode settings
         public bool DebugModeEnabled = false;
         public bool DebugGroupingEnabled = false;
         public string DebugSortColumn;
         public bool DebugSortAscending = true;
         public List<string> DebugExpandedPawns = new List<string>();
+
+        // Overlay settings
+        public bool OverlayEnabled = false;
+        public float OverlayOpacity = 0.5f;
+        public float OverlayFontSize = 15f;
+        public Rect OverlayRectDebug = new Rect(200f, 200f, 600f, 450f);
+        public Rect OverlayRectNonDebug = new Rect(200f, 200f, 400f, 250f);
+
 
         /// <summary>
         /// Gets the first active and valid API configuration.
@@ -107,7 +116,7 @@ namespace RimTalk
             }
             // If no other valid config is found, we stay at the current index or revert to original if it was valid
             // For now, we'll just stay at the current index.
-            Write(); // Save in case the original was invalid and we couldn\'t find a new one.
+            Write(); // Save in case the original was invalid and we couldn't find a new one.
         }
 
         /// <summary>
@@ -155,6 +164,39 @@ namespace RimTalk
             Scribe_Values.Look(ref DebugSortAscending, "debugSortAscending", true);
             Scribe_Collections.Look(ref DebugExpandedPawns, "debugExpandedPawns", LookMode.Value);
 
+            // Overlay settings
+            Scribe_Values.Look(ref OverlayEnabled, "overlayEnabled", false);
+            Scribe_Values.Look(ref OverlayOpacity, "overlayOpacity", 0.5f);
+            Scribe_Values.Look(ref OverlayFontSize, "overlayFontSize", 15f);
+
+            // Scribe Debug Overlay Rect
+            Rect defaultDebugRect = new Rect(200f, 200f, 600f, 450f);
+            float overlayDebugX = OverlayRectDebug.x;
+            float overlayDebugY = OverlayRectDebug.y;
+            float overlayDebugWidth = OverlayRectDebug.width;
+            float overlayDebugHeight = OverlayRectDebug.height;
+            Scribe_Values.Look(ref overlayDebugX, "overlayRectDebug_x", defaultDebugRect.x);
+            Scribe_Values.Look(ref overlayDebugY, "overlayRectDebug_y", defaultDebugRect.y);
+            Scribe_Values.Look(ref overlayDebugWidth, "overlayRectDebug_width", defaultDebugRect.width);
+            Scribe_Values.Look(ref overlayDebugHeight, "overlayRectDebug_height", defaultDebugRect.height);
+
+            // Scribe Non-Debug Overlay Rect
+            Rect defaultNonDebugRect = new Rect(200f, 200f, 400f, 250f);
+            float overlayNonDebugX = OverlayRectNonDebug.x;
+            float overlayNonDebugY = OverlayRectNonDebug.y;
+            float overlayNonDebugWidth = OverlayRectNonDebug.width;
+            float overlayNonDebugHeight = OverlayRectNonDebug.height;
+            Scribe_Values.Look(ref overlayNonDebugX, "overlayRectNonDebug_x", defaultNonDebugRect.x);
+            Scribe_Values.Look(ref overlayNonDebugY, "overlayRectNonDebug_y", defaultNonDebugRect.y);
+            Scribe_Values.Look(ref overlayNonDebugWidth, "overlayRectNonDebug_width", defaultNonDebugRect.width);
+            Scribe_Values.Look(ref overlayNonDebugHeight, "overlayRectNonDebug_height", defaultNonDebugRect.height);
+
+            if (Scribe.mode == LoadSaveMode.LoadingVars)
+            {
+                OverlayRectDebug = new Rect(overlayDebugX, overlayDebugY, overlayDebugWidth, overlayDebugHeight);
+                OverlayRectNonDebug = new Rect(overlayNonDebugX, overlayNonDebugY, overlayNonDebugWidth, overlayNonDebugHeight);
+            }
+
             // Initialize collections if null
             if (CloudConfigs == null)
                 CloudConfigs = new List<ApiConfig>();
@@ -164,6 +206,9 @@ namespace RimTalk
                 
             if (EnabledArchivableTypes == null)
                 EnabledArchivableTypes = new Dictionary<string, bool>();
+            
+            if (DebugExpandedPawns == null)
+                DebugExpandedPawns = new List<string>();
             
             // Ensure we have at least one cloud config
             if (CloudConfigs.Count == 0)

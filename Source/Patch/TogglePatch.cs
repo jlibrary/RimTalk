@@ -1,5 +1,4 @@
 using HarmonyLib;
-using RimTalk.UI;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -34,15 +33,8 @@ namespace RimTalk.Patch
             
             if (Event.current.control)
             {
-                var existingWindow = Find.WindowStack.WindowOfType<DebugWindow>();
-                if (existingWindow != null)
-                {
-                    existingWindow.Close();
-                }
-                else
-                {
-                    Find.WindowStack.Add(new DebugWindow());
-                }
+                settings.OverlayEnabled = !settings.OverlayEnabled;
+                settings.Write();
             }
             else if (Event.current.shift && Find.WindowStack.WindowOfType<Dialog_ModSettings>() == null)
             {

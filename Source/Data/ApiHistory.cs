@@ -74,8 +74,7 @@ namespace RimTalk.Data
 
         public static IEnumerable<ApiLog> GetAll()
         {
-            // LIFO: newest first
-            foreach (var log in History.Reverse())
+            foreach (var log in History)
             {
                 yield return log.Value;
             }
