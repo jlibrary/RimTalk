@@ -63,7 +63,7 @@
     <RimTalk.Persona.Vengeful>Vengeful – Grudge-holding and intense. Obsessed with revenge.</RimTalk.Persona.Vengeful>
 
     <!-- RimTalk_Toggle.cs -->
-    <RimTalk.Toggle.Tooltip>Toggle AI speech generation\nShift+click for settings\nCtrl+click for overlay window</RimTalk.Toggle.Tooltip>
+    <RimTalk.Toggle.Tooltip>Toggle AI speech generation\n\nShift+click for settings\nCtrl+click for overlay window</RimTalk.Toggle.Tooltip>
 
     <!-- Settings.cs -->
     <RimTalk.Settings.BasicSettings>Basic Settings</RimTalk.Settings.BasicSettings>
