@@ -30,6 +30,11 @@
 			<Private>False</Private>
 		</Reference>
 
+		<!-- Json libraries -->
+		<Reference Include="Libs\**\*.dll">
+			<Private>True</Private>
+		</Reference>
+
 		<!-- Harmony -->
 		<Reference Include="$(RimWorldDir)/../../workshop/content/294100/2009463077/Current/Assemblies/0Harmony.dll">
 			<Private>False</Private>
