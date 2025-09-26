@@ -1,11 +1,10 @@
 using System;
 
-namespace RimTalk.Error
+namespace RimTalk.Error;
+
+public class QuotaExceededException : Exception
 {
-    public class QuotaExceededException : Exception
+    public QuotaExceededException(string message) : base(message)
     {
-        public QuotaExceededException(string message) : base(message)
-        {
-        }
     }
 }

@@ -2,33 +2,32 @@ using RimWorld;
 using UnityEngine;
 using Verse;
 
-namespace RimTalk.UI
+namespace RimTalk.UI;
+
+/// <summary>
+/// A main tab button that acts as a launcher to toggle the unified Streaming/Debug overlay.
+/// </summary>
+public class OverlayTabLauncher : MainTabWindow
 {
-    /// <summary>
-    /// A main tab button that acts as a launcher to toggle the unified Streaming/Debug overlay.
-    /// </summary>
-    public class OverlayTabLauncher : MainTabWindow
+    // This remains empty, as it's just a launcher.
+    public override void DoWindowContents(Rect inRect)
     {
-        // This remains empty, as it's just a launcher.
-        public override void DoWindowContents(Rect inRect)
-        {
-        }
+    }
 
-        public override void PostOpen()
-        {
-            base.PostOpen();
+    public override void PostOpen()
+    {
+        base.PostOpen();
 
-            var settings = LoadedModManager.GetMod<Settings>().GetSettings<RimTalkSettings>();
+        var settings = LoadedModManager.GetMod<Settings>().GetSettings<RimTalkSettings>();
 
-            settings.OverlayEnabled = !settings.OverlayEnabled;
+        settings.OverlayEnabled = !settings.OverlayEnabled;
 
         if (settings.OverlayEnabled)
         {
             settings.OverlayEnabled = true;
         }
             
-            settings.Write();
-            Close();
-        }
+        settings.Write();
+        Close();
     }
 }

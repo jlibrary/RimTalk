@@ -1,13 +1,12 @@
-namespace RimTalk
+namespace RimTalk;
+
+public enum AIProvider
 {
-    public enum AIProvider
-    {
-        Google,
-        OpenAI,
-        DeepSeek,
-        OpenRouter,
-        Local,
-        Custom,
-        None
-    }
+    Google,
+    OpenAI,
+    DeepSeek,
+    OpenRouter,
+    Local,
+    Custom,
+    None
 }

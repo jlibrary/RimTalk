@@ -1,7 +1,6 @@
-namespace RimTalk.Data
+namespace RimTalk.Data;
+
+public interface IJsonData
 {
-    public interface IJsonData
-    {
-        string ToString();
-    }
+    string ToString();
 }

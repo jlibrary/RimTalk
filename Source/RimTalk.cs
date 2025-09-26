@@ -5,54 +5,53 @@ using RimTalk.Patch;
 using RimTalk.Service;
 using Verse;
 
-namespace RimTalk
+namespace RimTalk;
+
+public enum ButtonDisplayMode
 {
-    public enum ButtonDisplayMode
+    Tab,
+    Toggle,
+    None
+}
+
+public class RimTalk : GameComponent
+{
+    public RimTalk(Game game)
     {
-        Tab,
-        Toggle,
-        None
     }
 
-    public class RimTalk : GameComponent
+    public override void StartedNewGame()
     {
-        public RimTalk(Game game)
+        base.StartedNewGame();
+        Reset();
+    }
+
+    public override void LoadedGame()
+    {
+        base.LoadedGame();
+        Reset();
+    }
+
+    public static void Reset(bool soft = false)
+    {
+        var settings = Settings.Get();
+        if (settings != null)
         {
+            settings.CurrentCloudConfigIndex = 0;
         }
 
-        public override void StartedNewGame()
-        {
-            base.StartedNewGame();
-            Reset();
-        }
+        AIErrorHandler.ResetQuotaWarning();
+        TickManagerPatch.Reset();
+        AIClientFactory.Clear();
+        AIService.Clear();
+        TalkHistory.Clear();
 
-        public override void LoadedGame()
-        {
-            base.LoadedGame();
-            Reset();
-        }
+        if (soft) return;
 
-        public static void Reset(bool soft = false)
-        {
-            var settings = Settings.Get();
-            if (settings != null)
-            {
-                settings.CurrentCloudConfigIndex = 0;
-            }
-
-            AIErrorHandler.ResetQuotaWarning();
-            TickManagerPatch.Reset();
-            AIClientFactory.Clear();
-            AIService.Clear();
-            TalkHistory.Clear();
-
-            if (soft) return;
-
-            Counter.Tick = 0;
-            Cache.Clear();
-            Stats.Reset();
-            TalkRequestPool.Clear();
-            ApiHistory.Clear();
-        }
+        Counter.Tick = 0;
+        Cache.Clear();
+        Stats.Reset();
+        TalkRequestPool.Clear();
+        ApiHistory.Clear();
     }
 }

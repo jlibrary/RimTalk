@@ -2,67 +2,66 @@ using System.Collections.Generic;
 using System.Linq;
 using Verse;
 
-namespace RimTalk.Data
+namespace RimTalk.Data;
+
+public static class TalkRequestPool
 {
-    public static class TalkRequestPool
+    private static readonly List<TalkRequest> Requests = [];
+
+    public static void Add(string prompt, Pawn initiator = null, Pawn recipient = null, int mapId = 0)
     {
-        private static readonly List<TalkRequest> Requests = new List<TalkRequest>();
-
-        public static void Add(string prompt, Pawn initiator = null, Pawn recipient = null, int mapId = 0)
+        var request = new TalkRequest(prompt, initiator, recipient, TalkRequest.Type.Event)
         {
-            var request = new TalkRequest(prompt, initiator, recipient, TalkRequest.Type.Event)
-            {
-                MapId = mapId,
-            };
+            MapId = mapId,
+        };
 
-            Requests.Add(request);
-        }
-
-        public static TalkRequest GetRequestFromPool(Pawn pawn)
-        {
-            var requests = Requests
-                .Where(r => r.MapId == pawn.Map.uniqueID)
-                .OrderBy(r => r.CreatedTick)
-                .ToList();
-
-            foreach (var request in requests)
-            {
-                if (request.IsExpired())
-                {
-                    Requests.Remove(request);
-                }
-                else
-                {
-                    request.Initiator = pawn;
-                    return request;
-                }
-            }
-
-            return null;
-        }
-
-        // Get the first request without removing it
-        public static TalkRequest Peek()
-        {
-            return Requests.FirstOrDefault();
-        }
-
-        // Remove a specific request
-        public static bool Remove(TalkRequest request)
-        {            return Requests.Remove(request);
-        }
-
-        public static IEnumerable<TalkRequest> GetAll()
-        {
-            return Requests.ToList();
-        }
-
-        public static void Clear()
-        {
-            Requests.Clear();
-        }
-
-        public static int Count => Requests.Count;
-        public static bool IsEmpty => Requests.Count == 0;
+        Requests.Add(request);
     }
+
+    public static TalkRequest GetRequestFromPool(Pawn pawn)
+    {
+        var requests = Requests
+            .Where(r => r.MapId == pawn.Map.uniqueID)
+            .OrderBy(r => r.CreatedTick)
+            .ToList();
+
+        foreach (var request in requests)
+        {
+            if (request.IsExpired())
+            {
+                Requests.Remove(request);
+            }
+            else
+            {
+                request.Initiator = pawn;
+                return request;
+            }
+        }
+
+        return null;
+    }
+
+    // Get the first request without removing it
+    public static TalkRequest Peek()
+    {
+        return Requests.FirstOrDefault();
+    }
+
+    // Remove a specific request
+    public static bool Remove(TalkRequest request)
+    {            return Requests.Remove(request);
+    }
+
+    public static IEnumerable<TalkRequest> GetAll()
+    {
+        return Requests.ToList();
+    }
+
+    public static void Clear()
+    {
+        Requests.Clear();
+    }
+
+    public static int Count => Requests.Count;
+    public static bool IsEmpty => Requests.Count == 0;
 }
