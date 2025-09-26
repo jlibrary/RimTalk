@@ -85,7 +85,7 @@ namespace RimTalk.Service
 
                 Stats.IncrementCalls();
                 Stats.IncrementTokens(payload.TokenCount);
-                payload.Response = JsonUtil.Sanitize(payload.Response);
+                payload.Response = JsonUtil.SanitizeAndRepair(payload.Response);
 
                 return payload;
             }

@@ -1,8 +1,9 @@
 using System;
 using System.IO;
+using JsonRepairSharp;
+using Newtonsoft.Json;
 using System.Runtime.Serialization.Json;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace RimTalk.Util
 {
@@ -26,31 +27,59 @@ namespace RimTalk.Util
 
         public static T DeserializeFromJson<T>(string json)
         {
+            string sanitizedAndRepairedJson = SanitizeAndRepair(json);
+
             try
             {
-                using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(json)))
+                // Configure Newtonsoft.Json to be more tolerant of certain issues
+                var settings = new JsonSerializerSettings
                 {
-                    // Create an instance of DataContractJsonSerializer
-                    var serializer = new DataContractJsonSerializer(typeof(T));
+                    Error = (sender, args) =>
+                    {
+                        // Log the error but mark it as handled to continue parsing if possible
+                        Logger.Warning($"JSON deserialization error: {args.ErrorContext.Error.Message}");
+                        args.ErrorContext.Handled = true;
+                    }
+                };
 
-                    // Deserialize the JSON data
-                    return (T)serializer.ReadObject(stream);
-                }
+                return JsonConvert.DeserializeObject<T>(sanitizedAndRepairedJson, settings);
+            }
+            catch (JsonException ex)
+            {
+                Logger.Error($"Json deserialization failed for {typeof(T).Name} after repair. Error: {ex.Message}\nRepaired JSON:\n{sanitizedAndRepairedJson}");
+                throw;
             }
             catch (Exception ex)
             {
-                Logger.Error($"Json deserialization failed for {typeof(T).Name}\n{json}");
+                Logger.Error($"An unexpected error occurred during deserialization for {typeof(T).Name}. Error: {ex.Message}\nOriginal JSON:\n{json}");
                 throw;
             }
         }
-        
-        public static string Sanitize(string text)
+
+        public static string SanitizeAndRepair(string text)
         {
+            // Initial rough cleaning
             text = text.Replace("```json", "").Replace("```", "").Trim();
-            text = Regex.Replace(text, @"[“”""]+", "\"");
-            text = Regex.Replace(text, @"\n\s*|\\", "");
-            text = Regex.Replace(text, @".*[\r\n]*\[{", "[{");
-            text = Regex.Replace(text, @"\}][\r\n]*.*", "}]");
+
+            // Attempt to find the start and end of the JSON object/array
+            int startIndex = text.IndexOfAny(new char[] { '{', '[' });
+            int endIndex = text.LastIndexOfAny(new char[] { '}', ']' });
+
+            if (startIndex >= 0 && endIndex > startIndex)
+            {
+                text = text.Substring(startIndex, endIndex - startIndex + 1);
+            }
+
+            // Use JsonRepairSharp to fix common structural issues
+            try
+            {
+                text = JsonRepair.RepairJson(text);
+            }
+            catch (Exception ex)
+            {
+                Logger.Warning($"JsonRepairSharp failed: {ex.Message}. Proceeding with the roughly sanitized string.");
+            }
+
             return text;
         }
     }
