@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using HarmonyLib;
 using RimTalk.Data;
 using RimTalk.Service;
 using RimWorld;
@@ -12,41 +13,43 @@ namespace RimTalk.UI;
 
 public class Overlay : MapComponent
 {
-    // UI State
     private bool _isDragging;
     private bool _isResizing;
     private Vector2 _dragStartOffset;
     private bool _showSettingsDropdown;
-    private Rect _gearIconScreenRect;
-    private Rect _settingsDropdownRect;
     private Vector2 _tableScrollPosition;
 
-    // Settings & Cache
+    private Rect _gearIconScreenRect;
+    private Rect _settingsDropdownRect;
+    private Rect _dragHandleRect;
+    private Rect _localResizeHandleRect;
+    private Rect _screenResizeHandleRect;
+
     private bool _groupingEnabled;
     private bool _debugModeEnabled;
-    private string _sortColumn;
-    private bool _sortAscending;
     private readonly List<string> _expandedPawns;
 
-    // Data Cache
-    private string _aiStatus;
-    private long _totalCalls;
-    private long _totalTokens;
-    private double _avgCallsPerMin;
-    private double _avgTokensPerMin;
-    private double _avgTokensPerCall;
-    private List<PawnState> _pawnStates;
-    private List<ApiLog> _requests;
-    private Dictionary<string, List<ApiLog>> _talkLogsByPawn = new();
+    private string _cachedAiStatus;
+    private long _cachedTotalCalls;
+    private long _cachedTotalTokens;
+    private double _cachedAvgCallsPerMin;
+    private double _cachedAvgTokensPerMin;
+    private double _cachedAvgTokensPerCall;
+    private List<PawnState> _cachedPawnStates;
+    private List<ApiLog> _cachedRequests;
+    private Dictionary<string, List<ApiLog>> _cachedTalkLogsByPawn = new();
+    private IEnumerable<ApiLog> _cachedMessagesForLog;
 
-    // Constants: General
+    private int _ticksSinceLastUpdate;
+    private const int UpdateIntervalTicks = 30;
+
     private const float ColumnPadding = 10f;
     private const float OptionsBarHeight = 30f;
     private const float ResizeHandleSize = 24f;
     private const float DropdownWidth = 200f;
     private const float DropdownHeight = 270f;
+    private const int MaxMessagesInLog = 10;
 
-    // Constants: Debug View
     private readonly string _generating = "RimTalk.DebugWindow.Generating".Translate();
     private const float TimestampColumnWidth = 80f;
     private const float PawnColumnWidth = 80f;
@@ -67,9 +70,60 @@ public class Overlay : MapComponent
         var settings = LoadedModManager.GetMod<Settings>().GetSettings<RimTalkSettings>();
         _groupingEnabled = settings.DebugGroupingEnabled;
         _debugModeEnabled = settings.DebugModeEnabled;
-        _sortColumn = settings.DebugSortColumn;
-        _sortAscending = settings.DebugSortAscending;
         _expandedPawns = settings.DebugExpandedPawns ?? new List<string>();
+
+        UpdateCachedData();
+    }
+
+    public override void MapComponentTick()
+    {
+        base.MapComponentTick();
+        _ticksSinceLastUpdate++;
+        if (_ticksSinceLastUpdate >= UpdateIntervalTicks)
+        {
+            UpdateCachedData();
+            _ticksSinceLastUpdate = 0;
+        }
+    }
+
+    private void UpdateCachedData()
+    {
+        var settings = LoadedModManager.GetMod<Settings>().GetSettings<RimTalkSettings>();
+        _cachedAiStatus = !settings.IsEnabled
+            ? "RimTalk.DebugWindow.StatusDisabled".Translate()
+            : (AIService.IsBusy()
+                ? "RimTalk.DebugWindow.StatusProcessing".Translate()
+                : "RimTalk.DebugWindow.StatusIdle".Translate());
+
+        _cachedTotalCalls = Stats.TotalCalls;
+        _cachedTotalTokens = Stats.TotalTokens;
+        _cachedAvgCallsPerMin = Stats.AvgCallsPerMinute;
+        _cachedAvgTokensPerMin = Stats.AvgTokensPerMinute;
+        _cachedAvgTokensPerCall = Stats.AvgTokensPerCall;
+        _cachedPawnStates = Cache.GetAll().ToList();
+        _cachedRequests = ApiHistory.GetAll().ToList();
+
+        _cachedTalkLogsByPawn = _cachedRequests.Where(r => r.Name != null)
+            .GroupBy(r => r.Name)
+            .ToDictionary(g => g.Key, g => g.ToList());
+
+        if (_groupingEnabled)
+        {
+            _cachedMessagesForLog = _cachedTalkLogsByPawn
+                .Select(kvp => kvp.Value.LastOrDefault(log => log.IsSpoken))
+                .Where(log => log != null)
+                .OrderByDescending(log => log.Timestamp)
+                .Take(MaxMessagesInLog)
+                .ToList();
+        }
+        else
+        {
+            _cachedMessagesForLog = _cachedRequests
+                .Where(r => r.IsSpoken)
+                .Reverse()
+                .Take(MaxMessagesInLog)
+                .ToList();
+        }
     }
 
     public override void MapComponentOnGUI()
@@ -79,7 +133,6 @@ public class Overlay : MapComponent
         var settings = LoadedModManager.GetMod<Settings>().GetSettings<RimTalkSettings>();
         if (!settings.OverlayEnabled) return;
 
-        // Use the correct Rect based on whether debug mode is enabled
         ref Rect currentOverlayRect =
             ref (_debugModeEnabled ? ref settings.OverlayRectDebug : ref settings.OverlayRectNonDebug);
 
@@ -92,22 +145,21 @@ public class Overlay : MapComponent
 
         ClampRectToScreen(ref currentOverlayRect);
 
-        var windowRect = currentOverlayRect;
-        var dragHandleRect = new Rect(windowRect.x, windowRect.y, windowRect.width, OptionsBarHeight);
-
         float iconSize = OptionsBarHeight - 4f;
-        _gearIconScreenRect = new Rect(windowRect.xMax - iconSize - 5f, windowRect.y + 2f, iconSize, iconSize);
-        _settingsDropdownRect = new Rect(_gearIconScreenRect.x - DropdownWidth + _gearIconScreenRect.width,
+        _dragHandleRect.Set(currentOverlayRect.x, currentOverlayRect.y, currentOverlayRect.width, OptionsBarHeight);
+        _gearIconScreenRect.Set(currentOverlayRect.xMax - iconSize - 5f, currentOverlayRect.y + 2f, iconSize, iconSize);
+        _settingsDropdownRect.Set(_gearIconScreenRect.x - DropdownWidth + _gearIconScreenRect.width,
             _gearIconScreenRect.yMax, DropdownWidth, DropdownHeight);
+        _screenResizeHandleRect.Set(currentOverlayRect.xMax - ResizeHandleSize,
+            currentOverlayRect.yMax - ResizeHandleSize,
+            ResizeHandleSize, ResizeHandleSize);
 
-        HandleInput(ref currentOverlayRect, dragHandleRect);
+        HandleInput(ref currentOverlayRect);
 
-        GUI.BeginGroup(windowRect);
-        var inRect = new Rect(Vector2.zero, windowRect.size);
+        GUI.BeginGroup(currentOverlayRect);
+        var inRect = new Rect(Vector2.zero, currentOverlayRect.size);
 
         Widgets.DrawBoxSolid(inRect, new Color(0.1f, 0.1f, 0.1f, settings.OverlayOpacity));
-
-        UpdateData();
 
         var contentRect = new Rect(inRect.x, inRect.y, inRect.width, inRect.height);
 
@@ -123,11 +175,10 @@ public class Overlay : MapComponent
         var optionsRect = new Rect(inRect.x, inRect.y, inRect.width, OptionsBarHeight);
         DrawOptionsBar(optionsRect);
 
-
-        var resizeHandleRect = new Rect(inRect.width - ResizeHandleSize, inRect.height - ResizeHandleSize,
+        _localResizeHandleRect.Set(inRect.width - ResizeHandleSize, inRect.height - ResizeHandleSize,
             ResizeHandleSize, ResizeHandleSize);
-        GUI.DrawTexture(resizeHandleRect, TexUI.WinExpandWidget);
-        TooltipHandler.TipRegion(resizeHandleRect, "Drag to resize");
+        GUI.DrawTexture(_localResizeHandleRect, TexUI.WinExpandWidget);
+        TooltipHandler.TipRegion(_localResizeHandleRect, "Drag to resize");
 
         GUI.EndGroup();
 
@@ -137,11 +188,9 @@ public class Overlay : MapComponent
         }
     }
 
-    private void HandleInput(ref Rect windowRect, Rect dragHandleRect)
+    private void HandleInput(ref Rect windowRect)
     {
         Event currentEvent = Event.current;
-        var resizeHandleRect = new Rect(windowRect.xMax - ResizeHandleSize, windowRect.yMax - ResizeHandleSize,
-            ResizeHandleSize, ResizeHandleSize);
 
         if (currentEvent.type == EventType.MouseDown && currentEvent.button == 0)
         {
@@ -160,12 +209,12 @@ public class Overlay : MapComponent
                 }
             }
 
-            if (resizeHandleRect.Contains(currentEvent.mousePosition))
+            if (_screenResizeHandleRect.Contains(currentEvent.mousePosition))
             {
                 _isResizing = true;
                 currentEvent.Use();
             }
-            else if (dragHandleRect.Contains(currentEvent.mousePosition) &&
+            else if (_dragHandleRect.Contains(currentEvent.mousePosition) &&
                      !_gearIconScreenRect.Contains(currentEvent.mousePosition))
             {
                 _isDragging = true;
@@ -187,8 +236,15 @@ public class Overlay : MapComponent
         {
             if (_isResizing)
             {
-                windowRect.width = Mathf.Max(350, currentEvent.mousePosition.x - windowRect.x);
-                windowRect.height = Mathf.Max(50, currentEvent.mousePosition.y - windowRect.y);
+                float desiredWidth = currentEvent.mousePosition.x - windowRect.x;
+                float desiredHeight = currentEvent.mousePosition.y - windowRect.y;
+
+                float maxWidth = Verse.UI.screenWidth - windowRect.x;
+                float maxHeight = Verse.UI.screenHeight - windowRect.y;
+
+                windowRect.width = Mathf.Clamp(desiredWidth, 350f, maxWidth);
+                windowRect.height = Mathf.Clamp(desiredHeight, 50f, maxHeight);
+
                 currentEvent.Use();
             }
             else if (_isDragging)
@@ -205,28 +261,6 @@ public class Overlay : MapComponent
     {
         rect.x = Mathf.Clamp(rect.x, 0, Verse.UI.screenWidth - rect.width);
         rect.y = Mathf.Clamp(rect.y, 0, Verse.UI.screenHeight - rect.height);
-    }
-
-    private void UpdateData()
-    {
-        var settings = LoadedModManager.GetMod<Settings>().GetSettings<RimTalkSettings>();
-        _aiStatus = !settings.IsEnabled
-            ? "RimTalk.DebugWindow.StatusDisabled".Translate()
-            : (AIService.IsBusy()
-                ? "RimTalk.DebugWindow.StatusProcessing".Translate()
-                : "RimTalk.DebugWindow.StatusIdle".Translate());
-
-        _totalCalls = Stats.TotalCalls;
-        _totalTokens = Stats.TotalTokens;
-        _avgCallsPerMin = Stats.AvgCallsPerMinute;
-        _avgTokensPerMin = Stats.AvgTokensPerMinute;
-        _avgTokensPerCall = Stats.AvgTokensPerCall;
-        _pawnStates = Cache.GetAll().ToList();
-        _requests = ApiHistory.GetAll().ToList();
-
-        _talkLogsByPawn = _requests.Where(r => r.Name != null)
-            .GroupBy(r => r.Name)
-            .ToDictionary(g => g.Key, g => g.ToList());
     }
 
     private void DrawOptionsBar(Rect rect)
@@ -287,6 +321,7 @@ public class Overlay : MapComponent
             _groupingEnabled = value;
             settings.DebugGroupingEnabled = value;
             settings.Write();
+            UpdateCachedData();
         });
 
         DrawSettingsCheckbox(listing, "RimTalk.DebugWindow.DebugMode".Translate(), _debugModeEnabled, value =>
@@ -347,26 +382,14 @@ public class Overlay : MapComponent
 
     private void DrawMessageLog(Rect inRect)
     {
-        if (_groupingEnabled)
-        {
-            var latestMessages = _talkLogsByPawn
-                .Select(kvp => kvp.Value.LastOrDefault(log => log.Response != null))
-                .Where(log => log != null)
-                .OrderByDescending(log => log.Timestamp);
-            DrawMessageLogInternal(inRect, latestMessages);
-        }
-        else
-        {
-            var completedMessages = _requests.Where(r => r.Response != null).Reverse();
-            DrawMessageLogInternal(inRect, completedMessages);
-        }
+        DrawMessageLogInternal(inRect, _cachedMessagesForLog);
     }
 
     private void DrawMessageLogInternal(Rect inRect, IEnumerable<ApiLog> messagesToDraw)
     {
         var contentRect = inRect.ContractedBy(5f);
 
-        if (!messagesToDraw.Any())
+        if (messagesToDraw == null || !messagesToDraw.Any())
             return;
 
         var settings = LoadedModManager.GetMod<Settings>().GetSettings<RimTalkSettings>();
@@ -396,16 +419,15 @@ public class Overlay : MapComponent
                 if (currentY < contentRect.y) break;
 
                 var rowRect = new Rect(contentRect.x, currentY, contentRect.width, rowCalculatedHeight);
-                    
-                float nameWidth = Text.CalcSize(formattedName + " ").x;
+
+                float nameWidth = Text.CalcSize(formattedName).x;
                 var nameRect = new Rect(rowRect.x, rowRect.y, nameWidth, rowRect.height);
                 var dialogueRect = new Rect(nameRect.xMax, rowRect.y, rowRect.width - nameWidth,
                     rowRect.height);
 
-                // Use the new centralized method to draw the pawn's name
                 DrawClickablePawnName(nameRect, pawnName);
 
-                Widgets.Label(dialogueRect, dialogue);
+                Widgets.Label(dialogueRect, "  " + dialogue);
             }
         }
         finally
@@ -415,39 +437,28 @@ public class Overlay : MapComponent
             Text.Anchor = originalAnchor;
         }
     }
-        
-    /// <summary>
-    /// Draws a pawn's name with appropriate coloring and makes it a clickable button to jump to their location.
-    /// This is the centralized method for drawing pawn names consistently.
-    /// </summary>
-    /// <param name="rect">The Rect to draw the name in.</param>
-    /// <param name="pawnName">The name of the pawn to draw.</param>
-    /// <param name="pawnInstance">An optional, pre-fetched instance of the pawn to avoid lookups.</param>
+
     private void DrawClickablePawnName(Rect rect, string pawnName, Pawn pawnInstance = null)
     {
-        // 1. Find the pawn if not already provided.
         var pawn = pawnInstance;
         if (pawn == null)
         {
             pawn = Cache.GetByName(pawnName)?.Pawn;
             if (pawn == null)
             {
-                pawn = Find.WorldPawns.AllPawnsAliveOrDead.FirstOrDefault(p => p.Name.ToStringShort == pawnName);
+                pawn = Find.WorldPawns?.AllPawnsAliveOrDead.FirstOrDefault(p => p?.Name?.ToStringShort == pawnName);
             }
         }
 
-        // 2. Handle drawing based on whether the pawn was found.
         if (pawn != null)
         {
-            var originalColor = GUI.color; // Store original color.
+            var originalColor = GUI.color;
             Widgets.DrawHighlightIfMouseover(rect);
 
-            // 3. Apply color based on pawn status (dead or alive).
             GUI.color = pawn.Dead ? Color.gray : PawnNameColorUtility.PawnNameColorOf(pawn);
 
-            Widgets.Label(rect, pawnName);
+            Widgets.Label(rect, $"[{pawnName}]");
 
-            // 4. Create an invisible button for camera jumping.
             if (Widgets.ButtonInvisible(rect))
             {
                 if (pawn.Dead && pawn.Corpse != null && pawn.Corpse.Spawned)
@@ -460,11 +471,10 @@ public class Overlay : MapComponent
                 }
             }
 
-            GUI.color = originalColor; // 5. IMPORTANT: Reset to original color.
+            GUI.color = originalColor;
         }
         else
         {
-            // Fallback for pawns that can't be found.
             Widgets.Label(rect, pawnName);
         }
     }
@@ -483,7 +493,7 @@ public class Overlay : MapComponent
         var contentRect = rect.AtZero().ContractedBy(10f);
 
         Color statusColor;
-        var aiStatus = _aiStatus.Translate();
+        var aiStatus = _cachedAiStatus.Translate();
         if (aiStatus == "RimTalk.DebugWindow.StatusProcessing".Translate()) statusColor = Color.yellow;
         else if (aiStatus == "RimTalk.DebugWindow.StatusIdle".Translate()) statusColor = Color.green;
         else statusColor = Color.grey;
@@ -496,7 +506,7 @@ public class Overlay : MapComponent
         GUI.color = Color.gray;
         Widgets.Label(statusLabelRect, "RimTalk.DebugWindow.AIStatus".Translate());
         GUI.color = statusColor;
-        Widgets.Label(statusValueRect, _aiStatus);
+        Widgets.Label(statusValueRect, _cachedAiStatus);
 
         GUI.color = Color.white;
         currentY += rowHeight;
@@ -515,11 +525,11 @@ public class Overlay : MapComponent
             currentY += rowHeight;
         }
 
-        DrawStatRow("RimTalk.DebugWindow.TotalCalls".Translate(), _totalCalls.ToString("N0"));
-        DrawStatRow("RimTalk.DebugWindow.TotalTokens".Translate(), _totalTokens.ToString("N0"));
-        DrawStatRow("RimTalk.DebugWindow.AvgCallsPerMin".Translate(), _avgCallsPerMin.ToString("F2"));
-        DrawStatRow("RimTalk.DebugWindow.AvgTokensPerMin".Translate(), _avgTokensPerMin.ToString("F2"));
-        DrawStatRow("RimTalk.DebugWindow.AvgTokensPerCall".Translate(), _avgTokensPerCall.ToString("F2"));
+        DrawStatRow("RimTalk.DebugWindow.TotalCalls".Translate(), _cachedTotalCalls.ToString("N0"));
+        DrawStatRow("RimTalk.DebugWindow.TotalTokens".Translate(), _cachedTotalTokens.ToString("N0"));
+        DrawStatRow("RimTalk.DebugWindow.AvgCallsPerMin".Translate(), _cachedAvgCallsPerMin.ToString("F2"));
+        DrawStatRow("RimTalk.DebugWindow.AvgTokensPerMin".Translate(), _cachedAvgTokensPerMin.ToString("F2"));
+        DrawStatRow("RimTalk.DebugWindow.AvgTokensPerCall".Translate(), _cachedAvgTokensPerCall.ToString("F2"));
 
         GUI.EndGroup();
         GUI.color = Color.white;
@@ -596,7 +606,7 @@ public class Overlay : MapComponent
 
     private void DrawGroupedPawnTable(Rect rect)
     {
-        if (_pawnStates == null || !_pawnStates.Any())
+        if (_cachedPawnStates == null || !_cachedPawnStates.Any())
             return;
 
         var settings = LoadedModManager.GetMod<Settings>().GetSettings<RimTalkSettings>();
@@ -621,10 +631,10 @@ public class Overlay : MapComponent
             DrawGroupedHeader(new Rect(0, 0, viewRect.width, dynamicHeaderHeight), responseColumnWidth);
             float currentY = dynamicHeaderHeight;
 
-            var sortedPawns = GetSortedPawnStates().ToList();
-            for (int i = 0; i < sortedPawns.Count; i++)
+            var pawnsToDisplay = _cachedPawnStates.ToList();
+            for (int i = 0; i < pawnsToDisplay.Count; i++)
             {
-                var pawnState = sortedPawns[i];
+                var pawnState = pawnsToDisplay[i];
                 string pawnKey = pawnState.Pawn.LabelShort;
                 bool isExpanded = _expandedPawns.Contains(pawnKey);
 
@@ -638,9 +648,9 @@ public class Overlay : MapComponent
                 currentX += GroupedExpandIconWidth;
 
                 var pawnNameRect = new Rect(currentX, rowRect.y, GroupedPawnNameWidth, dynamicRowHeight);
-                // Use the new centralized method to draw the pawn's name
+
                 DrawClickablePawnName(pawnNameRect, pawnKey, pawnState.Pawn);
-                    
+
                 currentX += GroupedPawnNameWidth + ColumnPadding;
 
                 string lastResponse = GetLastResponseForPawn(pawnKey);
@@ -662,7 +672,7 @@ public class Overlay : MapComponent
                         pawnState.LastTalkTick.ToString());
                     currentX += GroupedLastTalkWidth + ColumnPadding;
 
-                    _talkLogsByPawn.TryGetValue(pawnKey, out var pawnRequests);
+                    _cachedTalkLogsByPawn.TryGetValue(pawnKey, out var pawnRequests);
                     var requestsWithTokens = pawnRequests?.Where(r => r.TokenCount != 0).ToList();
                     Widgets.Label(new Rect(currentX, rowRect.y, GroupedRequestsWidth, dynamicRowHeight),
                         (requestsWithTokens?.Count ?? 0).ToString());
@@ -680,7 +690,7 @@ public class Overlay : MapComponent
 
                 currentY += dynamicRowHeight;
 
-                if (isExpanded && _talkLogsByPawn.TryGetValue(pawnKey, out var requests) && requests.Any())
+                if (isExpanded && _cachedTalkLogsByPawn.TryGetValue(pawnKey, out var requests) && requests.Any())
                 {
                     const float indentWidth = 20f;
                     float innerWidth = viewRect.width - indentWidth;
@@ -688,7 +698,7 @@ public class Overlay : MapComponent
                     DrawRequestTableHeader(new Rect(indentWidth, currentY, innerWidth, dynamicHeaderHeight),
                         innerResponseWidth, false);
                     currentY += dynamicHeaderHeight;
-                        
+
                     var reversedRequests = requests.ToList();
                     reversedRequests.Reverse();
                     DrawRequestRows(reversedRequests, ref currentY, innerWidth, indentWidth, innerResponseWidth, false,
@@ -712,26 +722,32 @@ public class Overlay : MapComponent
         GUI.color = Color.white;
 
         float currentX = GroupedExpandIconWidth;
-        DrawSortableHeader(new Rect(currentX, rect.y, GroupedPawnNameWidth, rect.height), "Pawn");
+        Widgets.Label(new Rect(currentX, rect.y, GroupedPawnNameWidth, rect.height),
+            "RimTalk.DebugWindow.HeaderPawn".Translate());
         currentX += GroupedPawnNameWidth + ColumnPadding;
-        DrawSortableHeader(new Rect(currentX, rect.y, responseColumnWidth, rect.height), "Response");
+        Widgets.Label(new Rect(currentX, rect.y, responseColumnWidth, rect.height),
+            "RimTalk.DebugWindow.HeaderResponse".Translate());
         currentX += responseColumnWidth + ColumnPadding;
 
         if (_debugModeEnabled)
         {
-            DrawSortableHeader(new Rect(currentX, rect.y, GroupedStatusWidth, rect.height), "Status");
+            Widgets.Label(new Rect(currentX, rect.y, GroupedStatusWidth, rect.height),
+                "RimTalk.DebugWindow.HeaderStatus".Translate());
             currentX += GroupedStatusWidth + ColumnPadding;
-            DrawSortableHeader(new Rect(currentX, rect.y, GroupedLastTalkWidth, rect.height), "LastTalk");
+            Widgets.Label(new Rect(currentX, rect.y, GroupedLastTalkWidth, rect.height),
+                "RimTalk.DebugWindow.HeaderLastTalk".Translate());
             currentX += GroupedLastTalkWidth + ColumnPadding;
-            DrawSortableHeader(new Rect(currentX, rect.y, GroupedRequestsWidth, rect.height), "Requests");
+            Widgets.Label(new Rect(currentX, rect.y, GroupedRequestsWidth, rect.height),
+                "RimTalk.DebugWindow.HeaderRequests".Translate());
             currentX += GroupedRequestsWidth + ColumnPadding;
-            DrawSortableHeader(new Rect(currentX, rect.y, GroupedChattinessWidth, rect.height), "Chattiness");
+            Widgets.Label(new Rect(currentX, rect.y, GroupedChattinessWidth, rect.height),
+                "RimTalk.DebugWindow.HeaderChattiness".Translate());
         }
     }
 
     private void DrawUngroupedRequestTable(Rect rect)
     {
-        if (_requests == null || !_requests.Any())
+        if (_cachedRequests == null || !_cachedRequests.Any())
             return;
 
         var settings = LoadedModManager.GetMod<Settings>().GetSettings<RimTalkSettings>();
@@ -755,7 +771,7 @@ public class Overlay : MapComponent
             DrawRequestTableHeader(new Rect(0, 0, viewRect.width, dynamicHeaderHeight), responseWidth, true);
             float currentY = dynamicHeaderHeight;
 
-            var reversedRequests = ApiHistory.GetAll().ToList();
+            var reversedRequests = _cachedRequests.ToList();
             reversedRequests.Reverse();
             DrawRequestRows(reversedRequests, ref currentY, viewRect.width, 0, responseWidth, true,
                 dynamicRowHeight);
@@ -824,11 +840,10 @@ public class Overlay : MapComponent
             {
                 string pawnName = request.Name ?? "-";
                 var pawnNameRect = new Rect(currentX, rowRect.y, PawnColumnWidth, rowHeight);
-                var pawn = _pawnStates.FirstOrDefault(p => p.Pawn.LabelShort == pawnName)?.Pawn;
+                var pawn = _cachedPawnStates.FirstOrDefault(p => p.Pawn.LabelShort == pawnName)?.Pawn;
 
-                // Use the new centralized method to draw the pawn's name
                 DrawClickablePawnName(pawnNameRect, pawnName, pawn);
-                    
+
                 currentX += PawnColumnWidth + ColumnPadding;
             }
 
@@ -864,66 +879,6 @@ public class Overlay : MapComponent
             }
 
             currentY += rowHeight;
-        }
-    }
-
-    private void DrawSortableHeader(Rect rect, string column)
-    {
-        string translatedColumn = ("RimTalk.DebugWindow.Header" + column).Translate();
-        string arrow = (_sortColumn == column) ? (_sortAscending ? " ▲" : " ▼") : "";
-        if (Widgets.ButtonInvisible(rect))
-        {
-            if (_sortColumn == column)
-            {
-                _sortAscending = !_sortAscending;
-            }
-            else
-            {
-                _sortColumn = column;
-                _sortAscending = true;
-            }
-
-            var settings = LoadedModManager.GetMod<Settings>().GetSettings<RimTalkSettings>();
-            settings.DebugSortColumn = _sortColumn;
-            settings.DebugSortAscending = _sortAscending;
-            settings.Write();
-        }
-
-        Widgets.Label(rect, translatedColumn + arrow);
-    }
-
-    private IEnumerable<PawnState> GetSortedPawnStates()
-    {
-        switch (_sortColumn)
-        {
-            case "Pawn":
-                return _sortAscending
-                    ? _pawnStates.OrderBy(p => p.Pawn.LabelShort)
-                    : _pawnStates.OrderByDescending(p => p.Pawn.LabelShort);
-            case "Requests":
-                return _sortAscending
-                    ? _pawnStates.OrderBy(p =>
-                        _talkLogsByPawn.TryGetValue(p.Pawn.LabelShort, out var logs) ? logs.Count : 0)
-                    : _pawnStates.OrderByDescending(p =>
-                        _talkLogsByPawn.TryGetValue(p.Pawn.LabelShort, out var logs) ? logs.Count : 0);
-            case "Response":
-                return _sortAscending
-                    ? _pawnStates.OrderBy(p => GetLastResponseForPawn(p.Pawn.LabelShort))
-                    : _pawnStates.OrderByDescending(p => GetLastResponseForPawn(p.Pawn.LabelShort));
-            case "Status":
-                return _sortAscending
-                    ? _pawnStates.OrderBy(p => p.CanDisplayTalk())
-                    : _pawnStates.OrderByDescending(p => p.CanDisplayTalk());
-            case "LastTalk":
-                return _sortAscending
-                    ? _pawnStates.OrderBy(p => p.LastTalkTick)
-                    : _pawnStates.OrderByDescending(p => p.LastTalkTick);
-            case "Chattiness":
-                return _sortAscending
-                    ? _pawnStates.OrderBy(p => p.TalkInitiationWeight)
-                    : _pawnStates.OrderByDescending(p => p.TalkInitiationWeight);
-            default:
-                return _pawnStates;
         }
     }
 
@@ -965,17 +920,17 @@ public class Overlay : MapComponent
 
     private float CalculateUngroupedTableHeight(float rowHeight)
     {
-        return _requests == null ? 0f : rowHeight + (_requests.Count * rowHeight) + 50f;
+        return _cachedRequests == null ? 0f : rowHeight + (_cachedRequests.Count * rowHeight) + 50f;
     }
 
     private float CalculateGroupedTableHeight(float rowHeight)
     {
-        if (_pawnStates == null) return 0f;
-        float height = rowHeight + (_pawnStates.Count * rowHeight);
-        foreach (var pawnState in _pawnStates)
+        if (_cachedPawnStates == null) return 0f;
+        float height = rowHeight + (_cachedPawnStates.Count * rowHeight);
+        foreach (var pawnState in _cachedPawnStates)
         {
             var pawnKey = pawnState.Pawn.LabelShort;
-            if (_expandedPawns.Contains(pawnKey) && _talkLogsByPawn.TryGetValue(pawnKey, out var requests))
+            if (_expandedPawns.Contains(pawnKey) && _cachedTalkLogsByPawn.TryGetValue(pawnKey, out var requests))
             {
                 height += rowHeight;
                 height += requests.Count * rowHeight;
@@ -987,11 +942,28 @@ public class Overlay : MapComponent
 
     private string GetLastResponseForPawn(string pawnKey)
     {
-        if (_talkLogsByPawn.TryGetValue(pawnKey, out var logs) && logs.Any())
+        if (_cachedTalkLogsByPawn.TryGetValue(pawnKey, out var logs) && logs.Any())
         {
             return logs.LastOrDefault(l => l.Response != null)?.Response ?? _generating;
         }
 
         return "";
+    }
+}
+
+[HarmonyPatch(typeof(UIRoot_Play), nameof(UIRoot_Play.UIRootOnGUI))]
+public static class OverlayPatch
+{
+    private static bool _skip;
+
+    static void Postfix()
+    {
+        if (Current.ProgramState != ProgramState.Playing) return;
+
+        _skip = !_skip;
+        if (_skip) return;
+
+        var mapComp = Find.CurrentMap?.GetComponent<Overlay>();
+        mapComp?.MapComponentOnGUI();
     }
 }

@@ -20,7 +20,7 @@ public static class AIService
     {
         var currentMessages = new List<(Role role, string message)>(messages) { (Role.User, request.Prompt) };
 
-        int talkLogId = ApiHistory.AddRequest(request);
+        var talkLogId = ApiHistory.AddRequest(request);
 
         var payload = await ExecuteAIRequest(_instruction, currentMessages);
 
@@ -37,7 +37,8 @@ public static class AIService
             foreach (var talkResponse in talkResponses)
             {
                 talkResponse.ResponsePayload = payload.Response;
-                ApiHistory.AddResponse(talkLogId, talkResponse.Text, payload, talkResponse.Name);
+                talkLogId = ApiHistory.AddResponse(talkLogId, talkResponse.Text, payload, talkResponse.Name);
+                talkResponse.Id = talkLogId;
             }
         }
 
@@ -51,7 +52,7 @@ public static class AIService
     {
         List<(Role role, string message)> message = [(Role.User, request.Prompt)];
 
-        int talkLogId = ApiHistory.AddRequest(request);
+        var talkLogId = ApiHistory.AddRequest(request);
 
         var payload = await ExecuteAIRequest(_instruction, message);
 
@@ -83,7 +84,6 @@ public static class AIService
 
             Stats.IncrementCalls();
             Stats.IncrementTokens(payload.TokenCount);
-            payload.Response = JsonUtil.SanitizeAndRepair(payload.Response);
 
             return payload;
         }

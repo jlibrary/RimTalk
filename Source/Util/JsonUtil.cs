@@ -1,9 +1,10 @@
 using System;
+using System.Collections;
 using System.IO;
-using JsonRepairSharp;
-using Newtonsoft.Json;
 using System.Runtime.Serialization.Json;
 using System.Text;
+using JsonRepairSharp;
+using Newtonsoft.Json;
 
 namespace RimTalk.Util;
 
@@ -25,59 +26,88 @@ public static class JsonUtil
 
     public static T DeserializeFromJson<T>(string json)
     {
-        string sanitizedAndRepairedJson = SanitizeAndRepair(json);
+        string sanitizedJson = Sanitize(json, typeof(T));
+
+        if (string.IsNullOrEmpty(sanitizedJson))
+        {
+            return default;
+        }
 
         try
         {
-            // Configure Newtonsoft.Json to be more tolerant of certain issues
             var settings = new JsonSerializerSettings
             {
-                Error = (sender, args) =>
-                {
-                    // Log the error but mark it as handled to continue parsing if possible
-                    Logger.Warning($"JSON deserialization error: {args.ErrorContext.Error.Message}");
-                    args.ErrorContext.Handled = true;
-                }
+                MissingMemberHandling = MissingMemberHandling.Ignore
             };
 
-            return JsonConvert.DeserializeObject<T>(sanitizedAndRepairedJson, settings);
-        }
-        catch (JsonException ex)
-        {
-            Logger.Error($"Json deserialization failed for {typeof(T).Name} after repair. Error: {ex.Message}\nRepaired JSON:\n{sanitizedAndRepairedJson}");
-            throw;
+            return JsonConvert.DeserializeObject<T>(sanitizedJson, settings);
         }
         catch (Exception ex)
         {
-            Logger.Error($"An unexpected error occurred during deserialization for {typeof(T).Name}. Error: {ex.Message}\nOriginal JSON:\n{json}");
+            Console.WriteLine(
+                $"Json deserialization failed for {typeof(T).Name}. Error: {ex.Message}\n--- Sanitized JSON ---\n{sanitizedJson}\n--- Original JSON ---\n{json}");
             throw;
         }
     }
 
-    public static string SanitizeAndRepair(string text)
+    /// <summary>
+    /// The definitive sanitizer that fixes structural, syntax, and formatting errors from LLM-generated JSON.
+    /// </summary>
+    /// <param name="text">The raw string from the LLM.</param>
+    /// <param name="targetType">The C# type we are trying to deserialize into.</param>
+    /// <returns>A cleaned and likely valid JSON string.</returns>
+    public static string Sanitize(string text, Type targetType)
     {
-        // Initial rough cleaning
-        text = text.Replace("```json", "").Replace("```", "").Trim();
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return string.Empty;
+        }
 
-        // Attempt to find the start and end of the JSON object/array
-        int startIndex = text.IndexOfAny(new char[] { '{', '[' });
-        int endIndex = text.LastIndexOfAny(new char[] { '}', ']' });
+        string sanitized = text.Replace("```json", "").Replace("```", "").Trim();
+
+        int startIndex = sanitized.IndexOfAny(['{', '[']);
+        int endIndex = sanitized.LastIndexOfAny(['}', ']']);
 
         if (startIndex >= 0 && endIndex > startIndex)
         {
-            text = text.Substring(startIndex, endIndex - startIndex + 1);
+            sanitized = sanitized.Substring(startIndex, endIndex - startIndex + 1).Trim();
+        }
+        else
+        {
+            return string.Empty;
         }
 
-        // Use JsonRepairSharp to fix common structural issues
+        if (sanitized.Contains("]["))
+        {
+             sanitized = sanitized.Replace("][", ",");
+        }
+        if (sanitized.Contains("}{"))
+        {
+            sanitized = sanitized.Replace("}{", "},{");
+        }
+        
+        if (sanitized.StartsWith("{") && sanitized.EndsWith("}"))
+        {
+            string innerContent = sanitized.Substring(1, sanitized.Length - 2).Trim();
+            if (innerContent.StartsWith("[") && innerContent.EndsWith("]"))
+            {
+                sanitized = innerContent;
+            }
+        }
+
+        bool isEnumerable = typeof(IEnumerable).IsAssignableFrom(targetType) && targetType != typeof(string);
+        if (isEnumerable && sanitized.StartsWith("{"))
+        {
+            sanitized = $"[{sanitized}]";
+        }
+
         try
         {
-            text = JsonRepair.RepairJson(text);
+            return JsonRepair.RepairJson(sanitized);
         }
-        catch (Exception ex)
+        catch
         {
-            Logger.Warning($"JsonRepairSharp failed: {ex.Message}. Proceeding with the roughly sanitized string.");
+            return sanitized;
         }
-
-        return text;
     }
 }

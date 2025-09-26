@@ -31,8 +31,6 @@ public class RimTalkSettings : ModSettings
     // Debug mode settings
     public bool DebugModeEnabled = false;
     public bool DebugGroupingEnabled = false;
-    public string DebugSortColumn;
-    public bool DebugSortAscending = true;
     public List<string> DebugExpandedPawns = new();
 
     // Overlay settings
@@ -160,8 +158,6 @@ public class RimTalkSettings : ModSettings
         Scribe_Values.Look(ref ButtonDisplay, "buttonDisplay", ButtonDisplayMode.Tab, true);
         Scribe_Values.Look(ref DebugModeEnabled, "debugModeEnabled", false);
         Scribe_Values.Look(ref DebugGroupingEnabled, "debugGroupingEnabled", false);
-        Scribe_Values.Look(ref DebugSortColumn, "debugSortColumn", null);
-        Scribe_Values.Look(ref DebugSortAscending, "debugSortAscending", true);
         Scribe_Collections.Look(ref DebugExpandedPawns, "debugExpandedPawns", LookMode.Value);
 
         // Overlay settings

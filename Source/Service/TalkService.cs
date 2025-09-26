@@ -17,7 +17,7 @@ public static class TalkService
     {
         var settings = Settings.Get();
         if (!settings.IsEnabled || !CommonUtil.ShouldAiBeActiveOnSpeed()) return false;
-        if (!Bubbles.Settings.Activated || settings.GetActiveConfig() == null) return false;
+        if (settings.GetActiveConfig() == null) return false;
         if (AIService.IsBusy()) return false;
 
         PawnState pawn1 = Cache.Get(initiator);
@@ -90,7 +90,6 @@ public static class TalkService
             {
                 PawnState pawnState = Cache.GetByName(talkResponses[i].Name) ?? Cache.Get(allInvolvedPawns[i]);
                 pawnState.TalkQueue.Enqueue(talkResponses[i]);
-                talkResponses[i].Id = Guid.NewGuid();
                 talkResponses[i].Name = pawnState.Pawn.LabelShort;
                 if (i > 0)
                 {
@@ -155,8 +154,7 @@ public static class TalkService
             
         TalkResponse talkResponse = ConsumeTalk(pawnState);
             
-        if (!talkResponse.IsReply())
-            pawnState.LastTalkTick = GenTicks.TicksGame;
+        pawnState.LastTalkTick = GenTicks.TicksGame;
 
         return talkResponse.Text;
     }
@@ -165,6 +163,7 @@ public static class TalkService
     {
         TalkResponse talkResponse = pawnState.TalkQueue.Dequeue();
         TalkHistory.AddSpoken(talkResponse.Id);
+        ApiHistory.GetApiLog(talkResponse.Id).IsSpoken = true;
         return talkResponse;
     }
 }
