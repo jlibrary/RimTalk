@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using RimTalk.Client;
 using RimTalk.Data;
 
+namespace RimTalk.Client;
 public interface IAIClient
 {
     /// <summary>

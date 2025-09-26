@@ -12,6 +12,7 @@
 
 		<OutputPath>1.6/Assemblies</OutputPath>
 		<ModFolderName>RimTalk</ModFolderName>
+		<LangVersion>default</LangVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
