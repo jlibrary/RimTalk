@@ -22,35 +22,36 @@ namespace RimTalk.Service
 
             PawnState pawn1 = Cache.Get(initiator);
             PawnState pawn2 = Cache.Get(recipient);
-            
+
             if (pawn1 == null || !pawn1.CanGenerateTalk()) return false;
-            
+
             if (pawn2 == null || recipient?.Name == null || !pawn2.CanGenerateTalk())
                 recipient = null;
-            
+
             List<Pawn> nearbyPawns = PawnSelector.GetAllNearByPawns(initiator);
             var status = PawnService.GetPawnStatusFull(initiator, nearbyPawns);
-            
+
             // avoid generation if pawn status did not change
             if (status == pawn1.LastStatus && pawn1.RejectCount < 2)
             {
                 pawn1.RejectCount++;
                 return false;
             }
+
             pawn1.RejectCount = 0;
             pawn1.LastStatus = status;
 
             List<Pawn> pawns = new List<Pawn> { initiator, recipient }.Where(p => p != null).ToList();
-            
+
             // build generic context for pawns
             string context = PromptService.BuildContext(pawns);
             AIService.UpdateContext(context);
-            
+
             // add current status
             prompt = PromptService.DecoratePrompt(prompt, initiator, recipient, status);
-            
+
             var talkRequest = new TalkRequest(prompt, initiator, recipient);
-            
+
             Task.Run(async () =>
             {
                 try
@@ -79,10 +80,12 @@ namespace RimTalk.Service
                 Cache.Get(talkRequest.Initiator).TalkRequest = null;
                 return true;
             }
+
             return false;
         }
 
-        private static void ProcessSuccessfulResponse(List<Pawn> allInvolvedPawns, List<TalkResponse> talkResponses, string request)
+        private static void ProcessSuccessfulResponse(List<Pawn> allInvolvedPawns, List<TalkResponse> talkResponses,
+            string request)
         {
             try
             {
@@ -97,12 +100,13 @@ namespace RimTalk.Service
                         talkResponses[i].ParentTalkId = talkResponses[i - 1].Id;
                     }
                 }
-                
+
                 // Add the responses to the history of all pawns
                 string cleanedPrompt = request.Replace(Constant.Prompt, "");
                 foreach (var pawn in allInvolvedPawns)
                 {
-                    TalkHistory.AddMessageHistory(pawn, cleanedPrompt, JsonUtil.SerializeToJson(talkResponses));;
+                    TalkHistory.AddMessageHistory(pawn, cleanedPrompt, JsonUtil.SerializeToJson(talkResponses));
+                    ;
                 }
             }
             catch (Exception ex)
@@ -152,11 +156,10 @@ namespace RimTalk.Service
         {
             PawnState pawnState = Cache.Get(pawn);
             if (pawnState == null) return null;
-            
+
             TalkResponse talkResponse = ConsumeTalk(pawnState);
-            
-            if (!talkResponse.IsReply())
-                pawnState.LastTalkTick = GenTicks.TicksGame;
+
+            pawnState.LastTalkTick = GenTicks.TicksGame;
 
             return talkResponse.Text;
         }
