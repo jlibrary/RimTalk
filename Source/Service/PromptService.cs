@@ -35,7 +35,7 @@ public static class PromptService
         {
             // Main pawn gets more detail, others get basic info
             InfoLevel infoLevel = pawn == pawns[0] ? InfoLevel.Normal : InfoLevel.Short;
-            string pawnContext = CreatePawnContext(pawn, nearbyPawns, infoLevel);
+            string pawnContext = CreatePawnContext(pawn, infoLevel);
             Cache.Get(pawn).Context = pawnContext;
             count++;
             context.AppendLine();
@@ -150,7 +150,7 @@ public static class PromptService
         return sb.ToString();
     }
         
-    public static string CreatePawnContext(Pawn pawn, List<Pawn> nearbyPawns, InfoLevel infoLevel = InfoLevel.Normal)
+    public static string CreatePawnContext(Pawn pawn, InfoLevel infoLevel = InfoLevel.Normal)
     {
         StringBuilder sb = new StringBuilder();
 
@@ -198,7 +198,7 @@ public static class PromptService
         if (PawnService.IsVisitor(pawn))
             return sb.ToString();
 
-        sb.AppendLine(RelationsService.GetRelationsString(pawn, nearbyPawns));
+        sb.AppendLine(RelationsService.GetRelationsString(pawn));
 
         if (infoLevel != InfoLevel.Short)
         {

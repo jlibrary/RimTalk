@@ -10,13 +10,13 @@ public static class RelationsService
     private const float FriendOpinionThreshold = 20f;
     private const float RivalOpinionThreshold = -20f;
 
-    public static string GetRelationsString(Pawn pawn, List<Pawn> nearbyPawns)
+    public static string GetRelationsString(Pawn pawn)
     {
         if (pawn?.relations == null) return "";
 
         StringBuilder relationsSb = new StringBuilder();
 
-        foreach (Pawn otherPawn in nearbyPawns)
+        foreach (Pawn otherPawn in PawnSelector.GetAllNearByPawns(pawn))
         {
             if (otherPawn == pawn || !otherPawn.RaceProps.Humanlike || otherPawn.Dead || otherPawn.relations.hidePawnRelations) continue;
 
