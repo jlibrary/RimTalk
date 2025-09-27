@@ -2,6 +2,7 @@ using System;
 using System.Text.RegularExpressions;
 using RimWorld;
 using Verse;
+using Vector2 = UnityEngine.Vector2;
 
 namespace RimTalk.Util
 {
@@ -31,52 +32,82 @@ namespace RimTalk.Util
                     return 60; // Default to normal speed if unknown
             }
         }
-        
-        public static int? GetInGameHour()
+
+        // Struct containing all necessary in-game data
+        public struct InGameData
         {
+            public string Hour12HString;
+            public string DateString;
+            public string SeasonString;
+            public string WeatherString;
+        }
+        
+        public static InGameData GetInGameData()
+        {
+            // Default values in case data is invalid
+            InGameData mapData = new InGameData { Hour12HString = "N/A", DateString = "N/A", SeasonString = "N/A", WeatherString = "N/A" };
+
             try
             {
-                if (Find.CurrentMap?.Tile == null)
-                    return null;
-        
-                return GenDate.HourOfDay(Find.TickManager.TicksAbs, 
-                    Find.WorldGrid.LongLatOf(Find.CurrentMap.Tile).x);
+                // Basic condition check
+                Map currentMap = Find.CurrentMap;
+                if (currentMap?.Tile == null)
+                {
+                    return mapData; // Return default value if invalid
+                }
+
+                // Perform redundant calculations only once beforehand
+                long absTicks = Find.TickManager.TicksAbs;
+                Vector2 longLat = Find.WorldGrid.LongLatOf(currentMap.Tile);
+                
+                // Store various information in the struct
+                mapData.Hour12HString = GetInGameHour12HString(absTicks, longLat);
+                mapData.DateString = GetInGameDateString(absTicks, longLat);
+                mapData.SeasonString = GetInGameSeasonString(absTicks, longLat);
+                mapData.WeatherString = GetInGameWeatherString(currentMap);
+
+                return mapData;
             }
             catch (Exception)
             {
-               return null;
+                // Return default data in case of an exception
+                return new InGameData { Hour12HString = "N/A", DateString = "N/A", SeasonString = "N/A", WeatherString = "N/A" };
             }
         }
 
-        public static string GetInGameHour12HString()
+        // No path for null to occur as it only receives values and calculates. Changed from int? to int
+        private static int GetInGameHour(long absTicks, Vector2 longLat)
         {
-            int? hour24 = GetInGameHour();
-            if (!hour24.HasValue)
-                return "N/A";
-    
-            int hour12 = hour24.Value % 12;
+            return GenDate.HourOfDay(absTicks, longLat.x);
+        }
+        
+        private static string GetInGameHour12HString(long absTicks, Vector2 longLat)
+        {
+            int hour24 = GetInGameHour(absTicks, longLat);
+            
+            int hour12 = hour24 % 12;
             if (hour12 == 0)
             {
                 hour12 = 12;
             }
-            string ampm = hour24.Value < 12 ? "am" : "pm";
+            string ampm = hour24 < 12 ? "am" : "pm";
             return $"{hour12}{ampm}";
         }
         
         // Returns the year, quarter, and day.
-        public static string GetInGameDateString()
+        private static string GetInGameDateString(long absTicks, Vector2 longLat)
         {
-            try
-            {
-                if (Find.CurrentMap?.Tile == null)
-                    return "N/A";
-                
-                return GenDate.DateFullStringAt(Find.TickManager.TicksAbs, Find.WorldGrid.LongLatOf(Find.CurrentMap.Tile));
-            }
-            catch (Exception)
-            {
-                return "N/A";
-            }
+            return GenDate.DateFullStringAt(absTicks, longLat);
+        }
+        
+        private static string GetInGameSeasonString(long absTicks, Vector2 longLat)
+        {
+            return GenDate.Season(absTicks, longLat).Label();
+        }
+        
+        private static string GetInGameWeatherString(Map currentMap)
+        {
+            return currentMap.weatherManager?.curWeather?.label ?? "N/A";
         }
         
         // Simple token estimation algorithm (approximate)
