@@ -18,7 +18,6 @@ namespace RimTalk.UI
         private const float PawnColumnWidth = 80f;
         private const float TimeColumnWidth = 80f;
         private const float TokensColumnWidth = 80f;
-        private const float CopyAreaWidth = 10f;
         private const float ColumnPadding = 10f;
 
         private const float GroupedPawnNameWidth = 80f;
@@ -41,10 +40,9 @@ namespace RimTalk.UI
         private double _avgTokensPerCall;
         private List<PawnState> _pawnStates;
         private List<ApiLog> _requests;
-        private readonly Dictionary<string, List<ApiLog>> _talkLogsByPawn = new Dictionary<string, List<ApiLog>>();
+        private readonly Dictionary<string, List<ApiLog>> _talkLogsByPawn = new();
 
         private bool _groupingEnabled;
-        private bool _debugModeEnabled;
         private string _sortColumn;
         private bool _sortAscending;
         private readonly List<string> _expandedPawns;
@@ -60,7 +58,6 @@ namespace RimTalk.UI
 
             var settings = LoadedModManager.GetMod<Settings>().GetSettings<RimTalkSettings>();
             _groupingEnabled = settings.DebugGroupingEnabled;
-            _debugModeEnabled = settings.DebugModeEnabled;
             _sortColumn = settings.DebugSortColumn;
             _sortAscending = settings.DebugSortAscending;
             _expandedPawns = settings.DebugExpandedPawns ?? new List<string>();
@@ -73,7 +70,6 @@ namespace RimTalk.UI
             base.PreClose();
             var settings = LoadedModManager.GetMod<Settings>().GetSettings<RimTalkSettings>();
             settings.DebugGroupingEnabled = _groupingEnabled;
-            settings.DebugModeEnabled = _debugModeEnabled;
             settings.DebugSortColumn = _sortColumn;
             settings.DebugSortAscending = _sortAscending;
             settings.DebugExpandedPawns = _expandedPawns;
@@ -90,11 +86,7 @@ namespace RimTalk.UI
 
             var optionsRect = new Rect(inRect.x, inRect.y, inRect.width, optionsBarHeight);
 
-            float tableHeight = inRect.height - optionsBarHeight;
-            if (_debugModeEnabled)
-            {
-                tableHeight -= (bottomSectionHeight + spacing);
-            }
+            float tableHeight = inRect.height - optionsBarHeight - (bottomSectionHeight + spacing);
 
             var tableRect = new Rect(inRect.x, optionsRect.yMax, inRect.width, tableHeight);
 
@@ -105,16 +97,13 @@ namespace RimTalk.UI
             else
                 DrawUngroupedRequestTable(tableRect);
 
-            if (_debugModeEnabled)
-            {
-                var bottomRect = new Rect(inRect.x, tableRect.yMax + spacing, inRect.width, bottomSectionHeight);
-                var graphRect = new Rect(bottomRect.x, bottomRect.y, bottomRect.width * 0.55f - (spacing / 2),
-                    bottomRect.height);
-                var statsRect = new Rect(graphRect.xMax + spacing, bottomRect.y,
-                    bottomRect.width * 0.45f - (spacing / 2), bottomRect.height);
-                DrawGraph(graphRect);
-                DrawStatsSection(statsRect);
-            }
+            var bottomRect = new Rect(inRect.x, tableRect.yMax + spacing, inRect.width, bottomSectionHeight);
+            var graphRect = new Rect(bottomRect.x, bottomRect.y, bottomRect.width * 0.55f - (spacing / 2),
+                bottomRect.height);
+            var statsRect = new Rect(graphRect.xMax + spacing, bottomRect.y,
+                bottomRect.width * 0.45f - (spacing / 2), bottomRect.height);
+            DrawGraph(graphRect);
+            DrawStatsSection(statsRect);
         }
 
         private void UpdateData()
@@ -161,18 +150,6 @@ namespace RimTalk.UI
                 settings.DebugGroupingEnabled = _groupingEnabled;
             }
 
-            currentX += groupingRect.width + ColumnPadding;
-
-            // Debug Mode checkbox
-            bool debugMode = _debugModeEnabled;
-            var debugModeRect = new Rect(currentX, rect.y, 120f, 24f);
-            Widgets.CheckboxLabeled(debugModeRect, "RimTalk.DebugWindow.DebugMode".Translate(), ref debugMode);
-            if (debugMode != _debugModeEnabled)
-            {
-                _debugModeEnabled = debugMode;
-                settings.DebugModeEnabled = _debugModeEnabled;
-            }
-
             // --- Right-aligned controls (Global Actions) ---
             float rightEdgeX = rect.xMax - 15;
 
@@ -190,10 +167,7 @@ namespace RimTalk.UI
             var enabledCheckboxRect = new Rect(rightEdgeX - 150f, rect.y, 130f, 24f);
             Widgets.CheckboxLabeled(enabledCheckboxRect, "RimTalk.DebugWindow.EnableRimTalk".Translate(),
                 ref modEnabled);
-            if (modEnabled != settings.IsEnabled)
-            {
-                settings.IsEnabled = modEnabled;
-            }
+            settings.IsEnabled = modEnabled;
         }
 
         private void DrawStatsSection(Rect rect)
@@ -358,42 +332,39 @@ namespace RimTalk.UI
                 currentX += GroupedExpandIconWidth;
 
                 var pawnNameRect = new Rect(currentX, rowRect.y, GroupedPawnNameWidth, RowHeight);
-                if (Widgets.ButtonText(pawnNameRect, pawnKey, drawBackground: false, doMouseoverSound: true,
-                        active: true))
-                {
-                    CameraJumper.TryJump(pawnState.Pawn);
-                }
-
+                
+                // MODIFIED: Use the shared utility method to draw the pawn name
+                UIUtility.DrawClickablePawnName(pawnNameRect, pawnKey, pawnState.Pawn);
+                
                 currentX += GroupedPawnNameWidth + ColumnPadding;
 
+                // ... (rest of the method remains unchanged) ...
                 string lastResponse = GetLastResponseForPawn(pawnKey);
                 Widgets.Label(new Rect(currentX, rowRect.y, responseColumnWidth, RowHeight), lastResponse);
                 currentX += responseColumnWidth + ColumnPadding;
+                
+                bool canTalk = pawnState.CanDisplayTalk();
+                string statusText = canTalk
+                    ? "RimTalk.DebugWindow.StatusReady".Translate()
+                    : "RimTalk.DebugWindow.StatusBusy".Translate();
+                GUI.color = canTalk ? Color.green : Color.yellow;
+                Widgets.Label(new Rect(currentX, rowRect.y, GroupedStatusWidth, RowHeight), statusText);
+                GUI.color = Color.white;
+                currentX += GroupedStatusWidth + ColumnPadding;
 
-                if (_debugModeEnabled)
-                {
-                    bool canTalk = pawnState.CanDisplayTalk();
-                    string statusText = canTalk
-                        ? "RimTalk.DebugWindow.StatusReady".Translate()
-                        : "RimTalk.DebugWindow.StatusBusy".Translate();
-                    GUI.color = canTalk ? Color.green : Color.yellow;
-                    Widgets.Label(new Rect(currentX, rowRect.y, GroupedStatusWidth, RowHeight), statusText);
-                    GUI.color = Color.white;
-                    currentX += GroupedStatusWidth + ColumnPadding;
+                Widgets.Label(new Rect(currentX, rowRect.y, GroupedLastTalkWidth, RowHeight),
+                    pawnState.LastTalkTick.ToString());
+                currentX += GroupedLastTalkWidth + ColumnPadding;
 
-                    Widgets.Label(new Rect(currentX, rowRect.y, GroupedLastTalkWidth, RowHeight),
-                        pawnState.LastTalkTick.ToString());
-                    currentX += GroupedLastTalkWidth + ColumnPadding;
+                _talkLogsByPawn.TryGetValue(pawnKey, out var pawnRequests);
+                var requestsWithTokens = pawnRequests?.Where(r => r.TokenCount != 0).ToList();
+                Widgets.Label(new Rect(currentX, rowRect.y, GroupedRequestsWidth, RowHeight),
+                    (requestsWithTokens?.Count ?? 0).ToString());
+                currentX += GroupedRequestsWidth + ColumnPadding;
 
-                    _talkLogsByPawn.TryGetValue(pawnKey, out var pawnRequests);
-                    var requestsWithTokens = pawnRequests?.Where(r => r.TokenCount != 0).ToList();
-                    Widgets.Label(new Rect(currentX, rowRect.y, GroupedRequestsWidth, RowHeight),
-                        (requestsWithTokens?.Count ?? 0).ToString());
-                    currentX += GroupedRequestsWidth + ColumnPadding;
-
-                    Widgets.Label(new Rect(currentX, rowRect.y, GroupedChattinessWidth, RowHeight),
-                        pawnState.TalkInitiationWeight.ToString("F2"));
-                }
+                Widgets.Label(new Rect(currentX, rowRect.y, GroupedChattinessWidth, RowHeight),
+                    pawnState.TalkInitiationWeight.ToString("F2"));
+                
 
                 if (Widgets.ButtonInvisible(rowRect))
                 {
@@ -429,30 +400,20 @@ namespace RimTalk.UI
             currentX += GroupedPawnNameWidth + ColumnPadding;
             DrawSortableHeader(new Rect(currentX, rect.y, responseColumnWidth, rect.height), "Response");
             currentX += responseColumnWidth + ColumnPadding;
-
-            if (_debugModeEnabled)
-            {
-                DrawSortableHeader(new Rect(currentX, rect.y, GroupedStatusWidth, rect.height), "Status");
-                currentX += GroupedStatusWidth + ColumnPadding;
-                DrawSortableHeader(new Rect(currentX, rect.y, GroupedLastTalkWidth, rect.height), "Last Talk");
-                currentX += GroupedLastTalkWidth + ColumnPadding;
-                DrawSortableHeader(new Rect(currentX, rect.y, GroupedRequestsWidth, rect.height), "Requests");
-                currentX += GroupedRequestsWidth + ColumnPadding;
-                DrawSortableHeader(new Rect(currentX, rect.y, GroupedChattinessWidth, rect.height), "Chattiness");
-            }
+            
+            DrawSortableHeader(new Rect(currentX, rect.y, GroupedStatusWidth, rect.height), "Status");
+            currentX += GroupedStatusWidth + ColumnPadding;
+            DrawSortableHeader(new Rect(currentX, rect.y, GroupedLastTalkWidth, rect.height), "Last Talk");
+            currentX += GroupedLastTalkWidth + ColumnPadding;
+            DrawSortableHeader(new Rect(currentX, rect.y, GroupedRequestsWidth, rect.height), "Requests");
+            currentX += GroupedRequestsWidth + ColumnPadding;
+            DrawSortableHeader(new Rect(currentX, rect.y, GroupedChattinessWidth, rect.height), "Chattiness");
         }
 
         private void DrawUngroupedRequestTable(Rect rect)
         {
             if (_requests == null || !_requests.Any())
-            {
-                Text.Anchor = TextAnchor.MiddleCenter;
-                GUI.color = Color.gray;
-                Widgets.Label(rect, "RimTalk.DebugWindow.NoTalkLogs".Translate());
-                GUI.color = Color.white;
-                Text.Anchor = TextAnchor.UpperLeft;
                 return;
-            }
 
             float totalHeight = CalculateUngroupedTableHeight();
             var viewRect = new Rect(0, 0, rect.width - 16f, totalHeight);
@@ -486,15 +447,12 @@ namespace RimTalk.UI
             Widgets.Label(new Rect(currentX, rect.y, responseColumnWidth, rect.height),
                 "RimTalk.DebugWindow.HeaderResponse".Translate());
             currentX += responseColumnWidth + ColumnPadding;
-
-            if (_debugModeEnabled)
-            {
-                Widgets.Label(new Rect(currentX, rect.y, TimeColumnWidth, rect.height),
-                    "RimTalk.DebugWindow.HeaderTimeMs".Translate());
-                currentX += TimeColumnWidth + ColumnPadding;
-                Widgets.Label(new Rect(currentX, rect.y, TokensColumnWidth, rect.height),
-                    "RimTalk.DebugWindow.HeaderTokens".Translate());
-            }
+            
+            Widgets.Label(new Rect(currentX, rect.y, TimeColumnWidth, rect.height),
+                "RimTalk.DebugWindow.HeaderTimeMs".Translate());
+            currentX += TimeColumnWidth + ColumnPadding;
+            Widgets.Label(new Rect(currentX, rect.y, TokensColumnWidth, rect.height),
+                "RimTalk.DebugWindow.HeaderTokens".Translate());
         }
 
         private void DrawRequestRows(List<ApiLog> requests, ref float currentY, float totalWidth, float xOffset,
@@ -524,18 +482,8 @@ namespace RimTalk.UI
                     var pawnNameRect = new Rect(currentX, rowRect.y, PawnColumnWidth, RowHeight);
                     var pawn = _pawnStates.FirstOrDefault(p => p.Pawn.LabelShort == pawnName)?.Pawn;
 
-                    if (pawn != null)
-                    {
-                        if (Widgets.ButtonText(pawnNameRect, pawnName, drawBackground: false, doMouseoverSound: true,
-                                active: true))
-                        {
-                            CameraJumper.TryJump(pawn);
-                        }
-                    }
-                    else
-                    {
-                        Widgets.Label(pawnNameRect, pawnName);
-                    }
+                    // MODIFIED: Use the shared utility method to draw the pawn name
+                    UIUtility.DrawClickablePawnName(pawnNameRect, pawnName, pawn);
 
                     currentX += PawnColumnWidth + ColumnPadding;
                 }
@@ -543,33 +491,18 @@ namespace RimTalk.UI
                 var responseRect = new Rect(currentX, rowRect.y, responseColumnWidth, RowHeight);
                 Widgets.Label(responseRect, resp);
                 currentX += responseColumnWidth + ColumnPadding;
-
-                if (_debugModeEnabled)
-                {
-                    string elapsedMsText = (request.Response == null) ? "" : (isMultiTurnChild ? "-" : request.ElapsedMs.ToString());
-                    Widgets.Label(new Rect(currentX, rowRect.y, TimeColumnWidth, RowHeight),
-                        elapsedMsText);
-                    currentX += TimeColumnWidth + ColumnPadding;
-                    
-                    string tokenCountText = (request.Response == null) ? "" : (isMultiTurnChild ? "-" : request.TokenCount.ToString());
-                    Widgets.Label(new Rect(currentX, rowRect.y, TokensColumnWidth, RowHeight),
-                        tokenCountText);
-                }
-
-                if (_debugModeEnabled)
-                {
-                    // Add the tooltip to the main response area.
-                    string tooltip = "RimTalk.DebugWindow.TooltipPromptResponse".Translate(request.Prompt, (request.Response ?? _generating));
-                    TooltipHandler.TipRegion(responseRect, tooltip);
-                }
-                else
-                {
-                    var copyRect = new Rect(rowRect.xMax - CopyAreaWidth, rowRect.y, CopyAreaWidth, rowRect.height);
-                    if (Widgets.ButtonInvisible(copyRect))
-                    {
-                        GUIUtility.systemCopyBuffer = request.RequestPayload ?? "";
-                    }
-                }
+                
+                string elapsedMsText = (request.Response == null) ? "" : (isMultiTurnChild ? "-" : request.ElapsedMs.ToString());
+                Widgets.Label(new Rect(currentX, rowRect.y, TimeColumnWidth, RowHeight),
+                    elapsedMsText);
+                currentX += TimeColumnWidth + ColumnPadding;
+                
+                string tokenCountText = (request.Response == null) ? "" : (isMultiTurnChild ? "-" : request.TokenCount.ToString());
+                Widgets.Label(new Rect(currentX, rowRect.y, TokensColumnWidth, RowHeight),
+                    tokenCountText);
+                
+                string tooltip = "RimTalk.DebugWindow.TooltipPromptResponse".Translate(request.Prompt, (request.Response ?? _generating));
+                TooltipHandler.TipRegion(responseRect, tooltip);
 
                 currentY += RowHeight;
             }
@@ -637,35 +570,23 @@ namespace RimTalk.UI
 
         private float CalculateResponseColumnWidth(float totalWidth, bool includePawnColumn)
         {
-            float fixedWidth = TimestampColumnWidth;
-            int columnGaps = 2;
+            float fixedWidth = TimestampColumnWidth + TimeColumnWidth + TokensColumnWidth;
+            int columnGaps = 4;
 
             if (includePawnColumn)
             {
                 fixedWidth += PawnColumnWidth;
                 columnGaps++;
             }
-
-            if (_debugModeEnabled)
-            {
-                fixedWidth += TimeColumnWidth + TokensColumnWidth;
-                columnGaps += 2;
-            }
-
-            float availableWidth = totalWidth - fixedWidth - (ColumnPadding * columnGaps) - CopyAreaWidth;
+            
+            float availableWidth = totalWidth - fixedWidth - (ColumnPadding * columnGaps);
             return Math.Max(150f, availableWidth);
         }
 
         private float CalculateGroupedResponseColumnWidth(float totalWidth)
         {
-            float fixedWidth = GroupedExpandIconWidth + GroupedPawnNameWidth;
-            int columnGaps = 2;
-
-            if (_debugModeEnabled)
-            {
-                fixedWidth += GroupedRequestsWidth + GroupedLastTalkWidth + GroupedChattinessWidth + GroupedStatusWidth;
-                columnGaps += 4;
-            }
+            float fixedWidth = GroupedExpandIconWidth + GroupedPawnNameWidth + GroupedRequestsWidth + GroupedLastTalkWidth + GroupedChattinessWidth + GroupedStatusWidth;
+            int columnGaps = 6;
 
             float availableWidth = totalWidth - fixedWidth - (ColumnPadding * columnGaps);
             return Math.Max(150f, availableWidth);

@@ -4,49 +4,39 @@ using RimTalk.Client;
 
 namespace RimTalk.Data;
 
-public class ApiLog
+public class ApiLog(string name, string prompt, string response, Payload payload, DateTime timestamp)
 {
-    public int Id { get; }
-    public string Name { get; set; }
-    public string Prompt { get; set; }
-    public string Response { get; set; }
-    public string RequestPayload { get; set; }
-    public string ResponsePayload { get; set; }
-    public int TokenCount { get; set; }
-    public DateTime Timestamp { get; }
+    public Guid Id { get; } = Guid.NewGuid();
+    public string Name { get; set; } = name;
+    public string Prompt { get; set; } = prompt;
+    public string Response { get; set; } = response;
+    public string RequestPayload { get; set; } = payload?.Request;
+    public string ResponsePayload { get; set; } = payload?.Response;
+    public int TokenCount { get; set; } = payload?.TokenCount ?? 0;
+    public DateTime Timestamp { get; } = timestamp;
     public int ElapsedMs;
-        
-    public ApiLog(int id, string name, string prompt, string response, Payload payload, DateTime timestamp)
-    {
-        Id = id;
-        Name = name;
-        Prompt = prompt;
-        Response = response;
-        RequestPayload = payload?.Request;
-        ResponsePayload = payload?.Response;
-        TokenCount = payload?.TokenCount ?? 0;
-        Timestamp = timestamp;
-    }
+    public bool IsSpoken;
 }
 
 public static class ApiHistory
 {
-    private static readonly SortedDictionary<int, ApiLog> History = new();
-    private static int _nextId = 1;
+    private static readonly Dictionary<Guid, ApiLog> History = new();
+    
+    public static ApiLog GetApiLog(Guid id) => History.TryGetValue(id, out var apiLog) ? apiLog : null;
 
-    public static int AddRequest(TalkRequest request)
+    public static Guid AddRequest(TalkRequest request)
     {
-        var log = new ApiLog(_nextId++, request.Initiator.LabelShort, request.Prompt, null, null, DateTime.Now);
+        var log = new ApiLog(request.Initiator.LabelShort, request.Prompt, null, null, DateTime.Now);
         History[log.Id] = log;
         return log.Id;
     }
-        
-    public static void RemoveRequest(int id)
+
+    public static void RemoveRequest(Guid id)
     {
         History.Remove(id);
     }
 
-    public static void AddResponse(int id, string response, Payload payload, string name = null)
+    public static Guid AddResponse(Guid id, string response, Payload payload, string name = null)
     {
         if (History.TryGetValue(id, out var log))
         {
@@ -58,17 +48,19 @@ public static class ApiHistory
                 log.RequestPayload = payload?.Request;
                 log.ResponsePayload = payload?.Response;
                 log.TokenCount = payload?.TokenCount ?? 0;
-                log.ElapsedMs = (int) (DateTime.Now - log.Timestamp).TotalMilliseconds;
+                log.ElapsedMs = (int)(DateTime.Now - log.Timestamp).TotalMilliseconds;
             }
             // rest of multi-turn messages
             else
             {
-                log = new ApiLog(_nextId++, name, log.Prompt, response, payload, log.Timestamp);
+                log = new ApiLog(name, log.Prompt, response, payload, log.Timestamp);
                 History[log.Id] = log;
                 log.TokenCount = 0;
                 log.ElapsedMs = 0;
             }
+            return log.Id;
         }
+        return Guid.Empty;
     }
 
     public static IEnumerable<ApiLog> GetAll()
@@ -82,6 +74,5 @@ public static class ApiHistory
     public static void Clear()
     {
         History.Clear();
-        _nextId = 1;
     }
 }
