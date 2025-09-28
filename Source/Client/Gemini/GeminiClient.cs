@@ -9,136 +9,133 @@ using RimTalk.Util;
 using UnityEngine.Networking;
 using Verse;
 
-namespace RimTalk.Client.Gemini
+namespace RimTalk.Client.Gemini;
+
+public class GeminiClient : IAIClient
 {
-    public class GeminiClient : IAIClient
+    private const string BaseUrl = "https://generativelanguage.googleapis.com/v1beta";
+    private static string CurrentApiKey => Settings.Get().GetActiveConfig()?.ApiKey;
+    private static string CurrentModel => Settings.Get().GetCurrentModel();
+    private static string EndpointUrl => $"{BaseUrl}/models/{CurrentModel}:generateContent?key={CurrentApiKey}";
+    private readonly Random _random = new();
+
+    public async Task<Payload> GetChatCompletionAsync(string instruction,
+        List<(Role role, string message)> messages)
     {
-        private const string BaseUrl = "https://generativelanguage.googleapis.com/v1beta";
-        private static string CurrentApiKey => Settings.Get().GetActiveConfig()?.ApiKey;
-        private static string CurrentModel => Settings.Get().GetCurrentModel();
-        private static string EndpointUrl => $"{BaseUrl}/models/{CurrentModel}:generateContent?key={CurrentApiKey}";
-        private readonly Random _random = new Random();
+        // Handle system instruction based on model type
+        SystemInstruction systemInstruction = null;
+        var allMessages = new List<(Role role, string message)>();
 
-        public async Task<Payload> GetChatCompletionAsync(string instruction,
-            List<(Role role, string message)> messages)
+        if (CurrentModel.Contains("gemma"))
         {
-            // Handle system instruction based on model type
-            SystemInstruction systemInstruction = null;
-            List<(Role role, string message)> allMessages = new List<(Role role, string message)>();
-
-            if (CurrentModel.Contains("gemma"))
+            // For Gemma models, add instruction as the first user message with random prefix
+            allMessages.Add((Role.User, _random.Next() + " " + instruction));
+        }
+        else
+        {
+            // For other models, use system_instruction field
+            systemInstruction = new SystemInstruction
             {
-                // For Gemma models, add instruction as the first user message with random prefix
-                allMessages.Add((Role.User, _random.Next() + " " + instruction));
-            }
-            else
-            {
-                // For other models, use system_instruction field
-                systemInstruction = new SystemInstruction
-                {
-                    Parts = new List<Part> { new Part { Text = instruction } }
-                };
-            }
-
-            // Add the rest of the messages
-            allMessages.AddRange(messages);
-
-            var generationConfig = new GenerationConfig();
-
-            // Handle thinkingBudget for flash models
-            if (CurrentModel.Contains("flash"))
-            {
-                generationConfig.ThinkingConfig = new ThinkingConfig { ThinkingBudget = 0 };
-            }
-
-            var request = new GeminiRequest()
-            {
-                SystemInstruction = systemInstruction,
-                Contents = allMessages.Select(m => new Content
-                {
-                    Role = ConvertRole(m.role),
-                    Parts = new List<Part> { new Part { Text = m.message } }
-                }).ToList(),
-                GenerationConfig = generationConfig
+                Parts = [new Part { Text = instruction }]
             };
-
-            string jsonContent = JsonUtil.SerializeToJson(request);
-            var response = await GetCompletionAsync(jsonContent);
-            var content = response?.Candidates?[0]?.Content?.Parts?[0]?.Text;
-            var tokens = response?.UsageMetadata?.TotalTokenCount ?? 0;
-            return new Payload(jsonContent, content, tokens);
         }
-        
-        private async Task<GeminiResponse> GetCompletionAsync(string jsonContent)
+
+        // Add the rest of the messages
+        allMessages.AddRange(messages);
+
+        var generationConfig = new GenerationConfig();
+
+        // Handle thinkingBudget for flash models
+        if (CurrentModel.Contains("flash"))
         {
-            if (string.IsNullOrEmpty(CurrentApiKey))
-            {
-                Logger.Error("API key is missing.");
-                return null;
-            }
-
-            try
-            {
-                Logger.Debug($"API request: {EndpointUrl}\n{jsonContent}");
-
-                using (UnityWebRequest webRequest = UnityWebRequest.Post(EndpointUrl, jsonContent))
-                {
-                    byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonContent);
-                    webRequest.uploadHandler = new UploadHandlerRaw(bodyRaw);
-                    webRequest.downloadHandler = new DownloadHandlerBuffer();
-                    webRequest.SetRequestHeader("Content-Type", "application/json");
-
-                    var asyncOperation = webRequest.SendWebRequest();
-
-                    while (!asyncOperation.isDone)
-                    {
-                        if (Current.Game == null) return null;
-                        await Task.Delay(100);
-                    }
-                    
-                    Logger.Debug($"API response: \n{webRequest.downloadHandler.text}");
-
-                    if (webRequest.responseCode == 429)
-                        throw new QuotaExceededException("Quota exceeded");
-                    if (webRequest.responseCode == 503)
-                        throw new QuotaExceededException("Model overloaded");
-
-                    if (webRequest.isNetworkError || webRequest.isHttpError)
-                    {
-                        Logger.Error($"Request failed: {webRequest.responseCode} - {webRequest.error}");
-                        throw new Exception(webRequest.error);
-                    }
-
-                    GeminiResponse response = JsonUtil.DeserializeFromJson<GeminiResponse>(webRequest.downloadHandler.text);
-                    
-                    if (response.Candidates?[0]?.FinishReason == "MAX_TOKENS")
-                        throw new QuotaExceededException("Quota exceeded");
-                    
-                    return response;
-                }
-            }
-            catch (QuotaExceededException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                Logger.Error($"Exception in API request: {ex.Message}");
-                throw;
-            }
+            generationConfig.ThinkingConfig = new ThinkingConfig { ThinkingBudget = 0 };
         }
-        
-        private string ConvertRole(Role role)
+
+        var request = new GeminiRequest()
         {
-            switch (role)
+            SystemInstruction = systemInstruction,
+            Contents = allMessages.Select(m => new Content
             {
-                case Role.User:
-                    return "user";
-                case Role.AI:
-                    return "model"; 
-                default:
-                    throw new ArgumentException($"Unknown role: {role}");
+                Role = ConvertRole(m.role),
+                Parts = new List<Part> { new Part { Text = m.message } }
+            }).ToList(),
+            GenerationConfig = generationConfig
+        };
+
+        string jsonContent = JsonUtil.SerializeToJson(request);
+        var response = await GetCompletionAsync(jsonContent);
+        var content = response?.Candidates?[0]?.Content?.Parts?[0]?.Text;
+        var tokens = response?.UsageMetadata?.TotalTokenCount ?? 0;
+        return new Payload(jsonContent, content, tokens);
+    }
+        
+    private async Task<GeminiResponse> GetCompletionAsync(string jsonContent)
+    {
+        if (string.IsNullOrEmpty(CurrentApiKey))
+        {
+            Logger.Error("API key is missing.");
+            return null;
+        }
+
+        try
+        {
+            Logger.Debug($"API request: {EndpointUrl}\n{jsonContent}");
+
+            using var webRequest = new UnityWebRequest(EndpointUrl, "POST");
+            byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonContent);
+            webRequest.uploadHandler = new UploadHandlerRaw(bodyRaw);
+            webRequest.downloadHandler = new DownloadHandlerBuffer();
+            webRequest.SetRequestHeader("Content-Type", "application/json");
+
+            var asyncOperation = webRequest.SendWebRequest();
+
+            while (!asyncOperation.isDone)
+            {
+                if (Current.Game == null) return null;
+                await Task.Delay(100);
             }
+                    
+            Logger.Debug($"API response: \n{webRequest.downloadHandler.text}");
+
+            if (webRequest.responseCode == 429)
+                throw new QuotaExceededException("Quota exceeded");
+            if (webRequest.responseCode == 503)
+                throw new QuotaExceededException("Model overloaded");
+
+            if (webRequest.isNetworkError || webRequest.isHttpError)
+            {
+                Logger.Error($"Request failed: {webRequest.responseCode} - {webRequest.error}");
+                throw new Exception(webRequest.error);
+            }
+
+            GeminiResponse response = JsonUtil.DeserializeFromJson<GeminiResponse>(webRequest.downloadHandler.text);
+                    
+            if (response.Candidates?[0]?.FinishReason == "MAX_TOKENS")
+                throw new QuotaExceededException("Quota exceeded");
+                    
+            return response;
+        }
+        catch (QuotaExceededException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Logger.Error($"Exception in API request: {ex.Message}");
+            throw;
+        }
+    }
+        
+    private string ConvertRole(Role role)
+    {
+        switch (role)
+        {
+            case Role.User:
+                return "user";
+            case Role.AI:
+                return "model"; 
+            default:
+                throw new ArgumentException($"Unknown role: {role}");
         }
     }
 }

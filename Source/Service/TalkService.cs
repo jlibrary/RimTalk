@@ -9,166 +9,161 @@ using Verse;
 using Cache = RimTalk.Data.Cache;
 using Logger = RimTalk.Util.Logger;
 
-namespace RimTalk.Service
+namespace RimTalk.Service;
+
+public static class TalkService
 {
-    public static class TalkService
+    public static bool GenerateTalk(string prompt, Pawn initiator, Pawn recipient = null)
     {
-        public static bool GenerateTalk(string prompt, Pawn initiator, Pawn recipient = null)
+        var settings = Settings.Get();
+        if (!settings.IsEnabled || !CommonUtil.ShouldAiBeActiveOnSpeed()) return false;
+        if (settings.GetActiveConfig() == null) return false;
+        if (AIService.IsBusy()) return false;
+
+        PawnState pawn1 = Cache.Get(initiator);
+        PawnState pawn2 = Cache.Get(recipient);
+            
+        if (pawn1 == null || !pawn1.CanGenerateTalk()) return false;
+            
+        if (pawn2 == null || recipient?.Name == null || !pawn2.CanGenerateTalk())
+            recipient = null;
+            
+        List<Pawn> nearbyPawns = PawnSelector.GetAllNearByPawns(initiator);
+        var status = PawnService.GetPawnStatusFull(initiator, nearbyPawns);
+            
+        // avoid generation if pawn status did not change
+        if (status == pawn1.LastStatus && pawn1.RejectCount < 2)
         {
-            var settings = Settings.Get();
-            if (!settings.IsEnabled || !CommonUtil.ShouldAiBeActiveOnSpeed()) return false;
-            if (!Bubbles.Settings.Activated || settings.GetActiveConfig() == null) return false;
-            if (AIService.IsBusy()) return false;
-
-            PawnState pawn1 = Cache.Get(initiator);
-            PawnState pawn2 = Cache.Get(recipient);
-
-            if (pawn1 == null || !pawn1.CanGenerateTalk()) return false;
-
-            if (pawn2 == null || recipient?.Name == null || !pawn2.CanGenerateTalk())
-                recipient = null;
-
-            List<Pawn> nearbyPawns = PawnSelector.GetAllNearByPawns(initiator);
-            var status = PawnService.GetPawnStatusFull(initiator, nearbyPawns);
-
-            // avoid generation if pawn status did not change
-            if (status == pawn1.LastStatus && pawn1.RejectCount < 2)
-            {
-                pawn1.RejectCount++;
-                return false;
-            }
-
-            pawn1.RejectCount = 0;
-            pawn1.LastStatus = status;
-
-            List<Pawn> pawns = new List<Pawn> { initiator, recipient }.Where(p => p != null).ToList();
-
-            // build generic context for pawns
-            string context = PromptService.BuildContext(pawns);
-            AIService.UpdateContext(context);
-
-            // add current status
-            prompt = PromptService.DecoratePrompt(prompt, initiator, recipient, status);
-
-            var talkRequest = new TalkRequest(prompt, initiator, recipient);
-
-            Task.Run(async () =>
-            {
-                try
-                {
-                    Cache.Get(initiator).IsGeneratingTalk = true;
-                    var talkResponses = await AIService.Chat(talkRequest, TalkHistory.GetMessageHistory(initiator));
-                    ProcessSuccessfulResponse(pawns.Union(nearbyPawns).Distinct().ToList(), talkResponses, prompt);
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error(ex.StackTrace);
-                }
-                finally
-                {
-                    Cache.Get(initiator).IsGeneratingTalk = false;
-                }
-            });
-
-            return true;
-        }
-
-        public static bool GenerateTalk(TalkRequest talkRequest)
-        {
-            if (GenerateTalk(talkRequest.Prompt, talkRequest.Initiator, talkRequest.Recipient))
-            {
-                Cache.Get(talkRequest.Initiator).TalkRequest = null;
-                return true;
-            }
-
+            pawn1.RejectCount++;
             return false;
         }
+        pawn1.RejectCount = 0;
+        pawn1.LastStatus = status;
 
-        private static void ProcessSuccessfulResponse(List<Pawn> allInvolvedPawns, List<TalkResponse> talkResponses,
-            string request)
+        List<Pawn> pawns = new List<Pawn> { initiator, recipient }.Where(p => p != null).ToList();
+            
+        // build generic context for pawns
+        string context = PromptService.BuildContext(pawns);
+        AIService.UpdateContext(context);
+            
+        // add current status
+        prompt = PromptService.DecoratePrompt(prompt, initiator, recipient, status);
+            
+        var talkRequest = new TalkRequest(prompt, initiator, recipient);
+            
+        Task.Run(async () =>
         {
             try
             {
-                for (int i = 0; i < talkResponses.Count; i++)
-                {
-                    PawnState pawnState = Cache.GetByName(talkResponses[i].Name) ?? Cache.Get(allInvolvedPawns[i]);
-                    pawnState.TalkQueue.Enqueue(talkResponses[i]);
-                    talkResponses[i].Id = Guid.NewGuid();
-                    talkResponses[i].Name = pawnState.Pawn.LabelShort;
-                    if (i > 0)
-                    {
-                        talkResponses[i].ParentTalkId = talkResponses[i - 1].Id;
-                    }
-                }
-
-                // Add the responses to the history of all pawns
-                string cleanedPrompt = request.Replace(Constant.Prompt, "");
-                foreach (var pawn in allInvolvedPawns)
-                {
-                    TalkHistory.AddMessageHistory(pawn, cleanedPrompt, JsonUtil.SerializeToJson(talkResponses));
-                    ;
-                }
+                Cache.Get(initiator).IsGeneratingTalk = true;
+                var talkResponses = await AIService.Chat(talkRequest, TalkHistory.GetMessageHistory(initiator));
+                ProcessSuccessfulResponse(pawns.Union(nearbyPawns).Distinct().ToList(), talkResponses, prompt);
             }
             catch (Exception ex)
             {
-                Logger.Warning($"Failed to process response: {ex.StackTrace}");
+                Logger.Error(ex.StackTrace);
             }
-        }
-
-        // display generated talks
-        public static void DisplayTalk()
-        {
-            foreach (Pawn pawn in Cache.Keys)
+            finally
             {
-                PawnState pawnState = Cache.Get(pawn);
+                Cache.Get(initiator).IsGeneratingTalk = false;
+            }
+        });
 
-                if (pawnState == null || pawnState.TalkQueue.Empty()) continue;
+        return true;
+    }
 
-                var talk = pawnState.TalkQueue.Peek();
-                if (talk == null)
+    public static bool GenerateTalk(TalkRequest talkRequest)
+    {
+        if (GenerateTalk(talkRequest.Prompt, talkRequest.Initiator, talkRequest.Recipient))
+        {
+            Cache.Get(talkRequest.Initiator).TalkRequest = null;
+            return true;
+        }
+        return false;
+    }
+
+    private static void ProcessSuccessfulResponse(List<Pawn> allInvolvedPawns, List<TalkResponse> talkResponses, string request)
+    {
+        try
+        {
+            for (int i = 0; i < talkResponses.Count; i++)
+            {
+                PawnState pawnState = Cache.GetByName(talkResponses[i].Name) ?? Cache.Get(allInvolvedPawns[i]);
+                pawnState.TalkQueue.Enqueue(talkResponses[i]);
+                talkResponses[i].Name = pawnState.Pawn.LabelShort;
+                if (i > 0)
                 {
-                    pawnState.TalkQueue.Dequeue();
-                    continue;
+                    talkResponses[i].ParentTalkId = talkResponses[i - 1].Id;
                 }
-
-                // if reply, wait for ReplyInterval (3s)
-                int parentTalkTick = TalkHistory.GetSpokenTick(talk.ParentTalkId);
-                if (parentTalkTick == -1 || GenTicks.TicksGame - parentTalkTick
-                    < CommonUtil.GetTicksForDuration(RimTalkSettings.ReplyInterval)) continue;
-
-                // if pawn is not able to talk, skip it
-                if (!pawnState.CanDisplayTalk())
-                {
-                    ConsumeTalk(pawnState);
-                    continue;
-                }
-
-                InteractionDef intDef = DefDatabase<InteractionDef>.GetNamed("RimTalkInteraction");
-                var playLogEntryInteraction =
-                    new PlayLogEntry_RimTalkInteraction(intDef, pawn, pawn, null);
-
-                Find.PlayLog.Add(playLogEntryInteraction);
-                break;
+            }
+                
+            // Add the responses to the history of all pawns
+            string cleanedPrompt = request.Replace(Constant.Prompt, "");
+            foreach (var pawn in allInvolvedPawns)
+            {
+                TalkHistory.AddMessageHistory(pawn, cleanedPrompt, JsonUtil.SerializeToJson(talkResponses));;
             }
         }
+        catch (Exception ex)
+        {
+            Logger.Warning($"Failed to process response: {ex.StackTrace}");
+        }
+    }
 
-        public static string GetTalk(Pawn pawn)
+    // display generated talks
+    public static void DisplayTalk()
+    {
+        foreach (Pawn pawn in Cache.Keys)
         {
             PawnState pawnState = Cache.Get(pawn);
-            if (pawnState == null) return null;
 
-            TalkResponse talkResponse = ConsumeTalk(pawnState);
+            if (pawnState == null || pawnState.TalkQueue.Empty()) continue;
 
-            pawnState.LastTalkTick = GenTicks.TicksGame;
+            var talk = pawnState.TalkQueue.Peek();
+            if (talk == null)
+            {
+                pawnState.TalkQueue.Dequeue();
+                continue;
+            }
 
-            return talkResponse.Text;
+            // if reply, wait for ReplyInterval (3s)
+            int parentTalkTick = TalkHistory.GetSpokenTick(talk.ParentTalkId);
+            if (parentTalkTick == -1 || GenTicks.TicksGame - parentTalkTick
+                < CommonUtil.GetTicksForDuration(RimTalkSettings.ReplyInterval)) continue;
+
+            // if pawn is not able to talk, skip it
+            if (!pawnState.CanDisplayTalk())
+            {
+                ConsumeTalk(pawnState);
+                continue;
+            }
+
+            InteractionDef intDef = DefDatabase<InteractionDef>.GetNamed("RimTalkInteraction");
+            var playLogEntryInteraction =
+                new PlayLogEntry_RimTalkInteraction(intDef, pawn, pawn, null);
+
+            Find.PlayLog.Add(playLogEntryInteraction);
+            break;
         }
+    }
 
-        private static TalkResponse ConsumeTalk(PawnState pawnState)
-        {
-            TalkResponse talkResponse = pawnState.TalkQueue.Dequeue();
-            TalkHistory.AddSpoken(talkResponse.Id);
-            return talkResponse;
-        }
+    public static string GetTalk(Pawn pawn)
+    {
+        PawnState pawnState = Cache.Get(pawn);
+        if (pawnState == null) return null;
+            
+        TalkResponse talkResponse = ConsumeTalk(pawnState);
+            
+        pawnState.LastTalkTick = GenTicks.TicksGame;
+
+        return talkResponse.Text;
+    }
+
+    private static TalkResponse ConsumeTalk(PawnState pawnState)
+    {
+        TalkResponse talkResponse = pawnState.TalkQueue.Dequeue();
+        TalkHistory.AddSpoken(talkResponse.Id);
+        ApiHistory.GetApiLog(talkResponse.Id).IsSpoken = true;
+        return talkResponse;
     }
 }

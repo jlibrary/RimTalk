@@ -1,16 +1,8 @@
-namespace RimTalk.Client
-{
-    public class Payload
-    {
-        public string Request;
-        public string Response;
-        public int TokenCount;
+namespace RimTalk.Client;
 
-        public Payload(string request, string response, int tokenCount)
-        {
-            Request = request;
-            Response = response;
-            TokenCount = tokenCount;
-        }
-    }
+public class Payload(string request, string response, int tokenCount)
+{
+    public string Request = request;
+    public string Response = response;
+    public int TokenCount = tokenCount;
 }

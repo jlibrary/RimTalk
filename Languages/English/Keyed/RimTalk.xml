@@ -63,7 +63,7 @@
     <RimTalk.Persona.Vengeful>Vengeful – Grudge-holding and intense. Obsessed with revenge.</RimTalk.Persona.Vengeful>
 
     <!-- RimTalk_Toggle.cs -->
-    <RimTalk.Toggle.Tooltip>Toggle AI speech generation\nShift+click for settings\nCtrl+click for debug window</RimTalk.Toggle.Tooltip>
+    <RimTalk.Toggle.Tooltip>Toggle overlay window\nShift+click for mod settings\nCtrl+click for debug window</RimTalk.Toggle.Tooltip>
 
     <!-- Settings.cs -->
     <RimTalk.Settings.BasicSettings>Basic Settings</RimTalk.Settings.BasicSettings>
@@ -145,7 +145,6 @@
     <RimTalk.DebugWindow.StatusProcessing>Processing</RimTalk.DebugWindow.StatusProcessing>
     <RimTalk.DebugWindow.StatusIdle>Idle</RimTalk.DebugWindow.StatusIdle>
     <RimTalk.DebugWindow.GroupByPawn>Group by Pawn</RimTalk.DebugWindow.GroupByPawn>
-    <RimTalk.DebugWindow.DebugMode>Debug Mode</RimTalk.DebugWindow.DebugMode>
     <RimTalk.DebugWindow.ModSettings>Mod Settings</RimTalk.DebugWindow.ModSettings>
     <RimTalk.DebugWindow.EnableRimTalk>Enable RimTalk</RimTalk.DebugWindow.EnableRimTalk>
     <RimTalk.DebugWindow.AIStatus>AI Status:</RimTalk.DebugWindow.AIStatus>
@@ -165,9 +164,14 @@
     <RimTalk.DebugWindow.HeaderLastTalk>Last Talk</RimTalk.DebugWindow.HeaderLastTalk>
     <RimTalk.DebugWindow.HeaderRequests>Requests</RimTalk.DebugWindow.HeaderRequests>
     <RimTalk.DebugWindow.HeaderChattiness>Chattiness</RimTalk.DebugWindow.HeaderChattiness>
-    <RimTalk.DebugWindow.NoTalkLogs>No talk logs recorded yet. AI may be disabled or no colonists have spoken.</RimTalk.DebugWindow.NoTalkLogs>
     <RimTalk.DebugWindow.HeaderTimestamp>Timestamp</RimTalk.DebugWindow.HeaderTimestamp>
     <RimTalk.DebugWindow.HeaderTimeMs>Time(ms)</RimTalk.DebugWindow.HeaderTimeMs>
     <RimTalk.DebugWindow.HeaderTokens>Tokens</RimTalk.DebugWindow.HeaderTokens>
     <RimTalk.DebugWindow.TooltipPromptResponse>Prompt:\n{0}\n\nResponse:\n{1}</RimTalk.DebugWindow.TooltipPromptResponse>
+    
+    <!-- Overlay.cs -->
+    <RimTalk.Overlay.Debug>Debug</RimTalk.Overlay.Debug>
+    <RimTalk.Overlay.Option>Overlay Option</RimTalk.Overlay.Option>
+    <RimTalk.Overlay.Opacity>Opacity</RimTalk.Overlay.Opacity>
+    <RimTalk.Overlay.FontSize>Font Size</RimTalk.Overlay.FontSize>
 </LanguageData>

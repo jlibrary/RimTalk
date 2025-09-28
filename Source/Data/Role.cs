@@ -1,6 +1,5 @@
-namespace RimTalk.Data
-{
-    public enum Role {
-        User, AI
-    }
+namespace RimTalk.Data;
+
+public enum Role {
+    User, AI
 }

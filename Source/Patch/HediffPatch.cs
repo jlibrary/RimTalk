@@ -4,22 +4,21 @@ using RimTalk.Service;
 using System;
 using RimTalk.Data;
 
-namespace RimTalk.Patch
+namespace RimTalk.Patch;
+
+[HarmonyPatch(typeof(Pawn_HealthTracker))]
+[HarmonyPatch(nameof(Pawn_HealthTracker.AddHediff), new Type[] { typeof(Hediff), typeof(BodyPartRecord), typeof(DamageInfo), typeof(DamageWorker.DamageResult) })]
+public static class HediffPatch
 {
-    [HarmonyPatch(typeof(Pawn_HealthTracker))]
-    [HarmonyPatch(nameof(Pawn_HealthTracker.AddHediff), new Type[] { typeof(Hediff), typeof(BodyPartRecord), typeof(DamageInfo), typeof(DamageWorker.DamageResult) })]
-    public static class HediffPatch
+    public static void Postfix(Pawn_HealthTracker __instance, Pawn ___pawn, Hediff hediff)
     {
-        public static void Postfix(Pawn_HealthTracker __instance, Pawn ___pawn, Hediff hediff)
+        var pawnState = Cache.Get(___pawn);
+        if (pawnState != null && hediff.Visible && !pawnState.Hediffs.Contains(hediff))
         {
-            var pawnState = Cache.Get(___pawn);
-            if (pawnState != null && hediff.Visible && !pawnState.Hediffs.Contains(hediff))
-            {
-                pawnState.Hediffs = PawnService.GetHediffs(___pawn);
+            pawnState.Hediffs = PawnService.GetHediffs(___pawn);
                 
-                var prompt = $"{hediff.Part?.Label}-{hediff.LabelCap}";
-                pawnState.AddTalkRequest(prompt, type: TalkRequest.Type.Hediff);
-            }
+            var prompt = $"{hediff.Part?.Label}-{hediff.LabelCap}";
+            pawnState.AddTalkRequest(prompt, type: TalkRequest.Type.Hediff);
         }
     }
 }

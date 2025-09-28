@@ -4,106 +4,105 @@ using RimTalk.Util;
 using RimWorld;
 using Verse;
 
-namespace RimTalk.Error
+namespace RimTalk.Error;
+
+public static class AIErrorHandler
 {
-    public static class AIErrorHandler
+    public static bool QuotaWarningShown;
+
+    public static async Task<T> HandleWithRetry<T>(Func<Task<T>> operation)
     {
-        public static bool QuotaWarningShown;
-
-        public static async Task<T> HandleWithRetry<T>(Func<Task<T>> operation)
+        try
         {
-            try
+            T result = await operation();
+            return result;
+        }
+        catch (Exception ex)
+        {
+            var settings = Settings.Get();
+            if (CanRetryGeneration(settings))
             {
-                T result = await operation();
-                return result;
-            }
-            catch (Exception ex)
-            {
-                var settings = Settings.Get();
-                if (CanRetryGeneration(settings))
+                string nextModel = Settings.Get().GetCurrentModel();
+                if (!settings.UseSimpleConfig)
                 {
-                    string nextModel = Settings.Get().GetCurrentModel();
-                    if (!settings.UseSimpleConfig)
-                    {
-                        ShowRetryMessage(ex, nextModel);
-                    }
-
-                    try
-                    {
-                        T result = await operation();
-                        return result;
-                    }
-                    catch (Exception retryEx)
-                    {
-                        Logger.Warning($"Retry failed: {retryEx.Message}");
-                        HandleFinalFailure(ex);
-                        return default(T);
-                    }
+                    ShowRetryMessage(ex, nextModel);
                 }
-                else
+
+                try
                 {
+                    T result = await operation();
+                    return result;
+                }
+                catch (Exception retryEx)
+                {
+                    Logger.Warning($"Retry failed: {retryEx.Message}");
                     HandleFinalFailure(ex);
                     return default(T);
                 }
             }
-        }
-
-        private static bool CanRetryGeneration(RimTalkSettings settings)
-        {
-            if (settings.UseSimpleConfig)
-            {
-                return !settings.IsUsingFallbackModel;
-            }
-            else if (settings.UseCloudProviders)
-            {
-                int originalIndex = settings.CurrentCloudConfigIndex;
-                settings.TryNextConfig();
-                return settings.CurrentCloudConfigIndex != originalIndex;
-            }
-            
-            return false;
-        }
-
-        private static void HandleFinalFailure(Exception ex)
-        {
-            if (ex is QuotaExceededException)
-            {
-                ShowQuotaWarning(ex);
-            }
             else
             {
-                ShowGenerationWarning(ex);
+                HandleFinalFailure(ex);
+                return default(T);
             }
         }
+    }
 
-        public static void ResetQuotaWarning()
+    private static bool CanRetryGeneration(RimTalkSettings settings)
+    {
+        if (settings.UseSimpleConfig)
         {
-            QuotaWarningShown = false;
+            return !settings.IsUsingFallbackModel;
         }
-
-        public static void ShowQuotaWarning(Exception ex)
+        else if (settings.UseCloudProviders)
         {
-            if (!QuotaWarningShown)
-            {
-                QuotaWarningShown = true;
-                string message = "RimTalk.TalkService.QuotaExceeded".Translate();
-                Messages.Message(message, MessageTypeDefOf.NeutralEvent, false);
-                Logger.Warning(ex.Message);
-            }
+            int originalIndex = settings.CurrentCloudConfigIndex;
+            settings.TryNextConfig();
+            return settings.CurrentCloudConfigIndex != originalIndex;
         }
+            
+        return false;
+    }
 
-        public static void ShowGenerationWarning(Exception ex)
+    private static void HandleFinalFailure(Exception ex)
+    {
+        if (ex is QuotaExceededException)
         {
-            Logger.Warning(ex.StackTrace);
-            string message = $"{"RimTalk.TalkService.GenerationFailed".Translate()}: {ex.Message}";
+            ShowQuotaWarning(ex);
+        }
+        else
+        {
+            ShowGenerationWarning(ex);
+        }
+    }
+
+    public static void ResetQuotaWarning()
+    {
+        QuotaWarningShown = false;
+    }
+
+    public static void ShowQuotaWarning(Exception ex)
+    {
+        if (!QuotaWarningShown)
+        {
+            QuotaWarningShown = true;
+            string message = "RimTalk.TalkService.QuotaExceeded".Translate();
             Messages.Message(message, MessageTypeDefOf.NeutralEvent, false);
+            Logger.Warning(ex.Message);
         }
+    }
 
-        public static void ShowRetryMessage(Exception ex, string nextModel)
-        {
-            string messageKey = ex is QuotaExceededException ? "RimTalk.TalkService.QuotaReached" : "RimTalk.TalkService.APIError";
-            string message = $"{messageKey.Translate()}. {"RimTalk.TalkService.TryingNextAPI".Translate(nextModel)}";
-            Messages.Message(message, MessageTypeDefOf.NeutralEvent, false);
-        }
+    public static void ShowGenerationWarning(Exception ex)
+    {
+        Logger.Warning(ex.StackTrace);
+        string message = $"{"RimTalk.TalkService.GenerationFailed".Translate()}: {ex.Message}";
+        Messages.Message(message, MessageTypeDefOf.NeutralEvent, false);
+    }
+
+    public static void ShowRetryMessage(Exception ex, string nextModel)
+    {
+        string messageKey = ex is QuotaExceededException ? "RimTalk.TalkService.QuotaReached" : "RimTalk.TalkService.APIError";
+        string message = $"{messageKey.Translate()}. {"RimTalk.TalkService.TryingNextAPI".Translate(nextModel)}";
+        Messages.Message(message, MessageTypeDefOf.NeutralEvent, false);
     }
 }

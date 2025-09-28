@@ -7,77 +7,76 @@ using RimTalk.Util;
 using RimWorld;
 using Verse;
 
-namespace RimTalk.Patches
+namespace RimTalk.Patches;
+
+[HarmonyPatch(typeof(GameDataSaveLoader), nameof(GameDataSaveLoader.SaveGame))]
+public static class SaveGamePatch
 {
-    [HarmonyPatch(typeof(GameDataSaveLoader), nameof(GameDataSaveLoader.SaveGame))]
-    public static class SaveGamePatch
+    [HarmonyPrefix]
+    public static void PreSaveGame()
     {
-        [HarmonyPrefix]
-        public static void PreSaveGame()
+        try
         {
-            try
-            {
-                var entries = Find.PlayLog?.AllEntries;
-                if (entries == null) return;
+            var entries = Find.PlayLog?.AllEntries;
+            if (entries == null) return;
                 
-                for (int i = 0; i < entries.Count; i++)
+            for (int i = 0; i < entries.Count; i++)
+            {
+                if (entries[i] is PlayLogEntry_RimTalkInteraction rimTalkEntry)
                 {
-                    if (entries[i] is PlayLogEntry_RimTalkInteraction rimTalkEntry)
-                    {
-                        var newEntry = new PlayLogEntry_Interaction(
-                            InteractionDefOf.Chitchat,
-                            rimTalkEntry.Initiator,
-                            rimTalkEntry.Recipient,
-                            rimTalkEntry.ExtraSentencePacks ?? new List<RulePackDef>()
-                        );
+                    var newEntry = new PlayLogEntry_Interaction(
+                        InteractionDefOf.Chitchat,
+                        rimTalkEntry.Initiator,
+                        rimTalkEntry.Recipient,
+                        rimTalkEntry.ExtraSentencePacks ?? new List<RulePackDef>()
+                    );
 
-                        var ageTicksField = typeof(LogEntry).GetField("ticksAbs", BindingFlags.NonPublic | BindingFlags.Instance);
-                        ageTicksField?.SetValue(newEntry, rimTalkEntry.TicksAbs);
+                    var ageTicksField = typeof(LogEntry).GetField("ticksAbs", BindingFlags.NonPublic | BindingFlags.Instance);
+                    ageTicksField?.SetValue(newEntry, rimTalkEntry.TicksAbs);
 
-                        // Register the custom text for the new entry
-                        InteractionTextPatch.SetTextFor(newEntry, rimTalkEntry.CachedString);
+                    // Register the custom text for the new entry
+                    InteractionTextPatch.SetTextFor(newEntry, rimTalkEntry.CachedString);
 
-                        entries[i] = newEntry;
-                    }
+                    entries[i] = newEntry;
                 }
             }
-            catch (Exception ex)
-            {
-                Logger.Error($"Error converting RimTalk interactions: {ex}");
-            }
+        }
+        catch (Exception ex)
+        {
+            Logger.Error($"Error converting RimTalk interactions: {ex}");
         }
     }
+}
 
-    [HarmonyPatch]
-    public static class InteractionTextPatch
+[HarmonyPatch]
+public static class InteractionTextPatch
+{
+    private static readonly ConditionalWeakTable<LogEntry, string> CustomTextTable =
+        new ConditionalWeakTable<LogEntry, string>();
+
+    public static void SetTextFor(LogEntry entry, string text)
     {
-        private static readonly ConditionalWeakTable<LogEntry, string> CustomTextTable =
-            new ConditionalWeakTable<LogEntry, string>();
-
-        public static void SetTextFor(LogEntry entry, string text)
+        // Remove existing entry if it exists, then add the new one
+        if (CustomTextTable.TryGetValue(entry, out _))
         {
-            // Remove existing entry if it exists, then add the new one
-            if (CustomTextTable.TryGetValue(entry, out _))
-            {
-                CustomTextTable.Remove(entry);
-            }
-            CustomTextTable.Add(entry, text);
+            CustomTextTable.Remove(entry);
         }
-        
-        public static bool IsRimTalkInteraction(LogEntry entry)
-        {
-            return CustomTextTable.TryGetValue(entry, out _);
-        }
-        
-        [HarmonyPatch(typeof(LogEntry), nameof(LogEntry.ToGameStringFromPOV))]
-        [HarmonyPostfix]
-        public static void ToGameStringFromPOV_Postfix(LogEntry __instance, ref string __result)
-        {
-            if (CustomTextTable.TryGetValue(__instance, out var customText))
-            {
-                __result = customText;
-            }
-        }
-
+        CustomTextTable.Add(entry, text);
     }
+        
+    public static bool IsRimTalkInteraction(LogEntry entry)
+    {
+        return CustomTextTable.TryGetValue(entry, out _);
+    }
+        
+    [HarmonyPatch(typeof(LogEntry), nameof(LogEntry.ToGameStringFromPOV))]
+    [HarmonyPostfix]
+    public static void ToGameStringFromPOV_Postfix(LogEntry __instance, ref string __result)
+    {
+        if (CustomTextTable.TryGetValue(__instance, out var customText))
+        {
+            __result = customText;
+        }
+    }
+
 }

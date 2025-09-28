@@ -2,7 +2,7 @@
 <Defs>
     <MainButtonDef>
         <defName>RimTalkDebug</defName>
-        <tabWindowClass>RimTalk.UI.MainTabWindow_DebugLauncher</tabWindowClass>
+        <tabWindowClass>RimTalk.UI.OverlayTabLauncher</tabWindowClass>
         <order>79</order>
         <minimized>True</minimized>
         <iconPath>UI/ToggleIcon</iconPath>
