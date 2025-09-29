@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <LanguageData>
     <!-- BioTabPersonalityPatch.cs -->
-    <RimTalk.BioTab.RimTalkPersona>Персонаж RimTalk</RimTalk.BioTab.RimTalkPersona>
+    <RimTalk.BioTab.RimTalkPersona>Персонаж</RimTalk.BioTab.RimTalkPersona>
 
     <!-- TickManager_DoSingleTick.cs -->
     <RimTalk.TickManager.ApiKeyMissing>RimTalk: Отсутствует API-ключ или конечная точка.</RimTalk.TickManager.ApiKeyMissing>

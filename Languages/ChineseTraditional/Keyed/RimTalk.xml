@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <LanguageData>
     <!-- BioTabPersonalityPatch.cs -->
-    <RimTalk.BioTab.RimTalkPersona>RimTalk 人格</RimTalk.BioTab.RimTalkPersona>
+    <RimTalk.BioTab.RimTalkPersona>人格</RimTalk.BioTab.RimTalkPersona>
 
     <!-- TickManager_DoSingleTick.cs -->
     <RimTalk.TickManager.ApiKeyMissing>RimTalk：缺少 API 金鑰或端點。</RimTalk.TickManager.ApiKeyMissing>
@@ -63,8 +63,8 @@
     <RimTalk.Persona.Vengeful>復仇心切 – 記仇、激烈。痴迷於復仇。</RimTalk.Persona.Vengeful>
 
     <!-- RimTalk_Toggle.cs -->
-    <RimTalk.Toggle.Tooltip>切換覆蓋視窗\n\nShift+點擊打開模組設定\nCtrl+點擊打開除錯視窗</RimTalk.Toggle.Tooltip>
-    
+    <RimTalk.Toggle.Tooltip>切換懸浮窗\n\nShift+點擊打開模組設定\nCtrl+點擊打開除錯視窗</RimTalk.Toggle.Tooltip>
+
     <!-- Settings.cs -->
     <RimTalk.Settings.BasicSettings>基本設定</RimTalk.Settings.BasicSettings>
     <RimTalk.Settings.AIInstruction>AI 指令</RimTalk.Settings.AIInstruction>

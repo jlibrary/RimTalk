@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <LanguageData>
     <!-- BioTabPersonalityPatch.cs -->
-    <RimTalk.BioTab.RimTalkPersona>RimTalk 페르소나</RimTalk.BioTab.RimTalkPersona>
+    <RimTalk.BioTab.RimTalkPersona>페르소나</RimTalk.BioTab.RimTalkPersona>
 
     <!-- TickManager_DoSingleTick.cs -->
     <RimTalk.TickManager.ApiKeyMissing>RimTalk: API 키 또는 엔드포인트가 없습니다.</RimTalk.TickManager.ApiKeyMissing>

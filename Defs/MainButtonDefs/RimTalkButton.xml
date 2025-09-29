@@ -5,6 +5,6 @@
         <tabWindowClass>RimTalk.UI.OverlayTabLauncher</tabWindowClass>
         <order>79</order>
         <minimized>True</minimized>
-        <iconPath>UI/ToggleIcon</iconPath>
+        <iconPath>UI/RimTalkIcon</iconPath>
     </MainButtonDef>
 </Defs>

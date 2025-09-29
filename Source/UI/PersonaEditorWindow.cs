@@ -72,14 +72,21 @@ public class PersonaEditorWindow : Window
         Rect sliderRowRect = new Rect(inRect.x, tendencyTitleRect.yMax + 5f, inRect.width, 22f);
 
         Rect listenerLabelRect = new Rect(sliderRowRect.x, sliderRowRect.y, 70f, sliderRowRect.height);
-        Text.Anchor = TextAnchor.MiddleLeft;
-        Widgets.Label(listenerLabelRect, "RimTalk.PersonaEditor.Quiet".Translate());
+        Rect initiatorLabelRect;
+        var originalAnchor = Text.Anchor;
+        try
+        {
+            Text.Anchor = TextAnchor.MiddleLeft;
+            Widgets.Label(listenerLabelRect, "RimTalk.PersonaEditor.Quiet".Translate());
 
-        Rect initiatorLabelRect = new Rect(sliderRowRect.xMax - 70f, sliderRowRect.y, 70f, sliderRowRect.height);
-        Text.Anchor = TextAnchor.MiddleRight;
-        Widgets.Label(initiatorLabelRect, "RimTalk.PersonaEditor.Chatty".Translate());
-
-        Text.Anchor = TextAnchor.UpperLeft;
+            initiatorLabelRect = new Rect(sliderRowRect.xMax - 70f, sliderRowRect.y, 70f, sliderRowRect.height);
+            Text.Anchor = TextAnchor.MiddleRight;
+            Widgets.Label(initiatorLabelRect, "RimTalk.PersonaEditor.Chatty".Translate());
+        }
+        finally
+        {
+            Text.Anchor = originalAnchor;
+        }
 
         float sliderMargin = 5f;
         float sliderX = listenerLabelRect.xMax + sliderMargin;
@@ -94,7 +101,6 @@ public class PersonaEditorWindow : Window
         Text.Anchor = TextAnchor.MiddleLeft;
         Widgets.Label(valueLabelRect, _talkInitiationWeight.ToString("0.00"));
         Text.Anchor = TextAnchor.UpperLeft;
-        // ------------------------------------
 
         // Buttons
         float buttonWidth = 90f;

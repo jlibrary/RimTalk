@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <LanguageData>
     <!-- BioTabPersonalityPatch.cs -->
-    <RimTalk.BioTab.RimTalkPersona>Personnalité RimTalk</RimTalk.BioTab.RimTalkPersona>
+    <RimTalk.BioTab.RimTalkPersona>Personnalité</RimTalk.BioTab.RimTalkPersona>
 
     <!-- TickManager_DoSingleTick.cs -->
     <RimTalk.TickManager.ApiKeyMissing>RimTalk : Clé API ou Endpoint manquant.</RimTalk.TickManager.ApiKeyMissing>
