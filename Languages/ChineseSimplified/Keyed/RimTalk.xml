@@ -63,8 +63,8 @@
     <RimTalk.Persona.Vengeful>復仇心切 – 記仇、激烈。痴迷於復仇。</RimTalk.Persona.Vengeful>
 
     <!-- RimTalk_Toggle.cs -->
-    <RimTalk.Toggle.Tooltip>切换悬浮窗\n\nShift+点击打开模组设置\nCtrl+点击打开调试窗口</RimTalk.Toggle.Tooltip>
-
+    <RimTalk.Toggle.Tooltip>切换覆盖窗口\n\nShift+点击打开模组设置\nCtrl+点击打开调试窗口</RimTalk.Toggle.Tooltip>
+    
     <!-- Settings.cs -->
     <RimTalk.Settings.BasicSettings>基本設定</RimTalk.Settings.BasicSettings>
     <RimTalk.Settings.AIInstruction>AI 指令</RimTalk.Settings.AIInstruction>
