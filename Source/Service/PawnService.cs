@@ -293,7 +293,8 @@ public static class PawnService
         if (ResearchJobDefNames.Contains(pawn.CurJob?.def.defName)) // The job is compared against its defined name.
         {
             ResearchProjectDef project = Find.ResearchManager.GetProject();
-            status += $" (Project: {project.label})"; // Adding 'Project:' seems to work better for dialogue generation!
+            if (project != null)
+                status += $" (Project: {project.label})"; // Adding 'Project:' seems to work better for dialogue generation!
         }
         return status;
     }
