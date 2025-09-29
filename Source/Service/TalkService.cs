@@ -163,7 +163,10 @@ public static class TalkService
     {
         TalkResponse talkResponse = pawnState.TalkQueue.Dequeue();
         TalkHistory.AddSpoken(talkResponse.Id);
-        ApiHistory.GetApiLog(talkResponse.Id).IsSpoken = true;
+        var apiLog = ApiHistory.GetApiLog(talkResponse.Id);
+        if (apiLog != null)
+            apiLog.IsSpoken = true;
+        
         return talkResponse;
     }
 }
