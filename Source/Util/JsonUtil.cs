@@ -3,7 +3,6 @@ using System.Collections;
 using System.IO;
 using System.Runtime.Serialization.Json;
 using System.Text;
-using JsonRepairSharp;
 using Newtonsoft.Json;
 
 namespace RimTalk.Util;
@@ -101,13 +100,6 @@ public static class JsonUtil
             sanitized = $"[{sanitized}]";
         }
 
-        try
-        {
-            return JsonRepair.RepairJson(sanitized);
-        }
-        catch
-        {
-            return sanitized;
-        }
+        return sanitized;
     }
 }

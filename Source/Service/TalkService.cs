@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using RimTalk.Data;
+using RimTalk.UI;
 using RimTalk.Util;
 using RimWorld;
 using Verse;
@@ -167,6 +168,7 @@ public static class TalkService
         if (apiLog != null)
             apiLog.IsSpoken = true;
         
+        Overlay.NotifyLogUpdated();
         return talkResponse;
     }
 }

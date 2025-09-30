@@ -222,44 +222,60 @@ public static class PromptService
         return sb.ToString();
     }
 
-        public static string DecoratePrompt(string prompt, Pawn pawn1, Pawn pawn2, string status)
+    public static string DecoratePrompt(string prompt, Pawn pawn1, Pawn pawn2, string status)
+    {
+        var sb = new StringBuilder();
+        CommonUtil.InGameData gameData = CommonUtil.GetInGameData();
+
+        // add pawn names
+        sb.Append(pawn1.LabelShort);
+        if (pawn2 != null)
         {
-            var sb = new StringBuilder();
-            CommonUtil.InGameData gameData = CommonUtil.GetInGameData();
-            
-            // add pawn names
-            sb.Append(pawn1.LabelShort);
-            if (pawn2 != null)
-            {
-                sb.Append($" and {pawn2.LabelShort}");
-            }
-            sb.Append(": ");
-            
-            // add prompt
-            sb.Append(prompt);
-            
-            // add pawn status
-            sb.Append($"\n{status}");
-            
-            // add time
-            sb.Append($"\nTime: {gameData.Hour12HString}");
-            
-            // add date
-            sb.Append($"\nToday: {gameData.DateString}");
-            
-            // add season
-            sb.Append($"\nSeason: {gameData.SeasonString}");
-            
-            // add weather
-            sb.Append($"\nWeather: {gameData.WeatherString}");
+            sb.Append($" and {pawn2.LabelShort}");
+        }
+
+        sb.Append(": ");
+
+        // add prompt
+        sb.Append(prompt);
+
+        // add pawn status
+        sb.Append($"\n{status}");
+
+        string locationStatus = GetPawnLocationStatus(pawn1);
+        if (!string.IsNullOrEmpty(locationStatus))
+            sb.Append($"\nLocation: {locationStatus}");
+
+        // add time
+        sb.Append($"\nTime: {gameData.Hour12HString}");
+
+        // add date
+        sb.Append($"\nToday: {gameData.DateString}");
+
+        // add season
+        sb.Append($"\nSeason: {gameData.SeasonString}");
+
+        // add weather
+        sb.Append($"\nWeather: {gameData.WeatherString}");
 
             // add language assurance
             if (AIService.IsFirstInstruction())
                 sb.Append($"\nin {Constant.Lang}");
 
-            return sb.ToString();
-        }
-        
+        return sb.ToString();
+    }
+
+    public static string GetPawnLocationStatus(Pawn pawn)
+    {
+        if (pawn == null || pawn.Map == null || pawn.Position == IntVec3.Invalid)
+            return null;
+
+        Room room = pawn.GetRoom();
+        if (room != null && !room.PsychologicallyOutdoors)
+            return "Indoors".Translate();
+        return "Outdoors".Translate();
+    }
+
     private static string Sanitize(string text, Pawn pawn = null)
     {
         if (pawn != null)

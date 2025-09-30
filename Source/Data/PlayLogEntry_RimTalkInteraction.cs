@@ -5,14 +5,24 @@ using RimTalk.Service;
 
 namespace RimTalk;
 
-public class PlayLogEntry_RimTalkInteraction(
-    InteractionDef interactionDef,
-    Pawn initiator,
-    Pawn recipient,
-    List<RulePackDef> rules)
-    : PlayLogEntry_Interaction(interactionDef, initiator, recipient, rules)
+public class PlayLogEntry_RimTalkInteraction : PlayLogEntry_Interaction
 {
-    private string _cachedString = TalkService.GetTalk(initiator);
+    private string _cachedString;
+
+    public PlayLogEntry_RimTalkInteraction()
+    {
+        // Parameterless constructor required for Scribing (loading from save)
+    }
+
+    public PlayLogEntry_RimTalkInteraction(
+        InteractionDef interactionDef,
+        Pawn initiator,
+        Pawn recipient,
+        List<RulePackDef> rules)
+        : base(interactionDef, initiator, recipient, rules)
+    {
+        _cachedString = TalkService.GetTalk(initiator);
+    }
 
     public Pawn Initiator => initiator;
     public Pawn Recipient => recipient;
