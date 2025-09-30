@@ -8,108 +8,115 @@ namespace RimTalk.Util;
 
 public static class CommonUtil
 {
+    public static bool HasPassed(int pastTick, double seconds)
+    {
+        return GenTicks.TicksGame - pastTick > GetTicksForDuration(seconds);
+    }
     public static int GetTicksForDuration(double seconds)
     {
         var tickRate = GetCurrentTickRate();
         return (int)(seconds * tickRate);
     }
 
-        private static int GetCurrentTickRate()
+    private static int GetCurrentTickRate()
+    {
+        switch (Find.TickManager.CurTimeSpeed)
         {
-            switch (Find.TickManager.CurTimeSpeed)
+            case TimeSpeed.Paused:
+                return 0;
+            case TimeSpeed.Normal:
+                return 60;
+            case TimeSpeed.Fast:
+                return 180;
+            case TimeSpeed.Superfast:
+                return 360;
+            case TimeSpeed.Ultrafast:
+                return 1500;
+            default:
+                return 60; // Default to normal speed if unknown
+        }
+    }
+
+    // Struct containing all necessary in-game data
+    public struct InGameData
+    {
+        public string Hour12HString;
+        public string DateString;
+        public string SeasonString;
+        public string WeatherString;
+    }
+
+    public static InGameData GetInGameData()
+    {
+        // Default values in case data is invalid
+        InGameData mapData = new InGameData
+            { Hour12HString = "N/A", DateString = "N/A", SeasonString = "N/A", WeatherString = "N/A" };
+
+        try
+        {
+            // Basic condition check
+            Map currentMap = Find.CurrentMap;
+            if (currentMap?.Tile == null)
             {
-                case TimeSpeed.Paused:
-                    return 0;
-                case TimeSpeed.Normal:
-                    return 60;
-                case TimeSpeed.Fast:
-                    return 180;
-                case TimeSpeed.Superfast:
-                    return 360;
-                case TimeSpeed.Ultrafast:
-                    return 1500;
-                default:
-                    return 60; // Default to normal speed if unknown
+                return mapData; // Return default value if invalid
             }
+
+            // Perform redundant calculations only once beforehand
+            long absTicks = Find.TickManager.TicksAbs;
+            Vector2 longLat = Find.WorldGrid.LongLatOf(currentMap.Tile);
+
+            // Store various information in the struct
+            mapData.Hour12HString = GetInGameHour12HString(absTicks, longLat);
+            mapData.DateString = GetInGameDateString(absTicks, longLat);
+            mapData.SeasonString = GetInGameSeasonString(absTicks, longLat);
+            mapData.WeatherString = GetInGameWeatherString(currentMap);
+
+            return mapData;
+        }
+        catch (Exception)
+        {
+            // Return default data in case of an exception
+            return new InGameData
+                { Hour12HString = "N/A", DateString = "N/A", SeasonString = "N/A", WeatherString = "N/A" };
+        }
+    }
+
+    // No path for null to occur as it only receives values and calculates. Changed from int? to int
+    private static int GetInGameHour(long absTicks, Vector2 longLat)
+    {
+        return GenDate.HourOfDay(absTicks, longLat.x);
+    }
+
+    private static string GetInGameHour12HString(long absTicks, Vector2 longLat)
+    {
+        int hour24 = GetInGameHour(absTicks, longLat);
+
+        int hour12 = hour24 % 12;
+        if (hour12 == 0)
+        {
+            hour12 = 12;
         }
 
-        // Struct containing all necessary in-game data
-        public struct InGameData
-        {
-            public string Hour12HString;
-            public string DateString;
-            public string SeasonString;
-            public string WeatherString;
-        }
-        
-        public static InGameData GetInGameData()
-        {
-            // Default values in case data is invalid
-            InGameData mapData = new InGameData { Hour12HString = "N/A", DateString = "N/A", SeasonString = "N/A", WeatherString = "N/A" };
+        string ampm = hour24 < 12 ? "am" : "pm";
+        return $"{hour12}{ampm}";
+    }
 
-            try
-            {
-                // Basic condition check
-                Map currentMap = Find.CurrentMap;
-                if (currentMap?.Tile == null)
-                {
-                    return mapData; // Return default value if invalid
-                }
+    // Returns the year, quarter, and day.
+    private static string GetInGameDateString(long absTicks, Vector2 longLat)
+    {
+        return GenDate.DateFullStringAt(absTicks, longLat);
+    }
 
-                // Perform redundant calculations only once beforehand
-                long absTicks = Find.TickManager.TicksAbs;
-                Vector2 longLat = Find.WorldGrid.LongLatOf(currentMap.Tile);
-                
-                // Store various information in the struct
-                mapData.Hour12HString = GetInGameHour12HString(absTicks, longLat);
-                mapData.DateString = GetInGameDateString(absTicks, longLat);
-                mapData.SeasonString = GetInGameSeasonString(absTicks, longLat);
-                mapData.WeatherString = GetInGameWeatherString(currentMap);
+    private static string GetInGameSeasonString(long absTicks, Vector2 longLat)
+    {
+        return GenDate.Season(absTicks, longLat).Label();
+    }
 
-                return mapData;
-            }
-            catch (Exception)
-            {
-                // Return default data in case of an exception
-                return new InGameData { Hour12HString = "N/A", DateString = "N/A", SeasonString = "N/A", WeatherString = "N/A" };
-            }
-        }
+    private static string GetInGameWeatherString(Map currentMap)
+    {
+        return currentMap.weatherManager?.curWeather?.label ?? "N/A";
+    }
 
-        // No path for null to occur as it only receives values and calculates. Changed from int? to int
-        private static int GetInGameHour(long absTicks, Vector2 longLat)
-        {
-            return GenDate.HourOfDay(absTicks, longLat.x);
-        }
-        
-        private static string GetInGameHour12HString(long absTicks, Vector2 longLat)
-        {
-            int hour24 = GetInGameHour(absTicks, longLat);
-            
-            int hour12 = hour24 % 12;
-            if (hour12 == 0)
-            {
-                hour12 = 12;
-            }
-            string ampm = hour24 < 12 ? "am" : "pm";
-            return $"{hour12}{ampm}";
-        }
-        
-        // Returns the year, quarter, and day.
-        private static string GetInGameDateString(long absTicks, Vector2 longLat)
-        {
-            return GenDate.DateFullStringAt(absTicks, longLat);
-        }
-        
-        private static string GetInGameSeasonString(long absTicks, Vector2 longLat)
-        {
-            return GenDate.Season(absTicks, longLat).Label();
-        }
-        
-        private static string GetInGameWeatherString(Map currentMap)
-        {
-            return currentMap.weatherManager?.curWeather?.label ?? "N/A";
-        }
-        
     // Simple token estimation algorithm (approximate)
     public static int EstimateTokenCount(string text)
     {
@@ -120,16 +127,16 @@ public static class CommonUtil
 
         // Remove extra whitespace and normalize
         string normalizedText = Regex.Replace(text.Trim(), @"\s+", " ");
-            
+
         double totalTokens = 0.0;
-        string[] words = normalizedText.Split(new char[] { ' ' }, 
+        string[] words = normalizedText.Split(new char[] { ' ' },
             StringSplitOptions.RemoveEmptyEntries);
 
         foreach (string word in words)
         {
             // Clean word of leading/trailing punctuation for length calculation
             string cleanWord = word.Trim('!', '?', '.', ',', ':', ';', '"', '\'', '(', ')', '[', ']', '{', '}');
-                
+
             if (cleanWord.Length == 0)
             {
                 // Pure punctuation word
@@ -171,7 +178,7 @@ public static class CommonUtil
         return Math.Min(80 * cooldownSeconds, 800);
     }
 
-        
+
     public static bool ShouldAiBeActiveOnSpeed()
     {
         RimTalkSettings settings = Settings.Get();

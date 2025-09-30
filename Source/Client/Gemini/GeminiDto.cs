@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace RimTalk.Client.Gemini;
 
 [DataContract]
-public class GeminiRequest
+public class GeminiDto
 {
     [DataMember(Name = "system_instruction")]
     public SystemInstruction SystemInstruction { get; set; }

@@ -13,9 +13,7 @@ public class TalkResponse : IJsonData
     [DataMember(Name = "text")] public string Text { get; set; }
 
     public Guid ParentTalkId { get; set; }
-
-    public string ResponsePayload { get; set; }
-
+    
     public bool IsReply()
     {
         return ParentTalkId != Guid.Empty;

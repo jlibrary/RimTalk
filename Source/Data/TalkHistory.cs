@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using Verse;
 
 namespace RimTalk.Data;
@@ -10,16 +11,28 @@ public static class TalkHistory
     private const int MaxMessages = 6;
     private static readonly ConcurrentDictionary<int, List<(Role role, string message)>> MessageHistory = new();
     private static readonly ConcurrentDictionary<Guid, int> SpokenTickCache = new() { [Guid.Empty] = 0 };
+    private static readonly ConcurrentBag<Guid> IgnoredCache = [];
+
         
     // Add a new talk with the current game tick
     public static void AddSpoken(Guid id)
     {
         SpokenTickCache.TryAdd(id, GenTicks.TicksGame);
     }
+    
+    public static void AddIgnored(Guid id)
+    {
+        IgnoredCache.Add(id);
+    }
 
     public static int GetSpokenTick(Guid id)
     {
         return SpokenTickCache.TryGetValue(id, out var tick) ? tick : -1;
+    }
+    
+    public static bool IsTalkIgnored(Guid id)
+    {
+        return IgnoredCache.Contains(id);
     }
 
     public static void AddMessageHistory(Pawn pawn, string request, string response)

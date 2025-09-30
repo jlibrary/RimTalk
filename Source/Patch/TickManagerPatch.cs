@@ -1,3 +1,4 @@
+using System.Linq;
 using HarmonyLib;
 using RimTalk.Data;
 using RimTalk.Service;
@@ -125,25 +126,30 @@ internal static class TickManagerPatch
 
     private static bool TryGenerateThoughtTalk(Pawn pawn)
     {
-        var thought = PawnService.GetNewThought(pawn);
-        var thoughtLabel = PawnService.GetNewThoughtLabel(thought.Key);
-        bool result = false;
-
-        if (thoughtLabel != null)
+        var thoughtToTalkAbout = PawnService.GetThoughtToTalkAbout(pawn);
+        if (thoughtToTalkAbout == null)
         {
-            result = TalkService.GenerateTalk(thoughtLabel, pawn);
+            return false;
         }
 
-        var pawnCache = Cache.Get(pawn);
-        if (IsNow(TalkInterval * 50)) // reset thoughts occasionally
+        var thoughtLabel = PawnService.GetNewThoughtLabel(thoughtToTalkAbout);
+        if (thoughtLabel == null)
         {
-            pawnCache?.UpdateThoughts();
+            return false;
         }
-        else if (result)
+    
+        bool result = TalkService.GenerateTalk(thoughtLabel, pawn);
+    
+        // If we successfully talked, record the current tick in our memory.
+        if (result)
         {
-            pawnCache?.UpdateThoughts(thought);
+            var pawns = PawnSelector.GetAllNearByPawns(pawn).Prepend(pawn);
+            foreach (var p in pawns)
+            {
+                Cache.Get(p)?.SpokenThoughtTicks.SetOrAdd(thoughtToTalkAbout.def.defName, Counter.Tick);
+            }
         }
-
+    
         return result;
     }
 

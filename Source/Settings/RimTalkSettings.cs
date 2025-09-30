@@ -16,7 +16,7 @@ public class RimTalkSettings : ModSettings
     public readonly bool IsUsingFallbackModel = false;
     public bool IsEnabled = true;
     public int TalkInterval = 7;
-    public const int ReplyInterval = 3;
+    public const int ReplyInterval = 4;
     public bool ProcessNonRimTalkInteractions;
     public string CustomInstruction = "";
     public Dictionary<string, bool> EnabledArchivableTypes = new();
@@ -33,7 +33,6 @@ public class RimTalkSettings : ModSettings
     public bool DebugGroupingEnabled = false;
     public string DebugSortColumn;
     public bool DebugSortAscending = true;
-    public List<string> DebugExpandedPawns = new();
 
     // Overlay settings
     public bool OverlayEnabled = false;
@@ -162,9 +161,7 @@ public class RimTalkSettings : ModSettings
         Scribe_Values.Look(ref DebugGroupingEnabled, "debugGroupingEnabled", false);
         Scribe_Values.Look(ref DebugSortColumn, "debugSortColumn", null);
         Scribe_Values.Look(ref DebugSortAscending, "debugSortAscending", true);
-
-        Scribe_Collections.Look(ref DebugExpandedPawns, "debugExpandedPawns", LookMode.Value);
-
+        
         // Overlay settings
         Scribe_Values.Look(ref OverlayEnabled, "overlayEnabled", false);
         Scribe_Values.Look(ref OverlayOpacity, "overlayOpacity", 0.5f);
@@ -207,9 +204,6 @@ public class RimTalkSettings : ModSettings
                 
         if (EnabledArchivableTypes == null)
             EnabledArchivableTypes = new Dictionary<string, bool>();
-            
-        if (DebugExpandedPawns == null)
-            DebugExpandedPawns = new List<string>();
             
         // Ensure we have at least one cloud config
         if (CloudConfigs.Count == 0)

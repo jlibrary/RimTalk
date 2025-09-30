@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using RimTalk.Data;
-using RimTalk.Util;
 using RimWorld;
+using UnityEngine;
 using Verse;
 using Verse.AI;
 using Verse.AI.Group;
+using Cache = RimTalk.Data.Cache;
 
 namespace RimTalk.Service;
 
@@ -27,24 +28,64 @@ public static class PawnService
         return pawn.health.hediffSet.hediffs.Where(hediff => hediff.Visible).ToHashSet();
     }
 
-    // Compare and return new thought that has the highest overall effect
-    public static KeyValuePair<Thought, float> GetNewThought(Pawn pawn)
-    {
-        var newThoughts = GetThoughts(pawn).OrderByDescending(kvp => Math.Abs(kvp.Value));
+    private const int ThoughtTalkCooldownTicks = 30000; 
 
-        return newThoughts.FirstOrDefault(kvp =>
-            !Cache.Get(pawn).Thoughts.TryGetValue(kvp.Key.def.defName, out float moodOffset) ||
-            Math.Abs(kvp.Value) > Math.Abs(moodOffset));
+    public static Thought GetThoughtToTalkAbout(Pawn pawn)
+    {
+        var pawnCache = Cache.Get(pawn);
+        if (pawnCache == null) return null;
+
+        var currentThoughts = GetThoughts(pawn);
+        var spokenTicks = pawnCache.SpokenThoughtTicks;
+    
+        var candidates = new List<Thought>();
+
+        foreach (var kvp in currentThoughts)
+        {
+            var thought = kvp.Key;
+            if (Math.Abs(thought.MoodOffset()) < 0.01f)
+            {
+                continue;
+            }
+
+            var defName = thought.def.defName;
+
+            // Condition 1: Is this a brand new thought we've never spoken about?
+            if (!spokenTicks.ContainsKey(defName))
+            {
+                candidates.Add(thought);
+            }
+            // Condition 2: Or, have we spoken about it, but the cooldown has passed?
+            else
+            {
+                int lastSpokenTick = spokenTicks[defName];
+                if (Counter.Tick > lastSpokenTick + ThoughtTalkCooldownTicks)
+                {
+                    candidates.Add(thought);
+                }
+            }
+        }
+
+        if (!candidates.Any())
+        {
+            return null; // Nothing new or fresh to say.
+        }
+
+        // From the list of valid candidates, return the one with the highest current mood impact.
+        return candidates.OrderByDescending(t => Math.Abs(t.MoodOffset())).FirstOrDefault();
     }
 
     public static string GetNewThoughtLabel(Thought thought)
     {
         if (thought == null) return null;
 
-        // var offset = thought.MoodOffset();
-        // var attitude = offset > 0 ? "up" : offset < 0 ? "down" : "";
-
-        return $"thought: {thought.LabelCap}({thought.Description})";
+        var offset = thought.MoodOffset();
+    
+        if (offset > 0)
+            return $"positive thought: {thought.LabelCap}";
+        if (offset < 0)
+            return $"negative thought: {thought.LabelCap}";
+        return $"thought: {thought.LabelCap}";
     }
         
     public static bool IsPawnInDanger(Pawn pawn)
@@ -153,7 +194,7 @@ public static class PawnService
         List<string> parts = new List<string>();
             
         // --- 1. Add status ---
-        parts.Add($"Currently: {GetStatus(pawn)}");
+        parts.Add($"{pawn.LabelShort} ({GetActivity(pawn)})");
 
         if (IsPawnInDanger(pawn))
         {
@@ -168,7 +209,7 @@ public static class PawnService
             var nearbyNotableStatuses = nearbyPawns
                 .Where(nearbyPawn => nearbyPawn.Faction == pawn.Faction && IsPawnInDanger(nearbyPawn))
                 .Take(2)
-                .Select(other => $"{other.LabelShort} in {GetStatus(other).Replace("\n", "; ")}")
+                .Select(other => $"{other.LabelShort} in {GetActivity(other).Replace("\n", "; ")}")
                 .ToList();
 
             if (nearbyNotableStatuses.Any())
@@ -184,7 +225,7 @@ public static class PawnService
                     string name = GetPawnName(pawn, nearbyPawn);
                     if (Cache.Get(nearbyPawn) is PawnState pawnState)
                     {
-                        name = $"{name} ({GetStatus(nearbyPawn).StripTags()})";
+                        name = $"{name} ({GetActivity(nearbyPawn).StripTags()})";
                     }
                     return name;
                 })
@@ -204,7 +245,15 @@ public static class PawnService
 
         if (IsInvader(pawn))
         {
-            parts.Add("invading user colony");
+            if (pawn.GetLord()?.LordJob is LordJob_StageThenAttack || pawn.GetLord()?.LordJob is LordJob_Siege)
+            {
+                parts.Add("waiting to invade user colony");
+            }
+            else
+            {
+                parts.Add("invading user colony");
+            }
+            
             return string.Join("\n", parts);
         }
 
@@ -285,17 +334,88 @@ public static class PawnService
         "RR_InterrogatePrisoner",
         "RR_LearnRemotely"
     ];
-        
-    public static string GetStatus(Pawn pawn)
+    
+    private static string GetActivity(Pawn pawn)
     {
-        pawn.def.hideMainDesc = true;
-        string status = pawn.GetInspectString();
-        if (ResearchJobDefNames.Contains(pawn.CurJob?.def.defName)) // The job is compared against its defined name.
+        if (pawn.InMentalState)
+            return pawn.MentalState?.InspectLine;
+
+        if (pawn.CurJobDef is null)
+            return null;
+
+        var target = pawn.IsAttacking() ? pawn.TargetCurrentlyAimingAt.Thing?.LabelShortCap : null;
+        if (target != null)
+            return $"Attacking {target}";
+
+        var lord = pawn.GetLord()?.LordJob?.GetReport(pawn);
+        var job = pawn.jobs?.curDriver?.GetReport();
+
+        string activity;
+        if (lord == null) activity = job;
+        else activity = job == null ? lord : $"{lord} ({job})";
+
+        if (ResearchJobDefNames.Contains(pawn.CurJob?.def.defName))
         {
             ResearchProjectDef project = Find.ResearchManager.GetProject();
             if (project != null)
-                status += $" (Project: {project.label})"; // Adding 'Project:' seems to work better for dialogue generation!
+                activity += $" (Project: {project.label})";
         }
-        return status;
+
+        return activity;
+    }
+    
+    public static string GetPrisonerSlaveStatus(Pawn pawn)
+    {
+        string result = "";
+
+        if (pawn.IsPrisoner)
+        {
+            // === Resistance (for recruitment) ===
+            float resistance = pawn.guest.resistance;
+            result += $"Resistance: {resistance:0.0} ({DescribeResistance(resistance)})\n";
+
+            // === Will (for enslavement) ===
+            float will = pawn.guest.will;
+            result += $"Will: {will:0.0} ({DescribeWill(will)})\n";
+        }
+
+        // === Suppression (slave compliance, if applicable) ===
+        else if (pawn.IsSlave)
+        {
+            var suppressionNeed = pawn.needs?.TryGetNeed<Need_Suppression>();
+            if (suppressionNeed != null)
+            {
+                float suppression = suppressionNeed.CurLevelPercentage * 100f;
+                result += $"Suppression: {suppression:0.0}% ({DescribeSuppression(suppression)})\n";
+            }
+        }
+
+        return result.TrimEnd();
+    }
+
+    private static string DescribeResistance(float value)
+    {
+        if (value <= 0f) return "Completely broken, ready to join";
+        if (value < 2f) return "Barely resisting, close to giving in";
+        if (value < 6f) return "Weakened, but still cautious";
+        if (value < 12f) return "Strong-willed, requires effort";
+        return "Extremely defiant, will take a long time";
+    }
+
+    private static string DescribeWill(float value)
+    {
+        if (value <= 0f) return "No will left, ready for slavery";
+        if (value < 2f) return "Weak-willed, easy to enslave";
+        if (value < 6f) return "Moderate will, may resist a little";
+        if (value < 12f) return "Strong will, difficult to enslave";
+        return "Unyielding, very hard to enslave";
+    }
+
+    private static string DescribeSuppression(float value)
+    {
+        if (value < 20f) return "Openly rebellious, likely to resist or escape";
+        if (value < 50f) return "Unstable, may push boundaries";
+        if (value < 80f) return "Generally obedient, but watchful";
+        return "Completely cowed, unlikely to resist";
     }
 }

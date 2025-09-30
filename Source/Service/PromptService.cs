@@ -14,24 +14,18 @@ public static class PromptService
 {
     public enum InfoLevel
     {
-        Short, Normal, Full
+        Short,
+        Normal,
+        Full
     }
+
     public static string BuildContext(List<Pawn> pawns)
     {
-        // build context with 2 other nearby pawns
-        List<Pawn> nearbyPawns = PawnSelector.GetNearByTalkablePawns(pawns[0]);
-
-        // Create a new list with nearby pawns
-        List<Pawn> mergedPawns = pawns.Concat(nearbyPawns).Distinct().Take(3).ToList();
-            
         StringBuilder context = new StringBuilder();
-        var instruction = Regex.Replace(Constant.Instruction, @"\r\n", "\n");
-        instruction = Regex.Replace(instruction, @"  +", " ");
-
-        context.AppendLine(instruction).AppendLine();
+        context.AppendLine(Constant.Instruction).AppendLine();
 
         int count = 0;
-        foreach (Pawn pawn in mergedPawns)
+        foreach (Pawn pawn in pawns)
         {
             // Main pawn gets more detail, others get basic info
             InfoLevel infoLevel = pawn == pawns[0] ? InfoLevel.Normal : InfoLevel.Short;
@@ -43,7 +37,7 @@ public static class PromptService
             context.AppendLine(pawnContext);
             context.AppendLine($"[Person {count} END]");
         }
-            
+
         return context.ToString();
     }
 
@@ -129,7 +123,9 @@ public static class PromptService
             {
                 if (degreeData.degree == trait.Degree)
                 {
-                    traits += degreeData.label + (infoLevel == InfoLevel.Full ? $":{Sanitize(degreeData.description, pawn)}\n" : ",");
+                    traits += degreeData.label + (infoLevel == InfoLevel.Full
+                        ? $":{Sanitize(degreeData.description, pawn)}\n"
+                        : ",");
                     break;
                 }
             }
@@ -144,12 +140,13 @@ public static class PromptService
             {
                 skills += $"{skillRecord.def.label}: {skillRecord.Level}, ";
             }
+
             sb.AppendLine(skills);
         }
 
         return sb.ToString();
     }
-        
+
     public static string CreatePawnContext(Pawn pawn, InfoLevel infoLevel = InfoLevel.Normal)
     {
         StringBuilder sb = new StringBuilder();
@@ -172,7 +169,7 @@ public static class PromptService
 
         if (healthInfo != "")
             sb.AppendLine($"Health: {healthInfo}");
-            
+
         var personality = Cache.Get(pawn).Personality;
         if (personality != null)
             sb.AppendLine($"Personality: {personality}");
@@ -182,8 +179,9 @@ public static class PromptService
             return sb.ToString();
 
         var m = pawn.needs?.mood;
-        var mood = $"Mood: {m?.MoodString ?? "N/A"} ({(int)((m?.CurLevelPercentage ?? 0) * 100)})";
-            
+        var mood = pawn.InMentalState
+            ? $"Mood: {pawn.MentalState?.InspectLine} (in mental break)"
+            : $"Mood: {m?.MoodString ?? "N/A"} ({(int)((m?.CurLevelPercentage ?? 0) * 100)}%)";
         sb.AppendLine(mood);
 
         var thoughts = "Memory: ";
@@ -193,6 +191,9 @@ public static class PromptService
         }
 
         sb.AppendLine(thoughts);
+
+        if (pawn.IsSlave || pawn.IsPrisoner)
+            sb.AppendLine(PawnService.GetPrisonerSlaveStatus(pawn));
 
         //// VISITOR STOP
         if (PawnService.IsVisitor(pawn))
@@ -222,27 +223,29 @@ public static class PromptService
         return sb.ToString();
     }
 
-    public static string DecoratePrompt(string prompt, Pawn pawn1, Pawn pawn2, string status)
+    public static string DecoratePrompt(string prompt, List<Pawn> pawns, string status)
     {
         var sb = new StringBuilder();
         CommonUtil.InGameData gameData = CommonUtil.GetInGameData();
 
-        // add pawn names
-        sb.Append(pawn1.LabelShort);
-        if (pawn2 != null)
+        // Add the conversation part
+        if (pawns.Count == 1) 
+            sb.Append($"{pawns[0].LabelShort} short monologue");
+        else if (PawnService.HostilePawnNearBy(pawns[0]) == null)
         {
-            sb.Append($" and {pawn2.LabelShort}");
+            sb.Append($"{pawns[0].LabelShort} starts conversation, taking turns");
+        }
+        else
+        {
+            sb.Append($"{pawns[0].LabelShort} dialogue short, urgent tone (survival/command)");
         }
 
-        sb.Append(": ");
-
-        // add prompt
-        sb.Append(prompt);
+        sb.Append($"\n{prompt}");
 
         // add pawn status
         sb.Append($"\n{status}");
 
-        string locationStatus = GetPawnLocationStatus(pawn1);
+        string locationStatus = GetPawnLocationStatus(pawns[0]);
         if (!string.IsNullOrEmpty(locationStatus))
             sb.Append($"\nLocation: {locationStatus}");
 
@@ -258,9 +261,9 @@ public static class PromptService
         // add weather
         sb.Append($"\nWeather: {gameData.WeatherString}");
 
-            // add language assurance
-            if (AIService.IsFirstInstruction())
-                sb.Append($"\nin {Constant.Lang}");
+        // add language assurance
+        if (AIService.IsFirstInstruction())
+            sb.Append($"\nin {Constant.Lang}");
 
         return sb.ToString();
     }

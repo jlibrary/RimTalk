@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using RimTalk.Client;
+using RimTalk.Client.Gemini;
 using RimTalk.Data;
 using RimTalk.Error;
 using RimTalk.Util;
@@ -14,19 +16,84 @@ public static class AIService
     private static bool _contextUpdating;
     private static bool _firstInstruction = true;
 
-    // Multi-turn conversation used for generating AI dialogue
+    /// <summary>
+    /// Streaming chat that invokes callback as each player's dialogue is parsed
+    /// </summary>
+    public static async Task<List<TalkResponse>> ChatStreaming<T>(
+        TalkRequest request,
+        List<(Role role, string message)> messages,
+        Dictionary<string, T> players,
+        Action<T, TalkResponse> onPlayerResponseReceived)
+    {
+        var currentMessages = new List<(Role role, string message)>(messages) { (Role.User, request.Prompt) };
+        var initApiLog = ApiHistory.AddRequest(request, _instruction);
+        var allResponses = new List<TalkResponse>();
+        var lastApiLog = initApiLog;
+
+        _busy = true;
+        try
+        {
+            var payload = await AIErrorHandler.HandleWithRetry(() =>
+            {
+                var client = AIClientFactory.GetAIClient();
+                return client.GetStreamingChatCompletionAsync<TalkResponse>(_instruction, currentMessages,
+                    talkResponse =>
+                    {
+                        if (!players.TryGetValue(talkResponse.Name, out var player))
+                        {
+                            return;
+                        }
+
+                        allResponses.Add(talkResponse);
+
+                        // Add logs
+                        int elapsedMs = (int)(DateTime.Now - lastApiLog.Timestamp).TotalMilliseconds;
+                        if (lastApiLog == initApiLog)
+                            elapsedMs -= lastApiLog.ElapsedMs;
+                        
+                        var newApiLog = ApiHistory.AddResponse(initApiLog.Id, talkResponse.Text, talkResponse.Name, elapsedMs:elapsedMs);
+                        talkResponse.Id = newApiLog.Id;
+                        
+                        lastApiLog = newApiLog;
+
+                        onPlayerResponseReceived?.Invoke(player, talkResponse);
+                    });
+            });
+
+            if (payload == null)
+            {
+                initApiLog.Response = "Failed";
+                return null;
+            }
+
+            ApiHistory.UpdatePayload(initApiLog.Id, payload);
+
+            Stats.IncrementCalls();
+            Stats.IncrementTokens(payload.TokenCount);
+
+            _firstInstruction = false;
+
+            return allResponses;
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    // Original non-streaming method
     public static async Task<List<TalkResponse>> Chat(TalkRequest request,
         List<(Role role, string message)> messages)
     {
         var currentMessages = new List<(Role role, string message)>(messages) { (Role.User, request.Prompt) };
 
-        var talkLogId = ApiHistory.AddRequest(request);
+        var apiLog = ApiHistory.AddRequest(request, _instruction);
 
         var payload = await ExecuteAIRequest(_instruction, currentMessages);
 
         if (payload == null)
         {
-            ApiHistory.RemoveRequest(talkLogId);
+            apiLog.Response = "Failed";
             return null;
         }
 
@@ -36,9 +103,8 @@ public static class AIService
         {
             foreach (var talkResponse in talkResponses)
             {
-                talkResponse.ResponsePayload = payload.Response;
-                talkLogId = ApiHistory.AddResponse(talkLogId, talkResponse.Text, payload, talkResponse.Name);
-                talkResponse.Id = talkLogId;
+                apiLog = ApiHistory.AddResponse(apiLog.Id, talkResponse.Text, talkResponse.Name, payload);
+                talkResponse.Id = apiLog.Id;
             }
         }
 
@@ -52,19 +118,19 @@ public static class AIService
     {
         List<(Role role, string message)> message = [(Role.User, request.Prompt)];
 
-        var talkLogId = ApiHistory.AddRequest(request);
+        var apiLog = ApiHistory.AddRequest(request, _instruction);
 
         var payload = await ExecuteAIRequest(_instruction, message);
 
         if (payload == null)
         {
-            ApiHistory.RemoveRequest(talkLogId);
+            apiLog.Response = "Failed";
             return null;
         }
 
         var jsonData = JsonUtil.DeserializeFromJson<T>(payload.Response);
 
-        ApiHistory.AddResponse(talkLogId, jsonData.ToString(), payload);
+        ApiHistory.AddResponse(apiLog.Id, jsonData.ToString(), payload: payload);
 
         return jsonData;
     }
@@ -97,6 +163,11 @@ public static class AIService
     {
         Logger.Debug($"UpdateContext:\n{context}");
         _instruction = context;
+    }
+
+    public static string GetContext()
+    {
+        return _instruction;
     }
 
     public static bool IsFirstInstruction()

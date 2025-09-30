@@ -17,59 +17,100 @@ public class GeminiClient : IAIClient
     private static string CurrentApiKey => Settings.Get().GetActiveConfig()?.ApiKey;
     private static string CurrentModel => Settings.Get().GetCurrentModel();
     private static string EndpointUrl => $"{BaseUrl}/models/{CurrentModel}:generateContent?key={CurrentApiKey}";
+    private static string StreamEndpointUrl => $"{BaseUrl}/models/{CurrentModel}:streamGenerateContent?alt=sse&key={CurrentApiKey}";
+
     private readonly Random _random = new();
 
-    public async Task<Payload> GetChatCompletionAsync(string instruction,
-        List<(Role role, string message)> messages)
+    /// <summary>
+    /// Gets a standard chat completion.
+    /// </summary>
+    public async Task<Payload> GetChatCompletionAsync(string instruction, List<(Role role, string message)> messages)
     {
-        // Handle system instruction based on model type
+        string jsonContent = BuildRequestJson(instruction, messages);
+        var response = await SendRequestAsync<GeminiResponse>(EndpointUrl, jsonContent, new DownloadHandlerBuffer());
+
+        var content = response?.Candidates?[0]?.Content?.Parts?[0]?.Text;
+        var tokens = response?.UsageMetadata?.TotalTokenCount ?? 0;
+
+        return new Payload(jsonContent, content, tokens);
+    }
+
+    /// <summary>
+    /// Streams chat completion and invokes a callback for each response chunk.
+    /// </summary>
+    public async Task<Payload> GetStreamingChatCompletionAsync<T>(string instruction,
+        List<(Role role, string message)> messages, Action<T> onResponseParsed) where T : class
+    {
+        string jsonContent = BuildRequestJson(instruction, messages);
+        var jsonParser = new JsonStreamParser<T>();
+
+        var streamingHandler = new GeminiStreamHandler(jsonChunk =>
+        {
+            var responses = jsonParser.Parse(jsonChunk);
+            foreach (var response in responses)
+            {
+                onResponseParsed?.Invoke(response);
+            }
+        });
+
+        await SendRequestAsync<object>(StreamEndpointUrl, jsonContent,
+            streamingHandler); // Type param is not used here, so 'object' is a placeholder.
+
+        var fullResponse = streamingHandler.GetFullText();
+        var tokens = streamingHandler.GetTotalTokens();
+
+        Logger.Debug($"API response: \n{streamingHandler.GetRawJson()}");
+        return new Payload(jsonContent, fullResponse, tokens);
+    }
+
+    /// <summary>
+    /// Builds the JSON payload for the Gemini API request.
+    /// </summary>
+    private string BuildRequestJson(string instruction, List<(Role role, string message)> messages)
+    {
         SystemInstruction systemInstruction = null;
         var allMessages = new List<(Role role, string message)>();
 
         if (CurrentModel.Contains("gemma"))
         {
-            // For Gemma models, add instruction as the first user message with random prefix
-            allMessages.Add((Role.User, _random.Next() + " " + instruction));
+            // For Gemma models, the instruction is added as a user message with a random prefix.
+            allMessages.Add((Role.User, $"{_random.Next()} {instruction}"));
         }
         else
         {
-            // For other models, use system_instruction field
             systemInstruction = new SystemInstruction
             {
                 Parts = [new Part { Text = instruction }]
             };
         }
 
-        // Add the rest of the messages
         allMessages.AddRange(messages);
 
         var generationConfig = new GenerationConfig();
-
-        // Handle thinkingBudget for flash models
         if (CurrentModel.Contains("flash"))
         {
             generationConfig.ThinkingConfig = new ThinkingConfig { ThinkingBudget = 0 };
         }
 
-        var request = new GeminiRequest()
+        var request = new GeminiDto()
         {
             SystemInstruction = systemInstruction,
             Contents = allMessages.Select(m => new Content
             {
                 Role = ConvertRole(m.role),
-                Parts = new List<Part> { new Part { Text = m.message } }
+                Parts = [new Part { Text = m.message }]
             }).ToList(),
             GenerationConfig = generationConfig
         };
 
-        string jsonContent = JsonUtil.SerializeToJson(request);
-        var response = await GetCompletionAsync(jsonContent);
-        var content = response?.Candidates?[0]?.Content?.Parts?[0]?.Text;
-        var tokens = response?.UsageMetadata?.TotalTokenCount ?? 0;
-        return new Payload(jsonContent, content, tokens);
+        return JsonUtil.SerializeToJson(request);
     }
-        
-    private async Task<GeminiResponse> GetCompletionAsync(string jsonContent)
+
+    /// <summary>
+    /// A generic method to handle sending UnityWebRequests.
+    /// </summary>
+    private async Task<T> SendRequestAsync<T>(string url, string jsonContent, DownloadHandler downloadHandler)
+        where T : class
     {
         if (string.IsNullOrEmpty(CurrentApiKey))
         {
@@ -79,23 +120,25 @@ public class GeminiClient : IAIClient
 
         try
         {
-            Logger.Debug($"API request: {EndpointUrl}\n{jsonContent}");
+            Logger.Debug($"API request: {url}\n{jsonContent}");
 
-            using var webRequest = new UnityWebRequest(EndpointUrl, "POST");
-            byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonContent);
-            webRequest.uploadHandler = new UploadHandlerRaw(bodyRaw);
-            webRequest.downloadHandler = new DownloadHandlerBuffer();
+            using var webRequest = new UnityWebRequest(url, "POST");
+            webRequest.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(jsonContent));
+            webRequest.downloadHandler = downloadHandler;
             webRequest.SetRequestHeader("Content-Type", "application/json");
 
             var asyncOperation = webRequest.SendWebRequest();
 
             while (!asyncOperation.isDone)
             {
-                if (Current.Game == null) return null;
+                if (Current.Game == null) return null; // Exit if the game is no longer running.
                 await Task.Delay(100);
             }
-                    
-            Logger.Debug($"API response: \n{webRequest.downloadHandler.text}");
+
+            if (downloadHandler is DownloadHandlerBuffer)
+            {
+                Logger.Debug($"API response: \n{webRequest.downloadHandler.text}");
+            }
 
             if (webRequest.responseCode == 429)
                 throw new QuotaExceededException("Quota exceeded");
@@ -104,20 +147,26 @@ public class GeminiClient : IAIClient
 
             if (webRequest.isNetworkError || webRequest.isHttpError)
             {
-                Logger.Error($"Request failed: {webRequest.responseCode} - {webRequest.error}");
-                throw new Exception(webRequest.error);
+                var errorMessage = $"Request failed: {webRequest.responseCode} - {webRequest.error}";
+                Logger.Error(errorMessage);
+                throw new Exception(errorMessage);
             }
 
-            GeminiResponse response = JsonUtil.DeserializeFromJson<GeminiResponse>(webRequest.downloadHandler.text);
-                    
-            if (response.Candidates?[0]?.FinishReason == "MAX_TOKENS")
-                throw new QuotaExceededException("Quota exceeded");
-                    
-            return response;
+            // For non-streaming, deserialize the response. For streaming, the handler processes data, and we return null.
+            if (downloadHandler is DownloadHandlerBuffer)
+            {
+                var response = JsonUtil.DeserializeFromJson<GeminiResponse>(webRequest.downloadHandler.text);
+                if (response?.Candidates?[0]?.FinishReason == "MAX_TOKENS")
+                    throw new QuotaExceededException("Quota exceeded (MAX_TOKENS)");
+
+                return response as T;
+            }
+
+            return null; // For streaming, the result is handled by the callback.
         }
         catch (QuotaExceededException)
         {
-            throw;
+            throw; // Re-throw specific exceptions to be handled upstream.
         }
         catch (Exception ex)
         {
@@ -125,17 +174,14 @@ public class GeminiClient : IAIClient
             throw;
         }
     }
-        
+
     private string ConvertRole(Role role)
     {
-        switch (role)
+        return role switch
         {
-            case Role.User:
-                return "user";
-            case Role.AI:
-                return "model"; 
-            default:
-                throw new ArgumentException($"Unknown role: {role}");
-        }
+            Role.User => "user",
+            Role.AI => "model",
+            _ => throw new ArgumentException($"Unknown role: {role}"),
+        };
     }
 }

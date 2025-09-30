@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using RimTalk.Service;
 using RimTalk.Util;
 using RimWorld;
@@ -18,30 +17,31 @@ public class PawnState
     public readonly Queue<TalkResponse> TalkQueue = new();
     public bool IsGeneratingTalk { get; set; }
     public TalkRequest TalkRequest { get; set; }
-    public Dictionary<string, float> Thoughts { get; set; }
     public HashSet<Hediff> Hediffs { get; set; }
-        
+
     public string Personality => PersonaService.GetPersonality(Pawn);
     public double TalkInitiationWeight => PersonaService.GetTalkInitiationWeight(Pawn);
-        
+
+    public Dictionary<string, int> SpokenThoughtTicks { get; private set; } = new();
 
     public PawnState(Pawn pawn)
     {
         Pawn = pawn;
         LastTalkTick = 0;
-        UpdateThoughts();
         Hediffs = PawnService.GetHediffs(pawn);
+        SeedInitialThoughts();
     }
-        
-    public void UpdateThoughts() {
-        UpdateThoughts(new KeyValuePair<Thought, float>(null, 0.0f));
-    }
-    public void UpdateThoughts(KeyValuePair<Thought, float> thought)
+    
+    private void SeedInitialThoughts()
     {
-        if (thought.Key != null)
-            Thoughts[thought.Key.def.defName] = thought.Value;
-        else
-            Thoughts = PawnService.GetThoughts(Pawn).ToDictionary(kvp => kvp.Key.def.defName, kvp => kvp.Value);
+        // Safety check to ensure the game is fully loaded
+        if (Current.Game == null || Counter.Tick == 0) return;
+
+        var initialThoughts = PawnService.GetThoughts(Pawn);
+        foreach (var kvp in initialThoughts)
+        {
+            SpokenThoughtTicks[kvp.Key.def.defName] = Counter.Tick;
+        }
     }
 
     public void AddTalkRequest(string prompt, Pawn recipient = null, TalkRequest.Type type = TalkRequest.Type.Other)
@@ -51,26 +51,26 @@ public class PawnState
 
     public bool CanDisplayTalk()
     {
-        if (WorldRendererUtility.CurrentWorldRenderMode == WorldRenderMode.Planet || Find.CurrentMap == null || Pawn.Map != Find.CurrentMap || !Pawn.Spawned)
+        if (WorldRendererUtility.CurrentWorldRenderMode == WorldRenderMode.Planet || Find.CurrentMap == null ||
+            Pawn.Map != Find.CurrentMap || !Pawn.Spawned)
         {
             return false;
         }
-            
+
         if (!Settings.Get().DisplayTalkWhenDrafted && Pawn.Drafted)
             return false;
-            
+
         return Pawn.Awake()
                && !Pawn.DeadOrDowned
                && Pawn.CurJobDef != JobDefOf.LayDown
                && Pawn.CurJobDef != JobDefOf.LayDownAwake
                && Pawn.CurJobDef != JobDefOf.LayDownResting
-               && TalkInitiationWeight > 0 
-               && GenTicks.TicksGame - LastTalkTick >
-               CommonUtil.GetTicksForDuration(RimTalkSettings.ReplyInterval);
+               && TalkInitiationWeight > 0;
     }
-        
+
     public bool CanGenerateTalk()
     {
-        return !IsGeneratingTalk && CanDisplayTalk() && TalkQueue.Empty();
+        return !IsGeneratingTalk && CanDisplayTalk() && TalkQueue.Empty() 
+               && CommonUtil.HasPassed(LastTalkTick, Settings.Get().TalkInterval);;
     }
 }

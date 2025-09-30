@@ -45,6 +45,101 @@ public class OpenAIClient : IAIClient
 
     private string EndpointUrl { get; }
 
+    public async Task<Payload> GetStreamingChatCompletionAsync<T>(string instruction,
+        List<(Role role, string message)> messages, Action<T> onResponseParsed) where T : class
+    {
+        var allMessages = new List<Message>();
+
+        if (!string.IsNullOrEmpty(instruction))
+        {
+            allMessages.Add(new Message
+            {
+                Role = "system",
+                Content = instruction
+            });
+        }
+
+        allMessages.AddRange(messages.Select(m => new Message
+        {
+            Role = ConvertRole(m.role),
+            Content = m.message
+        }));
+
+        var request = new OpenAIRequest
+        {
+            Model = _model,
+            Messages = allMessages,
+            Stream = true,
+            StreamOptions = new StreamOptions { IncludeUsage = true }
+        };
+
+        string jsonContent = JsonUtil.SerializeToJson(request);
+        
+        var jsonParser = new JsonStreamParser<T>();
+        var streamingHandler = new OpenAIStreamHandler(contentChunk =>
+        {
+            var responses = jsonParser.Parse(contentChunk);
+            foreach (var response in responses)
+            {
+                onResponseParsed?.Invoke(response);
+            }
+        });
+
+        if (string.IsNullOrEmpty(EndpointUrl))
+        {
+            Logger.Error("Endpoint URL is missing.");
+            return null;
+        }
+
+        try
+        {
+            Logger.Debug($"API request: {EndpointUrl}\n{jsonContent}");
+
+            byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonContent);
+
+            using var webRequest = new UnityWebRequest(EndpointUrl, "POST");
+            webRequest.uploadHandler = new UploadHandlerRaw(bodyRaw);
+            webRequest.downloadHandler = streamingHandler;
+            webRequest.SetRequestHeader("Content-Type", "application/json");
+
+            if (!string.IsNullOrEmpty(_apiKey))
+            {
+                webRequest.SetRequestHeader("Authorization", $"Bearer {_apiKey}");
+            }
+
+            var asyncOperation = webRequest.SendWebRequest();
+
+            while (!asyncOperation.isDone)
+            {
+                if (Current.Game == null) return null;
+                await Task.Delay(100);
+            }
+
+            if (webRequest.responseCode == 429)
+                throw new QuotaExceededException("Quota exceeded");
+
+            if (webRequest.isNetworkError || webRequest.isHttpError)
+            {
+                Logger.Error($"Request failed: {webRequest.responseCode} - {webRequest.error}");
+                throw new Exception(webRequest.error);
+            }
+            
+            var fullResponse = streamingHandler.GetFullText();
+            var tokens = streamingHandler.GetTotalTokens();
+            Logger.Debug($"API response: \n{streamingHandler.GetRawJson()}");
+            return new Payload(jsonContent, fullResponse, tokens);
+        }
+        catch (QuotaExceededException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Logger.Error($"Exception in API request: {ex.Message}");
+            throw;
+        }
+    }
+
     public async Task<Payload> GetChatCompletionAsync(string instruction,
         List<(Role role, string message)> messages)
     {

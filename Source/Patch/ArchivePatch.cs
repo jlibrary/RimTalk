@@ -4,6 +4,7 @@ using RimTalk.Data;
 using RimWorld;
 using Verse;
 using System.Collections.Generic;
+using RimTalk.Service;
 
 namespace RimTalk.Patch;
 
@@ -53,7 +54,8 @@ public static class ArchivePatch
                 IntVec3 targetPosition = archivable.LookTargets.PrimaryTarget.Cell;
 
                 nearbyColonists = eventMap.mapPawns.AllPawnsSpawned
-                    .Where(pawn => pawn.IsColonist && pawn.Position.DistanceTo(targetPosition) <= maxDistance)
+                    .Where(pawn => Cache.Get(pawn)?.CanDisplayTalk() == true 
+                                   && pawn.Position.DistanceTo(targetPosition) <= maxDistance)
                     .ToList();
             }
         }

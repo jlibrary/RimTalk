@@ -49,7 +49,7 @@ public partial class Settings
             }
             else
             {
-                var response = JsonUtil.DeserializeFromJson<ModelsResponse>(webRequest.downloadHandler.text);
+                var response = JsonUtil.DeserializeFromJson<OpenAIModelsResponse>(webRequest.downloadHandler.text);
                 if (response != null)
                 {
                     models = response.Data.Select(m => m.Id).ToList();

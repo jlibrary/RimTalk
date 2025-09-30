@@ -3,7 +3,6 @@ using System.Collections;
 using System.IO;
 using System.Runtime.Serialization.Json;
 using System.Text;
-using Newtonsoft.Json;
 
 namespace RimTalk.Util;
 
@@ -31,20 +30,20 @@ public static class JsonUtil
         {
             return default;
         }
-
         try
         {
-            var settings = new JsonSerializerSettings
+            using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(sanitizedJson)))
             {
-                MissingMemberHandling = MissingMemberHandling.Ignore
-            };
+                // Create an instance of DataContractJsonSerializer
+                var serializer = new DataContractJsonSerializer(typeof(T));
 
-            return JsonConvert.DeserializeObject<T>(sanitizedJson, settings);
+                // Deserialize the JSON data
+                return (T)serializer.ReadObject(stream);
+            }
         }
         catch (Exception ex)
         {
-            Console.WriteLine(
-                $"Json deserialization failed for {typeof(T).Name}. Error: {ex.Message}\n--- Sanitized JSON ---\n{sanitizedJson}\n--- Original JSON ---\n{json}");
+            Logger.Error($"Json deserialization failed for {typeof(T).Name}\n{json}");
             throw;
         }
     }

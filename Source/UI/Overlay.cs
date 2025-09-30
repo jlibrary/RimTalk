@@ -84,8 +84,8 @@ public class Overlay : MapComponent
 
             var newCache = new List<CachedMessageLine>();
             var messages = allRequests
-                .Where(r => r.IsSpoken)
-                .Reverse()
+                .Where(r => r.SpokenTick > 0)
+                .OrderByDescending(r => r.SpokenTick)
                 .Take(MaxMessagesInLog);
 
             foreach (var message in messages)

@@ -39,6 +39,16 @@ public class OpenAIRequest
 
     [DataMember(Name = "stream", EmitDefaultValue = false)]
     public bool? Stream { get; set; }
+
+    [DataMember(Name = "stream_options", EmitDefaultValue = false)]
+    public StreamOptions StreamOptions { get; set; }
+}
+
+[DataContract]
+public class StreamOptions
+{
+    [DataMember(Name = "include_usage", EmitDefaultValue = false)]
+    public bool? IncludeUsage { get; set; }
 }
 
 [DataContract]
@@ -99,4 +109,44 @@ public class Usage
 
     [DataMember(Name = "total_tokens")]
     public int TotalTokens { get; set; }
+}
+
+// === Stream Response Models ===
+
+[DataContract]
+public class OpenAIStreamChunk
+{
+    [DataMember(Name = "choices")]
+    public List<StreamChoice> Choices { get; set; }
+
+    [DataMember(Name = "usage")]
+    public Usage Usage { get; set; }
+}
+
+[DataContract]
+public class StreamChoice
+{
+    [DataMember(Name = "delta")]
+    public Delta Delta { get; set; }
+}
+
+[DataContract]
+public class Delta
+{
+    [DataMember(Name = "content")]
+    public string Content { get; set; }
+}
+
+[DataContract]
+public class OpenAIModelsResponse
+{
+    [DataMember(Name = "data")]
+    public List<Model> Data { get; set; }
+}
+
+[DataContract]
+public class Model
+{
+    [DataMember(Name = "id")]
+    public string Id { get; set; }
 }

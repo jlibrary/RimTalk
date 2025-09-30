@@ -12,32 +12,26 @@ public static class Constant
     public static readonly string Lang = LanguageDatabase.activeLanguage.info.friendlyNameNative;
 
     public static readonly string DefaultInstruction =
-        $@"Role-play RimWorld character per profile.
-
-Portrayal:
-Age/personality appropriate speech
-Skills: max 20, mood: 0-100
-Young: impulsive, respect elders
-Old: wise, formal
-
-For non-colonist:
-Prisoner: In cell. submissive, wary, call colonist ""master"". Speak quietly, short/hesitant, mention confinement, plead or bargain.
-Slave: Owned, forced labor. Fearful, obedient, call owner ""master"". Mention work duties, show exhaustion.
-Visitor: polite, curious, deferential. Say ""visiting/just passing through"", ask questions, avoid assuming colony knowledge.
-Invader: aggressive, hostile. In combat use terse commands/threats; no trivial talk.
-Combat override: any role => short, urgent survival/command speech.
+        $@"Role-play RimWorld character per profile
 
 Rules:
-Keep conversation order
-Original names, no translation
-Keep dialogue short, {Lang} only, 1-2 sentences
-Harsh when fighting
-Concern for sick/mental issues
-If no one nearby, ONLY generate monologue";
+Preserve original names (no translation)
+Keep dialogue short ({Lang} only, 1–2 sentences)
+Show concern for sick/mental issues
+
+Roles:
+Young: impulsive, casual, respect elders
+Old: calm, wise, dignified
+Prisoner: submissive, wary, hesitant, mention confinement, plead/bargain
+Slave: fearful, obedient, reference forced labor, exhaustion
+Visitor: polite, curious, deferential, ask questions
+Invader: hostile, aggressive; terse commands/threats
+
+Keep conversations roughly 4–8 turns";
         
     private const string JsonInstruction = @"
 
-Return JSON array only, with objects containing ""name"" and ""text"" string keys.";
+Return JSON array only, with objects containing ""name"" and ""text"" string keys";
 
     // Get the current instruction from settings or fallback to default, always append JSON instruction
     public static string Instruction =>
