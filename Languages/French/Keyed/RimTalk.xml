@@ -91,7 +91,7 @@
     <RimTalk.Settings.ButtonDisplayTooltip>Contrôle la manière d'accéder à l'interface de débogage. 'Onglet' ajoute un onglet principal, 'Icône' affiche une icône dans la barre inférieure, et 'Aucun' le masque.</RimTalk.Settings.ButtonDisplayTooltip>
 
     <RimTalk.Settings.AIInstructionPrompt>Prompt d'instruction de l'IA (Modèle : {0})</RimTalk.Settings.AIInstructionPrompt>
-    <RimTalk.Settings.ExternalEditorTip>Astuce : Utilisez copier/coller avec un éditeur externe pour l'édition multiligne</RimTalk.Settings.ExternalEditorTip>
+    <RimTalk.Settings.ExternalEditorTip>Astuce : utilisez copier/coller avec un éditeur externe pour éditer plusieurs lignes, ou tapez \+n pour une nouvelle ligne.</RimTalk.Settings.ExternalEditorTip>
     <RimTalk.Settings.AutoIncludedTip>Astuce : Les détails du pion (traits, relations, race, âge, etc.) sont inclus automatiquement. Rédigez des instructions génériques qui fonctionnent pour tous les personnages et colonies.</RimTalk.Settings.AutoIncludedTip>
     <RimTalk.Settings.RateLimitWarning>Avertissement : Des prompts plus longs consommeront plus de jetons et atteindront plus rapidement les limites de taux. Aucune mise en cache de prompt n'est utilisée.</RimTalk.Settings.RateLimitWarning>
     <RimTalk.Settings.BubbleFadeTip>Astuce : Ajustez le temps de disparition des bulles dans les paramètres du mod Interaction Bubbles pour que le dialogue reste visible plus longtemps en avance rapide.</RimTalk.Settings.BubbleFadeTip>

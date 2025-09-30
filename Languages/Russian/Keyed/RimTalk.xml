@@ -91,7 +91,7 @@
     <RimTalk.Settings.ButtonDisplayTooltip>Управляет доступом к интерфейсу отладки. 'Вкладка' добавляет основную вкладку, 'Переключатель' показывает значок на нижней панели, а 'Нет' скрывает его.</RimTalk.Settings.ButtonDisplayTooltip>
 
     <RimTalk.Settings.AIInstructionPrompt>Инструкция для ИИ (модель: {0})</RimTalk.Settings.AIInstructionPrompt>
-    <RimTalk.Settings.ExternalEditorTip>Совет: Используйте копирование/вставку с внешним редактором для многострочного редактирования</RimTalk.Settings.ExternalEditorTip>
+    <RimTalk.Settings.ExternalEditorTip>Совет: используйте копирование/вставку с внешним редактором для многострочного редактирования или введите \+n для новой строки.</RimTalk.Settings.ExternalEditorTip>
     <RimTalk.Settings.AutoIncludedTip>Совет: Детали пешки (черты, отношения, раса, возраст и т. д.) включаются автоматически. Пишите общие инструкции, которые работают для всех персонажей и колоний.</RimTalk.Settings.AutoIncludedTip>
     <RimTalk.Settings.RateLimitWarning>Предупреждение: Более длинные запросы будут потреблять больше токенов и быстрее достигать лимитов. Кэширование запросов не используется.</RimTalk.Settings.RateLimitWarning>
     <RimTalk.Settings.BubbleFadeTip>Совет: Отрегулируйте время затухания пузыря в настройках мода Interaction Bubbles, чтобы диалоги оставались видимыми дольше во время быстрой перемотки.</RimTalk.Settings.BubbleFadeTip>

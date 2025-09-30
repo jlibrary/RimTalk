@@ -91,7 +91,7 @@
     <RimTalk.Settings.ButtonDisplayTooltip>Controls how the debug interface is accessed. 'Tab' adds a main tab, 'Toggle' shows an icon on the bottom bar, and 'None' hides it.</RimTalk.Settings.ButtonDisplayTooltip>
     
     <RimTalk.Settings.AIInstructionPrompt>AI Instruction Prompt (Model: {0})</RimTalk.Settings.AIInstructionPrompt>
-    <RimTalk.Settings.ExternalEditorTip>Tip: Use copy/paste with external editor for multiline editing</RimTalk.Settings.ExternalEditorTip>
+    <RimTalk.Settings.ExternalEditorTip>Tip: Use copy/paste with an external editor for multiline editing, or type \+n for new lines.</RimTalk.Settings.ExternalEditorTip>
     <RimTalk.Settings.AutoIncludedTip>Tip: Pawn details (traits, relationships, race, age, etc.) are auto-included. Write generic instructions that work across all characters and colonies.</RimTalk.Settings.AutoIncludedTip>
     <RimTalk.Settings.RateLimitWarning>Warning: Longer prompts will consume more tokens and hit rate limits faster. No prompt caching is used.</RimTalk.Settings.RateLimitWarning>
     <RimTalk.Settings.BubbleFadeTip>Tip: Adjust the bubble fade time in the Interaction Bubbles mod settings to keep dialogue visible longer during fast-forward play.</RimTalk.Settings.BubbleFadeTip>

@@ -91,7 +91,7 @@
     <RimTalk.Settings.ButtonDisplayTooltip>디버그 인터페이스 접근 방식을 제어합니다. '탭'은 주 탭을 추가하고, '토글'은 하단 바에 아이콘을 표시하며, '없음'은 숨깁니다.</RimTalk.Settings.ButtonDisplayTooltip>
 
     <RimTalk.Settings.AIInstructionPrompt>AI 지침 프롬프트 (모델: {0})</RimTalk.Settings.AIInstructionPrompt>
-    <RimTalk.Settings.ExternalEditorTip>팁: 여러 줄 편집을 위해 외부 편집기에서 복사/붙여넣기를 사용하세요.</RimTalk.Settings.ExternalEditorTip>
+    <RimTalk.Settings.ExternalEditorTip>팁: 외부 편집기를 사용해 여러 줄을 편집하거나 \+n 을 입력하여 새 줄을 추가하세요.</RimTalk.Settings.ExternalEditorTip>
     <RimTalk.Settings.AutoIncludedTip>팁: 정착민 세부 정보(특성, 관계, 종족, 나이 등)는 자동으로 포함됩니다. 모든 캐릭터와 정착지에 적용될 수 있는 일반적인 지침을 작성하세요.</RimTalk.Settings.AutoIncludedTip>
     <RimTalk.Settings.RateLimitWarning>경고: 프롬프트가 길수록 더 많은 토큰을 소비하고 사용량 제한에 더 빨리 도달합니다. 프롬프트 캐싱은 사용되지 않습니다.</RimTalk.Settings.RateLimitWarning>
     <RimTalk.Settings.BubbleFadeTip>팁: 빠른 진행 중에 대화가 더 오래 보이도록 하려면 Interaction Bubbles 모드 설정에서 말풍선 사라짐 시간을 조정하세요.</RimTalk.Settings.BubbleFadeTip>

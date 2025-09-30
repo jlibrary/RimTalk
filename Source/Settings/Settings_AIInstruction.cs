@@ -87,14 +87,16 @@ public partial class Settings
         // Update buffer and settings logic
         if (newInstruction != _textAreaBuffer)
         {
-            _textAreaBuffer = newInstruction;
-            if (newInstruction == Constant.DefaultInstruction)
+            string processedInstruction = newInstruction.Replace("\\n", "\n");
+
+            _textAreaBuffer = processedInstruction;
+            if (processedInstruction == Constant.DefaultInstruction)
             {
                 settings.CustomInstruction = "";
             }
             else
             {
-                settings.CustomInstruction = newInstruction;
+                settings.CustomInstruction = processedInstruction;
             }
         }
 

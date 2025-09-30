@@ -91,7 +91,7 @@
     <RimTalk.Settings.ButtonDisplayTooltip>控制除錯介面的存取方式。「標籤頁」會新增一個主標籤頁，「切換」會在底部欄顯示一個圖示，「無」則會隱藏它。</RimTalk.Settings.ButtonDisplayTooltip>
 
     <RimTalk.Settings.AIInstructionPrompt>AI 指令提示（模型：{0}）</RimTalk.Settings.AIInstructionPrompt>
-    <RimTalk.Settings.ExternalEditorTip>提示：使用外部編輯器進行複製/貼上以進行多行編輯</RimTalk.Settings.ExternalEditorTip>
+    <RimTalk.Settings.ExternalEditorTip>提示：使用外部编辑器进行多行编辑，或输入 \+n 添加新行。</RimTalk.Settings.ExternalEditorTip>
     <RimTalk.Settings.AutoIncludedTip>提示：角色詳情（特性、關係、種族、年齡等）會自動包含。請編寫適用於所有角色和殖民地的通用指令。</RimTalk.Settings.AutoIncludedTip>
     <RimTalk.Settings.RateLimitWarning>警告：較長的提示將消耗更多權杖並更快達到速率限制。不使用提示快取。</RimTalk.Settings.RateLimitWarning>
     <RimTalk.Settings.BubbleFadeTip>提示：在「互動氣泡」模組設定中調整氣泡淡出時間，以便在快進播放期間讓對話顯示更長時間。</RimTalk.Settings.BubbleFadeTip>

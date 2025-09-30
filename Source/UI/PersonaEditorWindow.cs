@@ -42,7 +42,11 @@ public class PersonaEditorWindow : Window
 
         // Text area with character counter
         Rect textAreaRect = new Rect(inRect.x, instructRect.yMax + 10f, inRect.width, 180f);
-        _editingPersonality = Widgets.TextArea(textAreaRect, _editingPersonality);
+        string rawInput = Widgets.TextArea(textAreaRect, _editingPersonality);
+        if (rawInput != _editingPersonality)
+        {
+            _editingPersonality = rawInput.Replace("\\n", "\n");
+        }
             
         // Character count
         Rect countRect = new Rect(inRect.x, textAreaRect.yMax + 2f, inRect.width, 20f);
