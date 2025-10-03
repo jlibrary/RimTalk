@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using RimTalk.Data;
 using RimWorld;
-using UnityEngine;
 using Verse;
 using Verse.AI;
 using Verse.AI.Group;
@@ -28,7 +27,7 @@ public static class PawnService
         return pawn.health.hediffSet.hediffs.Where(hediff => hediff.Visible).ToHashSet();
     }
 
-    private const int ThoughtTalkCooldownTicks = 30000; 
+    private const int ThoughtTalkCooldownTicks = 60000; 
 
     public static Thought GetThoughtToTalkAbout(Pawn pawn)
     {
@@ -358,7 +357,11 @@ public static class PawnService
         {
             ResearchProjectDef project = Find.ResearchManager.GetProject();
             if (project != null)
-                activity += $" (Project: {project.label})";
+            {
+                float progress = Find.ResearchManager.GetProgress(project);
+                float percentage = (progress / project.baseCost) * 100f;
+                activity += $" (Project: {project.label} - {percentage:F0}%)";
+            }
         }
 
         return activity;

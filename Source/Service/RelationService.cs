@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 using RimWorld;
 using Verse;
@@ -22,43 +23,51 @@ public static class RelationsService
 
             string label = null;
 
-            // --- Step 1: Check for the most important direct or family relationship ---
-            PawnRelationDef mostImportantRelation = pawn.GetMostImportantRelation(otherPawn);
-            if (mostImportantRelation != null)
+            try
             {
-                label = mostImportantRelation.GetGenderSpecificLabelCap(otherPawn);
-            }
+                float opinionValue = pawn.relations.OpinionOf(otherPawn);
 
-            // --- Step 2: If no family relation, check for an overriding status (master, slave, etc.) ---
-            if (string.IsNullOrEmpty(label))
-            {
-                label = GetStatusLabel(pawn, otherPawn);
-            }
+                // --- Step 1: Check for the most important direct or family relationship ---
+                PawnRelationDef mostImportantRelation = pawn.GetMostImportantRelation(otherPawn);
+                if (mostImportantRelation != null)
+                {
+                    label = mostImportantRelation.GetGenderSpecificLabelCap(otherPawn);
+                }
 
-            // --- Step 3: If no other label found, fall back to opinion-based relationship ---
-            if (string.IsNullOrEmpty(label))
-            {
-                float opinion = pawn.relations.OpinionOf(otherPawn);
-                if (opinion >= FriendOpinionThreshold)
+                // --- Step 2: If no family relation, check for an overriding status (master, slave, etc.) ---
+                if (string.IsNullOrEmpty(label))
                 {
-                    label = "Friend".Translate();
+                    label = GetStatusLabel(pawn, otherPawn);
                 }
-                else if (opinion <= RivalOpinionThreshold)
+
+                // --- Step 3: If no other label found, fall back to opinion-based relationship ---
+                if (string.IsNullOrEmpty(label))
                 {
-                    label = "Rival".Translate();
+                    if (opinionValue >= FriendOpinionThreshold)
+                    {
+                        label = "Friend".Translate();
+                    }
+                    else if (opinionValue <= RivalOpinionThreshold)
+                    {
+                        label = "Rival".Translate();
+                    }
+                    else
+                    {
+                        label = "Acquaintance".Translate();
+                    }
                 }
-                else
+
+                // If we found any relevant relationship, add it to the string.
+                if (!string.IsNullOrEmpty(label))
                 {
-                    label = "Acquaintance".Translate();
+                    string pawnName = otherPawn.LabelShort;
+                    string opinion = opinionValue.ToStringWithSign();
+                    relationsSb.Append($"{pawnName}({label}) {opinion}, ");
                 }
             }
-
-            // If we found any relevant relationship, add it to the string.
-            if (!string.IsNullOrEmpty(label))
+            catch (Exception)
             {
-                string pawnName = otherPawn.LabelShort;
-                string opinion = pawn.relations.OpinionOf(otherPawn).ToStringWithSign();
-                relationsSb.Append($"{pawnName}({label}) {opinion}, ");
+                // Skip this pawn if opinion calculation fails due to mod conflicts
             }
         }
 

@@ -1,10 +1,9 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using HarmonyLib;
 using RimTalk.Data;
 using RimWorld;
 using Verse;
-using System.Collections.Generic;
-using RimTalk.Service;
 
 namespace RimTalk.Patch;
 
@@ -47,15 +46,15 @@ public static class ArchivePatch
             eventMap = archivable.LookTargets.PrimaryTarget.Map ?? 
                        archivable.LookTargets.targets.Select(t => t.Map).FirstOrDefault(m => m != null);
                 
-            // If we successfully found a map, look for nearby colonists
+            // If we successfully found a map, look for the nearest colonists
             if (eventMap != null)
             {
-                const float maxDistance = 20.0f;
                 IntVec3 targetPosition = archivable.LookTargets.PrimaryTarget.Cell;
 
                 nearbyColonists = eventMap.mapPawns.AllPawnsSpawned
-                    .Where(pawn => Cache.Get(pawn)?.CanDisplayTalk() == true 
-                                   && pawn.Position.DistanceTo(targetPosition) <= maxDistance)
+                    .Where(pawn => Cache.Get(pawn)?.CanDisplayTalk() == true)
+                    .OrderBy(pawn => pawn.Position.DistanceTo(targetPosition))
+                    .Take(3)
                     .ToList();
             }
         }

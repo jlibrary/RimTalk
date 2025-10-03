@@ -22,7 +22,14 @@ public class PawnState
     public string Personality => PersonaService.GetPersonality(Pawn);
     public double TalkInitiationWeight => PersonaService.GetTalkInitiationWeight(Pawn);
 
-    public Dictionary<string, int> SpokenThoughtTicks { get; private set; } = new();
+    public Dictionary<string, int> SpokenThoughtTicks
+    {
+        get
+        {
+            var hediff = GetPersonaHediff();
+            return hediff?.SpokenThoughtTicks ?? new Dictionary<string, int>();
+        }
+    }
 
     public PawnState(Pawn pawn)
     {
@@ -32,15 +39,29 @@ public class PawnState
         SeedInitialThoughts();
     }
     
+    private Hediff_Persona GetPersonaHediff()
+    {
+        return Pawn?.health?.hediffSet?.GetFirstHediffOfDef(
+            DefDatabase<HediffDef>.GetNamedSilentFail(Hediff_Persona.RimtalkHediff)
+        ) as Hediff_Persona;
+    }
+    
     private void SeedInitialThoughts()
     {
         // Safety check to ensure the game is fully loaded
         if (Current.Game == null || Counter.Tick == 0) return;
 
-        var initialThoughts = PawnService.GetThoughts(Pawn);
-        foreach (var kvp in initialThoughts)
+        var hediff = GetPersonaHediff();
+        if (hediff == null) return;
+
+        // Only seed if the dictionary is empty (first time initialization)
+        if (hediff.SpokenThoughtTicks.Count == 0)
         {
-            SpokenThoughtTicks[kvp.Key.def.defName] = Counter.Tick;
+            var initialThoughts = PawnService.GetThoughts(Pawn);
+            foreach (var kvp in initialThoughts)
+            {
+                hediff.SpokenThoughtTicks[kvp.Key.def.defName] = Counter.Tick;
+            }
         }
     }
 
