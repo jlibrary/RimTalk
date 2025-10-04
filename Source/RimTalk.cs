@@ -45,6 +45,7 @@ public class RimTalk : GameComponent
         AIClientFactory.Clear();
         AIService.Clear();
         TalkHistory.Clear();
+        PatchThoughtHandlerGetDistinctMoodThoughtGroups.Clear();
 
         if (soft) return;
 

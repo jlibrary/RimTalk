@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using RimTalk.Data;
@@ -12,87 +11,17 @@ namespace RimTalk.Service;
 
 public static class PawnService
 {
-    public static Dictionary<Thought, float> GetThoughts(Pawn pawn)
-    {
-        var thoughts = new List<Thought>();
-        pawn?.needs?.mood?.thoughts?.GetAllMoodThoughts(thoughts);
-
-        return thoughts
-            .GroupBy(t => t.def.defName)
-            .ToDictionary(g => g.First(), g => g.Sum(t => t.MoodOffset()));
-    }
-
     public static HashSet<Hediff> GetHediffs(Pawn pawn)
     {
         return pawn.health.hediffSet.hediffs.Where(hediff => hediff.Visible).ToHashSet();
     }
-
-    private const int ThoughtTalkCooldownTicks = 60000; 
-
-    public static Thought GetThoughtToTalkAbout(Pawn pawn)
-    {
-        var pawnCache = Cache.Get(pawn);
-        if (pawnCache == null) return null;
-
-        var currentThoughts = GetThoughts(pawn);
-        var spokenTicks = pawnCache.SpokenThoughtTicks;
-    
-        var candidates = new List<Thought>();
-
-        foreach (var kvp in currentThoughts)
-        {
-            var thought = kvp.Key;
-            if (Math.Abs(thought.MoodOffset()) < 0.01f)
-            {
-                continue;
-            }
-
-            var defName = thought.def.defName;
-
-            // Condition 1: Is this a brand new thought we've never spoken about?
-            if (!spokenTicks.ContainsKey(defName))
-            {
-                candidates.Add(thought);
-            }
-            // Condition 2: Or, have we spoken about it, but the cooldown has passed?
-            else
-            {
-                int lastSpokenTick = spokenTicks[defName];
-                if (Counter.Tick > lastSpokenTick + ThoughtTalkCooldownTicks)
-                {
-                    candidates.Add(thought);
-                }
-            }
-        }
-
-        if (!candidates.Any())
-        {
-            return null; // Nothing new or fresh to say.
-        }
-
-        // From the list of valid candidates, return the one with the highest current mood impact.
-        return candidates.OrderByDescending(t => Math.Abs(t.MoodOffset())).FirstOrDefault();
-    }
-
-    public static string GetNewThoughtLabel(Thought thought)
-    {
-        if (thought == null) return null;
-
-        var offset = thought.MoodOffset();
-    
-        if (offset > 0)
-            return $"positive thought: {thought.LabelCap}";
-        if (offset < 0)
-            return $"negative thought: {thought.LabelCap}";
-        return $"thought: {thought.LabelCap}";
-    }
         
-    public static bool IsPawnInDanger(Pawn pawn)
+    public static bool IsPawnInDanger(Pawn pawn, bool includeMentalState = false)
     {
         if (pawn.Dead) return true;
         if (pawn.Downed) return true;
         if (!pawn.health.capacities.CapableOf(PawnCapacityDefOf.Moving)) return true;
-        if (pawn.InMentalState) return true;
+        if (pawn.InMentalState && includeMentalState) return true;
         if (pawn.IsBurning()) return true;
         if (pawn.health.hediffSet.PainTotal >= pawn.GetStatValue(StatDefOf.PainShockThreshold)) return true;
         if (pawn.health.hediffSet.BleedRateTotal > 0.3f) return true;
@@ -120,6 +49,10 @@ public static class PawnService
         // 2. Stance busy with attack verb
         if (pawn.stances?.curStance is Stance_Busy busy && busy.verb != null)
             return true;
+        
+        Pawn hostilePawn = HostilePawnNearBy(pawn);
+        if (hostilePawn != null && pawn.Position.DistanceTo(hostilePawn.Position) <= 20f)
+            return true;            
 
         return false;
     }
@@ -197,7 +130,6 @@ public static class PawnService
 
         if (IsPawnInDanger(pawn))
         {
-            parts.Add("be dramatic");
             isInDanger = true;
         }
             
@@ -206,7 +138,7 @@ public static class PawnService
         {
             // Collect critical statuses of nearby pawns
             var nearbyNotableStatuses = nearbyPawns
-                .Where(nearbyPawn => nearbyPawn.Faction == pawn.Faction && IsPawnInDanger(nearbyPawn))
+                .Where(nearbyPawn => nearbyPawn.Faction == pawn.Faction && IsPawnInDanger(nearbyPawn, true))
                 .Take(2)
                 .Select(other => $"{other.LabelShort} in {GetActivity(other).Replace("\n", "; ")}")
                 .ToList();
@@ -240,6 +172,11 @@ public static class PawnService
         else
         {
             parts.Add("Nearby people: none");
+        }
+
+        if (IsVisitor(pawn))
+        {
+            parts.Add("Visiting user colony");
         }
 
         if (IsInvader(pawn))

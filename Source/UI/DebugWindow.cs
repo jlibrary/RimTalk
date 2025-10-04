@@ -358,7 +358,7 @@ namespace RimTalk.UI
                 Widgets.Label(new Rect(currentX, rowRect.y, responseColumnWidth, RowHeight), lastResponse);
                 currentX += responseColumnWidth + ColumnPadding;
 
-                bool canTalk = pawnState.CanDisplayTalk();
+                bool canTalk = pawnState.CanGenerateTalk();
                 string statusText = canTalk
                     ? "RimTalk.DebugWindow.StatusReady".Translate()
                     : "RimTalk.DebugWindow.StatusBusy".Translate();
@@ -514,7 +514,7 @@ namespace RimTalk.UI
 
                 string tokenCountText = (request.Response == null)
                     ? ""
-                    : (request.TokenCount == 0 ? "-" : request.TokenCount.ToString());
+                    : (request.TokenCount == 0 ? request.IsFirstDialogue ? "RimTalk.DebugWindow.StatusBusy".Translate() : "-" : request.TokenCount.ToString());
                 Widgets.Label(new Rect(currentX, rowRect.y, TokensColumnWidth, RowHeight),
                     tokenCountText);
 

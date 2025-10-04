@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using RimTalk.Source.Data;
 using Verse;
 
 namespace RimTalk.Data;
@@ -10,7 +11,7 @@ public static class TalkRequestPool
 
     public static void Add(string prompt, Pawn initiator = null, Pawn recipient = null, int mapId = 0)
     {
-        var request = new TalkRequest(prompt, initiator, recipient, TalkRequest.Type.Event)
+        var request = new TalkRequest(prompt, initiator, recipient, TalkType.Event)
         {
             MapId = mapId,
         };

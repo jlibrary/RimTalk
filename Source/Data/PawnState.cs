@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using RimTalk.Service;
+using RimTalk.Source.Data;
 using RimTalk.Util;
 using RimWorld;
 using RimWorld.Planet;
@@ -7,67 +8,51 @@ using Verse;
 
 namespace RimTalk.Data;
 
-public class PawnState
+public class PawnState(Pawn pawn)
 {
-    public readonly Pawn Pawn;
+    public readonly Pawn Pawn = pawn;
     public string Context { get; set; }
-    public int LastTalkTick { get; set; }
+    public int LastTalkTick { get; set; } = 0;
     public string LastStatus { get; set; } = "";
     public int RejectCount { get; set; }
-    public readonly Queue<TalkResponse> TalkQueue = new();
+    public readonly Queue<TalkResponse> TalkResponses = new();
     public bool IsGeneratingTalk { get; set; }
-    public TalkRequest TalkRequest { get; set; }
-    public HashSet<Hediff> Hediffs { get; set; }
+    public readonly LinkedList<TalkRequest> TalkRequests = new();
+    public HashSet<Hediff> Hediffs { get; set; } = PawnService.GetHediffs(pawn);
 
     public string Personality => PersonaService.GetPersonality(Pawn);
     public double TalkInitiationWeight => PersonaService.GetTalkInitiationWeight(Pawn);
 
-    public Dictionary<string, int> SpokenThoughtTicks
+    public void AddTalkRequest(string prompt, Pawn recipient = null, TalkType talkType = TalkType.Other)
     {
-        get
+        if (talkType == TalkType.Urgent)
         {
-            var hediff = GetPersonaHediff();
-            return hediff?.SpokenThoughtTicks ?? new Dictionary<string, int>();
+            TalkRequests.Clear();
+        }
+
+        if (talkType == TalkType.Event)
+        {
+            TalkRequests.AddFirst(new TalkRequest(prompt, Pawn, recipient, talkType));
+        }
+        else
+        {
+            TalkRequests.AddLast(new TalkRequest(prompt, Pawn, recipient, talkType));    
         }
     }
-
-    public PawnState(Pawn pawn)
-    {
-        Pawn = pawn;
-        LastTalkTick = 0;
-        Hediffs = PawnService.GetHediffs(pawn);
-        SeedInitialThoughts();
-    }
     
-    private Hediff_Persona GetPersonaHediff()
+    public TalkRequest GetNextTalkRequest()
     {
-        return Pawn?.health?.hediffSet?.GetFirstHediffOfDef(
-            DefDatabase<HediffDef>.GetNamedSilentFail(Hediff_Persona.RimtalkHediff)
-        ) as Hediff_Persona;
-    }
-    
-    private void SeedInitialThoughts()
-    {
-        // Safety check to ensure the game is fully loaded
-        if (Current.Game == null || Counter.Tick == 0) return;
-
-        var hediff = GetPersonaHediff();
-        if (hediff == null) return;
-
-        // Only seed if the dictionary is empty (first time initialization)
-        if (hediff.SpokenThoughtTicks.Count == 0)
+        while (TalkRequests.Count > 0)
         {
-            var initialThoughts = PawnService.GetThoughts(Pawn);
-            foreach (var kvp in initialThoughts)
+            var request = TalkRequests.First.Value;
+            if (request.IsExpired())
             {
-                hediff.SpokenThoughtTicks[kvp.Key.def.defName] = Counter.Tick;
+                TalkRequests.RemoveFirst();
+                continue;
             }
+            return request;
         }
-    }
-
-    public void AddTalkRequest(string prompt, Pawn recipient = null, TalkRequest.Type type = TalkRequest.Type.Other)
-    {
-        TalkRequest = new TalkRequest(prompt, Pawn, recipient, type);
+        return null;
     }
 
     public bool CanDisplayTalk()
@@ -91,7 +76,7 @@ public class PawnState
 
     public bool CanGenerateTalk()
     {
-        return !IsGeneratingTalk && CanDisplayTalk() && TalkQueue.Empty() 
+        return !IsGeneratingTalk && CanDisplayTalk() && TalkResponses.Empty() 
                && CommonUtil.HasPassed(LastTalkTick, Settings.Get().TalkInterval);;
     }
 }

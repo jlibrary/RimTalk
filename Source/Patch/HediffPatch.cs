@@ -3,6 +3,7 @@ using Verse;
 using RimTalk.Service;
 using System;
 using RimTalk.Data;
+using RimTalk.Source.Data;
 
 namespace RimTalk.Patch;
 
@@ -18,7 +19,7 @@ public static class HediffPatch
             pawnState.Hediffs = PawnService.GetHediffs(___pawn);
                 
             var prompt = $"{hediff.Part?.Label}-{hediff.LabelCap}";
-            pawnState.AddTalkRequest(prompt, type: TalkRequest.Type.Hediff);
+            pawnState.AddTalkRequest(prompt, talkType: TalkType.Hediff);
         }
     }
 }

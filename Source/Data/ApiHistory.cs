@@ -12,6 +12,8 @@ public class ApiLog(string name, string prompt, string response, Payload payload
     public List<string> Contexts { get; set; } = contexts ?? new List<string>();
     public string Prompt { get; set; } = prompt;
     public string Response { get; set; } = response;
+
+    public bool IsFirstDialogue;
     public string RequestPayload { get; set; } = payload?.Request;
     public string ResponsePayload { get; set; } = payload?.Response;
     public int TokenCount { get; set; } = payload?.TokenCount ?? 0;
@@ -45,7 +47,10 @@ public static class ApiHistory
 
     public static ApiLog AddRequest(TalkRequest request, string context)
     {
-        var log = new ApiLog(request.Initiator.LabelShort, request.Prompt, null, null, DateTime.Now, ApiLog.ExtractContextBlocks(context));
+        var log = new ApiLog(request.Initiator.LabelShort, request.Prompt, null, null, DateTime.Now, ApiLog.ExtractContextBlocks(context))
+            {
+                IsFirstDialogue = true
+            };
         History[log.Id] = log;
         return log;
     }

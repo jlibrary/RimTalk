@@ -37,7 +37,7 @@ public static class Cache
     public static void Refresh()
     {
         var settings = Settings.Get();
-            
+
         // Identify and remove ineligible pawns from all caches.
         foreach (Pawn pawn in PawnCache.Keys.ToList())
         {
@@ -82,7 +82,7 @@ public static class Cache
 
         if (pawn.RaceProps.intelligence < Intelligence.Humanlike)
             return false;
-            
+
         if (!pawn.health.capacities.CapableOf(PawnCapacityDefOf.Talking))
             return false;
 
@@ -95,11 +95,11 @@ public static class Cache
                 (settings.AllowOtherFactionsToTalk && PawnService.IsVisitor(pawn)) ||
                 (settings.AllowEnemiesToTalk && PawnService.IsInvader(pawn)));
     }
-        
-    private static double GetScaleFactor(double groupWeight, double colonistWeight)
+
+    private static double GetScaleFactor(double groupWeight, double baselineWeight)
     {
-        if (colonistWeight <= 0) return 0.0; // If colonists can't talk, no one else should.
-        if (groupWeight > colonistWeight) return colonistWeight / groupWeight;
+        if (baselineWeight <= 0 || groupWeight <= 0) return 0.0;
+        if (groupWeight > baselineWeight) return baselineWeight / groupWeight;
         return 1.0;
     }
 
@@ -115,7 +115,7 @@ public static class Cache
         {
             return null;
         }
-            
+
         // 1. Categorize pawns and calculate the total weight for each group.
         double totalColonistWeight = 0.0;
         double totalVisitorWeight = 0.0;
@@ -132,52 +132,59 @@ public static class Cache
             else if (PawnService.IsVisitor(p)) totalVisitorWeight += weight;
             else if (PawnService.IsInvader(p)) totalEnemyWeight += weight;
         }
-            
-        // 2. Determine scaling factors using the private helper method.
-        var visitorScaleFactor = GetScaleFactor(totalVisitorWeight, totalColonistWeight);
-        var enemyScaleFactor = GetScaleFactor(totalEnemyWeight, totalColonistWeight);
-        var slaveScaleFactor = GetScaleFactor(totalSlaveWeight, totalColonistWeight);
-        var prisonerScaleFactor = GetScaleFactor(totalPrisonerWeight, totalColonistWeight);
 
-        // 3. Calculate the new, effective total weight for the weighted random selection.
+        // NEW: Use the highest group weight as baseline for balancing
+        double baselineWeight = new[]
+        {
+            totalColonistWeight, totalVisitorWeight,
+            totalEnemyWeight, totalSlaveWeight,
+            totalPrisonerWeight
+        }.Max();
+
+        // If no one has any weight, no one can talk
+        if (baselineWeight <= 0)
+        {
+            return null;
+        }
+
+        // 2. Determine scaling factors - groups above baseline get scaled down
+        var colonistScaleFactor = GetScaleFactor(totalColonistWeight, baselineWeight);
+        var visitorScaleFactor = GetScaleFactor(totalVisitorWeight, baselineWeight);
+        var enemyScaleFactor = GetScaleFactor(totalEnemyWeight, baselineWeight);
+        var slaveScaleFactor = GetScaleFactor(totalSlaveWeight, baselineWeight);
+        var prisonerScaleFactor = GetScaleFactor(totalPrisonerWeight, baselineWeight);
+
+        // 3. Calculate effective total weight
         var effectiveTotalWeight = pawnList.Sum(p =>
         {
             var weight = Get(p)?.TalkInitiationWeight ?? 0.0;
-            if (p.IsFreeColonist) return weight;
+            if (p.IsFreeColonist) return weight * colonistScaleFactor;
             if (p.IsSlave) return weight * slaveScaleFactor;
             if (p.IsPrisoner) return weight * prisonerScaleFactor;
             if (PawnService.IsVisitor(p)) return weight * visitorScaleFactor;
             if (PawnService.IsInvader(p)) return weight * enemyScaleFactor;
-            return 0; // Should not be reached, but safe.
+            return 0;
         });
 
-        // If total weight is 0, it means no pawn is eligible to be selected.
-        if (effectiveTotalWeight <= 0)
-        {
-            return null;
-        }
-            
         var randomWeight = Random.NextDouble() * effectiveTotalWeight;
         var cumulativeWeight = 0.0;
 
         foreach (var pawn in pawnList)
         {
-            // Apply the scaling factor during the selection loop
             var currentPawnWeight = Get(pawn)?.TalkInitiationWeight ?? 0.0;
-                
-            if (pawn.IsFreeColonist) cumulativeWeight += currentPawnWeight;
+
+            if (pawn.IsFreeColonist) cumulativeWeight += currentPawnWeight * colonistScaleFactor;
             else if (pawn.IsSlave) cumulativeWeight += currentPawnWeight * slaveScaleFactor;
             else if (pawn.IsPrisoner) cumulativeWeight += currentPawnWeight * prisonerScaleFactor;
             else if (PawnService.IsVisitor(pawn)) cumulativeWeight += currentPawnWeight * visitorScaleFactor;
             else if (PawnService.IsInvader(pawn)) cumulativeWeight += currentPawnWeight * enemyScaleFactor;
-                
+
             if (randomWeight < cumulativeWeight)
             {
                 return pawn;
             }
         }
-            
-        // Fallback in case of floating point inaccuracies, though it should rarely be hit.
+
         return pawnList.LastOrDefault(p => (Get(p)?.TalkInitiationWeight ?? 0.0) > 0);
     }
 }

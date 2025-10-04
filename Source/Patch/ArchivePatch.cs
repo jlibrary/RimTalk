@@ -2,6 +2,7 @@
 using System.Linq;
 using HarmonyLib;
 using RimTalk.Data;
+using RimTalk.Source.Data;
 using RimWorld;
 using Verse;
 
@@ -29,11 +30,11 @@ public static class ArchivePatch
         var prompt = "";
         if (archivable is ChoiceLetter choiceLetter && choiceLetter.quest != null)
         {
-            prompt += $"(Talk if you want to accept quest)\n{choiceLetter.quest.description.ToString().StripTags()}";
+            prompt += $"(Talk if you want to accept quest)\n[{choiceLetter.quest.description.ToString().StripTags()}]";
         }
         else
         {
-            prompt += $"(Talk about incident)\n{archivable.ArchivedTooltip.StripTags()}";
+            prompt += $"(Talk about incident)\n[{archivable.ArchivedTooltip.StripTags()}]";
         }
 
         Map eventMap = null;
@@ -49,12 +50,8 @@ public static class ArchivePatch
             // If we successfully found a map, look for the nearest colonists
             if (eventMap != null)
             {
-                IntVec3 targetPosition = archivable.LookTargets.PrimaryTarget.Cell;
-
                 nearbyColonists = eventMap.mapPawns.AllPawnsSpawned
-                    .Where(pawn => Cache.Get(pawn)?.CanDisplayTalk() == true)
-                    .OrderBy(pawn => pawn.Position.DistanceTo(targetPosition))
-                    .Take(3)
+                    .Where(pawn => pawn.IsFreeColonist && Cache.Get(pawn)?.CanDisplayTalk() == true)
                     .ToList();
             }
         }
@@ -65,7 +62,7 @@ public static class ArchivePatch
             // If specific colonists are nearby, create a request for each one.
             foreach (var pawn in nearbyColonists)
             {
-                Cache.Get(pawn)?.AddTalkRequest(prompt, type: TalkRequest.Type.Event);
+                Cache.Get(pawn)?.AddTalkRequest(prompt, talkType: TalkType.Event);
             }
         }
         else

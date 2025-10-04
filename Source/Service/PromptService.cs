@@ -4,9 +4,11 @@ using System.Text;
 using System.Text.RegularExpressions;
 using HarmonyLib;
 using RimTalk.Data;
+using RimTalk.Source.Data;
 using RimTalk.Util;
 using RimWorld;
 using Verse;
+using Verse.AI.Group;
 
 namespace RimTalk.Service;
 
@@ -56,12 +58,12 @@ public static class PromptService
         if (ModsConfig.BiotechActive && pawn.genes?.Xenotype != null)
         {
             var xenotypeInfo = $"Race: {pawn.genes.Xenotype.LabelCap}";
-            if (!pawn.genes.Xenotype.descriptionShort.NullOrEmpty())
-                xenotypeInfo += $" - {pawn.genes.Xenotype.descriptionShort}";
+            // if (!pawn.genes.Xenotype.descriptionShort.NullOrEmpty())
+                // xenotypeInfo += $" - {pawn.genes.Xenotype.descriptionShort}";
             sb.AppendLine(xenotypeInfo);
         }
 
-        if (infoLevel != InfoLevel.Short)
+        if (infoLevel != InfoLevel.Short && !PawnService.IsVisitor(pawn) && !PawnService.IsInvader(pawn))
         {
             if (ModsConfig.BiotechActive && pawn.genes?.GenesListForReading != null)
             {
@@ -96,8 +98,8 @@ public static class PromptService
             }
         }
 
-        //// INVADER STOP
-        if (PawnService.IsInvader(pawn))
+        //// INVADER AND VISITOR STOP
+        if (PawnService.IsInvader(pawn) || PawnService.IsVisitor(pawn))
             return sb.ToString();
 
         if (pawn.story.Childhood != null)
@@ -185,7 +187,7 @@ public static class PromptService
         sb.AppendLine(mood);
 
         var thoughts = "Memory: ";
-        foreach (Thought thought in PawnService.GetThoughts(pawn).Keys)
+        foreach (Thought thought in GetThoughts(pawn).Keys)
         {
             thoughts += $"{Sanitize(thought.LabelCap)}, ";
         }
@@ -197,7 +199,15 @@ public static class PromptService
 
         //// VISITOR STOP
         if (PawnService.IsVisitor(pawn))
-            return sb.ToString();
+        {
+            Lord lord = pawn.GetLord() ?? pawn.CurJob?.lord;
+            if (lord?.LordJob != null)
+            {
+                string fullTypeName = lord.LordJob.GetType().Name;
+                string cleanName = fullTypeName.Replace("LordJob_", "");
+                sb.AppendLine($"Activity: {cleanName}");
+            }
+        }
 
         sb.AppendLine(RelationsService.GetRelationsString(pawn));
 
@@ -223,7 +233,7 @@ public static class PromptService
         return sb.ToString();
     }
 
-    public static string DecoratePrompt(string prompt, List<Pawn> pawns, string status)
+    public static void DecoratePrompt(TalkRequest talkRequest, List<Pawn> pawns, string status)
     {
         var sb = new StringBuilder();
         CommonUtil.InGameData gameData = CommonUtil.GetInGameData();
@@ -231,16 +241,27 @@ public static class PromptService
         // Add the conversation part
         if (pawns.Count == 1) 
             sb.Append($"{pawns[0].LabelShort} short monologue");
-        else if (PawnService.HostilePawnNearBy(pawns[0]) == null)
+        else if (PawnService.HostilePawnNearBy(pawns[0]) != null)
         {
-            sb.Append($"{pawns[0].LabelShort} starts conversation, taking turns");
+            if (talkRequest.TalkType != TalkType.Urgent && !pawns[0].InMentalState)
+            {
+                talkRequest.Prompt = null;
+            }
+            talkRequest.TalkType = TalkType.Urgent;
+            if (pawns[0].IsSlave || pawns[0].IsPrisoner)
+                sb.Append($"{pawns[0].LabelShort} dialogue short (worry/survival)");
+            else 
+                sb.Append($"{pawns[0].LabelShort} dialogue short, urgent tone (survival/command)");
         }
         else
         {
-            sb.Append($"{pawns[0].LabelShort} dialogue short, urgent tone (survival/command)");
+            sb.Append($"{pawns[0].LabelShort} starts conversation, taking turns");
         }
 
-        sb.Append($"\n{prompt}");
+        if (pawns[0].InMentalState)
+            sb.Append($"\nbe dramatic (mental break)");
+        else 
+            sb.Append($"\n{talkRequest.Prompt}");
 
         // add pawn status
         sb.Append($"\n{status}");
@@ -265,7 +286,7 @@ public static class PromptService
         if (AIService.IsFirstInstruction())
             sb.Append($"\nin {Constant.Lang}");
 
-        return sb.ToString();
+        talkRequest.Prompt = sb.ToString();
     }
 
     public static string GetPawnLocationStatus(Pawn pawn)
@@ -277,6 +298,16 @@ public static class PromptService
         if (room != null && !room.PsychologicallyOutdoors)
             return "Indoors".Translate();
         return "Outdoors".Translate();
+    }
+    
+    public static Dictionary<Thought, float> GetThoughts(Pawn pawn)
+    {
+        var thoughts = new List<Thought>();
+        pawn?.needs?.mood?.thoughts?.GetAllMoodThoughts(thoughts);
+
+        return thoughts
+            .GroupBy(t => t.def.defName)
+            .ToDictionary(g => g.First(), g => g.Sum(t => t.MoodOffset()));
     }
 
     private static string Sanitize(string text, Pawn pawn = null)

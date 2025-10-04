@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
-using RimTalk.Data;
 using RimTalk.Service;
+using RimTalk.Source.Data;
 using RimTalk.Util;
 using Verse;
 using Cache = RimTalk.Data.Cache;
@@ -27,13 +27,13 @@ public static class BattleLogPatch
 
         if (string.IsNullOrEmpty(prompt)) return;
             
-        Cache.Get(initiator)?.AddTalkRequest(prompt, recipient, TalkRequest.Type.Battle);
-        Cache.Get(recipient)?.AddTalkRequest(prompt, initiator, TalkRequest.Type.Battle);
+        Cache.Get(initiator)?.AddTalkRequest(prompt, recipient, TalkType.Urgent);
+        Cache.Get(recipient)?.AddTalkRequest(prompt, initiator, TalkType.Urgent);
             
         var pawns = PawnSelector.GetNearByTalkablePawns(initiator, recipient, PawnSelector.DetectionType.Viewing);
         foreach (var pawn in pawns.Take(2))
         {
-            Cache.Get(pawn)?.AddTalkRequest(prompt, initiator, TalkRequest.Type.Battle);
+            Cache.Get(pawn)?.AddTalkRequest(prompt, initiator, TalkType.Urgent);
         }
     }
 

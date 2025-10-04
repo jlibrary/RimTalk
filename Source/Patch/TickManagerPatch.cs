@@ -1,7 +1,7 @@
-using System.Linq;
 using HarmonyLib;
 using RimTalk.Data;
 using RimTalk.Service;
+using RimTalk.Source.Data;
 using RimTalk.Util;
 using RimWorld;
 using Verse;
@@ -17,7 +17,6 @@ internal static class TickManagerPatch
     private static double TalkInterval => Settings.Get().TalkInterval;
     private static bool _noApiKeyMessageShown;
     private static bool _initialCacheRefresh;
-    private static bool _isNormalTalkIteration = true; // Track which iteration we're on
 
     public static void Postfix()
     {
@@ -61,45 +60,33 @@ internal static class TickManagerPatch
                 // 1. ALWAYS try to get from the general pool first.
                 var talkGenerated = TryGenerateTalkFromPool(selectedPawn);
 
-                // 2. If no talk was generated from the pool, proceed with the original logic.
+                // 2. If the pawn has a specific talk request, try generating it
                 if (!talkGenerated)
                 {
-                    if (_isNormalTalkIteration)
+                    var pawnState = Cache.Get(selectedPawn);
+                    if (pawnState.GetNextTalkRequest() != null)
                     {
-                        // Iteration 1: Try normal talk, then thought talk as fallback
-                        talkGenerated = TryGenerateNormalTalk(selectedPawn);
-                        if (!talkGenerated)
-                        {
-                            talkGenerated = TryGenerateThoughtTalk(selectedPawn);
-                        }
-                    }
-                    else
-                    {
-                        // Iteration 2: Try thought talk, then normal talk as fallback
-                        talkGenerated = TryGenerateThoughtTalk(selectedPawn);
-                        if (!talkGenerated)
-                        {
-                            talkGenerated = TryGenerateNormalTalk(selectedPawn);
-                        }
+                        talkGenerated = TalkService.GenerateTalk(pawnState.GetNextTalkRequest());
+                        if(talkGenerated)
+                            pawnState.TalkRequests.RemoveFirst();
                     }
                 }
 
-                // 3. Final fallback: generate based on current context if nothing else worked
+                // 3. Fallback: generate based on current context if nothing else worked
                 if (!talkGenerated)
                 {
-                    TalkService.GenerateTalk(null, selectedPawn);
+                    TalkType talkType = PawnService.IsPawnInDanger(selectedPawn) ? TalkType.Urgent : TalkType.Other;
+                    TalkRequest talkRequest = new TalkRequest(null, selectedPawn, null, talkType);
+                    TalkService.GenerateTalk(talkRequest);
                 }
             }
-
-            // Toggle for the next iteration
-            _isNormalTalkIteration = !_isNormalTalkIteration;
         }
     }
 
     private static bool TryGenerateTalkFromPool(Pawn pawn)
     {
         // If the pawn is a free colonist not in danger and the pool has requests
-        if (pawn.IsFreeNonSlaveColonist && !TalkRequestPool.IsEmpty && !PawnService.IsPawnInDanger(pawn))
+        if (pawn.IsFreeNonSlaveColonist && !TalkRequestPool.IsEmpty && !PawnService.IsPawnInDanger(pawn, true))
         {
             var request = TalkRequestPool.GetRequestFromPool(pawn);
             if (request != null)
@@ -109,48 +96,6 @@ internal static class TickManagerPatch
         }
 
         return false;
-    }
-
-    private static bool TryGenerateNormalTalk(Pawn pawn)
-    {
-        var pawnState = Cache.Get(pawn);
-
-        // If the pawn has a specific talk request, try generating it
-        if (pawnState.TalkRequest != null && !pawnState.TalkRequest.IsExpired())
-        {
-            return TalkService.GenerateTalk(pawnState.TalkRequest);
-        }
-
-        return false;
-    }
-
-    private static bool TryGenerateThoughtTalk(Pawn pawn)
-    {
-        var thoughtToTalkAbout = PawnService.GetThoughtToTalkAbout(pawn);
-        if (thoughtToTalkAbout == null)
-        {
-            return false;
-        }
-
-        var thoughtLabel = PawnService.GetNewThoughtLabel(thoughtToTalkAbout);
-        if (thoughtLabel == null)
-        {
-            return false;
-        }
-    
-        bool result = TalkService.GenerateTalk(thoughtLabel, pawn);
-    
-        // If we successfully talked, record the current tick in our memory.
-        if (result)
-        {
-            var pawns = PawnSelector.GetAllNearByPawns(pawn).Prepend(pawn);
-            foreach (var p in pawns)
-            {
-                Cache.Get(p)?.SpokenThoughtTicks.SetOrAdd(thoughtToTalkAbout.def.defName, Counter.Tick);
-            }
-        }
-    
-        return result;
     }
 
     private static bool IsNow(double interval)
@@ -164,6 +109,5 @@ internal static class TickManagerPatch
     {
         _noApiKeyMessageShown = false;
         _initialCacheRefresh = false;
-        _isNormalTalkIteration = true;
     }
 }

@@ -5,6 +5,7 @@ using HarmonyLib;
 using RimTalk.Data;
 using RimTalk.Patches;
 using RimTalk.Service;
+using RimTalk.Source.Data;
 using RimTalk.Util;
 using RimWorld;
 using Verse;
@@ -63,12 +64,12 @@ public static class Bubbler_Add
         PawnState pawnState = Cache.Get(initiator);
 
         // chitchat is ignored if talkRequest exists
-        if (pawnState == null || isChitchat && pawnState.TalkRequest != null)
+        if (pawnState == null || (isChitchat && pawnState.TalkRequests.Count > 0))
             return false;
 
         // Otherwise, block normal bubble and generate talk
         prompt = $"{prompt} ({GetInteractionDef(entry).label})";
-        pawnState.AddTalkRequest(prompt, recipient, TalkRequest.Type.Chitchat);
+        pawnState.AddTalkRequest(prompt, recipient, TalkType.Chitchat);
         return false;
     }
 

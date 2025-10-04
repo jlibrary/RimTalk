@@ -10,7 +10,7 @@ public static class PersonaService
 {
     private static Hediff_Persona GetOrAddPersonaHediff(Pawn pawn)
     {
-        var hediff = pawn.health.hediffSet.GetFirstHediffOfDef(HediffDef.Named(Hediff_Persona.RimtalkHediff)) as Hediff_Persona;
+        var hediff = Hediff_Persona.Get(pawn);
         if (hediff == null)
         {
             hediff = (Hediff_Persona)HediffMaker.MakeHediff(HediffDef.Named(Hediff_Persona.RimtalkHediff), pawn);

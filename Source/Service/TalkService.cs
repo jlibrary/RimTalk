@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using RimTalk.Data;
+using RimTalk.Source.Data;
 using RimTalk.UI;
 using RimTalk.Util;
 using RimWorld;
@@ -21,11 +22,7 @@ public static class TalkService
     /// Initiates the process of generating a conversation. It performs initial checks and then
     /// starts a background task to handle the actual AI communication.
     /// </summary>
-    /// <param name="prompt">The initial prompt or trigger for the conversation.</param>
-    /// <param name="initiator">The pawn starting the conversation.</param>
-    /// <param name="recipient">The optional direct recipient of the conversation.</param>
-    /// <returns>True if the generation process was successfully started; otherwise, false.</returns>
-    public static bool GenerateTalk(string prompt, Pawn initiator, Pawn recipient = null)
+    public static bool GenerateTalk(TalkRequest talkRequest)
     {
         // Guard clauses to prevent generation when the feature is disabled or the AI service is busy.
         var settings = Settings.Get();
@@ -33,17 +30,18 @@ public static class TalkService
         if (settings.GetActiveConfig() == null) return false;
         if (AIService.IsBusy()) return false;
 
-        PawnState pawn1 = Cache.Get(initiator);
+        PawnState pawn1 = Cache.Get(talkRequest.Initiator);
         if (pawn1 == null || !pawn1.CanGenerateTalk()) return false;
 
         // Ensure the recipient is valid and capable of talking.
-        if (Cache.Get(recipient) == null || recipient?.Name == null || !Cache.Get(recipient).CanDisplayTalk())
+        PawnState pawn2 = talkRequest.Recipient != null ? Cache.Get(talkRequest.Recipient) : null;
+        if (pawn2 == null || talkRequest.Recipient?.Name == null || !pawn2.CanDisplayTalk())
         {
-            recipient = null;
+            talkRequest.Recipient = null;
         }
 
-        List<Pawn> nearbyPawns = PawnSelector.GetAllNearByPawns(initiator);
-        var status = PawnService.GetPawnStatusFull(initiator, nearbyPawns);
+        List<Pawn> nearbyPawns = PawnSelector.GetAllNearByPawns(talkRequest.Initiator);
+        var status = PawnService.GetPawnStatusFull(talkRequest.Initiator, nearbyPawns);
 
         // Avoid spamming generations if the pawn's status hasn't changed recently.
         if (status == pawn1.LastStatus && pawn1.RejectCount < 2)
@@ -51,11 +49,12 @@ public static class TalkService
             pawn1.RejectCount++;
             return false;
         }
+
         pawn1.RejectCount = 0;
         pawn1.LastStatus = status;
 
         // Select the most relevant pawns for the conversation context.
-        List<Pawn> pawns = new List<Pawn> { initiator, recipient }
+        List<Pawn> pawns = new List<Pawn> { talkRequest.Initiator, talkRequest.Recipient }
             .Where(p => p != null)
             .Concat(nearbyPawns.Where(p => Cache.Get(p).CanGenerateTalk()))
             .Distinct()
@@ -65,9 +64,8 @@ public static class TalkService
         // Build the context and decorate the prompt with current status information.
         string context = PromptService.BuildContext(pawns);
         AIService.UpdateContext(context);
-        prompt = PromptService.DecoratePrompt(prompt, pawns, status);
-        
-        var talkRequest = new TalkRequest(prompt, initiator, recipient);
+        PromptService.DecoratePrompt(talkRequest, pawns, status);
+
         var allInvolvedPawns = pawns.Union(nearbyPawns).Distinct().ToList();
 
         // Offload the AI request and processing to a background thread to avoid blocking the game's main thread.
@@ -101,16 +99,17 @@ public static class TalkService
 
                     PawnState pawnState = Cache.Get(pawn);
                     talkResponse.Name = pawnState.Pawn.LabelShort;
-                    
+
                     // Link replies to the previous message in the conversation.
                     if (receivedResponses.Any())
                     {
                         talkResponse.ParentTalkId = receivedResponses.Last().Id;
                     }
+
                     receivedResponses.Add(talkResponse);
-                    
+
                     // Enqueue the received talk for the pawn to display later.
-                    pawnState.TalkQueue.Enqueue(talkResponse);
+                    pawnState.TalkResponses.Enqueue(talkResponse);
                 }
             );
 
@@ -133,27 +132,14 @@ public static class TalkService
     private static void AddResponsesToHistory(List<Pawn> pawns, List<TalkResponse> responses, string prompt)
     {
         if (!responses.Any()) return;
-        
+
         string cleanedPrompt = prompt.Replace(Constant.Prompt, "");
         string serializedResponses = JsonUtil.SerializeToJson(responses);
-        
+
         foreach (var pawn in pawns)
         {
             TalkHistory.AddMessageHistory(pawn, cleanedPrompt, serializedResponses);
         }
-    }
-
-    /// <summary>
-    /// Convenience method to generate talk from an existing TalkRequest object.
-    /// </summary>
-    public static bool GenerateTalk(TalkRequest talkRequest)
-    {
-        if (GenerateTalk(talkRequest.Prompt, talkRequest.Initiator, talkRequest.Recipient))
-        {
-            Cache.Get(talkRequest.Initiator).TalkRequest = null;
-            return true;
-        }
-        return false;
     }
 
     /// <summary>
@@ -164,15 +150,15 @@ public static class TalkService
         foreach (Pawn pawn in Cache.Keys)
         {
             PawnState pawnState = Cache.Get(pawn);
-            if (pawnState == null || pawnState.TalkQueue.Empty()) continue;
+            if (pawnState == null || pawnState.TalkResponses.Empty()) continue;
 
-            var talk = pawnState.TalkQueue.Peek();
+            var talk = pawnState.TalkResponses.Peek();
             if (talk == null)
             {
-                pawnState.TalkQueue.Dequeue();
+                pawnState.TalkResponses.Dequeue();
                 continue;
             }
-            
+
             // Skip this talk if its parent was ignored or the pawn is currently unable to speak.
             if (TalkHistory.IsTalkIgnored(talk.ParentTalkId) || !pawnState.CanDisplayTalk())
             {
@@ -180,14 +166,30 @@ public static class TalkService
                 continue;
             }
 
-            if (!CommonUtil.HasPassed(pawnState.LastTalkTick, Settings.Get().TalkInterval))
+            if (!talk.IsReply() && !CommonUtil.HasPassed(pawnState.LastTalkTick, Settings.Get().TalkInterval))
             {
                 continue;
             }
 
+            int replyInterval = RimTalkSettings.ReplyInterval;
+            if (PawnService.IsPawnInDanger(pawn))
+            {
+                replyInterval = 2;
+                while (pawnState.TalkResponses.Count > 0)
+                {
+                    talk = pawnState.TalkResponses.Peek();
+                    if (talk.TalkType == TalkType.Urgent)
+                        break;
+
+                    ConsumeTalk(pawnState, true);
+                }
+                if (pawnState.TalkResponses.Empty())
+                    continue;
+            }
+
             // Enforce a delay for replies to make conversations feel more natural.
             int parentTalkTick = TalkHistory.GetSpokenTick(talk.ParentTalkId);
-            if (parentTalkTick == -1 || !CommonUtil.HasPassed(parentTalkTick ,RimTalkSettings.ReplyInterval)) continue;
+            if (parentTalkTick == -1 || !CommonUtil.HasPassed(parentTalkTick, replyInterval)) continue;
 
             // Create the interaction log entry, which triggers the display of the talk bubble in-game.
             InteractionDef intDef = DefDatabase<InteractionDef>.GetNamed("RimTalkInteraction");
@@ -217,7 +219,7 @@ public static class TalkService
     /// </summary>
     private static TalkResponse ConsumeTalk(PawnState pawnState, bool ignored = false)
     {
-        TalkResponse talkResponse = pawnState.TalkQueue.Dequeue();
+        TalkResponse talkResponse = pawnState.TalkResponses.Dequeue();
         if (ignored)
         {
             TalkHistory.AddIgnored(talkResponse.Id);
@@ -227,10 +229,12 @@ public static class TalkService
             TalkHistory.AddSpoken(talkResponse.Id);
             var apiLog = ApiHistory.GetApiLog(talkResponse.Id);
             if (apiLog != null)
-                apiLog.SpokenTick = GenTicks.TicksGame;;
+                apiLog.SpokenTick = GenTicks.TicksGame;
+            ;
 
             Overlay.NotifyLogUpdated();
         }
+
         return talkResponse;
     }
 }

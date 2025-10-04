@@ -27,7 +27,7 @@ Slave: fearful, obedient, reference forced labor, exhaustion
 Visitor: polite, curious, deferential, ask questions
 Invader: hostile, aggressive; terse commands/threats
 
-Keep conversations roughly 4–8 turns";
+Monologue = 1 turn. Conversation = 4–8 short turns";
         
     private const string JsonInstruction = @"
 
@@ -40,7 +40,7 @@ Return JSON array only, with objects containing ""name"" and ""text"" string key
             : Settings.Get().CustomInstruction) + JsonInstruction;
 
     public const string Prompt =
-        "Act based on context. Be natural. no repetition.";
+        "Act based on role and context";
 
     public static readonly string PersonaGenInstruction =
         $@"Create a funny persona (to be used as conversation style) in {Lang}. Must be short in 1 sentence.
@@ -51,53 +51,53 @@ Must return JSON only, with fields 'persona' (string) and 'chattiness' (float)."
         
     public static readonly PersonalityData[] Personalities =
     {
-        new PersonalityData { Persona ="RimTalk.Persona.CheerfulHelper".Translate(), Chattiness =1.5f },
-        new PersonalityData { Persona ="RimTalk.Persona.CynicalRealist".Translate(), Chattiness =0.8f },
-        new PersonalityData { Persona ="RimTalk.Persona.ShyThinker".Translate(), Chattiness =0.3f },
-        new PersonalityData { Persona ="RimTalk.Persona.Hothead".Translate(), Chattiness =1.2f },
-        new PersonalityData { Persona ="RimTalk.Persona.Philosopher".Translate(), Chattiness =1.6f },
-        new PersonalityData { Persona ="RimTalk.Persona.DarkHumorist".Translate(), Chattiness =1.4f },
-        new PersonalityData { Persona ="RimTalk.Persona.Caregiver".Translate(), Chattiness =1.5f },
-        new PersonalityData { Persona ="RimTalk.Persona.Opportunist".Translate(), Chattiness =1.3f },
-        new PersonalityData { Persona ="RimTalk.Persona.OptimisticDreamer".Translate(), Chattiness =1.6f },
-        new PersonalityData { Persona ="RimTalk.Persona.Pessimist".Translate(), Chattiness =0.7f },
-        new PersonalityData { Persona ="RimTalk.Persona.StoicSoldier".Translate(), Chattiness =0.4f },
-        new PersonalityData { Persona ="RimTalk.Persona.FreeSpirit".Translate(), Chattiness =1.7f },
-        new PersonalityData { Persona ="RimTalk.Persona.Workaholic".Translate(), Chattiness =0.5f },
-        new PersonalityData { Persona ="RimTalk.Persona.Slacker".Translate(), Chattiness =1.1f },
-        new PersonalityData { Persona ="RimTalk.Persona.NobleIdealist".Translate(), Chattiness =1.5f },
-        new PersonalityData { Persona ="RimTalk.Persona.StreetwiseSurvivor".Translate(), Chattiness =1.0f },
-        new PersonalityData { Persona ="RimTalk.Persona.Scholar".Translate(), Chattiness =1.6f },
-        new PersonalityData { Persona ="RimTalk.Persona.Jokester".Translate(), Chattiness =1.8f },
-        new PersonalityData { Persona ="RimTalk.Persona.MelancholicPoet".Translate(), Chattiness =0.4f },
-        new PersonalityData { Persona ="RimTalk.Persona.Paranoid".Translate(), Chattiness =0.6f },
-        new PersonalityData { Persona ="RimTalk.Persona.Commander".Translate(), Chattiness =1.0f },
-        new PersonalityData { Persona ="RimTalk.Persona.Coward".Translate(), Chattiness =0.7f },
-        new PersonalityData { Persona ="RimTalk.Persona.ArrogantNoble".Translate(), Chattiness =1.4f },
-        new PersonalityData { Persona ="RimTalk.Persona.LoyalCompanion".Translate(), Chattiness =1.3f },
-        new PersonalityData { Persona ="RimTalk.Persona.CuriousExplorer".Translate(), Chattiness =1.7f },
-        new PersonalityData { Persona ="RimTalk.Persona.ColdRationalist".Translate(), Chattiness =0.3f },
-        new PersonalityData { Persona ="RimTalk.Persona.FlirtatiousCharmer".Translate(), Chattiness =1.9f },
-        new PersonalityData { Persona ="RimTalk.Persona.BitterOutcast".Translate(), Chattiness =0.5f },
-        new PersonalityData { Persona ="RimTalk.Persona.Zealot".Translate(), Chattiness =1.8f },
-        new PersonalityData { Persona ="RimTalk.Persona.Trickster".Translate(), Chattiness =1.6f },
-        new PersonalityData { Persona ="RimTalk.Persona.DeadpanRealist".Translate(), Chattiness =0.6f },
-        new PersonalityData { Persona ="RimTalk.Persona.ChildAtHeart".Translate(), Chattiness =1.7f },
-        new PersonalityData { Persona ="RimTalk.Persona.SkepticalScientist".Translate(), Chattiness =1.2f },
-        new PersonalityData { Persona ="RimTalk.Persona.Martyr".Translate(), Chattiness =1.3f },
-        new PersonalityData { Persona ="RimTalk.Persona.Manipulator".Translate(), Chattiness =1.5f },
-        new PersonalityData { Persona ="RimTalk.Persona.Rebel".Translate(), Chattiness =1.4f },
-        new PersonalityData { Persona ="RimTalk.Persona.Oddball".Translate(), Chattiness =1.2f },
-        new PersonalityData { Persona ="RimTalk.Persona.GreedyMerchant".Translate(), Chattiness =1.7f },
-        new PersonalityData { Persona ="RimTalk.Persona.Romantic".Translate(), Chattiness =1.6f },
-        new PersonalityData { Persona ="RimTalk.Persona.BattleManiac".Translate(), Chattiness =0.8f },
-        new PersonalityData { Persona ="RimTalk.Persona.GrumpyElder".Translate(), Chattiness =1.0f },
-        new PersonalityData { Persona ="RimTalk.Persona.AmbitiousClimber".Translate(), Chattiness =1.5f },
-        new PersonalityData { Persona ="RimTalk.Persona.Mediator".Translate(), Chattiness =1.4f },
-        new PersonalityData { Persona ="RimTalk.Persona.Gambler".Translate(), Chattiness =1.5f },
-        new PersonalityData { Persona ="RimTalk.Persona.ArtisticSoul".Translate(), Chattiness =0.9f },
-        new PersonalityData { Persona ="RimTalk.Persona.Drifter".Translate(), Chattiness =0.6f },
-        new PersonalityData { Persona ="RimTalk.Persona.Perfectionist".Translate(), Chattiness =0.8f },
-        new PersonalityData { Persona ="RimTalk.Persona.Vengeful".Translate(), Chattiness =0.7f }
+        new() { Persona ="RimTalk.Persona.CheerfulHelper".Translate(), Chattiness =1.5f },
+        new() { Persona ="RimTalk.Persona.CynicalRealist".Translate(), Chattiness =0.8f },
+        new() { Persona ="RimTalk.Persona.ShyThinker".Translate(), Chattiness =0.3f },
+        new() { Persona ="RimTalk.Persona.Hothead".Translate(), Chattiness =1.2f },
+        new() { Persona ="RimTalk.Persona.Philosopher".Translate(), Chattiness =1.6f },
+        new() { Persona ="RimTalk.Persona.DarkHumorist".Translate(), Chattiness =1.4f },
+        new() { Persona ="RimTalk.Persona.Caregiver".Translate(), Chattiness =1.5f },
+        new() { Persona ="RimTalk.Persona.Opportunist".Translate(), Chattiness =1.3f },
+        new() { Persona ="RimTalk.Persona.OptimisticDreamer".Translate(), Chattiness =1.6f },
+        new() { Persona ="RimTalk.Persona.Pessimist".Translate(), Chattiness =0.7f },
+        new() { Persona ="RimTalk.Persona.StoicSoldier".Translate(), Chattiness =0.4f },
+        new() { Persona ="RimTalk.Persona.FreeSpirit".Translate(), Chattiness =1.7f },
+        new() { Persona ="RimTalk.Persona.Workaholic".Translate(), Chattiness =0.5f },
+        new() { Persona ="RimTalk.Persona.Slacker".Translate(), Chattiness =1.1f },
+        new() { Persona ="RimTalk.Persona.NobleIdealist".Translate(), Chattiness =1.5f },
+        new() { Persona ="RimTalk.Persona.StreetwiseSurvivor".Translate(), Chattiness =1.0f },
+        new() { Persona ="RimTalk.Persona.Scholar".Translate(), Chattiness =1.6f },
+        new() { Persona ="RimTalk.Persona.Jokester".Translate(), Chattiness =1.8f },
+        new() { Persona ="RimTalk.Persona.MelancholicPoet".Translate(), Chattiness =0.4f },
+        new() { Persona ="RimTalk.Persona.Paranoid".Translate(), Chattiness =0.6f },
+        new() { Persona ="RimTalk.Persona.Commander".Translate(), Chattiness =1.0f },
+        new() { Persona ="RimTalk.Persona.Coward".Translate(), Chattiness =0.7f },
+        new() { Persona ="RimTalk.Persona.ArrogantNoble".Translate(), Chattiness =1.4f },
+        new() { Persona ="RimTalk.Persona.LoyalCompanion".Translate(), Chattiness =1.3f },
+        new() { Persona ="RimTalk.Persona.CuriousExplorer".Translate(), Chattiness =1.7f },
+        new() { Persona ="RimTalk.Persona.ColdRationalist".Translate(), Chattiness =0.3f },
+        new() { Persona ="RimTalk.Persona.FlirtatiousCharmer".Translate(), Chattiness =1.9f },
+        new() { Persona ="RimTalk.Persona.BitterOutcast".Translate(), Chattiness =0.5f },
+        new() { Persona ="RimTalk.Persona.Zealot".Translate(), Chattiness =1.8f },
+        new() { Persona ="RimTalk.Persona.Trickster".Translate(), Chattiness =1.6f },
+        new() { Persona ="RimTalk.Persona.DeadpanRealist".Translate(), Chattiness =0.6f },
+        new() { Persona ="RimTalk.Persona.ChildAtHeart".Translate(), Chattiness =1.7f },
+        new() { Persona ="RimTalk.Persona.SkepticalScientist".Translate(), Chattiness =1.2f },
+        new() { Persona ="RimTalk.Persona.Martyr".Translate(), Chattiness =1.3f },
+        new() { Persona ="RimTalk.Persona.Manipulator".Translate(), Chattiness =1.5f },
+        new() { Persona ="RimTalk.Persona.Rebel".Translate(), Chattiness =1.4f },
+        new() { Persona ="RimTalk.Persona.Oddball".Translate(), Chattiness =1.2f },
+        new() { Persona ="RimTalk.Persona.GreedyMerchant".Translate(), Chattiness =1.7f },
+        new() { Persona ="RimTalk.Persona.Romantic".Translate(), Chattiness =1.6f },
+        new() { Persona ="RimTalk.Persona.BattleManiac".Translate(), Chattiness =0.8f },
+        new() { Persona ="RimTalk.Persona.GrumpyElder".Translate(), Chattiness =1.0f },
+        new() { Persona ="RimTalk.Persona.AmbitiousClimber".Translate(), Chattiness =1.5f },
+        new() { Persona ="RimTalk.Persona.Mediator".Translate(), Chattiness =1.4f },
+        new() { Persona ="RimTalk.Persona.Gambler".Translate(), Chattiness =1.5f },
+        new() { Persona ="RimTalk.Persona.ArtisticSoul".Translate(), Chattiness =0.9f },
+        new() { Persona ="RimTalk.Persona.Drifter".Translate(), Chattiness =0.6f },
+        new() { Persona ="RimTalk.Persona.Perfectionist".Translate(), Chattiness =0.8f },
+        new() { Persona ="RimTalk.Persona.Vengeful".Translate(), Chattiness =0.7f }
     };
 }

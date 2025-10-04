@@ -41,7 +41,7 @@ public static class RelationsService
                 }
 
                 // --- Step 3: If no other label found, fall back to opinion-based relationship ---
-                if (string.IsNullOrEmpty(label))
+                if (string.IsNullOrEmpty(label) && !PawnService.IsVisitor(pawn) && !PawnService.IsInvader(pawn))
                 {
                     if (opinionValue >= FriendOpinionThreshold)
                     {

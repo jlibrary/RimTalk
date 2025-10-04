@@ -44,6 +44,7 @@ public static class AIService
                             return;
                         }
 
+                        talkResponse.TalkType = request.TalkType;
                         allResponses.Add(talkResponse);
 
                         // Add logs

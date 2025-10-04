@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.Serialization;
+using RimTalk.Source.Data;
 
 namespace RimTalk.Data;
 
@@ -7,6 +8,8 @@ namespace RimTalk.Data;
 public class TalkResponse : IJsonData
 {
     public Guid Id { get; set; }
+    
+    public TalkType TalkType { get; set; }
 
     [DataMember(Name = "name")] public string Name { get; set; }
 
