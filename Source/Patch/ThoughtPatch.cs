@@ -14,7 +14,8 @@ public static class ThoughtTracker
     // Check if thought was already processed, if not mark it as processed
     public static void TryMarkAsProcessed(Pawn pawn, Thought thought)
     {
-        var hediff = Hediff_Persona.Get(pawn);
+        if (pawn == null || thought == null || thought.def == null) return;
+        var hediff = Hediff_Persona.Ensure(pawn);
 
         if (hediff == null) return;
 
@@ -29,7 +30,16 @@ public static class ThoughtTracker
     {
         if (thought == null) return null;
 
-        var offset = thought.MoodOffset();
+        float offset;
+        try
+        {
+            offset = thought.MoodOffset();
+        }
+        catch
+        {
+            return null; 
+        }
+
 
         if (offset > 0)
             return $"new good feeling: {thought.LabelCap}";
@@ -136,9 +146,18 @@ public static class PatchThoughtHandlerGetDistinctMoodThoughtGroups
         {
             // Get the actual thought object
             var thought = outThoughts.FirstOrDefault(t => t.def.defName == thoughtDefName);
-            if (thought != null && !(thought.MoodOffset() > 0 && __instance.pawn.InMentalState))
+            if (thought != null)
             {
-                ThoughtTracker.TryMarkAsProcessed(__instance.pawn, thought);
+                try
+                {
+                    if (!(thought.MoodOffset() > 0 && __instance.pawn.InMentalState))
+                    {
+                        ThoughtTracker.TryMarkAsProcessed(__instance.pawn, thought);
+                    }
+                }
+                catch
+                {
+                }
             }
         }
 

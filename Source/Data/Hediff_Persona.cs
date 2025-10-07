@@ -35,6 +35,19 @@ public class Hediff_Persona : Hediff
         ) as Hediff_Persona;
     }
 
+    public static Hediff_Persona Ensure(Pawn pawn) {
+        var def = DefDatabase<HediffDef>.GetNamedSilentFail(RimtalkHediff);
+        if (pawn?.health?.hediffSet == null || def == null) return null;
+        var h = pawn.health.hediffSet.GetFirstHediffOfDef(def) as Hediff_Persona;
+        if (h == null) {
+            h = (Hediff_Persona)HediffMaker.MakeHediff(def, pawn);
+            pawn.health.AddHediff(h);
+        }
+        if (h.SpokenThoughtTicks == null) h.SpokenThoughtTicks = new Dictionary<string,int>();
+        return h;
+    }
+
+
     // Centralized key generation - ensures consistency across all code
     public static string GetThoughtKey(Thought thought)
     {
@@ -67,7 +80,7 @@ public class Hediff_Persona : Hediff
         foreach (var p in nearbyPawns)
         {
             if (p == thought.pawn) continue; 
-            var hediff = Get(p);
+            var hediff = Ensure(p);
             if (hediff != null)
             {
                 hediff.SpokenThoughtTicks[key] = currentTick;
