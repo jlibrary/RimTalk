@@ -15,7 +15,7 @@ public static class ThoughtTracker
     public static void TryMarkAsProcessed(Pawn pawn, Thought thought)
     {
         if (pawn == null || thought == null || thought.def == null) return;
-        var hediff = Hediff_Persona.Ensure(pawn);
+        var hediff = Hediff_Persona.GetOrAddNew(pawn);
 
         if (hediff == null) return;
 

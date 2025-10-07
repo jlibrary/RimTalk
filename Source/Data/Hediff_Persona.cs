@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using RimTalk.Service;
 using RimWorld;
+using UnityEngine;
 using Verse;
 
 namespace RimTalk.Data;
@@ -28,30 +29,40 @@ public class Hediff_Persona : Hediff
         }
     }
     
-    public static Hediff_Persona Get(Pawn pawn)
+    public static Hediff_Persona GetOrAddNew(Pawn pawn)
     {
-        return pawn?.health?.hediffSet?.GetFirstHediffOfDef(
-            DefDatabase<HediffDef>.GetNamedSilentFail(RimtalkHediff)
-        ) as Hediff_Persona;
-    }
-
-    public static Hediff_Persona Ensure(Pawn pawn) {
         var def = DefDatabase<HediffDef>.GetNamedSilentFail(RimtalkHediff);
         if (pawn?.health?.hediffSet == null || def == null) return null;
-        var h = pawn.health.hediffSet.GetFirstHediffOfDef(def) as Hediff_Persona;
-        if (h == null) {
-            h = (Hediff_Persona)HediffMaker.MakeHediff(def, pawn);
-            pawn.health.AddHediff(h);
+    
+        var hediff = pawn.health.hediffSet.GetFirstHediffOfDef(def) as Hediff_Persona;
+    
+        if (hediff == null)
+        {
+            hediff = (Hediff_Persona)HediffMaker.MakeHediff(def, pawn);
+        
+            // Assign a random personality on creation
+            PersonalityData randomPersonalityData = Constant.Personalities.RandomElement();
+            hediff.Personality = randomPersonalityData.Persona;
+        
+            if (pawn.IsSlave || pawn.IsPrisoner || PawnService.IsVisitor(pawn) || PawnService.IsInvader(pawn))
+            {
+                hediff.TalkInitiationWeight = 0.3f;
+            }
+            else
+            {
+                hediff.TalkInitiationWeight = randomPersonalityData.Chattiness;
+            }
+        
+            pawn.health.AddHediff(hediff);
         }
-        if (h.SpokenThoughtTicks == null) h.SpokenThoughtTicks = new Dictionary<string,int>();
-        return h;
-    }
-
-
-    // Centralized key generation - ensures consistency across all code
-    public static string GetThoughtKey(Thought thought)
-    {
-        return $"{thought.def.defName}_{thought.CurStageIndex}";
+    
+        // Ensure dictionary is initialized (for both new and existing hediffs)
+        if (hediff.SpokenThoughtTicks == null)
+        {
+            hediff.SpokenThoughtTicks = new Dictionary<string, int>();
+        }
+    
+        return hediff;
     }
     
     // Check if thought was spoken recently, if not mark it as spoken
@@ -63,7 +74,7 @@ public class Hediff_Persona : Hediff
         int currentTick = Find.TickManager.TicksGame;
     
         // Randomize interval from 1 to 2.5 days
-        int randomInterval = UnityEngine.Random.Range(60000, 150000);
+        int randomInterval = Random.Range(60000, 150000);
     
         if (SpokenThoughtTicks.TryGetValue(key, out int lastTick))
         {
@@ -80,7 +91,7 @@ public class Hediff_Persona : Hediff
         foreach (var p in nearbyPawns)
         {
             if (p == thought.pawn) continue; 
-            var hediff = Ensure(p);
+            var hediff = GetOrAddNew(p);
             if (hediff != null)
             {
                 hediff.SpokenThoughtTicks[key] = currentTick;

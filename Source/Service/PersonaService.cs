@@ -8,49 +8,24 @@ namespace RimTalk.Data;
 
 public static class PersonaService
 {
-    private static Hediff_Persona GetOrAddPersonaHediff(Pawn pawn)
-    {
-        var hediff = Hediff_Persona.Ensure(pawn);
-        if (hediff == null)
-        {
-            hediff = (Hediff_Persona)HediffMaker.MakeHediff(HediffDef.Named(Hediff_Persona.RimtalkHediff), pawn);
-                
-            // Assign a random personality on creation, similar to old logic
-            PersonalityData randomPersonalityData = Constant.Personalities.RandomElement();
-            hediff.Personality = randomPersonalityData.Persona;
-                
-            if (pawn.IsSlave || pawn.IsPrisoner || PawnService.IsVisitor(pawn) || PawnService.IsInvader(pawn))
-            {
-                hediff.TalkInitiationWeight = 0.3f;
-            }
-            else
-            {
-                hediff.TalkInitiationWeight = randomPersonalityData.Chattiness;
-            }
-                
-            pawn.health.AddHediff(hediff);
-        }
-        return hediff;
-    }
-
     public static string GetPersonality(Pawn pawn)
     {
-        return GetOrAddPersonaHediff(pawn).Personality;
+        return Hediff_Persona.GetOrAddNew(pawn).Personality;
     }
 
     public static void SetPersonality(Pawn pawn, string personality)
     {
-        GetOrAddPersonaHediff(pawn).Personality = personality;
+        Hediff_Persona.GetOrAddNew(pawn).Personality = personality;
     }
 
     public static float GetTalkInitiationWeight(Pawn pawn)
     {
-        return GetOrAddPersonaHediff(pawn).TalkInitiationWeight;
+        return Hediff_Persona.GetOrAddNew(pawn).TalkInitiationWeight;
     }
 
     public static void SetTalkInitiationWeight(Pawn pawn, float frequency)
     {
-        GetOrAddPersonaHediff(pawn).TalkInitiationWeight = frequency;
+        Hediff_Persona.GetOrAddNew(pawn).TalkInitiationWeight = frequency;
     }
 
     public static async Task<PersonalityData> GeneratePersona(Pawn pawn)
