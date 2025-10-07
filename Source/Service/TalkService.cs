@@ -41,7 +41,8 @@ public static class TalkService
         }
 
         List<Pawn> nearbyPawns = PawnSelector.GetAllNearByPawns(talkRequest.Initiator);
-        var status = PawnService.GetPawnStatusFull(talkRequest.Initiator, nearbyPawns);
+        var (status, isInDanger) = PawnService.GetPawnStatusFull(talkRequest.Initiator, nearbyPawns);
+        if (isInDanger) talkRequest.TalkType = TalkType.Urgent;
 
         // Avoid spamming generations if the pawn's status hasn't changed recently.
         if (status == pawn1.LastStatus && pawn1.RejectCount < 2)
@@ -95,7 +96,7 @@ public static class TalkService
                 playerDict,
                 (pawn, talkResponse) =>
                 {
-                    Logger.Debug($"Streamed {pawn.LabelShort}: {talkResponse.Text}");
+                    Logger.Debug($"Streamed {pawn.LabelShort}: {talkResponse.TalkType}: {talkResponse.Text}");
 
                     PawnState pawnState = Cache.Get(pawn);
                     talkResponse.Name = pawnState.Pawn.LabelShort;

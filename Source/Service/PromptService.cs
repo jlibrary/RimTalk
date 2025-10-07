@@ -181,9 +181,11 @@ public static class PromptService
             return sb.ToString();
 
         var m = pawn.needs?.mood;
-        var mood = pawn.InMentalState
-            ? $"Mood: {pawn.MentalState?.InspectLine} (in mental break)"
-            : $"Mood: {m?.MoodString ?? "N/A"} ({(int)((m?.CurLevelPercentage ?? 0) * 100)}%)";
+        var mood = pawn.Downed
+            ? "Critical: Downed (in pain/distress)"
+            : pawn.InMentalState
+                ? $"Mood: {pawn.MentalState?.InspectLine} (in mental break)"
+                : $"Mood: {m?.MoodString ?? "N/A"} ({(int)((m?.CurLevelPercentage ?? 0) * 100)}%)";
         sb.AppendLine(mood);
 
         var thoughts = "Memory: ";
@@ -260,7 +262,9 @@ public static class PromptService
 
         if (pawns[0].InMentalState)
             sb.Append($"\nbe dramatic (mental break)");
-        else 
+        else if (pawns[0].Downed)
+            sb.Append($"\n(downed in pain. Short, strained dialogue)");
+        else
             sb.Append($"\n{talkRequest.Prompt}");
 
         // add pawn status

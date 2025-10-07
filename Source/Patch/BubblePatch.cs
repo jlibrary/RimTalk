@@ -49,6 +49,7 @@ public static class Bubbler_Add
         }
             
         InteractionDef interactionDef = GetInteractionDef(entry);
+        if (interactionDef == null) return true;
         bool isChitchat = interactionDef == InteractionDefOf.Chitchat ||
                           interactionDef == InteractionDefOf.DeepTalk;
 
@@ -68,7 +69,7 @@ public static class Bubbler_Add
             return false;
 
         // Otherwise, block normal bubble and generate talk
-        prompt = $"{prompt} ({GetInteractionDef(entry).label})";
+        prompt = $"{prompt} ({interactionDef.label})";
         pawnState.AddTalkRequest(prompt, recipient, TalkType.Chitchat);
         return false;
     }

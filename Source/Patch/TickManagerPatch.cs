@@ -1,7 +1,6 @@
 using HarmonyLib;
 using RimTalk.Data;
 using RimTalk.Service;
-using RimTalk.Source.Data;
 using RimTalk.Util;
 using RimWorld;
 using Verse;
@@ -75,8 +74,7 @@ internal static class TickManagerPatch
                 // 3. Fallback: generate based on current context if nothing else worked
                 if (!talkGenerated)
                 {
-                    TalkType talkType = PawnService.IsPawnInDanger(selectedPawn) ? TalkType.Urgent : TalkType.Other;
-                    TalkRequest talkRequest = new TalkRequest(null, selectedPawn, null, talkType);
+                    TalkRequest talkRequest = new TalkRequest(null, selectedPawn);
                     TalkService.GenerateTalk(talkRequest);
                 }
             }

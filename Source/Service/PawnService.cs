@@ -119,7 +119,7 @@ public static class PawnService
         return shortName;
     }
 
-    public static string GetPawnStatusFull(Pawn pawn, List<Pawn> nearbyPawns)
+    public static (string, bool) GetPawnStatusFull(Pawn pawn, List<Pawn> nearbyPawns)
     {
         bool isInDanger = false;
             
@@ -190,7 +190,7 @@ public static class PawnService
                 parts.Add("invading user colony");
             }
             
-            return string.Join("\n", parts);
+            return (string.Join("\n", parts), isInDanger);
         }
 
         // --- 3. Enemy proximity / combat info ---
@@ -211,7 +211,7 @@ public static class PawnService
         if (!isInDanger)
             parts.Add(Constant.Prompt);
 
-        return string.Join("\n", parts);
+        return (string.Join("\n", parts), isInDanger);
     }
         
     public static Pawn HostilePawnNearBy(Pawn pawn)

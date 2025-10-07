@@ -67,7 +67,7 @@ public class PawnState(Pawn pawn)
             return false;
 
         return Pawn.Awake()
-               && !Pawn.DeadOrDowned
+               && !Pawn.Dead
                && Pawn.CurJobDef != JobDefOf.LayDown
                && Pawn.CurJobDef != JobDefOf.LayDownAwake
                && Pawn.CurJobDef != JobDefOf.LayDownResting
