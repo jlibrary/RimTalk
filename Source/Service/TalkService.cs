@@ -57,7 +57,7 @@ public static class TalkService
         // Select the most relevant pawns for the conversation context.
         List<Pawn> pawns = new List<Pawn> { talkRequest.Initiator, talkRequest.Recipient }
             .Where(p => p != null)
-            .Concat(nearbyPawns.Where(p => Cache.Get(p).CanGenerateTalk()))
+            .Concat(nearbyPawns.Where(p => Cache.Get(p).CanDisplayTalk()))
             .Distinct()
             .Take(3)
             .ToList();
