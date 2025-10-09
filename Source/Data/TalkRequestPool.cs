@@ -19,6 +19,15 @@ public static class TalkRequestPool
         Requests.Add(request);
     }
 
+    public static void Add(string prompt, Pawn initiator, Pawn recipient, int mapId, TalkType talkType)
+    {
+        var request = new TalkRequest(prompt, initiator, recipient, talkType)
+        {
+            MapId = mapId,
+        };
+        Requests.Add(request);
+    }
+
     public static TalkRequest GetRequestFromPool(Pawn pawn)
     {
         var requests = Requests
