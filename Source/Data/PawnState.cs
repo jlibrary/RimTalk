@@ -30,13 +30,13 @@ public class PawnState(Pawn pawn)
             TalkRequests.Clear();
         }
 
-        if (talkType == TalkType.Event || talkType == TalkType.QuestOffer)
+        if (talkType is TalkType.Event or TalkType.QuestOffer)
         {
             TalkRequests.AddFirst(new TalkRequest(prompt, Pawn, recipient, talkType));
         }
         else
         {
-            TalkRequests.AddLast(new TalkRequest(prompt, Pawn, recipient, talkType));    
+            TalkRequests.AddLast(new TalkRequest(prompt, Pawn, recipient, talkType));   
         }
     }
     

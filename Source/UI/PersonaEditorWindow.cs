@@ -21,13 +21,6 @@ public class PersonaEditorWindow : Window
         _editingPersonality = Data.PersonaService.GetPersonality(pawn) ?? "";
         _talkInitiationWeight = Data.PersonaService.GetTalkInitiationWeight(pawn);
 
-        // if (string.IsNullOrWhiteSpace(_editingPersonality))
-        // {
-        //     var seed = Constant.Personalities.RandomElement();
-        //     _editingPersonality = seed.Persona;
-        //     _talkInitiationWeight = seed.Chattiness;
-        // }
-
         doCloseX = true;
         draggable = true;
         closeOnAccept = false;
@@ -50,40 +43,29 @@ public class PersonaEditorWindow : Window
         GUI.color = new Color(0.8f, 0.8f, 0.8f);
         Widgets.Label(instructRect, "RimTalk.PersonaEditor.Instruct".Translate());
         GUI.color = Color.white;
-
-        // Text area with character counter
+        
         // --- Scrollable multi-line text area ---
-        // --- Scrollable multi-line text area with border ---
-        Rect textBoxOuter = new Rect(inRect.x, instructRect.yMax + 10f, inRect.width, 180f);
+        Rect textBoxRect = new Rect(inRect.x, instructRect.yMax + 10f, inRect.width, 180f);
 
-        Widgets.DrawMenuSection(textBoxOuter);
+        float innerWidth = textBoxRect.width - 16f;
 
-        Rect padded = textBoxOuter.ContractedBy(6f);
-        float innerWidth = padded.width - 16f;
-
-        float contentHeight = Mathf.Max(padded.height, Text.CalcHeight(
+        float contentHeight = Mathf.Max(textBoxRect.height, Text.CalcHeight(
             string.IsNullOrEmpty(_editingPersonality) ? " " : _editingPersonality, innerWidth));
-
-        Widgets.BeginScrollView(padded, ref _scrollPos, new Rect(0f, 0f, innerWidth, contentHeight));
-
+        
+        Widgets.BeginScrollView(textBoxRect, ref _scrollPos, new Rect(0f, 0f, innerWidth, contentHeight));
         GUI.SetNextControlName(_textControlName);
-        string rawInput = Widgets.TextArea(new Rect(0f, 0f, innerWidth, contentHeight), _editingPersonality);
-        if (rawInput != _editingPersonality)
-        {
-            _editingPersonality = rawInput.Replace("\\n", "\n");
-        }
-
+        _editingPersonality = Widgets.TextArea(new Rect(0f, 0f, innerWidth, contentHeight), _editingPersonality);
         Widgets.EndScrollView();
-            
+
         // Character count
-        Rect countRect = new Rect(inRect.x, textBoxOuter.yMax + 2f, inRect.width, 20f);
+        Rect countRect = new Rect(inRect.x, textBoxRect.yMax + 2f, inRect.width, 20f);
         Text.Font = GameFont.Tiny;
         Color countColor = _editingPersonality.Length > 300 ? Color.yellow : Color.gray;
         if (_editingPersonality.Length >= MaxLength) countColor = Color.red;
         GUI.color = countColor;
-        Text.Anchor = TextAnchor.MiddleRight; 
+        Text.Anchor = TextAnchor.MiddleRight;
         Widgets.Label(countRect, "RimTalk.PersonaEditor.Characters".Translate(_editingPersonality.Length, 300));
-        Text.Anchor = TextAnchor.UpperLeft; 
+        Text.Anchor = TextAnchor.UpperLeft;
         GUI.color = Color.white;
         Text.Font = GameFont.Small;
 
