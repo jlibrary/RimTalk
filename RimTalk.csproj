@@ -13,53 +13,72 @@
 		<OutputPath>1.6/Assemblies</OutputPath>
 		<ModFolderName>RimTalk</ModFolderName>
 		<LangVersion>default</LangVersion>
+		<EnableBubbles>true</EnableBubbles>
 	</PropertyGroup>
 
+	<!-- Release build configuration -->
 	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
 	  <Optimize>false</Optimize>
 	  <DebugSymbols>true</DebugSymbols>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<!-- Core RimWorld library -->
-		<Reference Include="$(RimWorldDir)/RimWorldMac.app/Contents/Resources/Data/Managed/Assembly-CSharp.dll">
-			<Private>False</Private>
-		</Reference>
-
-		<!-- All UnityEngine libraries -->
-		<Reference Include="$(RimWorldDir)/RimWorldMac.app/Contents/Resources/Data/Managed/UnityEngine.*.dll">
-			<Private>False</Private>
-		</Reference>
-
-		<!-- Harmony -->
-		<Reference Include="$(RimWorldDir)/../../workshop/content/294100/2009463077/Current/Assemblies/0Harmony.dll">
-			<Private>False</Private>
-		</Reference>
-
-		<!-- Bubbles -->
-		<Reference Include="$(RimWorldDir)/../../workshop/content/294100/1516158345/Assemblies/Bubbles.dll">
-			<Private>False</Private>
-		</Reference>
+		<!-- Core RimWorld & UnityEngine libraries -->
+	  <PackageReference Include="Krafs.Rimworld.Ref" Version="1.6.*" PrivateAssets="All" />
+		<!-- Harmony API -->
+	  <PackageReference Include="Lib.Harmony.Ref" Version="2.*" PrivateAssets="All" />
 	</ItemGroup>
 
-	<!-- DEPLOYMENT TARGET WITH THE CORRECTED MACOS PATH -->
-	<Target Name="DeployToModsFolder" AfterTargets="Build" Condition=" '$(BuildingWithScript)' != 'true' ">
-		<Message Text="--- Deploying Mod to macOS Mods folder (IDE Build) ---" Importance="high" />
+	<!-- Remove BubblePatch.cs when bubble is disabled -->
+	<ItemGroup Condition=" '$(EnableBubbles)' == 'false' ">
+		<Compile Remove="Source/Patch/BubblePatch.cs" />
+	</ItemGroup>
 
-		<PropertyGroup>
-			<!-- THIS IS THE CORRECTED LINE -->
-			<DeployPath>$(RimWorldDir)/RimWorldMac.app/Mods/$(ModFolderName)/</DeployPath>
-		</PropertyGroup>
+	<!-- Include Bubble library when bubble is enabled -->
+  <ItemGroup Condition=" '$(EnableBubbles)' == 'true' ">
+    <Reference Include="Bubbles">
+      <HintPath>Libs/Bubbles.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
 
-		<MakeDir Directories="$(DeployPath)" />
-
-		<Exec Command="rsync -a --delete --checksum &quot;$(ProjectDir)About/&quot; &quot;$(DeployPath)About/&quot;" />
-		<Exec Command="rsync -a --delete --checksum &quot;$(ProjectDir)Defs/&quot; &quot;$(DeployPath)Defs/&quot;" />
-		<Exec Command="rsync -a --delete --checksum &quot;$(ProjectDir)Languages/&quot; &quot;$(DeployPath)Languages/&quot;" />
-		<Exec Command="rsync -a --delete --checksum &quot;$(ProjectDir)Textures/&quot; &quot;$(DeployPath)Textures/&quot;" />
-		<Exec Command="rsync -a --delete --checksum &quot;$(ProjectDir)1.6/&quot; &quot;$(DeployPath)1.6/&quot;" />
-
-		<Message Text="--- IDE Deployment finished successfully ---" Importance="high" />
+	<!-- Deploy to RimWorld client -->
+	<Target Name="DeployToModsFolder" AfterTargets="Build" Condition=" '$(BuildingWithScript)' != 'true' AND '$(RimWorldDir)' != '' ">
+		<CallTarget Targets="WinDeploy" Condition=" '$(OS)' == 'Windows_NT' " />
+    <CallTarget Targets="MacDeploy" Condition=" '$(OS)' != 'Windows_NT' " />
 	</Target>
+
+	<!-- Deploy to RimWorld client (macOS) -->
+  <Target Name="MacDeploy">
+    <PropertyGroup>
+      <DeployPath>$(RimWorldDir)/RimWorldMac.app/Mods/RimTalk/</DeployPath>
+    </PropertyGroup>
+    <MakeDir Directories="$(DeployPath)" />
+    <Exec Command='rsync -a --delete --checksum "$(ProjectDir)About/"     "$(DeployPath)About/"' />
+    <Exec Command='rsync -a --delete --checksum "$(ProjectDir)Defs/"      "$(DeployPath)Defs/"' />
+    <Exec Command='rsync -a --delete --checksum "$(ProjectDir)Languages/" "$(DeployPath)Languages/"' />
+    <Exec Command='rsync -a --delete --checksum "$(ProjectDir)Textures/"  "$(DeployPath)Textures/"' />
+    <Exec Command='rsync -a --delete --checksum "$(ProjectDir)1.6/"       "$(DeployPath)1.6/"' />
+    <Message Text="--- macOS deployment finished successfully ---" Importance="high" />
+  </Target>
+
+	<!-- Deploy to RimWorld client (Windows) -->
+  <Target Name="WinDeploy">
+    <PropertyGroup>
+      <WinModPath>$(RimWorldDir)\Mods\RimTalk\</WinModPath>
+    </PropertyGroup>
+    <Message Text="Copying to $(WinModPath)" Importance="high" />
+    <ItemGroup>
+      <_CopyDirs Include="About;Defs;Languages;Textures;1.6" />
+    </ItemGroup>
+    <MakeDir Directories="$(WinModPath)" />
+    <Exec Command='robocopy "$(ProjectDir)About"     "$(WinModPath)About" /MIR' IgnoreExitCode="true" />
+    <Exec Command='robocopy "$(ProjectDir)Defs"      "$(WinModPath)Defs" /MIR' IgnoreExitCode="true" />
+    <Exec Command='robocopy "$(ProjectDir)Languages" "$(WinModPath)Languages" /MIR' IgnoreExitCode="true" />
+    <Exec Command='robocopy "$(ProjectDir)Textures"  "$(WinModPath)Textures" /MIR' IgnoreExitCode="true" />
+    <Exec Command='robocopy "$(ProjectDir)1.6"       "$(WinModPath)1.6" /MIR' IgnoreExitCode="true" />
+		<Message Text="--- Windows deployment finished successfully ---" Importance="high" />
+  </Target>
 
 </Project>
