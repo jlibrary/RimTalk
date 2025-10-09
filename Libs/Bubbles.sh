@@ -3,7 +3,7 @@
 OWNER="Jaxe-Dev"
 REPO="Bubbles"
 DLLNAME="Bubbles.dll"
-SCRIPT_PATH=$(dirname $(realpath -s $0))
+SCRIPT_PATH="$( cd "$( dirname "$0" )" && pwd )"
 API_BASE_URL="https://api.github.com/repos/$OWNER/$REPO"
 
 README_CONTENT=$(curl -s "$API_BASE_URL/readme" | \
