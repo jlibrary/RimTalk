@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using RimTalk.Data;
@@ -27,13 +28,42 @@ public static class ArchivePatch
         }
 
         // Generate the prompt text first, as it's needed in all cases.
+        // Decide quest category & generate prompt (kept compatible with original text)
         var prompt = "";
+        var talkType = TalkType.Event; // default
+
         if (archivable is ChoiceLetter choiceLetter && choiceLetter.quest != null)
         {
-            prompt += $"(Talk if you want to accept quest)\n[{choiceLetter.quest.description.ToString().StripTags()}]";
+            if (choiceLetter.quest.State == QuestState.NotYetAccepted)
+            {
+                talkType = TalkType.QuestOffer;
+                prompt += $"(Talk if you want to accept quest)\n[{choiceLetter.quest.description.ToString().StripTags()}]";
+            }
+            else
+            {
+                talkType = TalkType.QuestEnd;
+                prompt += $"(Talk about quest result)\n[{archivable.ArchivedTooltip.StripTags()}]";
+            }
+        }
+        else if (archivable is Letter && !(archivable is ChoiceLetter))
+        {
+            var label = archivable.ArchivedLabel ?? string.Empty;
+            var tip   = archivable.ArchivedTooltip ?? string.Empty;
+            if (label.IndexOf("Quest", StringComparison.OrdinalIgnoreCase) >= 0
+                || tip.IndexOf("Quest", StringComparison.OrdinalIgnoreCase) >= 0
+                || label.Contains("Quest") || tip.Contains("Quest"))
+            {
+                talkType = TalkType.QuestEnd;
+                prompt += $"(Talk about quest result)\n[{archivable.ArchivedTooltip.StripTags()}]";
+            }
+            else
+            {
+                prompt += $"(Talk about incident)\n[{archivable.ArchivedTooltip.StripTags()}]";
+            }
         }
         else
         {
+            // Other events
             prompt += $"(Talk about incident)\n[{archivable.ArchivedTooltip.StripTags()}]";
         }
 
@@ -62,7 +92,7 @@ public static class ArchivePatch
             // If specific colonists are nearby, create a request for each one.
             foreach (var pawn in nearbyColonists)
             {
-                Cache.Get(pawn)?.AddTalkRequest(prompt, talkType: TalkType.Event);
+                Cache.Get(pawn)?.AddTalkRequest(prompt, talkType: talkType);
             }
         }
         else

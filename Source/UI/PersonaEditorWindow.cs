@@ -12,15 +12,26 @@ public class PersonaEditorWindow : Window
     private string _editingPersonality;
     private float _talkInitiationWeight;
     private bool _isGenerating = false;
+    private Vector2 _scrollPos = Vector2.zero;
+    private readonly string _textControlName = "RimTalk_Persona_TextArea";
 
     public PersonaEditorWindow(Pawn pawn)
     {
         _pawn = pawn;
         _editingPersonality = Data.PersonaService.GetPersonality(pawn) ?? "";
         _talkInitiationWeight = Data.PersonaService.GetTalkInitiationWeight(pawn);
-            
+
+        // if (string.IsNullOrWhiteSpace(_editingPersonality))
+        // {
+        //     var seed = Constant.Personalities.RandomElement();
+        //     _editingPersonality = seed.Persona;
+        //     _talkInitiationWeight = seed.Chattiness;
+        // }
+
         doCloseX = true;
         draggable = true;
+        closeOnAccept = false;
+        closeOnCancel = true;
         absorbInputAroundWindow = false;
         preventCameraMotion = false;
     }
@@ -41,15 +52,31 @@ public class PersonaEditorWindow : Window
         GUI.color = Color.white;
 
         // Text area with character counter
-        Rect textAreaRect = new Rect(inRect.x, instructRect.yMax + 10f, inRect.width, 180f);
-        string rawInput = Widgets.TextArea(textAreaRect, _editingPersonality);
+        // --- Scrollable multi-line text area ---
+        // --- Scrollable multi-line text area with border ---
+        Rect textBoxOuter = new Rect(inRect.x, instructRect.yMax + 10f, inRect.width, 180f);
+
+        Widgets.DrawMenuSection(textBoxOuter);
+
+        Rect padded = textBoxOuter.ContractedBy(6f);
+        float innerWidth = padded.width - 16f;
+
+        float contentHeight = Mathf.Max(padded.height, Text.CalcHeight(
+            string.IsNullOrEmpty(_editingPersonality) ? " " : _editingPersonality, innerWidth));
+
+        Widgets.BeginScrollView(padded, ref _scrollPos, new Rect(0f, 0f, innerWidth, contentHeight));
+
+        GUI.SetNextControlName(_textControlName);
+        string rawInput = Widgets.TextArea(new Rect(0f, 0f, innerWidth, contentHeight), _editingPersonality);
         if (rawInput != _editingPersonality)
         {
             _editingPersonality = rawInput.Replace("\\n", "\n");
         }
+
+        Widgets.EndScrollView();
             
         // Character count
-        Rect countRect = new Rect(inRect.x, textAreaRect.yMax + 2f, inRect.width, 20f);
+        Rect countRect = new Rect(inRect.x, textBoxOuter.yMax + 2f, inRect.width, 20f);
         Text.Font = GameFont.Tiny;
         Color countColor = _editingPersonality.Length > 300 ? Color.yellow : Color.gray;
         if (_editingPersonality.Length >= MaxLength) countColor = Color.red;

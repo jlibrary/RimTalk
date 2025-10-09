@@ -7,6 +7,8 @@ public enum TalkType
     LevelUp,
     Chitchat,
     Event,
+    QuestOffer,
+    QuestEnd,
     Thought,
     Other
 }
