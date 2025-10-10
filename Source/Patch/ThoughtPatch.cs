@@ -77,6 +77,11 @@ public static class PatchMemoryThoughtHandlerTryGainMemory
 {
     static void Postfix(Thought_Memory newThought, Pawn otherPawn)
     {
+        if (Current.ProgramState != ProgramState.Playing)
+        {
+            return;
+        }
+
         if (newThought?.pawn == null)
             return;
 
@@ -96,7 +101,7 @@ public static class PatchMemoryThoughtHandlerTryGainMemory
         {
             return; // Skip this thought if another mod has issues
         }
-        
+
         if (Math.Abs(moodImpact) < 3f)
         {
             return;
@@ -120,6 +125,11 @@ public static class PatchThoughtHandlerGetDistinctMoodThoughtGroups
 
     static void Postfix(ThoughtHandler __instance, List<Thought> outThoughts)
     {
+        if (Current.ProgramState != ProgramState.Playing)
+        {
+            return;
+        }
+        
         if (__instance.pawn == null || !__instance.pawn.Spawned)
             return;
 

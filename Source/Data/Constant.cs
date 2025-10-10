@@ -20,7 +20,7 @@ Keep dialogue short ({Lang} only, 1–2 sentences)
 Show concern for sick/mental issues
 
 Roles:
-Young: impulsive, casual, respect elders
+Young: impulsive, casual
 Old: calm, wise, dignified
 Prisoner: submissive, wary, hesitant, mention confinement, plead/bargain
 Slave: fearful, obedient, reference forced labor, exhaustion

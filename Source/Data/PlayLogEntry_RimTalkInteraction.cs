@@ -35,10 +35,4 @@ public class PlayLogEntry_RimTalkInteraction : PlayLogEntry_Interaction
     {
         return _cachedString;
     }
-
-    public override void ExposeData()
-    {
-        base.ExposeData();
-        Scribe_Values.Look(ref _cachedString, "talkContent");
-    }
 }
