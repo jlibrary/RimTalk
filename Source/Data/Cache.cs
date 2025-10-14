@@ -133,13 +133,22 @@ public static class Cache
             else if (PawnService.IsInvader(p)) totalEnemyWeight += weight;
         }
 
-        // NEW: Use the highest group weight as baseline for balancing
-        double baselineWeight = new[]
+        // Use the colonist group weight as baseline. If it's zero, fall back to the heaviest group.
+        double baselineWeight;
+        if (totalColonistWeight > 0)
         {
-            totalColonistWeight, totalVisitorWeight,
-            totalEnemyWeight, totalSlaveWeight,
-            totalPrisonerWeight
-        }.Max();
+            baselineWeight = totalColonistWeight;
+        }
+        else
+        {
+            baselineWeight = new[]
+            {
+                totalVisitorWeight,
+                totalEnemyWeight,
+                totalSlaveWeight,
+                totalPrisonerWeight
+            }.Max();
+        }
 
         // If no one has any weight, no one can talk
         if (baselineWeight <= 0)

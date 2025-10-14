@@ -69,12 +69,12 @@ public static class PawnService
         
     public static bool IsVisitor(Pawn pawn)
     {
-        return pawn.Faction != null && pawn.Faction != Faction.OfPlayer && !pawn.HostileTo(Faction.OfPlayer);
+        return pawn?.Faction != null && pawn.Faction != Faction.OfPlayer && !pawn.HostileTo(Faction.OfPlayer);
     }
 
     public static bool IsInvader(Pawn pawn)
     {
-        return pawn.HostileTo(Faction.OfPlayer);
+        return pawn != null && pawn.HostileTo(Faction.OfPlayer);
     }
 
     public static string GetPawnName(Pawn pawn, Pawn nearbyPawn)
