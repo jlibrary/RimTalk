@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using RimTalk.Data;
+using RimTalk.Source.Data;
 using RimWorld;
 using Verse;
 
@@ -65,9 +66,39 @@ public class PawnSelector
         return GetNearbyPawnsInternal(pawn1, pawn2, DetectionType.Hearing, onlyTalkable: false);
     }
 
-    public static Pawn SelectAvailablePawnByWeight()
+    public static Pawn SelectNextAvailablePawn()
     {
-        var availablePawns = Cache.Keys.Where(p => Cache.Get(p).CanGenerateTalk());
-        return Cache.GetRandomWeightedPawn(availablePawns);
+        Pawn pawnWithOldestUserRequest = null;
+        int oldestTick = int.MaxValue;
+        var talkReadyPawns = new List<Pawn>();
+
+        // Find the pawn with the highest priority task:
+        // 1. The oldest user-initiated talk request (absolute priority).
+        // 2. Pawns that can talk normally (for fallback).
+        foreach (var pawn in Cache.Keys)
+        {
+            var pawnState = Cache.Get(pawn);
+
+            var minTick = pawnState.TalkRequests
+                .Where(req => req.TalkType == TalkType.User)
+                .Select(req => req.CreatedTick)
+                .DefaultIfEmpty(int.MaxValue)
+                .Min();
+
+            if (minTick < oldestTick)
+            {
+                oldestTick = minTick;
+                pawnWithOldestUserRequest = pawn;
+            }
+
+            if (pawnState.CanGenerateTalk())
+            {
+                talkReadyPawns.Add(pawn);
+            }
+        }
+
+        // Return the highest priority pawn found, or null if none are available.
+        return pawnWithOldestUserRequest ?? 
+               (talkReadyPawns.Any() ? Cache.GetRandomWeightedPawn(talkReadyPawns) : null);
     }
 }

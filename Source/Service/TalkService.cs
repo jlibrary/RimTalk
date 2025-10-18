@@ -31,7 +31,7 @@ public static class TalkService
         if (AIService.IsBusy()) return false;
 
         PawnState pawn1 = Cache.Get(talkRequest.Initiator);
-        if (pawn1 == null || !pawn1.CanGenerateTalk()) return false;
+        if (talkRequest.TalkType != TalkType.User && (pawn1 == null || !pawn1.CanGenerateTalk())) return false;
 
         // Ensure the recipient is valid and capable of talking.
         PawnState pawn2 = talkRequest.Recipient != null ? Cache.Get(talkRequest.Recipient) : null;
@@ -42,15 +42,16 @@ public static class TalkService
 
         List<Pawn> nearbyPawns = PawnSelector.GetAllNearByPawns(talkRequest.Initiator);
         var (status, isInDanger) = talkRequest.Initiator.GetPawnStatusFull(nearbyPawns);
-        if (isInDanger) talkRequest.TalkType = TalkType.Urgent;
-
+        
         // Avoid spamming generations if the pawn's status hasn't changed recently.
-        if (status == pawn1.LastStatus && pawn1.RejectCount < 2)
+        if (talkRequest.TalkType != TalkType.User && status == pawn1.LastStatus && pawn1.RejectCount < 2)
         {
             pawn1.RejectCount++;
             return false;
         }
-
+        
+        if (talkRequest.TalkType != TalkType.User && isInDanger) talkRequest.TalkType = TalkType.Urgent;
+        
         pawn1.RejectCount = 0;
         pawn1.LastStatus = status;
 
@@ -179,7 +180,7 @@ public static class TalkService
                 while (pawnState.TalkResponses.Count > 0)
                 {
                     talk = pawnState.TalkResponses.Peek();
-                    if (talk.TalkType == TalkType.Urgent)
+                    if (talk.TalkType is TalkType.Urgent or TalkType.User)
                         break;
 
                     ConsumeTalk(pawnState, true);
@@ -218,7 +219,7 @@ public static class TalkService
     /// <summary>
     /// Dequeues a talk and updates its history as either spoken or ignored.
     /// </summary>
-    private static TalkResponse ConsumeTalk(PawnState pawnState, bool ignored = false)
+    public static TalkResponse ConsumeTalk(PawnState pawnState, bool ignored = false)
     {
         TalkResponse talkResponse = pawnState.TalkResponses.Dequeue();
         if (ignored)
@@ -231,7 +232,6 @@ public static class TalkService
             var apiLog = ApiHistory.GetApiLog(talkResponse.Id);
             if (apiLog != null)
                 apiLog.SpokenTick = GenTicks.TicksGame;
-            ;
 
             Overlay.NotifyLogUpdated();
         }

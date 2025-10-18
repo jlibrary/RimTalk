@@ -5,15 +5,15 @@ using RimTalk.Source.Data;
 namespace RimTalk.Data;
 
 [DataContract]
-public class TalkResponse : IJsonData
+public class TalkResponse(TalkType talkType, string name, string text) : IJsonData
 {
-    public Guid Id { get; set; }
-    
-    public TalkType TalkType { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
 
-    [DataMember(Name = "name")] public string Name { get; set; }
+    public TalkType TalkType { get; set; } = talkType;
 
-    [DataMember(Name = "text")] public string Text { get; set; }
+    [DataMember(Name = "name")] public string Name { get; set; } = name;
+
+    [DataMember(Name = "text")] public string Text { get; set; } = text;
 
     public Guid ParentTalkId { get; set; }
     

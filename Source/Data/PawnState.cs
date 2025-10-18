@@ -27,10 +27,34 @@ public class PawnState(Pawn pawn)
     {
         if (talkType == TalkType.Urgent)
         {
-            TalkRequests.Clear();
+            var currentNode = TalkRequests.First;
+            while (currentNode != null)
+            {
+                var nextNode = currentNode.Next;
+                var request = currentNode.Value;
+                if (request.TalkType != TalkType.User)
+                {
+                    TalkRequests.Remove(currentNode);
+                }
+                currentNode = nextNode;
+            }
         }
 
-        if (talkType is TalkType.Event or TalkType.QuestOffer)
+        if (talkType == TalkType.User)
+        {
+            TalkRequests.AddFirst(new TalkRequest(prompt, Pawn, recipient, talkType));
+            while (TalkResponses.Count > 0)
+            {
+                TalkService.ConsumeTalk(this, true);
+            }
+
+            PawnState recipientState = Cache.Get(recipient);
+            while (recipientState.TalkResponses.Count > 0)
+            {
+                TalkService.ConsumeTalk(recipientState, true);
+            }
+        }
+        else if (talkType is TalkType.Event or TalkType.QuestOffer)
         {
             TalkRequests.AddFirst(new TalkRequest(prompt, Pawn, recipient, talkType));
         }

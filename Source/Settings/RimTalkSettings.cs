@@ -25,6 +25,7 @@ public class RimTalkSettings : ModSettings
     public bool AllowPrisonersToTalk = true;
     public bool AllowOtherFactionsToTalk = false;
     public bool AllowEnemiesToTalk = false;
+    public bool AllowCustomConversation = true;
     public int DisableAiAtSpeed = 0;
     public ButtonDisplayMode ButtonDisplay = ButtonDisplayMode.Tab;
 
@@ -40,7 +41,6 @@ public class RimTalkSettings : ModSettings
     public float OverlayFontSize = 15f;
     public Rect OverlayRectDebug = new(200f, 200f, 600f, 450f);
     public Rect OverlayRectNonDebug = new(200f, 200f, 400f, 250f);
-
 
     /// <summary>
     /// Gets the first active and valid API configuration.

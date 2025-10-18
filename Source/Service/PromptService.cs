@@ -243,31 +243,44 @@ public static class PromptService
         string shortName = $"{pawns[0].LabelShort}({pawns[0].GetRole()})";
 
         // Add the conversation part
-        if (pawns.Count == 1) 
-            sb.Append($"{shortName} short monologue");
-        else if (pawns[0].GetHostilePawnNearBy() != null)
+        if (talkRequest.TalkType == TalkType.User)
         {
-            if (talkRequest.TalkType != TalkType.Urgent && !pawns[0].InMentalState)
+            if (talkRequest.Initiator == talkRequest.Recipient)
+                sb.Append(
+                    $"A voice from beyond says '{pawns[0].LabelShort}({pawns[0].GetRole()}):{talkRequest.Prompt}'");
+            else
+                sb.Append(
+                    $"{pawns[1].LabelShort}({pawns[1].GetRole()}) said to '{pawns[0].LabelShort}({pawns[0].GetRole()}):{talkRequest.Prompt}'. Generate multi turn dialogues, starting with {pawns[0].LabelShort}, ");
+        }
+        else
+        {
+            if (pawns.Count == 1) 
+                sb.Append($"{shortName} short monologue");
+            else if (pawns[0].GetHostilePawnNearBy() != null)
             {
-                talkRequest.Prompt = null;
+                if (talkRequest.TalkType != TalkType.Urgent && !pawns[0].InMentalState)
+                {
+                    talkRequest.Prompt = null;
+                }
+                talkRequest.TalkType = TalkType.Urgent;
+                if (pawns[0].IsSlave || pawns[0].IsPrisoner)
+                    sb.Append($"{shortName} dialogue short (worry/survival)");
+                else 
+                    sb.Append($"{shortName} dialogue short, urgent tone (survival/command)");
             }
-            talkRequest.TalkType = TalkType.Urgent;
-            if (pawns[0].IsSlave || pawns[0].IsPrisoner)
-                sb.Append($"{shortName} dialogue short (worry/survival)");
-            else 
-                sb.Append($"{shortName} dialogue short, urgent tone (survival/command)");
-        }
-        else
-        {
-            sb.Append($"{shortName} starts conversation, taking turns");
-        }
+            else
+            {
+                sb.Append($"{shortName} starts conversation, taking turns");
+            }
 
-        if (pawns[0].InMentalState)
-            sb.Append($"\nbe dramatic (mental break)");
-        else if (pawns[0].Downed)
-            sb.Append($"\n(downed in pain. Short, strained dialogue)");
-        else
-            sb.Append($"\n{talkRequest.Prompt}");
+            if (pawns[0].InMentalState)
+                sb.Append($"\nbe dramatic (mental break)");
+            else if (pawns[0].Downed)
+                sb.Append($"\n(downed in pain. Short, strained dialogue)");
+            else
+                sb.Append($"\n{talkRequest.Prompt}");
+        }
+        
 
         // add pawn status
         sb.Append($"\n{status}");

@@ -84,6 +84,8 @@
     <RimTalk.Settings.AllowOtherFactionsToTalkTooltip>Enable this to allow members of other factions to have AI-generated conversations.</RimTalk.Settings.AllowOtherFactionsToTalkTooltip>
     <RimTalk.Settings.AllowEnemiesToTalk>Allow enemies to talk</RimTalk.Settings.AllowEnemiesToTalk>
     <RimTalk.Settings.AllowEnemiesToTalkTooltip>Enable this to allow enemies to have AI-generated conversations.</RimTalk.Settings.AllowEnemiesToTalkTooltip>
+    <RimTalk.Settings.AllowCustomConversation>Allow Custom Conversations</RimTalk.Settings.AllowCustomConversation>
+    <RimTalk.Settings.AllowCustomConversationTooltip>Allows you to initiate custom dialogues between characters or talk directly to a character.</RimTalk.Settings.AllowCustomConversationTooltip>
     <RimTalk.Settings.PauseAtSpeed>Pause AI on high speed</RimTalk.Settings.PauseAtSpeed>
     <RimTalk.Settings.DisableAiAtSpeedTooltip>To reduce API calls, the AI will be paused when game speed is set to this level or higher.</RimTalk.Settings.DisableAiAtSpeedTooltip>
     <RimTalk.Settings.Disabled>Disabled</RimTalk.Settings.Disabled>
@@ -174,4 +176,11 @@
     <RimTalk.Overlay.Option>Overlay Option</RimTalk.Overlay.Option>
     <RimTalk.Overlay.Opacity>Opacity</RimTalk.Overlay.Opacity>
     <RimTalk.Overlay.FontSize>Font Size</RimTalk.Overlay.FontSize>
+
+    <!-- FloatMenuMakerMapGetOptionsPatch.cs -->
+    <RimTalk.FloatMenu.ChatWith>Chat with {0}</RimTalk.FloatMenu.ChatWith>
+    <RimTalk.FloatMenu.WhatToSayToSelf>What do you want to say to {0}?</RimTalk.FloatMenu.WhatToSayToSelf>
+    <RimTalk.FloatMenu.WhatToSayToOther>What do you want {0} to say to {1}?</RimTalk.FloatMenu.WhatToSayToOther>
+    <RimTalk.FloatMenu.Send>Send</RimTalk.FloatMenu.Send>
+    <RimTalk.FloatMenu.Cancel>Cancel</RimTalk.FloatMenu.Cancel>
 </LanguageData>

@@ -84,6 +84,8 @@
     <RimTalk.Settings.AllowOtherFactionsToTalkTooltip>이 옵션을 활성화하면 다른 세력의 구성원이 AI 생성 대화를 할 수 있습니다.</RimTalk.Settings.AllowOtherFactionsToTalkTooltip>
     <RimTalk.Settings.AllowEnemiesToTalk>적들이 말하도록 허용</RimTalk.Settings.AllowEnemiesToTalk>
     <RimTalk.Settings.AllowEnemiesToTalkTooltip>이 옵션을 활성화하면 적들이 AI 생성 대화를 할 수 있습니다.</RimTalk.Settings.AllowEnemiesToTalkTooltip>
+    <RimTalk.Settings.AllowCustomConversation>커스텀 대화 허용</RimTalk.Settings.AllowCustomConversation>
+    <RimTalk.Settings.AllowCustomConversationTooltip>캐릭터 간에 커스텀 대화를 시작하거나, 개별 캐릭터와 직접 대화할 수 있습니다.</RimTalk.Settings.AllowCustomConversationTooltip>
     <RimTalk.Settings.PauseAtSpeed>고속에서 AI 일시정지</RimTalk.Settings.PauseAtSpeed>
     <RimTalk.Settings.DisableAiAtSpeedTooltip>API 호출을 줄이기 위해 게임 속도가 이 수준 이상으로 설정되면 AI가 일시정지됩니다.</RimTalk.Settings.DisableAiAtSpeedTooltip>
     <RimTalk.Settings.Disabled>비활성화됨</RimTalk.Settings.Disabled>
@@ -174,4 +176,11 @@
     <RimTalk.Overlay.Option>오버레이 옵션</RimTalk.Overlay.Option>
     <RimTalk.Overlay.Opacity>투명도</RimTalk.Overlay.Opacity>
     <RimTalk.Overlay.FontSize>글꼴 크기</RimTalk.Overlay.FontSize>
+
+    <!-- FloatMenuMakerMapGetOptionsPatch.cs -->
+    <RimTalk.FloatMenu.ChatWith>{0}와 대화하기</RimTalk.FloatMenu.ChatWith>
+    <RimTalk.FloatMenu.WhatToSayToSelf>{0}에게 무엇을 말하고 싶으세요?</RimTalk.FloatMenu.WhatToSayToSelf>
+    <RimTalk.FloatMenu.WhatToSayToOther>{0}가 {1}에게 무엇을 말하기를 원하세요?</RimTalk.FloatMenu.WhatToSayToOther>
+    <RimTalk.FloatMenu.Send>보내기</RimTalk.FloatMenu.Send>
+    <RimTalk.FloatMenu.Cancel>취소</RimTalk.FloatMenu.Cancel>
 </LanguageData>

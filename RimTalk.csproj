@@ -9,12 +9,17 @@
         <AssemblyName>RimTalk</AssemblyName>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 
-		<RimWorldDir Condition=" '$(RimWorldDir)' == '' ">$(RIMWORLD_DIR)</RimWorldDir>
+        <RimWorldDir Condition=" '$(RimWorldDir)' == '' ">$(RIMWORLD_DIR)</RimWorldDir>
 
-		<OutputPath>1.6/Assemblies</OutputPath>
-		<ModFolderName>RimTalk</ModFolderName>
+        <OutputPath>$(GameVersion)/Assemblies</OutputPath>
+        <ModFolderName>RimTalk</ModFolderName>
         <LangVersion>default</LangVersion>
         <EnableBubbles>true</EnableBubbles>
+    </PropertyGroup>
+
+    <!-- Define version constants based on GameVersion -->
+    <PropertyGroup>
+        <DefineConstants>$(DefineConstants);V$(GameVersion.Replace('.', '_'))</DefineConstants>
     </PropertyGroup>
 
     <!-- Release build configuration -->
@@ -60,7 +65,7 @@
         <Exec Command='rsync -a --delete --checksum "$(ProjectDir)Defs/"      "$(DeployPath)Defs/"'/>
         <Exec Command='rsync -a --delete --checksum "$(ProjectDir)Languages/" "$(DeployPath)Languages/"'/>
         <Exec Command='rsync -a --delete --checksum "$(ProjectDir)Textures/"  "$(DeployPath)Textures/"'/>
-        <Exec Command='rsync -a --delete --checksum "$(ProjectDir)1.6/"       "$(DeployPath)1.6/"'/>
+        <Exec Command='rsync -a --delete --checksum "$(ProjectDir)$(GameVersion)/"       "$(DeployPath)$(GameVersion)/"'/>
         <Message Text="--- macOS deployment finished successfully ---" Importance="high"/>
     </Target>
 
@@ -71,14 +76,14 @@
         </PropertyGroup>
         <Message Text="Copying to $(WinModPath)" Importance="high"/>
         <ItemGroup>
-            <_CopyDirs Include="About;Defs;Languages;Textures;1.6"/>
+            <_CopyDirs Include="About;Defs;Languages;Textures;$(GameVersion)"/>
         </ItemGroup>
         <MakeDir Directories="$(WinModPath)"/>
         <Exec Command='robocopy "$(ProjectDir)About"     "$(WinModPath)About" /MIR' IgnoreExitCode="true"/>
         <Exec Command='robocopy "$(ProjectDir)Defs"      "$(WinModPath)Defs" /MIR' IgnoreExitCode="true"/>
         <Exec Command='robocopy "$(ProjectDir)Languages" "$(WinModPath)Languages" /MIR' IgnoreExitCode="true"/>
         <Exec Command='robocopy "$(ProjectDir)Textures"  "$(WinModPath)Textures" /MIR' IgnoreExitCode="true"/>
-        <Exec Command='robocopy "$(ProjectDir)1.6"       "$(WinModPath)1.6" /MIR' IgnoreExitCode="true"/>
+        <Exec Command='robocopy "$(ProjectDir)$(GameVersion)"       "$(WinModPath)$(GameVersion)" /MIR' IgnoreExitCode="true"/>
         <Message Text="--- Windows deployment finished successfully ---" Importance="high"/>
     </Target>
 

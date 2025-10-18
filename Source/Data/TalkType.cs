@@ -10,5 +10,6 @@ public enum TalkType
     QuestOffer,
     QuestEnd,
     Thought,
+    User,
     Other
 }

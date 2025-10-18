@@ -27,6 +27,7 @@ public class TalkRequest
     public bool IsExpired()
     {
         int duration = 10;
+        if (TalkType == TalkType.User) return false;
         if (TalkType == TalkType.Urgent)
         {
             duration = 5;

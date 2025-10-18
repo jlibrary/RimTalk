@@ -43,7 +43,7 @@ public partial class Settings
         var cooldownLabel = "RimTalk.Settings.AICooldown".Translate(settings.TalkInterval).ToString();
         var cooldownLabelRect = listingStandard.GetRect(Text.CalcHeight(cooldownLabel, listingStandard.ColumnWidth));
         Widgets.Label(cooldownLabelRect, cooldownLabel);
-        settings.TalkInterval = (int)listingStandard.Slider(settings.TalkInterval, 1, 20);
+        settings.TalkInterval = (int)listingStandard.Slider(settings.TalkInterval, 1, 60);
 
         listingStandard.Gap(12f);
 
@@ -60,6 +60,9 @@ public partial class Settings
         listingStandard.Gap(12f);
         listingStandard.CheckboxLabeled("RimTalk.Settings.AllowEnemiesToTalk".Translate().ToString(), ref settings.AllowEnemiesToTalk, "RimTalk.Settings.AllowEnemiesToTalkTooltip".Translate().ToString());
         listingStandard.Gap(12f);
+        listingStandard.CheckboxLabeled("RimTalk.Settings.AllowCustomConversation".Translate().ToString(), ref settings.AllowCustomConversation, "RimTalk.Settings.AllowCustomConversationTooltip".Translate().ToString());
+        listingStandard.Gap(12f);
+
             
         // --- Dropdown for PauseAtSpeed ---
         Rect pauseLineRect = listingStandard.GetRect(30f);
@@ -141,6 +144,7 @@ public partial class Settings
             settings.AllowPrisonersToTalk = true;
             settings.AllowOtherFactionsToTalk = false;
             settings.AllowEnemiesToTalk = false;
+            settings.AllowCustomConversation = true;
             settings.UseSimpleConfig = true;
             settings.DisableAiAtSpeed = 0;
             settings.ButtonDisplay = ButtonDisplayMode.Tab;
