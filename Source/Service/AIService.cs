@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using RimTalk.Client;
-using RimTalk.Client.Gemini;
 using RimTalk.Data;
 using RimTalk.Error;
 using RimTalk.Util;
@@ -19,15 +18,13 @@ public static class AIService
     /// <summary>
     /// Streaming chat that invokes callback as each player's dialogue is parsed
     /// </summary>
-    public static async Task<List<TalkResponse>> ChatStreaming<T>(
-        TalkRequest request,
+    public static async Task ChatStreaming<T>(TalkRequest request,
         List<(Role role, string message)> messages,
         Dictionary<string, T> players,
         Action<T, TalkResponse> onPlayerResponseReceived)
     {
         var currentMessages = new List<(Role role, string message)>(messages) { (Role.User, request.Prompt) };
         var initApiLog = ApiHistory.AddRequest(request, _instruction);
-        var allResponses = new List<TalkResponse>();
         var lastApiLog = initApiLog;
 
         _busy = true;
@@ -45,7 +42,6 @@ public static class AIService
                         }
 
                         talkResponse.TalkType = request.TalkType;
-                        allResponses.Add(talkResponse);
 
                         // Add logs
                         int elapsedMs = (int)(DateTime.Now - lastApiLog.Timestamp).TotalMilliseconds;
@@ -61,20 +57,24 @@ public static class AIService
                     });
             });
 
-            if (payload == null)
+            // Try deserializing once again with all streaming chunks to make sure a correct format was returned
+            try
+            {
+                if (payload == null) throw new Exception();
+                JsonUtil.DeserializeFromJson<List<TalkResponse>>(payload.Response);
+            }
+            catch
             {
                 initApiLog.Response = "Failed";
-                return null;
+                return;
             }
-
+            
             ApiHistory.UpdatePayload(initApiLog.Id, payload);
 
             Stats.IncrementCalls();
             Stats.IncrementTokens(payload.TokenCount);
 
             _firstInstruction = false;
-
-            return allResponses;
         }
         finally
         {

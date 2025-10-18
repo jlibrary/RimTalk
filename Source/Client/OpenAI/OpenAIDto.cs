@@ -116,6 +116,18 @@ public class Usage
 [DataContract]
 public class OpenAIStreamChunk
 {
+    [DataMember(Name = "id")]
+    public string Id { get; set; }
+
+    [DataMember(Name = "object")]
+    public string Object { get; set; }
+
+    [DataMember(Name = "created")]
+    public long Created { get; set; }
+
+    [DataMember(Name = "model")]
+    public string Model { get; set; }
+
     [DataMember(Name = "choices")]
     public List<StreamChoice> Choices { get; set; }
 
@@ -126,8 +138,14 @@ public class OpenAIStreamChunk
 [DataContract]
 public class StreamChoice
 {
+    [DataMember(Name = "index")]
+    public int Index { get; set; }
+
     [DataMember(Name = "delta")]
     public Delta Delta { get; set; }
+
+    [DataMember(Name = "finish_reason")]
+    public string FinishReason { get; set; }
 }
 
 [DataContract]

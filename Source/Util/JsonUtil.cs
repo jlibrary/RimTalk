@@ -25,21 +25,15 @@ public static class JsonUtil
     public static T DeserializeFromJson<T>(string json)
     {
         string sanitizedJson = Sanitize(json, typeof(T));
-
-        if (string.IsNullOrEmpty(sanitizedJson))
-        {
-            return default;
-        }
+        
         try
         {
-            using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(sanitizedJson)))
-            {
-                // Create an instance of DataContractJsonSerializer
-                var serializer = new DataContractJsonSerializer(typeof(T));
+            using var stream = new MemoryStream(Encoding.UTF8.GetBytes(sanitizedJson));
+            // Create an instance of DataContractJsonSerializer
+            var serializer = new DataContractJsonSerializer(typeof(T));
 
-                // Deserialize the JSON data
-                return (T)serializer.ReadObject(stream);
-            }
+            // Deserialize the JSON data
+            return (T)serializer.ReadObject(stream);
         }
         catch (Exception ex)
         {
