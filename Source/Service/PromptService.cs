@@ -52,7 +52,7 @@ public static class PromptService
         var genderAndAge = Regex.Replace(pawn.MainDesc(false), @"\(\d+\)", "");
         sb.AppendLine($"{name} {title} ({genderAndAge})");
 
-        var role = $"Role: {PawnService.GetRole(pawn)}";
+        var role = $"Role: {pawn.GetRole(true)}";
         sb.AppendLine(role);
 
         if (ModsConfig.BiotechActive && pawn.genes?.Xenotype != null)
@@ -63,7 +63,7 @@ public static class PromptService
             sb.AppendLine(xenotypeInfo);
         }
 
-        if (infoLevel != InfoLevel.Short && !PawnService.IsVisitor(pawn) && !PawnService.IsInvader(pawn))
+        if (infoLevel != InfoLevel.Short && !pawn.IsVisitor() && !pawn.IsInvader())
         {
             if (ModsConfig.BiotechActive && pawn.genes?.GenesListForReading != null)
             {
@@ -99,7 +99,7 @@ public static class PromptService
         }
 
         //// INVADER AND VISITOR STOP
-        if (PawnService.IsInvader(pawn) || PawnService.IsVisitor(pawn))
+        if (pawn.IsInvader() || pawn.IsVisitor())
             return sb.ToString();
 
         if (pawn.story.Childhood != null)
@@ -177,7 +177,7 @@ public static class PromptService
             sb.AppendLine($"Personality: {personality}");
 
         //// INVADER STOP
-        if (PawnService.IsInvader(pawn))
+        if (pawn.IsInvader())
             return sb.ToString();
 
         var m = pawn.needs?.mood;
@@ -197,10 +197,10 @@ public static class PromptService
         sb.AppendLine(thoughts);
 
         if (pawn.IsSlave || pawn.IsPrisoner)
-            sb.AppendLine(PawnService.GetPrisonerSlaveStatus(pawn));
+            sb.AppendLine(pawn.GetPrisonerSlaveStatus());
 
         //// VISITOR STOP
-        if (PawnService.IsVisitor(pawn))
+        if (pawn.IsVisitor())
         {
             Lord lord = pawn.GetLord() ?? pawn.CurJob?.lord;
             if (lord?.LordJob != null)
@@ -239,11 +239,13 @@ public static class PromptService
     {
         var sb = new StringBuilder();
         CommonUtil.InGameData gameData = CommonUtil.GetInGameData();
+        
+        string shortName = $"{pawns[0].LabelShort}({pawns[0].GetRole()})";
 
         // Add the conversation part
         if (pawns.Count == 1) 
-            sb.Append($"{pawns[0].LabelShort} short monologue");
-        else if (PawnService.HostilePawnNearBy(pawns[0]) != null)
+            sb.Append($"{shortName} short monologue");
+        else if (pawns[0].GetHostilePawnNearBy() != null)
         {
             if (talkRequest.TalkType != TalkType.Urgent && !pawns[0].InMentalState)
             {
@@ -251,13 +253,13 @@ public static class PromptService
             }
             talkRequest.TalkType = TalkType.Urgent;
             if (pawns[0].IsSlave || pawns[0].IsPrisoner)
-                sb.Append($"{pawns[0].LabelShort} dialogue short (worry/survival)");
+                sb.Append($"{shortName} dialogue short (worry/survival)");
             else 
-                sb.Append($"{pawns[0].LabelShort} dialogue short, urgent tone (survival/command)");
+                sb.Append($"{shortName} dialogue short, urgent tone (survival/command)");
         }
         else
         {
-            sb.Append($"{pawns[0].LabelShort} starts conversation, taking turns");
+            sb.Append($"{shortName} starts conversation, taking turns");
         }
 
         if (pawns[0].InMentalState)

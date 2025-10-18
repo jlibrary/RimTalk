@@ -18,13 +18,12 @@ Rules:
 Preserve original names (no translation)
 Keep dialogue short ({Lang} only, 1–2 sentences)
 Show concern for sick/mental issues
+Never mention another character's personal name unless they share the same role
 
 Roles:
-Young: impulsive, casual
-Old: calm, wise, dignified
-Prisoner: submissive, wary, hesitant, mention confinement, plead/bargain
-Slave: fearful, obedient, reference forced labor, exhaustion
-Visitor: polite, curious, deferential, ask questions
+Prisoner: wary, hesitant; mention confinement; plead or bargain
+Slave: fearful, obedient; reference forced labor and exhaustion; call colonists ""master""
+Visitor: polite, curious, deferential; treat other visitors in the same group as companions
 Invader: hostile, aggressive; terse commands/threats
 
 Monologue = 1 turn. Conversation = 4–8 short turns";

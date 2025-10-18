@@ -84,16 +84,9 @@ internal static class TickManagerPatch
     private static bool TryGenerateTalkFromPool(Pawn pawn)
     {
         // If the pawn is a free colonist not in danger and the pool has requests
-        if (pawn.IsFreeNonSlaveColonist && !TalkRequestPool.IsEmpty && !PawnService.IsPawnInDanger(pawn, true))
-        {
-            var request = TalkRequestPool.GetRequestFromPool(pawn);
-            if (request != null)
-            {
-                return TalkService.GenerateTalk(request);
-            }
-        }
-
-        return false;
+        if (!pawn.IsFreeNonSlaveColonist || pawn.IsQuestLodger() || TalkRequestPool.IsEmpty || pawn.IsInDanger(true)) return false;
+        var request = TalkRequestPool.GetRequestFromPool(pawn);
+        return request != null && TalkService.GenerateTalk(request);
     }
 
     private static bool IsNow(double interval)

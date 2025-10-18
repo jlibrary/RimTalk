@@ -55,8 +55,8 @@ public static class Bubbler_Add
 
         // if in danger then stop chitchat
         if (isChitchat
-            && (PawnService.IsPawnInDanger(initiator)
-                || PawnService.HostilePawnNearBy(initiator) != null
+            && (initiator.IsInDanger()
+                || initiator.GetHostilePawnNearBy() != null
                 || !PawnSelector.GetNearByTalkablePawns(initiator).Contains(recipient)))
         {
             return false;

@@ -41,7 +41,7 @@ public static class TalkService
         }
 
         List<Pawn> nearbyPawns = PawnSelector.GetAllNearByPawns(talkRequest.Initiator);
-        var (status, isInDanger) = PawnService.GetPawnStatusFull(talkRequest.Initiator, nearbyPawns);
+        var (status, isInDanger) = talkRequest.Initiator.GetPawnStatusFull(nearbyPawns);
         if (isInDanger) talkRequest.TalkType = TalkType.Urgent;
 
         // Avoid spamming generations if the pawn's status hasn't changed recently.
@@ -173,7 +173,7 @@ public static class TalkService
             }
 
             int replyInterval = RimTalkSettings.ReplyInterval;
-            if (PawnService.IsPawnInDanger(pawn))
+            if (pawn.IsInDanger())
             {
                 replyInterval = 2;
                 while (pawnState.TalkResponses.Count > 0)

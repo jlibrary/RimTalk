@@ -89,11 +89,11 @@ public static class Cache
         if (pawn.skills?.GetSkill(SkillDefOf.Social) == null)
             return false;
 
-        return (pawn.IsFreeColonist ||
+        return pawn.IsFreeColonist ||
                 (settings.AllowSlavesToTalk && pawn.IsSlave) ||
                 (settings.AllowPrisonersToTalk && pawn.IsPrisoner) ||
-                (settings.AllowOtherFactionsToTalk && PawnService.IsVisitor(pawn)) ||
-                (settings.AllowEnemiesToTalk && PawnService.IsInvader(pawn)));
+                (settings.AllowOtherFactionsToTalk && pawn.IsVisitor()) ||
+                (settings.AllowEnemiesToTalk && pawn.IsInvader());
     }
 
     private static double GetScaleFactor(double groupWeight, double baselineWeight)
@@ -126,11 +126,11 @@ public static class Cache
         foreach (var p in pawnList)
         {
             var weight = Get(p)?.TalkInitiationWeight ?? 0.0;
-            if (p.IsFreeColonist) totalColonistWeight += weight;
+            if (p.IsFreeNonSlaveColonist) totalColonistWeight += weight;
             else if (p.IsSlave) totalSlaveWeight += weight;
             else if (p.IsPrisoner) totalPrisonerWeight += weight;
-            else if (PawnService.IsVisitor(p)) totalVisitorWeight += weight;
-            else if (PawnService.IsInvader(p)) totalEnemyWeight += weight;
+            else if (p.IsVisitor()) totalVisitorWeight += weight;
+            else if (p.IsInvader()) totalEnemyWeight += weight;
         }
 
         // Use the colonist group weight as baseline. If it's zero, fall back to the heaviest group.
@@ -167,11 +167,11 @@ public static class Cache
         var effectiveTotalWeight = pawnList.Sum(p =>
         {
             var weight = Get(p)?.TalkInitiationWeight ?? 0.0;
-            if (p.IsFreeColonist) return weight * colonistScaleFactor;
+            if (p.IsFreeNonSlaveColonist) return weight * colonistScaleFactor;
             if (p.IsSlave) return weight * slaveScaleFactor;
             if (p.IsPrisoner) return weight * prisonerScaleFactor;
-            if (PawnService.IsVisitor(p)) return weight * visitorScaleFactor;
-            if (PawnService.IsInvader(p)) return weight * enemyScaleFactor;
+            if (p.IsVisitor()) return weight * visitorScaleFactor;
+            if (p.IsInvader()) return weight * enemyScaleFactor;
             return 0;
         });
 
@@ -182,11 +182,11 @@ public static class Cache
         {
             var currentPawnWeight = Get(pawn)?.TalkInitiationWeight ?? 0.0;
 
-            if (pawn.IsFreeColonist) cumulativeWeight += currentPawnWeight * colonistScaleFactor;
+            if (pawn.IsFreeNonSlaveColonist) cumulativeWeight += currentPawnWeight * colonistScaleFactor;
             else if (pawn.IsSlave) cumulativeWeight += currentPawnWeight * slaveScaleFactor;
             else if (pawn.IsPrisoner) cumulativeWeight += currentPawnWeight * prisonerScaleFactor;
-            else if (PawnService.IsVisitor(pawn)) cumulativeWeight += currentPawnWeight * visitorScaleFactor;
-            else if (PawnService.IsInvader(pawn)) cumulativeWeight += currentPawnWeight * enemyScaleFactor;
+            else if (pawn.IsVisitor()) cumulativeWeight += currentPawnWeight * visitorScaleFactor;
+            else if (pawn.IsInvader()) cumulativeWeight += currentPawnWeight * enemyScaleFactor;
 
             if (randomWeight < cumulativeWeight)
             {

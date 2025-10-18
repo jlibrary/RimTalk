@@ -17,8 +17,8 @@ public class PawnState(Pawn pawn)
     public int RejectCount { get; set; }
     public readonly Queue<TalkResponse> TalkResponses = new();
     public bool IsGeneratingTalk { get; set; }
-    public readonly LinkedList<TalkRequest> TalkRequests = new();
-    public HashSet<Hediff> Hediffs { get; set; } = PawnService.GetHediffs(pawn);
+    public readonly LinkedList<TalkRequest> TalkRequests = [];
+    public HashSet<Hediff> Hediffs { get; set; } = pawn.GetHediffs();
 
     public string Personality => PersonaService.GetPersonality(Pawn);
     public double TalkInitiationWeight => PersonaService.GetTalkInitiationWeight(Pawn);

@@ -44,7 +44,7 @@ public class Hediff_Persona : Hediff
             PersonalityData randomPersonalityData = Constant.Personalities.RandomElement();
             hediff.Personality = randomPersonalityData.Persona;
         
-            if (pawn.IsSlave || pawn.IsPrisoner || PawnService.IsVisitor(pawn) || PawnService.IsInvader(pawn))
+            if (pawn.IsSlave || pawn.IsPrisoner || pawn.IsVisitor() || pawn.IsInvader())
             {
                 hediff.TalkInitiationWeight = 0.3f;
             }

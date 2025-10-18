@@ -46,16 +46,8 @@ public static class BattleLogPatch
     {
         try
         {
-            string initiatorLabel = initiator.LabelShort;
-            string recipientLabel = recipient.LabelShort;
-            if (PawnService.IsInvader(recipient))
-            {
-                string invaderName = PawnService.GetPawnName(initiator, recipient);
-                if (!string.IsNullOrEmpty(invaderName))
-                {
-                    recipientLabel = invaderName;
-                }
-            }
+            string initiatorLabel = $"{initiator.LabelShort}({initiator.GetRole()})";
+            string recipientLabel = $"{recipient.LabelShort}({recipient.GetRole()})";
                 
             if (entry is BattleLogEntry_RangedImpact impactEntry)
             {

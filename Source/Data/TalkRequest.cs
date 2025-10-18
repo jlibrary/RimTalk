@@ -30,7 +30,7 @@ public class TalkRequest
         if (TalkType == TalkType.Urgent)
         {
             duration = 5;
-            if (!PawnService.IsPawnInDanger(Initiator))
+            if (!Initiator.IsInDanger())
             {
                 return true;
             }

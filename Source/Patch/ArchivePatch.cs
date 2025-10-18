@@ -108,7 +108,7 @@ public static class ArchivePatch
         if (eventMap != null)
         {
             nearbyColonists = eventMap.mapPawns.AllPawnsSpawned
-                .Where(pawn => pawn.IsFreeColonist && Cache.Get(pawn)?.CanDisplayTalk() == true)
+                .Where(pawn => pawn.IsFreeNonSlaveColonist && !pawn.IsQuestLodger() && Cache.Get(pawn)?.CanDisplayTalk() == true)
                 .ToList();
         }
 
