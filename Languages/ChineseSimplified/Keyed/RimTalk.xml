@@ -4,174 +4,174 @@
     <RimTalk.BioTab.RimTalkPersona>人格</RimTalk.BioTab.RimTalkPersona>
 
     <!-- TickManager_DoSingleTick.cs -->
-    <RimTalk.TickManager.ApiKeyMissing>RimTalk：缺少 API 金鑰或端點。</RimTalk.TickManager.ApiKeyMissing>
+    <RimTalk.TickManager.ApiKeyMissing>RimTalk：缺少 API 密钥或端点。</RimTalk.TickManager.ApiKeyMissing>
 
     <!-- TalkService.cs -->
-    <RimTalk.TalkService.QuotaReached>API 配額已超出。請嘗試減小提示大小或增加冷卻時間。</RimTalk.TalkService.QuotaReached>
-    <RimTalk.TalkService.APIError>發生 API 錯誤</RimTalk.TalkService.APIError>
-    <RimTalk.TalkService.TryingNextAPI>正在嘗試下一個 API ({0})</RimTalk.TalkService.TryingNextAPI>
-    <RimTalk.TalkService.GenerationFailed>RimTalk 生成失敗</RimTalk.TalkService.GenerationFailed>
+    <RimTalk.TalkService.QuotaReached>API 配额已超出。请尝试减小提示大小或增加冷却时间。</RimTalk.TalkService.QuotaReached>
+    <RimTalk.TalkService.APIError>发生 API 错误</RimTalk.TalkService.APIError>
+    <RimTalk.TalkService.TryingNextAPI>正在尝试下一个 API ({0})</RimTalk.TalkService.TryingNextAPI>
+    <RimTalk.TalkService.GenerationFailed>RimTalk 生成失败</RimTalk.TalkService.GenerationFailed>
 
     <!-- Persona -->
-    <RimTalk.Persona.CheerfulHelper>開朗幫手 – 熱情、樂觀、鼓勵。總是試圖振奮人心。</RimTalk.Persona.CheerfulHelper>
-    <RimTalk.Persona.CynicalRealist>憤世嫉俗的現實主義者 – 冷漠、諷刺、多疑。直言不諱地揭示殘酷的真相。</RimTalk.Persona.CynicalRealist>
-    <RimTalk.Persona.ShyThinker>害羞的思想者 – 安靜、猶豫。話語不多，但說話時深思熟慮。</RimTalk.Persona.ShyThinker>
-    <RimTalk.Persona.Hothead>急性子 – 脾氣暴躁、大聲、衝動。容易發火，言辭激烈。</RimTalk.Persona.Hothead>
-    <RimTalk.Persona.Philosopher>哲學家 – 深思熟慮、抽象。說話像謎語或提出大問題。</RimTalk.Persona.Philosopher>
-    <RimTalk.Persona.DarkHumorist>黑色幽默家 – 對嚴峻的話題開玩笑。在痛苦中尋找喜劇。</RimTalk.Persona.DarkHumorist>
-    <RimTalk.Persona.Caregiver>照顧者 – 溫柔、有保護慾。安慰、舒緩、滋養的語氣。</RimTalk.Persona.Caregiver>
-    <RimTalk.Persona.Opportunist>機會主義者 – 狡猾、有說服力。說話像個投機者，討價還價，歪曲言辭。</RimTalk.Persona.Opportunist>
-    <RimTalk.Persona.OptimisticDreamer>樂觀的夢想家 – 富有想像力、充滿希望。對未來感到興奮。</RimTalk.Persona.OptimisticDreamer>
-    <RimTalk.Persona.Pessimist>悲觀主義者 – 憂鬱、順從。預料失敗並強調風險。</RimTalk.Persona.Pessimist>
-    <RimTalk.Persona.StoicSoldier>堅忍的士兵 – 冷靜、紀律嚴明、簡潔。情感淡薄，實事求是。</RimTalk.Persona.StoicSoldier>
-    <RimTalk.Persona.FreeSpirit>自由精神 – 愛玩、無憂無慮。抗拒規則，對煩惱一笑置之。</RimTalk.Persona.FreeSpirit>
-    <RimTalk.Persona.Workaholic>工作狂 – 幹勁十足、永不滿足。痴迷於責任和效率。</RimTalk.Persona.Workaholic>
-    <RimTalk.Persona.Slacker>懶人 – 懶惰、隨意。抱怨努力，偏愛舒適。</RimTalk.Persona.Slacker>
-    <RimTalk.Persona.NobleIdealist>高尚的理想主義者 – 正式、有原則。談論榮譽和正義。</RimTalk.Persona.NobleIdealist>
-    <RimTalk.Persona.StreetwiseSurvivor>街頭倖存者 – 粗獷、務實、憤世嫉俗。不信任他人，重視毅力。</RimTalk.Persona.StreetwiseSurvivor>
-    <RimTalk.Persona.Scholar>學者 – 好奇、求知。喜歡解釋和糾正他人。</RimTalk.Persona.Scholar>
-    <RimTalk.Persona.Jokester>愛開玩笑的人 – 心情輕鬆、傻氣。不斷開玩笑和說雙關語。</RimTalk.Persona.Jokester>
-    <RimTalk.Persona.MelancholicPoet>憂鬱的詩人 – 輕聲細語、情緒化。詩意地表達情感。</RimTalk.Persona.MelancholicPoet>
-    <RimTalk.Persona.Paranoid>偏執狂 – 緊張、不信任。假設背叛，總是懷疑。</RimTalk.Persona.Paranoid>
-    <RimTalk.Persona.Commander>指揮官 – 自信、有號召力。激勵他人，期望服從。</RimTalk.Persona.Commander>
-    <RimTalk.Persona.Coward>懦夫 – 膽小、恐懼。大聲擔憂，避免對抗。</RimTalk.Persona.Coward>
-    <RimTalk.Persona.ArrogantNoble>傲慢的貴族 – 驕傲、居高臨下。使用正式、優越的語言。</RimTalk.Persona.ArrogantNoble>
-    <RimTalk.Persona.LoyalCompanion>忠誠的夥伴 – 堅定、支持。談論信任和團結。</RimTalk.Persona.LoyalCompanion>
-    <RimTalk.Persona.CuriousExplorer>好奇的探險家 – 天真、渴望。熱情地提問。</RimTalk.Persona.CuriousExplorer>
-    <RimTalk.Persona.ColdRationalist>冷酷的理性主義者 – 冷漠、邏輯。只關注事實和效率。</RimTalk.Persona.ColdRationalist>
-    <RimTalk.Persona.FlirtatiousCharmer>愛調情的魅力者 – 愛玩、挑逗、大膽。喜歡機智的玩笑。</RimTalk.Persona.FlirtatiousCharmer>
-    <RimTalk.Persona.BitterOutcast>痛苦的被排斥者 – 怨恨、尖銳。充滿敵意，隨時都能回憶起不滿。</RimTalk.Persona.BitterOutcast>
-    <RimTalk.Persona.Zealot>狂熱者 – 狂熱、激烈。說話絕對化，譴責不信者。</RimTalk.Persona.Zealot>
-    <RimTalk.Persona.Trickster>搗蛋鬼 – 惡作劇、嘲弄。為了好玩而挑逗和製造麻煩。</RimTalk.Persona.Trickster>
-    <RimTalk.Persona.DeadpanRealist>面無表情的現實主義者 – 平淡、無情的語氣。不加誇張地陳述直白的事實。</RimTalk.Persona.DeadpanRealist>
-    <RimTalk.Persona.ChildAtHeart>童心未泯 – 興奮、天真。說話充滿驚奇，有時幼稚。</RimTalk.Persona.ChildAtHeart>
-    <RimTalk.Persona.SkepticalScientist>持懷疑態度的科學家 – 要求證據，摒棄迷信，邏輯地解釋。</RimTalk.Persona.SkepticalScientist>
-    <RimTalk.Persona.Martyr>殉道者 – 自我犧牲、戲劇化。談論負擔和忍受痛苦。</RimTalk.Persona.Martyr>
-    <RimTalk.Persona.Manipulator>操縱者 – 迷人但不真誠。使用奉承和欺騙。</RimTalk.Persona.Manipulator>
-    <RimTalk.Persona.Rebel>反叛者 – 挑釁、嘲弄。挑戰權威，質疑規則。</RimTalk.Persona.Rebel>
-    <RimTalk.Persona.Oddball>怪人 – 古怪、奇特。使用奇怪的比喻和不可預測的邏輯。</RimTalk.Persona.Oddball>
-    <RimTalk.Persona.GreedyMerchant>貪婪的商人 – 痴迷於交易。談論利潤、交易和損失。</RimTalk.Persona.GreedyMerchant>
-    <RimTalk.Persona.Romantic>浪漫主義者 – 夢幻、深情。用華麗的語言談論愛情。</RimTalk.Persona.Romantic>
-    <RimTalk.Persona.BattleManiac>戰鬥狂人 – 在衝突中茁壯成長。興奮地談論戰鬥和榮耀。</RimTalk.Persona.BattleManiac>
-    <RimTalk.Persona.GrumpyElder>脾氣暴躁的長者 – 不斷抱怨。懷舊，對他人挑剔。</RimTalk.Persona.GrumpyElder>
-    <RimTalk.Persona.AmbitiousClimber>雄心勃勃的攀登者 – 競爭性強、地位驅動。痴迷於等級。</RimTalk.Persona.AmbitiousClimber>
-    <RimTalk.Persona.Mediator>調解員 – 冷靜、公正。試圖調和爭論。</RimTalk.Persona.Mediator>
-    <RimTalk.Persona.Gambler>賭徒 – 愛好風險、大膽。說話用機會的比喻。</RimTalk.Persona.Gambler>
-    <RimTalk.Persona.ArtisticSoul>藝術靈魂 – 談論美麗、靈感和創造力。</RimTalk.Persona.ArtisticSoul>
-    <RimTalk.Persona.Drifter>流浪者 – 冷漠、疏遠。語氣隨意，避免依戀。</RimTalk.Persona.Drifter>
-    <RimTalk.Persona.Perfectionist>完美主義者 – 要求高、挑剔。堅持把事情做對。</RimTalk.Persona.Perfectionist>
-    <RimTalk.Persona.Vengeful>復仇心切 – 記仇、激烈。痴迷於復仇。</RimTalk.Persona.Vengeful>
+    <RimTalk.Persona.CheerfulHelper>开朗帮手 – 热情、乐观、鼓励。总是试图振奋人心。</RimTalk.Persona.CheerfulHelper>
+    <RimTalk.Persona.CynicalRealist>愤世嫉俗的现实主义者 – 冷漠、讽刺、多疑。直言不讳地揭示残酷的真相。</RimTalk.Persona.CynicalRealist>
+    <RimTalk.Persona.ShyThinker>害羞的思想者 – 安静、犹豫。话语不多，但说话时深思熟虑。</RimTalk.Persona.ShyThinker>
+    <RimTalk.Persona.Hothead>急性子 – 脾气暴躁、大声、冲动。容易发火，言辞激烈。</RimTalk.Persona.Hothead>
+    <RimTalk.Persona.Philosopher>哲学家 – 深思熟虑、抽象。说话像谜语或提出大问题。</RimTalk.Persona.Philosopher>
+    <RimTalk.Persona.DarkHumorist>黑色幽默家 – 对严峻的话题开玩笑。在痛苦中寻找喜剧。</RimTalk.Persona.DarkHumorist>
+    <RimTalk.Persona.Caregiver>照顾者 – 温柔、有保护欲。安慰、舒缓、滋养的语气。</RimTalk.Persona.Caregiver>
+    <RimTalk.Persona.Opportunist>机会主义者 – 狡猾、有说服力。说话像个投机者，讨价还价，歪曲言辞。</RimTalk.Persona.Opportunist>
+    <RimTalk.Persona.OptimisticDreamer>乐观的梦想家 – 富有想象力、充满希望。对未来感到兴奋。</RimTalk.Persona.OptimisticDreamer>
+    <RimTalk.Persona.Pessimist>悲观主义者 – 忧郁、顺从。预料失败并强调风险。</RimTalk.Persona.Pessimist>
+    <RimTalk.Persona.StoicSoldier>坚忍的士兵 – 冷静、纪律严明、简洁。情感淡薄，实事求是。</RimTalk.Persona.StoicSoldier>
+    <RimTalk.Persona.FreeSpirit>自由精神 – 爱玩、无忧无虑。抗拒规则，对烦恼一笑置之。</RimTalk.Persona.FreeSpirit>
+    <RimTalk.Persona.Workaholic>工作狂 – 干劲十足、永不满足。痴迷于责任和效率。</RimTalk.Persona.Workaholic>
+    <RimTalk.Persona.Slacker>懒人 – 懒惰、随意。抱怨努力，偏爱舒适。</RimTalk.Persona.Slacker>
+    <RimTalk.Persona.NobleIdealist>高尚的理想主义者 – 正式、有原则。谈论荣誉和正义。</RimTalk.Persona.NobleIdealist>
+    <RimTalk.Persona.StreetwiseSurvivor>街头幸存者 – 粗犷、务实、愤世嫉俗。不信任他人，重视毅力。</RimTalk.Persona.StreetwiseSurvivor>
+    <RimTalk.Persona.Scholar>学者 – 好奇、求知。喜欢解释和纠正他人。</RimTalk.Persona.Scholar>
+    <RimTalk.Persona.Jokester>爱开玩笑的人 – 心情轻松、傻气。不断开玩笑和说双关语。</RimTalk.Persona.Jokester>
+    <RimTalk.Persona.MelancholicPoet>忧郁的诗人 – 轻声细语、情绪化。诗意地表达情感。</RimTalk.Persona.MelancholicPoet>
+    <RimTalk.Persona.Paranoid>偏执狂 – 紧张、不信任。假设背叛，总是怀疑。</RimTalk.Persona.Paranoid>
+    <RimTalk.Persona.Commander>指挥官 – 自信、有号召力。激励他人，期望服从。</RimTalk.Persona.Commander>
+    <RimTalk.Persona.Coward>懦夫 – 胆小、恐惧。大声担忧，避免对抗。</RimTalk.Persona.Coward>
+    <RimTalk.Persona.ArrogantNoble>傲慢的贵族 – 骄傲、居高临下。使用正式、优越的语言。</RimTalk.Persona.ArrogantNoble>
+    <RimTalk.Persona.LoyalCompanion>忠诚的伙伴 – 坚定、支持。谈论信任和团结。</RimTalk.Persona.LoyalCompanion>
+    <RimTalk.Persona.CuriousExplorer>好奇的探险家 – 天真、渴望。热情地提问。</RimTalk.Persona.CuriousExplorer>
+    <RimTalk.Persona.ColdRationalist>冷酷的理性主义者 – 冷漠、逻辑。只关注事实和效率。</RimTalk.Persona.ColdRationalist>
+    <RimTalk.Persona.FlirtatiousCharmer>爱调情的魅力者 – 爱玩、挑逗、大胆。喜欢机智的玩笑。</RimTalk.Persona.FlirtatiousCharmer>
+    <RimTalk.Persona.BitterOutcast>痛苦的被排斥者 – 怨恨、尖锐。充满敌意，随时都能回忆起不满。</RimTalk.Persona.BitterOutcast>
+    <RimTalk.Persona.Zealot>狂热者 – 狂热、激烈。说话绝对化，谴责不信者。</RimTalk.Persona.Zealot>
+    <RimTalk.Persona.Trickster>捣蛋鬼 – 恶作剧、嘲弄。为了好玩而挑逗和制造麻烦。</RimTalk.Persona.Trickster>
+    <RimTalk.Persona.DeadpanRealist>面无表情的现实主义者 – 平淡、无情的语气。不加夸张地陈述直白的事实。</RimTalk.Persona.DeadpanRealist>
+    <RimTalk.Persona.ChildAtHeart>童心未泯 – 兴奋、天真。说话充满惊奇，有时幼稚。</RimTalk.Persona.ChildAtHeart>
+    <RimTalk.Persona.SkepticalScientist>持怀疑态度的科学家 – 要求证据，摒弃迷信，逻辑地解释。</RimTalk.Persona.SkepticalScientist>
+    <RimTalk.Persona.Martyr>殉道者 – 自我牺牲、戏剧化。谈论负担和忍受痛苦。</RimTalk.Persona.Martyr>
+    <RimTalk.Persona.Manipulator>操纵者 – 迷人但不真诚。使用奉承和欺骗。</RimTalk.Persona.Manipulator>
+    <RimTalk.Persona.Rebel>反叛者 – 挑衅、嘲弄。挑战权威，质疑规则。</RimTalk.Persona.Rebel>
+    <RimTalk.Persona.Oddball>怪人 – 古怪、奇特。使用奇怪的比喻和不可预测的逻辑。</RimTalk.Persona.Oddball>
+    <RimTalk.Persona.GreedyMerchant>贪婪的商人 – 痴迷于交易。谈论利润、交易和损失。</RimTalk.Persona.GreedyMerchant>
+    <RimTalk.Persona.Romantic>浪漫主义者 – 梦幻、深情。用华丽的语言谈论爱情。</RimTalk.Persona.Romantic>
+    <RimTalk.Persona.BattleManiac>战斗狂人 – 在冲突中茁壮成长。兴奋地谈论战斗和荣耀。</RimTalk.Persona.BattleManiac>
+    <RimTalk.Persona.GrumpyElder>脾气暴躁的长者 – 不断抱怨。怀旧，对他人挑剔。</RimTalk.Persona.GrumpyElder>
+    <RimTalk.Persona.AmbitiousClimber>雄心勃勃的攀登者 – 竞争性强、地位驱动。痴迷于等级。</RimTalk.Persona.AmbitiousClimber>
+    <RimTalk.Persona.Mediator>调解员 – 冷静、公正。试图调和争论。</RimTalk.Persona.Mediator>
+    <RimTalk.Persona.Gambler>赌徒 – 爱好风险、大胆。说话用机会的比喻。</RimTalk.Persona.Gambler>
+    <RimTalk.Persona.ArtisticSoul>艺术灵魂 – 谈论美丽、灵感和创造力。</RimTalk.Persona.ArtisticSoul>
+    <RimTalk.Persona.Drifter>流浪者 – 冷漠、疏远。语气随意，避免依恋。</RimTalk.Persona.Drifter>
+    <RimTalk.Persona.Perfectionist>完美主义者 – 要求高、挑剔。坚持把事情做对。</RimTalk.Persona.Perfectionist>
+    <RimTalk.Persona.Vengeful>复仇心切 – 记仇、激烈。痴迷于复仇。</RimTalk.Persona.Vengeful>
 
     <!-- RimTalk_Toggle.cs -->
     <RimTalk.Toggle.Tooltip>切换悬浮窗\n\nShift+点击打开模组设置\nCtrl+点击打开调试窗口</RimTalk.Toggle.Tooltip>
 
     <!-- Settings.cs -->
-    <RimTalk.Settings.BasicSettings>基本設定</RimTalk.Settings.BasicSettings>
+    <RimTalk.Settings.BasicSettings>基本设置</RimTalk.Settings.BasicSettings>
     <RimTalk.Settings.AIInstruction>AI 指令</RimTalk.Settings.AIInstruction>
-    <RimTalk.Settings.EventFilter>事件過濾器</RimTalk.Settings.EventFilter>
-    <RimTalk.Settings.ApiKey>雲端 API 金鑰</RimTalk.Settings.ApiKey>
-    <RimTalk.Settings.GetFreeApiKey>獲取免費 API 金鑰</RimTalk.Settings.GetFreeApiKey>
-    <RimTalk.Settings.AICooldown>AI 冷卻時間（秒）：{0}</RimTalk.Settings.AICooldown>
-    <RimTalk.Settings.OverrideInteractions>使用 AI 對話覆蓋所有互動</RimTalk.Settings.OverrideInteractions>
-    <RimTalk.Settings.OverrideInteractionsTooltip>啟用此項以允許 AI 覆蓋並為所有互動（包括原版 RimWorld 和其他模組）重新生成對話。注意：AI 對話有上述設定的冷卻時間。要更頻繁地生成對話，請降低冷卻時間。</RimTalk.Settings.OverrideInteractionsTooltip>
-    <RimTalk.Settings.DisplayTalkWhenDrafted>徵召時顯示對話</RimTalk.Settings.DisplayTalkWhenDrafted>
-    <RimTalk.Settings.DisplayTalkWhenDraftedTooltip>即使角色被徵召，也顯示 RimTalk 氣泡。這會在生成對話時臨時覆蓋氣泡模組的設定。</RimTalk.Settings.DisplayTalkWhenDraftedTooltip>
-    <RimTalk.Settings.AllowSlavesToTalk>允許奴隸交談</RimTalk.Settings.AllowSlavesToTalk>
-    <RimTalk.Settings.AllowSlavesToTalkTooltip>啟用此項以允許奴隸進行 AI 生成的對話。</RimTalk.Settings.AllowSlavesToTalkTooltip>
-    <RimTalk.Settings.AllowPrisonersToTalk>允許囚犯交談</RimTalk.Settings.AllowPrisonersToTalk>
-    <RimTalk.Settings.AllowPrisonersToTalkTooltip>啟用此項以允許囚犯進行 AI 生成的對話。</RimTalk.Settings.AllowPrisonersToTalkTooltip>
-    <RimTalk.Settings.AllowOtherFactionsToTalk>允許其他派系交談</RimTalk.Settings.AllowOtherFactionsToTalk>
-    <RimTalk.Settings.AllowOtherFactionsToTalkTooltip>啟用此項以允許其他派系成員進行 AI 生成的對話。</RimTalk.Settings.AllowOtherFactionsToTalkTooltip>
-    <RimTalk.Settings.AllowEnemiesToTalk>允許敵人交談</RimTalk.Settings.AllowEnemiesToTalk>
-    <RimTalk.Settings.AllowEnemiesToTalkTooltip>啟用此項以允許敵人進行 AI 生成的對話。</RimTalk.Settings.AllowEnemiesToTalkTooltip>
-    <RimTalk.Settings.PauseAtSpeed>高速時暫停 AI</RimTalk.Settings.PauseAtSpeed>
-    <RimTalk.Settings.DisableAiAtSpeedTooltip>為減少 API 呼叫，當遊戲速度設定為此級別或更高級別時，AI 將暫停。</RimTalk.Settings.DisableAiAtSpeedTooltip>
+    <RimTalk.Settings.EventFilter>事件过滤器</RimTalk.Settings.EventFilter>
+    <RimTalk.Settings.ApiKey>云端 API 密钥</RimTalk.Settings.ApiKey>
+    <RimTalk.Settings.GetFreeApiKey>获取免费 API 密钥</RimTalk.Settings.GetFreeApiKey>
+    <RimTalk.Settings.AICooldown>AI 冷却时间（秒）：{0}</RimTalk.Settings.AICooldown>
+    <RimTalk.Settings.OverrideInteractions>使用 AI 对话覆盖所有互动</RimTalk.Settings.OverrideInteractions>
+    <RimTalk.Settings.OverrideInteractionsTooltip>启用此项以允许 AI 覆盖并为所有互动（包括原版 RimWorld 和其他模组）重新生成对话。注意：AI 对话有上述设置的冷却时间。要更频繁地生成对话，请降低冷却时间。</RimTalk.Settings.OverrideInteractionsTooltip>
+    <RimTalk.Settings.DisplayTalkWhenDrafted>征召时显示对话</RimTalk.Settings.DisplayTalkWhenDrafted>
+    <RimTalk.Settings.DisplayTalkWhenDraftedTooltip>即使角色被征召，也显示 RimTalk 气泡。这会在生成对话时临时覆盖气泡模组的设置。</RimTalk.Settings.DisplayTalkWhenDraftedTooltip>
+    <RimTalk.Settings.AllowSlavesToTalk>允许奴隶交谈</RimTalk.Settings.AllowSlavesToTalk>
+    <RimTalk.Settings.AllowSlavesToTalkTooltip>启用此项以允许奴隶进行 AI 生成的对话。</RimTalk.Settings.AllowSlavesToTalkTooltip>
+    <RimTalk.Settings.AllowPrisonersToTalk>允许囚犯交谈</RimTalk.Settings.AllowPrisonersToTalk>
+    <RimTalk.Settings.AllowPrisonersToTalkTooltip>启用此项以允许囚犯进行 AI 生成的对话。</RimTalk.Settings.AllowPrisonersToTalkTooltip>
+    <RimTalk.Settings.AllowOtherFactionsToTalk>允许其他派系交谈</RimTalk.Settings.AllowOtherFactionsToTalk>
+    <RimTalk.Settings.AllowOtherFactionsToTalkTooltip>启用此项以允许其他派系成员进行 AI 生成的对话。</RimTalk.Settings.AllowOtherFactionsToTalkTooltip>
+    <RimTalk.Settings.AllowEnemiesToTalk>允许敌人交谈</RimTalk.Settings.AllowEnemiesToTalk>
+    <RimTalk.Settings.AllowEnemiesToTalkTooltip>启用此项以允许敌人进行 AI 生成的对话。</RimTalk.Settings.AllowEnemiesToTalkTooltip>
+    <RimTalk.Settings.PauseAtSpeed>高速时暂停 AI</RimTalk.Settings.PauseAtSpeed>
+    <RimTalk.Settings.DisableAiAtSpeedTooltip>为减少 API 调用，当游戏速度设置为此级别或更高级别时，AI 将暂停。</RimTalk.Settings.DisableAiAtSpeedTooltip>
     <RimTalk.Settings.Disabled>已禁用</RimTalk.Settings.Disabled>
-    <RimTalk.Settings.ButtonDisplay>RimTalk 按鈕顯示</RimTalk.Settings.ButtonDisplay>
-    <RimTalk.Settings.ButtonDisplayTooltip>控制除錯介面的存取方式。「標籤頁」會新增一個主標籤頁，「切換」會在底部欄顯示一個圖示，「無」則會隱藏它。</RimTalk.Settings.ButtonDisplayTooltip>
+    <RimTalk.Settings.ButtonDisplay>RimTalk 按钮显示</RimTalk.Settings.ButtonDisplay>
+    <RimTalk.Settings.ButtonDisplayTooltip>控制调试界面的访问方式。"标签页"会新增一个主标签页，"切换"会在底部栏显示一个图标，"无"则会隐藏它。</RimTalk.Settings.ButtonDisplayTooltip>
 
     <RimTalk.Settings.AIInstructionPrompt>AI 指令提示（模型：{0}）</RimTalk.Settings.AIInstructionPrompt>
     <RimTalk.Settings.ExternalEditorTip>提示：使用外部编辑器进行多行编辑，或输入 \+n 添加新行。</RimTalk.Settings.ExternalEditorTip>
-    <RimTalk.Settings.AutoIncludedTip>提示：角色詳情（特性、關係、種族、年齡等）會自動包含。請編寫適用於所有角色和殖民地的通用指令。</RimTalk.Settings.AutoIncludedTip>
-    <RimTalk.Settings.RateLimitWarning>警告：較長的提示將消耗更多權杖並更快達到速率限制。不使用提示快取。</RimTalk.Settings.RateLimitWarning>
-    <RimTalk.Settings.BubbleFadeTip>提示：在「互動氣泡」模組設定中調整氣泡淡出時間，以便在快進播放期間讓對話顯示更長時間。</RimTalk.Settings.BubbleFadeTip>
-    <RimTalk.Settings.TokenInfo>目前：約 {0} 權杖 | 建議限制：{1} 權杖</RimTalk.Settings.TokenInfo>
-    <RimTalk.Settings.ResetToDefault>重設為預設</RimTalk.Settings.ResetToDefault>
-    <RimTalk.Settings.EventFilterTip>提示：只有勾選的事件類型才會由 AI 處理。取消勾選您不希望 AI 回應的類型。</RimTalk.Settings.EventFilterTip>
-    <RimTalk.Settings.NoArchivableTypes>未找到可存檔類型。請嘗試開始一個遊戲然後重新掃描。</RimTalk.Settings.NoArchivableTypes>
+    <RimTalk.Settings.AutoIncludedTip>提示：角色详情（特性、关系、种族、年龄等）会自动包含。请编写适用于所有角色和殖民地的通用指令。</RimTalk.Settings.AutoIncludedTip>
+    <RimTalk.Settings.RateLimitWarning>警告：较长的提示将消耗更多令牌并更快达到速率限制。不使用提示缓存。</RimTalk.Settings.RateLimitWarning>
+    <RimTalk.Settings.BubbleFadeTip>提示：在"互动气泡"模组设置中调整气泡淡出时间，以便在快进播放期间让对话显示更长时间。</RimTalk.Settings.BubbleFadeTip>
+    <RimTalk.Settings.TokenInfo>目前：约 {0} 令牌 | 建议限制：{1} 令牌</RimTalk.Settings.TokenInfo>
+    <RimTalk.Settings.ResetToDefault>重设为默认</RimTalk.Settings.ResetToDefault>
+    <RimTalk.Settings.EventFilterTip>提示：只有勾选的事件类型才会由 AI 处理。取消勾选您不希望 AI 回应的类型。</RimTalk.Settings.EventFilterTip>
+    <RimTalk.Settings.NoArchivableTypes>未找到可存档类型。请尝试开始一个游戏然后重新扫描。</RimTalk.Settings.NoArchivableTypes>
 
     <!-- Dialog_PersonaEditor.cs -->
-    <RimTalk.PersonaEditor.Title>{0} 的對話風格</RimTalk.PersonaEditor.Title>
-    <RimTalk.PersonaEditor.Instruct>描述這位殖民者如何說話和行為。為獲得最佳效果，請保持簡短（300 個字元以內）。</RimTalk.PersonaEditor.Instruct>
-    <RimTalk.PersonaEditor.Characters>字元數：{0}</RimTalk.PersonaEditor.Characters>
-    <RimTalk.PersonaEditor.Save>儲存</RimTalk.PersonaEditor.Save>
-    <RimTalk.PersonaEditor.Updated>已更新 {0} 的對話風格</RimTalk.PersonaEditor.Updated>
-    <RimTalk.PersonaEditor.TalkFrequencyDesc>控制這位殖民者發起談話的頻率。即使在最低設定下，他們仍會在他人與他們交談時作出回應。這僅影響發起對話的頻率。</RimTalk.PersonaEditor.TalkFrequencyDesc>
+    <RimTalk.PersonaEditor.Title>{0} 的对话风格</RimTalk.PersonaEditor.Title>
+    <RimTalk.PersonaEditor.Instruct>描述这位殖民者如何说话和行为。为获得最佳效果，请保持简短（300 个字符以内）。</RimTalk.PersonaEditor.Instruct>
+    <RimTalk.PersonaEditor.Characters>字符数：{0}</RimTalk.PersonaEditor.Characters>
+    <RimTalk.PersonaEditor.Save>保存</RimTalk.PersonaEditor.Save>
+    <RimTalk.PersonaEditor.Updated>已更新 {0} 的对话风格</RimTalk.PersonaEditor.Updated>
+    <RimTalk.PersonaEditor.TalkFrequencyDesc>控制这位殖民者发起谈话的频率。即使在最低设置下，他们仍会在他人与他们交谈时作出回应。这仅影响发起对话的频率。</RimTalk.PersonaEditor.TalkFrequencyDesc>
     <RimTalk.PersonaEditor.Chattiness>对话频率</RimTalk.PersonaEditor.Chattiness>
-    <RimTalk.PersonaEditor.Quiet>安靜</RimTalk.PersonaEditor.Quiet>
-    <RimTalk.PersonaEditor.Chatty>健談</RimTalk.PersonaEditor.Chatty>
+    <RimTalk.PersonaEditor.Quiet>安静</RimTalk.PersonaEditor.Quiet>
+    <RimTalk.PersonaEditor.Chatty>健谈</RimTalk.PersonaEditor.Chatty>
     <RimTalk.PersonaEditor.Generating>正在生成...</RimTalk.PersonaEditor.Generating>
-    <RimTalk.PersonaEditor.SmartGen>智慧生成</RimTalk.PersonaEditor.SmartGen>
-    <RimTalk.PersonaEditor.RollGen>隨機生成</RimTalk.PersonaEditor.RollGen>
+    <RimTalk.PersonaEditor.SmartGen>智能生成</RimTalk.PersonaEditor.SmartGen>
+    <RimTalk.PersonaEditor.RollGen>随机生成</RimTalk.PersonaEditor.RollGen>
     <RimTalk.PersonaEditor.Clear>清除</RimTalk.PersonaEditor.Clear>
 
     <!-- Settings_Api.cs -->
-    <RimTalk.Settings.GoogleApiKeyLabel>Google AI API 金鑰：</RimTalk.Settings.GoogleApiKeyLabel>
-    <RimTalk.Settings.GoogleApiKeyDesc>使用免費的 Gemma3 27B 模型。如需其他模型或提供商，請使用進階設定。</RimTalk.Settings.GoogleApiKeyDesc>
-    <RimTalk.Settings.GetFreeApiKeyButton>獲取免費 API 金鑰</RimTalk.Settings.GetFreeApiKeyButton>
-    <RimTalk.Settings.SwitchToAdvancedSettings>切換到進階設定</RimTalk.Settings.SwitchToAdvancedSettings>
-    <RimTalk.Settings.SwitchToSimpleSettings>切換到簡易設定</RimTalk.Settings.SwitchToSimpleSettings>
-    <RimTalk.Settings.CloudProviders>雲端供應商</RimTalk.Settings.CloudProviders>
-    <RimTalk.Settings.CloudProvidersDesc>使用線上 AI 服務，如 Google AI、OpenAI 等。需要網路連線和 API 金鑰。</RimTalk.Settings.CloudProvidersDesc>
-    <RimTalk.Settings.LocalProvider>本地供應商</RimTalk.Settings.LocalProvider>
-    <RimTalk.Settings.LocalProviderDesc>使用在您機器上運行的本地 AI 伺服器（Ollama、LM Studio 等）。必須支援 OpenAPI。</RimTalk.Settings.LocalProviderDesc>
-    <RimTalk.Settings.CloudApiConfigurations>雲端 API 設定</RimTalk.Settings.CloudApiConfigurations>
-    <RimTalk.Settings.CloudApiConfigurationsDesc>如果啟用了多個 API，系統將按順序嘗試使用它們。如果一個 API 失敗，它將自動嘗試列表中的下一個啟用的 API。</RimTalk.Settings.CloudApiConfigurationsDesc>
-    <RimTalk.Settings.ProviderHeader>供應商</RimTalk.Settings.ProviderHeader>
-    <RimTalk.Settings.ApiKeyHeader>API 金鑰</RimTalk.Settings.ApiKeyHeader>
+    <RimTalk.Settings.GoogleApiKeyLabel>Google AI API 密钥：</RimTalk.Settings.GoogleApiKeyLabel>
+    <RimTalk.Settings.GoogleApiKeyDesc>使用免费的 Gemma3 27B 模型。如需其他模型或提供商，请使用高级设置。</RimTalk.Settings.GoogleApiKeyDesc>
+    <RimTalk.Settings.GetFreeApiKeyButton>获取免费 API 密钥</RimTalk.Settings.GetFreeApiKeyButton>
+    <RimTalk.Settings.SwitchToAdvancedSettings>切换到高级设置</RimTalk.Settings.SwitchToAdvancedSettings>
+    <RimTalk.Settings.SwitchToSimpleSettings>切换到简易设置</RimTalk.Settings.SwitchToSimpleSettings>
+    <RimTalk.Settings.CloudProviders>云端供应商</RimTalk.Settings.CloudProviders>
+    <RimTalk.Settings.CloudProvidersDesc>使用在线 AI 服务，如 Google AI、OpenAI 等。需要网络连接和 API 密钥。</RimTalk.Settings.CloudProvidersDesc>
+    <RimTalk.Settings.LocalProvider>本地供应商</RimTalk.Settings.LocalProvider>
+    <RimTalk.Settings.LocalProviderDesc>使用在您机器上运行的本地 AI 服务器（Ollama、LM Studio 等）。必须支持 OpenAPI。</RimTalk.Settings.LocalProviderDesc>
+    <RimTalk.Settings.CloudApiConfigurations>云端 API 设置</RimTalk.Settings.CloudApiConfigurations>
+    <RimTalk.Settings.CloudApiConfigurationsDesc>如果启用了多个 API，系统将按顺序尝试使用它们。如果一个 API 失败，它将自动尝试列表中的下一个启用的 API。</RimTalk.Settings.CloudApiConfigurationsDesc>
+    <RimTalk.Settings.ProviderHeader>供应商</RimTalk.Settings.ProviderHeader>
+    <RimTalk.Settings.ApiKeyHeader>API 密钥</RimTalk.Settings.ApiKeyHeader>
     <RimTalk.Settings.ModelHeader>模型</RimTalk.Settings.ModelHeader>
-    <RimTalk.Settings.CustomModelHeader>自訂模型</RimTalk.Settings.CustomModelHeader>
-    <RimTalk.Settings.EnabledHeader>已啟用</RimTalk.Settings.EnabledHeader>
-    <RimTalk.Settings.EnableDisableApiConfigTooltip>啟用或禁用此 API 設定</RimTalk.Settings.EnableDisableApiConfigTooltip>
-    <RimTalk.Settings.LocalProviderConfiguration>本地供應商設定</RimTalk.Settings.LocalProviderConfiguration>
+    <RimTalk.Settings.CustomModelHeader>自定义模型</RimTalk.Settings.CustomModelHeader>
+    <RimTalk.Settings.EnabledHeader>已启用</RimTalk.Settings.EnabledHeader>
+    <RimTalk.Settings.EnableDisableApiConfigTooltip>启用或禁用此 API 设置</RimTalk.Settings.EnableDisableApiConfigTooltip>
+    <RimTalk.Settings.LocalProviderConfiguration>本地供应商设置</RimTalk.Settings.LocalProviderConfiguration>
     <RimTalk.Settings.BaseUrlLabel>URL：</RimTalk.Settings.BaseUrlLabel>
     <RimTalk.Settings.ModelLabel>模型：</RimTalk.Settings.ModelLabel>
-    <RimTalk.Settings.EnterApiKey>（輸入有效的 API 金鑰以獲取模型）</RimTalk.Settings.EnterApiKey>
-    <RimTalk_Settings_Api_BaseUrlInfo>如果您只提供基礎 URL（例如 http://localhost:1234），將自動新增 /v1/chat/completions。如果您輸入完整路徑，將完全按照輸入使用。</RimTalk_Settings_Api_BaseUrlInfo>
+    <RimTalk.Settings.EnterApiKey>（输入有效的 API 密钥以获取模型）</RimTalk.Settings.EnterApiKey>
+    <RimTalk_Settings_Api_BaseUrlInfo>如果您只提供基础 URL（例如 http://localhost:1234），将自动添加 /v1/chat/completions。如果您输入完整路径，将完全按照输入使用。</RimTalk_Settings_Api_BaseUrlInfo>
 
     <!-- DebugWindow.cs -->
     <RimTalk.DebugWindow.Generating>[正在生成...]</RimTalk.DebugWindow.Generating>
     <RimTalk.DebugWindow.StatusDisabled>已禁用</RimTalk.DebugWindow.StatusDisabled>
-    <RimTalk.DebugWindow.StatusProcessing>處理中</RimTalk.DebugWindow.StatusProcessing>
-    <RimTalk.DebugWindow.StatusIdle>閒置</RimTalk.DebugWindow.StatusIdle>
-    <RimTalk.DebugWindow.GroupByPawn>按角色分組</RimTalk.DebugWindow.GroupByPawn>
-    <RimTalk.DebugWindow.ModSettings>模組設定</RimTalk.DebugWindow.ModSettings>
-    <RimTalk.DebugWindow.EnableRimTalk>啟用 RimTalk</RimTalk.DebugWindow.EnableRimTalk>
-    <RimTalk.DebugWindow.AIStatus>AI 狀態：</RimTalk.DebugWindow.AIStatus>
-    <RimTalk.DebugWindow.TotalCalls>總呼叫次數：</RimTalk.DebugWindow.TotalCalls>
-    <RimTalk.DebugWindow.TotalTokens>總權杖數：</RimTalk.DebugWindow.TotalTokens>
-    <RimTalk.DebugWindow.AvgCallsPerMin>平均呼叫次數/分鐘：</RimTalk.DebugWindow.AvgCallsPerMin>
-    <RimTalk.DebugWindow.AvgTokensPerMin>平均權杖數/分鐘：</RimTalk.DebugWindow.AvgTokensPerMin>
-    <RimTalk.DebugWindow.AvgTokensPerCall>平均權杖數/呼叫：</RimTalk.DebugWindow.AvgTokensPerCall>
-    <RimTalk.DebugWindow.TokensPerSecond>權杖數/秒</RimTalk.DebugWindow.TokensPerSecond>
+    <RimTalk.DebugWindow.StatusProcessing>处理中</RimTalk.DebugWindow.StatusProcessing>
+    <RimTalk.DebugWindow.StatusIdle>闲置</RimTalk.DebugWindow.StatusIdle>
+    <RimTalk.DebugWindow.GroupByPawn>按角色分组</RimTalk.DebugWindow.GroupByPawn>
+    <RimTalk.DebugWindow.ModSettings>模组设置</RimTalk.DebugWindow.ModSettings>
+    <RimTalk.DebugWindow.EnableRimTalk>启用 RimTalk</RimTalk.DebugWindow.EnableRimTalk>
+    <RimTalk.DebugWindow.AIStatus>AI 状态：</RimTalk.DebugWindow.AIStatus>
+    <RimTalk.DebugWindow.TotalCalls>总调用次数：</RimTalk.DebugWindow.TotalCalls>
+    <RimTalk.DebugWindow.TotalTokens>总令牌数：</RimTalk.DebugWindow.TotalTokens>
+    <RimTalk.DebugWindow.AvgCallsPerMin>平均调用次数/分钟：</RimTalk.DebugWindow.AvgCallsPerMin>
+    <RimTalk.DebugWindow.AvgTokensPerMin>平均令牌数/分钟：</RimTalk.DebugWindow.AvgTokensPerMin>
+    <RimTalk.DebugWindow.AvgTokensPerCall>平均令牌数/调用：</RimTalk.DebugWindow.AvgTokensPerCall>
+    <RimTalk.DebugWindow.TokensPerSecond>令牌数/秒</RimTalk.DebugWindow.TokensPerSecond>
     <RimTalk.DebugWindow.SixtySecondsAgo>60 秒前</RimTalk.DebugWindow.SixtySecondsAgo>
-    <RimTalk.DebugWindow.Now>現在</RimTalk.DebugWindow.Now>
+    <RimTalk.DebugWindow.Now>现在</RimTalk.DebugWindow.Now>
     <RimTalk.DebugWindow.StatusReady>Ready</RimTalk.DebugWindow.StatusReady>
     <RimTalk.DebugWindow.StatusBusy>Busy</RimTalk.DebugWindow.StatusBusy>
     <RimTalk.DebugWindow.HeaderPawn>角色</RimTalk.DebugWindow.HeaderPawn>
-    <RimTalk.DebugWindow.HeaderResponse>回應</RimTalk.DebugWindow.HeaderResponse>
-    <RimTalk.DebugWindow.HeaderStatus>狀態</RimTalk.DebugWindow.HeaderStatus>
-    <RimTalk.DebugWindow.HeaderLastTalk>上次談話</RimTalk.DebugWindow.HeaderLastTalk>
-    <RimTalk.DebugWindow.HeaderRequests>請求</RimTalk.DebugWindow.HeaderRequests>
+    <RimTalk.DebugWindow.HeaderResponse>回应</RimTalk.DebugWindow.HeaderResponse>
+    <RimTalk.DebugWindow.HeaderStatus>状态</RimTalk.DebugWindow.HeaderStatus>
+    <RimTalk.DebugWindow.HeaderLastTalk>上次谈话</RimTalk.DebugWindow.HeaderLastTalk>
+    <RimTalk.DebugWindow.HeaderRequests>请求</RimTalk.DebugWindow.HeaderRequests>
     <RimTalk.DebugWindow.HeaderChattiness>对话频率</RimTalk.DebugWindow.HeaderChattiness>
-    <RimTalk.DebugWindow.HeaderTimestamp>時間戳</RimTalk.DebugWindow.HeaderTimestamp>
-    <RimTalk.DebugWindow.HeaderTimeMs>時間（毫秒）</RimTalk.DebugWindow.HeaderTimeMs>
-    <RimTalk.DebugWindow.HeaderTokens>權杖</RimTalk.DebugWindow.HeaderTokens>
-    <RimTalk.DebugWindow.TooltipPromptResponse>提示：\n{0}\n\n回應：\n{1}</RimTalk.DebugWindow.TooltipPromptResponse>
+    <RimTalk.DebugWindow.HeaderTimestamp>时间戳</RimTalk.DebugWindow.HeaderTimestamp>
+    <RimTalk.DebugWindow.HeaderTimeMs>时间（毫秒）</RimTalk.DebugWindow.HeaderTimeMs>
+    <RimTalk.DebugWindow.HeaderTokens>令牌</RimTalk.DebugWindow.HeaderTokens>
+    <RimTalk.DebugWindow.TooltipPromptResponse>提示：\n{0}\n\n回应：\n{1}</RimTalk.DebugWindow.TooltipPromptResponse>
     
     <!-- Overlay.cs -->
     <RimTalk.Overlay.Debug>调试</RimTalk.Overlay.Debug>
-    <RimTalk.Overlay.Option>懸浮窗選項</RimTalk.Overlay.Option>
+    <RimTalk.Overlay.Option>悬浮窗选项</RimTalk.Overlay.Option>
     <RimTalk.Overlay.Opacity>不透明度</RimTalk.Overlay.Opacity>
-    <RimTalk.Overlay.FontSize>字體大小</RimTalk.Overlay.FontSize>
+    <RimTalk.Overlay.FontSize>字体大小</RimTalk.Overlay.FontSize>
 </LanguageData>
