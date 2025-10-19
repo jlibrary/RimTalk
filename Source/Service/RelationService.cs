@@ -84,7 +84,7 @@ public static class RelationsService
     private static string GetStatusLabel(Pawn pawn, Pawn otherPawn)
     {
         // Master relationship
-        if ((pawn.IsPrisoner || pawn.IsSlave) && otherPawn.IsColonist)
+        if ((pawn.IsPrisoner || pawn.IsSlave) && otherPawn.IsFreeNonSlaveColonist)
         {
             return "Master".Translate();
         }
