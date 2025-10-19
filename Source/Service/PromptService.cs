@@ -256,7 +256,7 @@ public static class PromptService
         {
             if (pawns.Count == 1) 
                 sb.Append($"{shortName} short monologue");
-            else if (pawns[0].GetHostilePawnNearBy() != null)
+            else if (pawns[0].IsInCombat())
             {
                 if (talkRequest.TalkType != TalkType.Urgent && !pawns[0].InMentalState)
                 {
