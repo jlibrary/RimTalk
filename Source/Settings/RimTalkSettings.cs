@@ -18,6 +18,7 @@ public class RimTalkSettings : ModSettings
     public int TalkInterval = 7;
     public const int ReplyInterval = 4;
     public bool ProcessNonRimTalkInteractions;
+    public bool AllowSimultaneousConversations;
     public string CustomInstruction = "";
     public Dictionary<string, bool> EnabledArchivableTypes = new();
     public bool DisplayTalkWhenDrafted = true;
@@ -146,6 +147,7 @@ public class RimTalkSettings : ModSettings
         Scribe_Values.Look(ref IsEnabled, "isEnabled", true);
         Scribe_Values.Look(ref TalkInterval, "talkInterval", 7);
         Scribe_Values.Look(ref ProcessNonRimTalkInteractions, "processNonRimTalkInteractions", true);
+        Scribe_Values.Look(ref AllowSimultaneousConversations, "allowSimultaneousConversations", true);
         Scribe_Values.Look(ref CustomInstruction, "customInstruction", "");
         Scribe_Values.Look(ref DisplayTalkWhenDrafted, "displayTalkWhenDrafted", true);
         Scribe_Values.Look(ref AllowSlavesToTalk, "allowSlavesToTalk", true);

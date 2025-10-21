@@ -74,8 +74,13 @@
     <RimTalk.Settings.AICooldown>AI 冷卻時間（秒）：{0}</RimTalk.Settings.AICooldown>
     <RimTalk.Settings.OverrideInteractions>使用 AI 對話覆蓋所有互動</RimTalk.Settings.OverrideInteractions>
     <RimTalk.Settings.OverrideInteractionsTooltip>啟用此項以允許 AI 覆蓋並為所有互動（包括原版 RimWorld 和其他模組）重新生成對話。注意：AI 對話有上述設定的冷卻時間。要更頻繁地生成對話，請降低冷卻時間。</RimTalk.Settings.OverrideInteractionsTooltip>
+    <RimTalk.Settings.AllowSimultaneousConversations>允許多組同時對話</RimTalk.Settings.AllowSimultaneousConversations>
+    <RimTalk.Settings.AllowSimultaneousConversationsTooltip>啟用後，多個殖民者小組可以同時交談。若你希望一次只顯示一段對話，或覺得對話太多，可關閉此選項。</RimTalk.Settings.AllowSimultaneousConversationsTooltip>
     <RimTalk.Settings.DisplayTalkWhenDrafted>徵召時顯示對話</RimTalk.Settings.DisplayTalkWhenDrafted>
     <RimTalk.Settings.DisplayTalkWhenDraftedTooltip>即使角色被徵召，也顯示 RimTalk 氣泡。這會在生成對話時臨時覆蓋氣泡模組的設定。</RimTalk.Settings.DisplayTalkWhenDraftedTooltip>
+    <RimTalk.Settings.AllowCustomConversation>允許玩家自訂對話</RimTalk.Settings.AllowCustomConversation>
+    <RimTalk.Settings.AllowCustomConversationTooltip>允許你輸入台詞以在角色之間發起自訂對話，或直接與角色交談。右鍵點擊角色即可開始對話。</RimTalk.Settings.AllowCustomConversationTooltip>
+    
     <RimTalk.Settings.AllowSlavesToTalk>允許奴隸交談</RimTalk.Settings.AllowSlavesToTalk>
     <RimTalk.Settings.AllowSlavesToTalkTooltip>啟用此項以允許奴隸進行 AI 生成的對話。</RimTalk.Settings.AllowSlavesToTalkTooltip>
     <RimTalk.Settings.AllowPrisonersToTalk>允許囚犯交談</RimTalk.Settings.AllowPrisonersToTalk>
@@ -84,8 +89,6 @@
     <RimTalk.Settings.AllowOtherFactionsToTalkTooltip>啟用此項以允許其他派系成員進行 AI 生成的對話。</RimTalk.Settings.AllowOtherFactionsToTalkTooltip>
     <RimTalk.Settings.AllowEnemiesToTalk>允許敵人交談</RimTalk.Settings.AllowEnemiesToTalk>
     <RimTalk.Settings.AllowEnemiesToTalkTooltip>啟用此項以允許敵人進行 AI 生成的對話。</RimTalk.Settings.AllowEnemiesToTalkTooltip>
-    <RimTalk.Settings.AllowCustomConversation>允許自訂對話</RimTalk.Settings.AllowCustomConversation>
-    <RimTalk.Settings.AllowCustomConversationTooltip>允許你在角色之間發起自訂對話，或直接與某個角色交談。</RimTalk.Settings.AllowCustomConversationTooltip>
     <RimTalk.Settings.PauseAtSpeed>高速時暫停 AI</RimTalk.Settings.PauseAtSpeed>
     <RimTalk.Settings.DisableAiAtSpeedTooltip>為減少 API 呼叫，當遊戲速度設定為此級別或更高級別時，AI 將暫停。</RimTalk.Settings.DisableAiAtSpeedTooltip>
     <RimTalk.Settings.Disabled>已禁用</RimTalk.Settings.Disabled>

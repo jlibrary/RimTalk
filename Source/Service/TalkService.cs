@@ -32,6 +32,8 @@ public static class TalkService
 
         PawnState pawn1 = Cache.Get(talkRequest.Initiator);
         if (talkRequest.TalkType != TalkType.User && (pawn1 == null || !pawn1.CanGenerateTalk())) return false;
+        
+        if (!settings.AllowSimultaneousConversations && AnyPawnHasPendingResponses()) return false;
 
         // Ensure the recipient is valid and capable of talking.
         PawnState pawn2 = talkRequest.Recipient != null ? Cache.Get(talkRequest.Recipient) : null;
@@ -237,5 +239,10 @@ public static class TalkService
         }
 
         return talkResponse;
+    }
+
+    private static bool AnyPawnHasPendingResponses()
+    {
+        return Cache.GetAll().Any(pawnState => pawnState.TalkResponses.Count > 0);
     }
 }

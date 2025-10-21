@@ -74,8 +74,13 @@
     <RimTalk.Settings.AICooldown>Temps de recharge de l'IA (Secondes) : {0}</RimTalk.Settings.AICooldown>
     <RimTalk.Settings.OverrideInteractions>Remplacer toutes les interactions par des dialogues de l'IA</RimTalk.Settings.OverrideInteractions>
     <RimTalk.Settings.OverrideInteractionsTooltip>Activez ceci pour permettre à l'IA de remplacer et de régénérer les dialogues pour toutes les interactions (y compris RimWorld vanilla et autres mods). Remarque : les dialogues de l'IA ont une période de recharge définie ci-dessus. Pour générer des dialogues plus fréquemment, diminuez le temps de recharge.</RimTalk.Settings.OverrideInteractionsTooltip>
+    <RimTalk.Settings.AllowSimultaneousConversations>Autoriser les conversations simultanées</RimTalk.Settings.AllowSimultaneousConversations>
+    <RimTalk.Settings.AllowSimultaneousConversationsTooltip>Lorsqu’elle est activée, plusieurs groupes de colons peuvent discuter en même temps. Désactivez cette option si vous préférez qu’une seule conversation ait lieu à la fois ou si cela devient trop bruyant.</RimTalk.Settings.AllowSimultaneousConversationsTooltip>
     <RimTalk.Settings.DisplayTalkWhenDrafted>Afficher les bulles de dialogue lorsque recruté</RimTalk.Settings.DisplayTalkWhenDrafted>
     <RimTalk.Settings.DisplayTalkWhenDraftedTooltip>Affiche les bulles RimTalk même lorsque les pions sont recrutés. Cela remplace temporairement les paramètres du mod de bulles lors de la génération de dialogue.</RimTalk.Settings.DisplayTalkWhenDraftedTooltip>
+    <RimTalk.Settings.AllowCustomConversation>Autoriser les conversations créées par le joueur</RimTalk.Settings.AllowCustomConversation>
+    <RimTalk.Settings.AllowCustomConversationTooltip>Permet de lancer des dialogues personnalisés entre personnages ou de parler directement à un personnage en écrivant vos propres répliques. Faites un clic droit sur un colon pour commencer une conversation.</RimTalk.Settings.AllowCustomConversationTooltip>
+    
     <RimTalk.Settings.AllowSlavesToTalk>Autoriser les esclaves à parler</RimTalk.Settings.AllowSlavesToTalk>
     <RimTalk.Settings.AllowSlavesToTalkTooltip>Activez ceci pour permettre aux esclaves d'avoir des conversations générées par l'IA.</RimTalk.Settings.AllowSlavesToTalkTooltip>
     <RimTalk.Settings.AllowPrisonersToTalk>Autoriser les prisonniers à parler</RimTalk.Settings.AllowPrisonersToTalk>
@@ -84,8 +89,6 @@
     <RimTalk.Settings.AllowOtherFactionsToTalkTooltip>Activez ceci pour permettre aux membres d'autres factions d'avoir des conversations générées par l'IA.</RimTalk.Settings.AllowOtherFactionsToTalkTooltip>
     <RimTalk.Settings.AllowEnemiesToTalk>Autoriser les ennemis à parler</RimTalk.Settings.AllowEnemiesToTalk>
     <RimTalk.Settings.AllowEnemiesToTalkTooltip>Activez ceci pour permettre aux ennemis d'avoir des conversations générées par l'IA.</RimTalk.Settings.AllowEnemiesToTalkTooltip>
-    <RimTalk.Settings.AllowCustomConversation>Autoriser les conversations personnalisées</RimTalk.Settings.AllowCustomConversation>
-    <RimTalk.Settings.AllowCustomConversationTooltip>Permet d’initier des dialogues personnalisés entre les personnages ou de parler directement à un personnage.</RimTalk.Settings.AllowCustomConversationTooltip>
     <RimTalk.Settings.PauseAtSpeed>Mettre l'IA en pause à haute vitesse</RimTalk.Settings.PauseAtSpeed>
     <RimTalk.Settings.DisableAiAtSpeedTooltip>Pour réduire les appels à l'API, l'IA sera mise en pause lorsque la vitesse du jeu est réglée sur ce niveau ou plus.</RimTalk.Settings.DisableAiAtSpeedTooltip>
     <RimTalk.Settings.Disabled>Désactivé</RimTalk.Settings.Disabled>
