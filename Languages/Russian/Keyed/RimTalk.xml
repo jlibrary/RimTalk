@@ -186,4 +186,7 @@
     <RimTalk.FloatMenu.WhatToSayToOther>Что вы хотите, чтобы {0} сказал {1}?</RimTalk.FloatMenu.WhatToSayToOther>
     <RimTalk.FloatMenu.Send>Отправить</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>Отмена</RimTalk.FloatMenu.Cancel>
+
+    <!-- CustomDialogueService.cs -->
+    <RimTalk.CustomDialogue.Player>Игрок</RimTalk.CustomDialogue.Player>
 </LanguageData>

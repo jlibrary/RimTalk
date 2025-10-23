@@ -8,8 +8,9 @@ namespace RimTalk.Data;
 public class ApiLog(string name, string prompt, string response, Payload payload, DateTime timestamp, List<string> contexts = null)
 {
     public Guid Id { get; } = Guid.NewGuid();
+    public int ConversationId { get; set; }
     public string Name { get; set; } = name;
-    public List<string> Contexts { get; set; } = contexts ?? new List<string>();
+    public List<string> Contexts { get; set; } = contexts ?? [];
     public string Prompt { get; set; } = prompt;
     public string Response { get; set; } = response;
 
@@ -42,6 +43,7 @@ public class ApiLog(string name, string prompt, string response, Payload payload
 public static class ApiHistory
 {
     private static readonly Dictionary<Guid, ApiLog> History = new();
+    private static int _conversationIdIndex = 0;
     
     public static ApiLog GetApiLog(Guid id) => History.TryGetValue(id, out var apiLog) ? apiLog : null;
 
@@ -49,7 +51,8 @@ public static class ApiHistory
     {
         var log = new ApiLog(request.Initiator.LabelShort, request.Prompt, null, null, DateTime.Now, ApiLog.ExtractContextBlocks(context))
             {
-                IsFirstDialogue = true
+                IsFirstDialogue = true,
+                ConversationId = request.IsMonologue ? -1 : _conversationIdIndex++
             };
         History[log.Id] = log;
         return log;
@@ -85,7 +88,15 @@ public static class ApiHistory
         var newLog = new ApiLog(name, originalLog.Prompt, response, payload, DateTime.Now, originalLog.Contexts);
         History[newLog.Id] = newLog;
         newLog.ElapsedMs = elapsedMs;
+        newLog.ConversationId = originalLog.ConversationId;
         return newLog;
+    }
+    
+    public static ApiLog AddUserHistory(string name, string text)
+    {
+        var log = new ApiLog(name, null, text, null, DateTime.Now);
+        History[log.Id] = log;
+        return log;
     }
 
     public static IEnumerable<ApiLog> GetAll()

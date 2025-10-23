@@ -2,7 +2,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using RimTalk.Service;
-using RimWorld;
 using Verse;
 using Random = System.Random;
 
@@ -36,12 +35,10 @@ public static class Cache
 
     public static void Refresh()
     {
-        var settings = Settings.Get();
-
         // Identify and remove ineligible pawns from all caches.
         foreach (Pawn pawn in PawnCache.Keys.ToList())
         {
-            if (!IsEligiblePawn(pawn, settings))
+            if (!pawn.IsTalkEligible())
             {
                 if (PawnCache.TryRemove(pawn, out var removedState))
                 {
@@ -53,7 +50,7 @@ public static class Cache
         // Add new eligible pawns to all caches.
         foreach (Pawn pawn in Find.CurrentMap.mapPawns.AllPawnsSpawned)
         {
-            if (IsEligiblePawn(pawn, settings) && !PawnCache.ContainsKey(pawn))
+            if (pawn.IsTalkEligible() && !PawnCache.ContainsKey(pawn))
             {
                 PawnCache[pawn] = new PawnState(pawn);
                 NameCache[pawn.LabelShort] = pawn;
@@ -70,30 +67,6 @@ public static class Cache
     {
         PawnCache.Clear();
         NameCache.Clear();
-    }
-
-    public static bool IsEligiblePawn(Pawn pawn, RimTalkSettings settings)
-    {
-        if (pawn.DestroyedOrNull() || !pawn.Spawned || pawn.Dead)
-            return false;
-
-        if (!pawn.RaceProps.Humanlike)
-            return false;
-
-        if (pawn.RaceProps.intelligence < Intelligence.Humanlike)
-            return false;
-
-        if (!pawn.health.capacities.CapableOf(PawnCapacityDefOf.Talking))
-            return false;
-
-        if (pawn.skills?.GetSkill(SkillDefOf.Social) == null)
-            return false;
-
-        return pawn.IsFreeColonist ||
-                (settings.AllowSlavesToTalk && pawn.IsSlave) ||
-                (settings.AllowPrisonersToTalk && pawn.IsPrisoner) ||
-                (settings.AllowOtherFactionsToTalk && pawn.IsVisitor()) ||
-                (settings.AllowEnemiesToTalk && pawn.IsInvader());
     }
 
     private static double GetScaleFactor(double groupWeight, double baselineWeight)

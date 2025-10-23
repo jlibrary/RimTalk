@@ -14,6 +14,7 @@ public class TalkRequest
     public Pawn Recipient { get; set; }
     public int MapId { get; set; }
     public int CreatedTick { get; set; }
+    public bool IsMonologue;
 
     public TalkRequest(string prompt, Pawn initiator, Pawn recipient = null, TalkType talkType = TalkType.Other)
     {

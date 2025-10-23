@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
+using RimTalk.Service;
 using RimTalk.UI;
 using RimWorld;
 using UnityEngine;
@@ -51,7 +52,7 @@ public static class FloatMenuPatch
                 targetPawn != pawn && 
                 targetPawn.RaceProps.Humanlike)
             {
-                if (pawn.CanReach(targetPawn, PathEndMode.Touch, Danger.None))
+                if (pawn.IsTalkEligible() && pawn.CanReach(targetPawn, PathEndMode.Touch, Danger.None))
                 {
                     AddTalkOption(__result, pawn, targetPawn);
                 }

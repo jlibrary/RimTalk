@@ -1,3 +1,4 @@
+using System.Linq;
 using RimTalk.Client;
 using RimTalk.Data;
 using RimTalk.Error;
@@ -46,6 +47,7 @@ public class RimTalk : GameComponent
         AIService.Clear();
         TalkHistory.Clear();
         PatchThoughtHandlerGetDistinctMoodThoughtGroups.Clear();
+        Cache.GetAll().ToList().ForEach(pawnState => pawnState.IgnoreAllTalkResponses());
 
         if (soft) return;
 

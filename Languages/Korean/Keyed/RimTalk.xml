@@ -75,7 +75,7 @@
     <RimTalk.Settings.OverrideInteractions>모든 상호작용을 AI 대화로 덮어쓰기</RimTalk.Settings.OverrideInteractions>
     <RimTalk.Settings.OverrideInteractionsTooltip>이 옵션을 활성화하면 AI가 모든 상호작용(바닐라 림월드 및 다른 모드 포함)의 대화를 덮어쓰고 다시 생성할 수 있습니다. 참고: AI 대화에는 위에 설정된 재사용 대기시간이 있습니다. 대화를 더 자주 생성하려면 재사용 대기시간을 줄이세요.</RimTalk.Settings.OverrideInteractionsTooltip>
     <RimTalk.Settings.AllowSimultaneousConversations>동시다발적 대화 허용</RimTalk.Settings.AllowSimultaneousConversations>
-    <RimTalk.Settings.AllowSimultaneousConversationsTooltip>활성화하면 여러 식민자들이 동시에 대화를 나누는 모습을 볼 수 있습니다. 대화가 너무 많거나 한 번에 한 대화만 보고 싶다면 비활성화하세요.</RimTalk.Settings.AllowSimultaneousConversationsTooltip>
+    <RimTalk.Settings.AllowSimultaneousConversationsTooltip>활성화하면 여러 캐릭터들이 동시에 대화를 나누는 모습을 볼 수 있습니다. 대화가 너무 많거나 한 번에 한 대화만 보고 싶다면 비활성화하세요.</RimTalk.Settings.AllowSimultaneousConversationsTooltip>
     <RimTalk.Settings.DisplayTalkWhenDrafted>소집 시 대화 표시</RimTalk.Settings.DisplayTalkWhenDrafted>
     <RimTalk.Settings.DisplayTalkWhenDraftedTooltip>정착민이 소집되었을 때도 RimTalk 말풍선을 표시합니다. 이는 대화 생성 중에 일시적으로 말풍선 모드 설정을 덮어씁니다.</RimTalk.Settings.DisplayTalkWhenDraftedTooltip>
     <RimTalk.Settings.AllowCustomConversation>유저 지정 대화 허용</RimTalk.Settings.AllowCustomConversation>
@@ -186,4 +186,7 @@
     <RimTalk.FloatMenu.WhatToSayToOther>{0}가 {1}에게 무엇을 말하기를 원하세요?</RimTalk.FloatMenu.WhatToSayToOther>
     <RimTalk.FloatMenu.Send>보내기</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>취소</RimTalk.FloatMenu.Cancel>
+
+    <!-- CustomDialogueService.cs -->
+    <RimTalk.CustomDialogue.Player>플레이어</RimTalk.CustomDialogue.Player>
 </LanguageData>

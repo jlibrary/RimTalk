@@ -14,6 +14,16 @@ public class Overlay : MapComponent
 {
     public static event Action OnLogUpdated;
 
+    private static readonly Color[] TextColors =
+    [
+        new(1f, 0.95f, 0.7f),
+        new(0.75f, 1f, 0.75f),
+        new(1f, 0.75f, 0.85f),
+        new(0.7f, 0.85f, 1f),
+        new(1f, 0.85f, 0.7f),
+        new(0.85f, 0.75f, 1f)
+    ];
+
     public static void NotifyLogUpdated()
     {
         OnLogUpdated?.Invoke();
@@ -26,6 +36,7 @@ public class Overlay : MapComponent
         public float NameWidth;
         public float LineHeight;
         public Pawn PawnInstance;
+        public Color TextColor;
     }
 
     private bool _isDragging;
@@ -107,7 +118,8 @@ public class Overlay : MapComponent
                     Dialogue = dialogue,
                     NameWidth = Text.CalcSize(formattedName).x,
                     LineHeight = Text.CalcHeight(fullMessage, contentWidth),
-                    PawnInstance = foundPawn
+                    PawnInstance = foundPawn,
+                    TextColor = settings.AllowSimultaneousConversations && message.ConversationId >= 0 ? TextColors[message.ConversationId % TextColors.Length] : Color.white
                 });
             }
 
@@ -398,7 +410,9 @@ public class Overlay : MapComponent
 
                 UIUtility.DrawClickablePawnName(nameRect, message.PawnName, message.PawnInstance);
 
+                // GUI.color = message.TextColor;
                 Widgets.Label(dialogueRect, "  " + message.Dialogue);
+                // GUI.color = Color.white;
             }
         }
         finally

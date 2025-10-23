@@ -151,6 +151,7 @@ public partial class Settings : Mod
         }
 
         sb.AppendLine(settings.CustomInstruction);
+        sb.AppendLine(settings.AllowSimultaneousConversations.ToString());
 
         return sb.ToString().GetHashCode();
     }

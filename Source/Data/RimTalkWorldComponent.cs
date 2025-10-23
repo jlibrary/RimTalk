@@ -7,7 +7,7 @@ namespace RimTalk.Data;
 
 public class RimTalkWorldComponent(World world) : WorldComponent(world)
 {
-    private const int MaxLogEntries = 10000;
+    private const int MaxLogEntries = 1000;
 
     public Dictionary<string, string> RimTalkInteractionTexts = new();
     private Queue<string> _keyInsertionOrder = new();
@@ -29,14 +29,7 @@ public class RimTalkWorldComponent(World world) : WorldComponent(world)
         if (Scribe.mode != LoadSaveMode.PostLoadInit) return;
         RimTalkInteractionTexts ??= new Dictionary<string, string>();
             
-        if (keyOrderList != null)
-        {
-            _keyInsertionOrder = new Queue<string>(keyOrderList);
-        }
-        else
-        {
-            _keyInsertionOrder = new Queue<string>();
-        }
+        _keyInsertionOrder = keyOrderList != null ? new Queue<string>(keyOrderList) : new Queue<string>();
     }
 
     public void SetTextFor(LogEntry entry, string text)

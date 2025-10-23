@@ -186,4 +186,7 @@
     <RimTalk.FloatMenu.WhatToSayToOther>{0}に{1}に何を言わせたいですか？</RimTalk.FloatMenu.WhatToSayToOther>
     <RimTalk.FloatMenu.Send>送信</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>キャンセル</RimTalk.FloatMenu.Cancel>
+
+    <!-- CustomDialogueService.cs -->
+    <RimTalk.CustomDialogue.Player>プレイヤー</RimTalk.CustomDialogue.Player>
 </LanguageData>

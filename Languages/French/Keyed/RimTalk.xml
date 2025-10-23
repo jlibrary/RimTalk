@@ -186,4 +186,7 @@
     <RimTalk.FloatMenu.WhatToSayToOther>Que voulez-vous que {0} dise à {1} ?</RimTalk.FloatMenu.WhatToSayToOther>
     <RimTalk.FloatMenu.Send>Envoyer</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>Annuler</RimTalk.FloatMenu.Cancel>
+
+    <!-- CustomDialogueService.cs -->
+    <RimTalk.CustomDialogue.Player>Joueur</RimTalk.CustomDialogue.Player>
 </LanguageData>

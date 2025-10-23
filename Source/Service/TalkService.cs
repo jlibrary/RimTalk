@@ -60,10 +60,16 @@ public static class TalkService
         // Select the most relevant pawns for the conversation context.
         List<Pawn> pawns = new List<Pawn> { talkRequest.Initiator, talkRequest.Recipient }
             .Where(p => p != null)
-            .Concat(nearbyPawns.Where(p => Cache.Get(p).CanDisplayTalk()))
+            .Concat(nearbyPawns.Where(p =>
+            {
+                var pawnState = Cache.Get(p);
+                return pawnState.CanDisplayTalk() && pawnState.TalkResponses.Empty();
+            }))
             .Distinct()
             .Take(3)
             .ToList();
+
+        if (pawns.Count == 1) talkRequest.IsMonologue = true;
 
         // Build the context and decorate the prompt with current status information.
         string context = PromptService.BuildContext(pawns);
@@ -113,7 +119,7 @@ public static class TalkService
                     receivedResponses.Add(talkResponse);
 
                     // Enqueue the received talk for the pawn to display later.
-                    pawnState.TalkResponses.Enqueue(talkResponse);
+                    pawnState.TalkResponses.Add(talkResponse);
                 }
             );
 
@@ -156,17 +162,17 @@ public static class TalkService
             PawnState pawnState = Cache.Get(pawn);
             if (pawnState == null || pawnState.TalkResponses.Empty()) continue;
 
-            var talk = pawnState.TalkResponses.Peek();
+            var talk = pawnState.TalkResponses.First();
             if (talk == null)
             {
-                pawnState.TalkResponses.Dequeue();
+                pawnState.TalkResponses.RemoveAt(0);
                 continue;
             }
 
             // Skip this talk if its parent was ignored or the pawn is currently unable to speak.
             if (TalkHistory.IsTalkIgnored(talk.ParentTalkId) || !pawnState.CanDisplayTalk())
             {
-                ConsumeTalk(pawnState, true);
+                pawnState.IgnoreTalkResponse();
                 continue;
             }
 
@@ -179,16 +185,7 @@ public static class TalkService
             if (pawn.IsInDanger())
             {
                 replyInterval = 2;
-                while (pawnState.TalkResponses.Count > 0)
-                {
-                    talk = pawnState.TalkResponses.Peek();
-                    if (talk.TalkType is TalkType.Urgent or TalkType.User)
-                        break;
-
-                    ConsumeTalk(pawnState, true);
-                }
-                if (pawnState.TalkResponses.Empty())
-                    continue;
+                pawnState.IgnoreAllTalkResponses([TalkType.Urgent, TalkType.User]);
             }
 
             // Enforce a delay for replies to make conversations feel more natural.
@@ -221,23 +218,16 @@ public static class TalkService
     /// <summary>
     /// Dequeues a talk and updates its history as either spoken or ignored.
     /// </summary>
-    public static TalkResponse ConsumeTalk(PawnState pawnState, bool ignored = false)
+    public static TalkResponse ConsumeTalk(PawnState pawnState)
     {
-        TalkResponse talkResponse = pawnState.TalkResponses.Dequeue();
-        if (ignored)
-        {
-            TalkHistory.AddIgnored(talkResponse.Id);
-        }
-        else
-        {
-            TalkHistory.AddSpoken(talkResponse.Id);
-            var apiLog = ApiHistory.GetApiLog(talkResponse.Id);
-            if (apiLog != null)
-                apiLog.SpokenTick = GenTicks.TicksGame;
+        var talkResponse = pawnState.TalkResponses.First();
+        pawnState.TalkResponses.Remove(talkResponse);
+        TalkHistory.AddSpoken(talkResponse.Id);
+        var apiLog = ApiHistory.GetApiLog(talkResponse.Id);
+        if (apiLog != null)
+            apiLog.SpokenTick = GenTicks.TicksGame;
 
-            Overlay.NotifyLogUpdated();
-        }
-
+        Overlay.NotifyLogUpdated();
         return talkResponse;
     }
 

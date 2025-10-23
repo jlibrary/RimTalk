@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using RimTalk.Data;
 using RimTalk.Source.Data;
+using RimTalk.UI;
 using Verse;
 using Cache = RimTalk.Data.Cache;
 
@@ -55,14 +56,28 @@ public static class CustomDialogueService
     
     public static void ExecuteDialogue(Pawn initiator, Pawn recipient, string message)
     {
-        PawnState pawnState = Cache.Get(recipient);
-        if (pawnState != null && pawnState.CanDisplayTalk())
-            pawnState.AddTalkRequest(message, initiator, TalkType.User);
+        PawnState initiatorState = Cache.Get(initiator);
+        if (initiatorState == null || !initiatorState.CanDisplayTalk())
+            return;
+        
+        PawnState recipientState = Cache.Get(recipient);
+        if (recipientState != null && recipientState.CanDisplayTalk())
+            recipientState.AddTalkRequest(message, initiator, TalkType.User);
 
         if (initiator != recipient)
         {
-            TalkResponse talkResponse = new(TalkType.User, initiator.LabelShort, message);
-            Cache.Get(initiator).TalkResponses.Enqueue(talkResponse);
+            ApiLog apiLog = ApiHistory.AddUserHistory(initiator.LabelShort, message);
+            TalkResponse talkResponse = new(TalkType.User, initiator.LabelShort, message)
+            {
+                Id = apiLog.Id
+            };
+            Cache.Get(initiator).TalkResponses.Insert(0, talkResponse);
+        }
+        else
+        {
+            ApiLog apiLog = ApiHistory.AddUserHistory("RimTalk.CustomDialogue.Player".Translate(), message);
+            apiLog.SpokenTick = GenTicks.TicksGame;
+            Overlay.NotifyLogUpdated();
         }
     }
     

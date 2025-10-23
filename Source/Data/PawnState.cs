@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using RimTalk.Service;
 using RimTalk.Source.Data;
 using RimTalk.Util;
@@ -15,7 +16,7 @@ public class PawnState(Pawn pawn)
     public int LastTalkTick { get; set; } = 0;
     public string LastStatus { get; set; } = "";
     public int RejectCount { get; set; }
-    public readonly Queue<TalkResponse> TalkResponses = new();
+    public readonly List<TalkResponse> TalkResponses = [];
     public bool IsGeneratingTalk { get; set; }
     public readonly LinkedList<TalkRequest> TalkRequests = [];
     public HashSet<Hediff> Hediffs { get; set; } = pawn.GetHediffs();
@@ -43,16 +44,8 @@ public class PawnState(Pawn pawn)
         if (talkType == TalkType.User)
         {
             TalkRequests.AddFirst(new TalkRequest(prompt, Pawn, recipient, talkType));
-            while (TalkResponses.Count > 0)
-            {
-                TalkService.ConsumeTalk(this, true);
-            }
-
-            PawnState recipientState = Cache.Get(recipient);
-            while (recipientState.TalkResponses.Count > 0)
-            {
-                TalkService.ConsumeTalk(recipientState, true);
-            }
+            IgnoreAllTalkResponses();
+            Cache.Get(recipient)?.IgnoreAllTalkResponses();
         }
         else if (talkType is TalkType.Event or TalkType.QuestOffer)
         {
@@ -102,5 +95,27 @@ public class PawnState(Pawn pawn)
     {
         return !IsGeneratingTalk && CanDisplayTalk() && TalkResponses.Empty() 
                && CommonUtil.HasPassed(LastTalkTick, Settings.Get().TalkInterval);;
+    }
+    
+    public void IgnoreTalkResponse()
+    {
+        if (TalkResponses.Count == 0) return;
+        var talkResponse = TalkResponses[0];
+        TalkHistory.AddIgnored(talkResponse.Id);
+        TalkResponses.Remove(talkResponse);
+    }
+
+    public void IgnoreAllTalkResponses(List<TalkType> keepTypes = null)
+    {
+        if (keepTypes == null)
+            while (TalkResponses.Count > 0)
+                IgnoreTalkResponse();
+        else
+            TalkResponses.RemoveAll(response =>
+            {
+                if (keepTypes.Contains(response.TalkType)) return false;
+                TalkHistory.AddIgnored(response.Id);
+                return true;
+            });
     }
 }

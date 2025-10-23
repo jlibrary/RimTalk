@@ -24,7 +24,6 @@ public class CustomDialogueWindow : Window
     }
 
     public override Vector2 InitialSize => new(400f, 150f);
-
     public override void DoWindowContents(Rect inRect)
     {
         Text.Font = GameFont.Small;
@@ -38,6 +37,11 @@ public class CustomDialogueWindow : Window
         GUI.SetNextControlName(TextFieldControlName);
         _text = Widgets.TextField(new Rect(0f, 30f, inRect.width, 35f), _text);
 
+        if (Event.current.type == EventType.Repaint && string.IsNullOrEmpty(GUI.GetNameOfFocusedControl()))
+        {
+            GUI.FocusControl(TextFieldControlName);
+        }
+        
         if (GUI.GetNameOfFocusedControl() == TextFieldControlName && Event.current.isKey && Event.current.keyCode == KeyCode.Return)
         {
             if (!string.IsNullOrWhiteSpace(_text))
@@ -89,7 +93,7 @@ public class CustomDialogueWindow : Window
             Job job = JobMaker.MakeJob(JobDefOf.Goto, _recipient);
             job.playerForced = true;
             job.collideWithPawns = false;
-            job.locomotionUrgency = LocomotionUrgency.Walk;
+            job.locomotionUrgency = LocomotionUrgency.Jog;
 
             _initiator.jobs.TryTakeOrderedJob(job, JobTag.Misc);
         }
