@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using RimTalk.Data;
 using RimTalk.Source.Data;
+using RimWorld;
 using Verse;
 using Cache = RimTalk.Data.Cache;
 
@@ -46,7 +47,10 @@ public static class CustomDialogueService
     
     public static bool CanTalk(Pawn initiator, Pawn recipient)
     {
-        // Talking to oneself is always allowed
+        // Should we disturb a sleeping pawn (may cause bugs)?
+        if (initiator == null || !initiator.Awake()) return false;
+
+        // Otherwise, talking to oneself is always allowed
         if (initiator == recipient) return true;
         
         float distance = initiator.Position.DistanceTo(recipient.Position);
@@ -55,9 +59,12 @@ public static class CustomDialogueService
     
     public static void ExecuteDialogue(Pawn initiator, Pawn recipient, string message)
     {
-        PawnState pawnState = Cache.Get(recipient);
-        if (pawnState != null && pawnState.CanDisplayTalk())
-            pawnState.AddTalkRequest(message, initiator, TalkType.User);
+        if (recipient != null && recipient.Awake())
+        {
+            PawnState pawnState = Cache.Get(recipient);
+            if (pawnState != null && pawnState.CanDisplayTalk())
+                pawnState.AddTalkRequest(message, initiator, TalkType.User);
+        }
 
         if (initiator != recipient)
         {

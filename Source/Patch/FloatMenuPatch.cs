@@ -17,6 +17,24 @@ namespace RimTalk.Patch;
 public static class FloatMenuPatch
 {
     private const float ClickRadius = 1.2f; // Radius in cells to check around click position
+
+    private static bool IsValidSpeaker(Pawn p)
+    {
+        if (p == null) return false;
+        if (p.Drafted) return false;
+        if (!(p.RaceProps?.Humanlike ?? false)) return false;
+        if ((p.RaceProps?.IsMechanoid ?? false) || p.IsColonyMech) return false;
+        if (!p.Awake()) return false;                    
+        return true;
+    }
+
+    private static bool IsValidRecipient(Pawn p)
+    {
+        if (p == null) return false;
+        if (!(p.RaceProps?.Humanlike ?? false)) return false;
+        if ((p.RaceProps?.IsMechanoid ?? false) || p.IsColonyMech) return false;                   
+        return true;
+    }
     
 #if V1_5
     public static void Postfix(Vector3 clickPos, Pawn pawn, ref List<FloatMenuOption> __result)
@@ -30,7 +48,7 @@ public static class FloatMenuPatch
         Pawn pawn = selectedPawns[0];
 #endif
         if (!Settings.Get().AllowCustomConversation) return;
-        if (pawn == null || pawn.Drafted) return;
+        if (!IsValidSpeaker(pawn)) return;  
         
         IntVec3 cell = IntVec3.FromVector3(clickPos);
         
@@ -38,7 +56,8 @@ public static class FloatMenuPatch
         float distanceToSelf = pawn.Position.DistanceTo(cell);
         if (distanceToSelf <= ClickRadius)
         {
-            AddTalkOption(__result, pawn, pawn);
+            if (IsValidRecipient(pawn))                   
+                AddTalkOption(__result, pawn, pawn);
             return; // Don't check for other pawns if we're clicking on ourselves
         }
 

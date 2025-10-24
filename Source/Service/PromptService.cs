@@ -48,7 +48,7 @@ public static class PromptService
         StringBuilder sb = new StringBuilder();
 
         var name = pawn.LabelShort;
-        var title = pawn.story.title == null ? "" : $"({pawn.story.title})";
+        var title = (pawn.story != null && pawn.story.title != null) ? $"({pawn.story.title})" : "";
         var genderAndAge = Regex.Replace(pawn.MainDesc(false), @"\(\d+\)", "");
         sb.AppendLine($"{name} {title} ({genderAndAge})");
 
@@ -135,14 +135,11 @@ public static class PromptService
 
         sb.AppendLine(traits);
 
-        if (infoLevel != InfoLevel.Short)
+        if (infoLevel != InfoLevel.Short && pawn.skills != null)
         {
             var skills = "Skills: ";
-            foreach (SkillRecord skillRecord in pawn.skills.skills)
-            {
+            foreach (SkillRecord skillRecord in pawn.skills?.skills ?? Enumerable.Empty<SkillRecord>())
                 skills += $"{skillRecord.def.label}: {skillRecord.Level}, ";
-            }
-
             sb.AppendLine(skills);
         }
 
@@ -238,19 +235,39 @@ public static class PromptService
     public static void DecoratePrompt(TalkRequest talkRequest, List<Pawn> pawns, string status)
     {
         var sb = new StringBuilder();
+
+        pawns = (pawns ?? new List<Pawn>())
+            .Where(p => p != null
+                && (p.RaceProps?.Humanlike ?? false)
+                && !(p.RaceProps?.IsMechanoid ?? false)
+                && !p.IsColonyMech
+                && p.Spawned && !p.Dead && p.Map != null)
+            .ToList();
+
+        if (pawns.Count == 0) {
+            // No one could talk.
+            talkRequest.Prompt = string.IsNullOrEmpty(talkRequest.Prompt) ? status : talkRequest.Prompt;
+            return;
+        }
+
         CommonUtil.InGameData gameData = CommonUtil.GetInGameData();
         
         string shortName = $"{pawns[0].LabelShort}({pawns[0].GetRole()})";
 
         // Add the conversation part
+        var p0 = pawns[0];
+        var p1 = pawns.Count > 1 ? pawns[1] : null; // Force p1 to get value
+
         if (talkRequest.TalkType == TalkType.User)
         {
-            if (talkRequest.Initiator == talkRequest.Recipient)
-                sb.Append(
-                    $"A voice from beyond says '{pawns[0].LabelShort}({pawns[0].GetRole()}):{talkRequest.Prompt}'");
+            if (talkRequest.Initiator == talkRequest.Recipient || p1 == null)
+            {
+                sb.Append($"A voice from beyond says '{p0.LabelShort}({p0.GetRole()}):{talkRequest.Prompt}'");
+            }
             else
-                sb.Append(
-                    $"{pawns[1].LabelShort}({pawns[1].GetRole()}) said to '{pawns[0].LabelShort}({pawns[0].GetRole()}):{talkRequest.Prompt}'. Generate multi turn dialogues, starting with {pawns[0].LabelShort}, ");
+            {
+                sb.Append($"{p1.LabelShort}({p1.GetRole()}) said to '{p0.LabelShort}({p0.GetRole()}):{talkRequest.Prompt}'. Generate multi turn conversation with short sentences.");
+            }
         }
         else
         {

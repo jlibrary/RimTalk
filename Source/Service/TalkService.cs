@@ -30,13 +30,38 @@ public static class TalkService
         if (settings.GetActiveConfig() == null) return false;
         if (AIService.IsBusy()) return false;
 
-        PawnState pawn1 = Cache.Get(talkRequest.Initiator);
+        Pawn initiator = talkRequest.Initiator;
+        if (initiator == null) return false;
+        bool initiatorIsMech =
+            (initiator?.RaceProps?.IsMechanoid ?? false) || initiator.IsColonyMech;
+        bool initiatorAsleep = !initiator.Awake();
+
+        if (initiatorIsMech || initiatorAsleep) return false;
+
+        PawnState pawn1 = Cache.Get(initiator);
+        if (talkRequest.TalkType != TalkType.User && (pawn1 == null || !pawn1.CanGenerateTalk()))
+            return false;
+        if (initiatorIsMech) return false;
+
+        // // If you think a robot should talk, enable this.
+        // if (initiatorIsMech) {
+        //     talkRequest.TalkType = TalkType.User;
+        //     talkRequest.Recipient = null;
+        // }
+
         if (talkRequest.TalkType != TalkType.User && (pawn1 == null || !pawn1.CanGenerateTalk())) return false;
         
         if (!settings.AllowSimultaneousConversations && AnyPawnHasPendingResponses()) return false;
 
         // Ensure the recipient is valid and capable of talking.
         PawnState pawn2 = talkRequest.Recipient != null ? Cache.Get(talkRequest.Recipient) : null;
+        bool recipientIsMech =
+            talkRequest.Recipient != null
+            && ((talkRequest.Recipient.RaceProps?.IsMechanoid ?? false)
+                || talkRequest.Recipient.IsColonyMech);
+        if (recipientIsMech) {
+            talkRequest.Recipient = null; // Users should not talk to a mechanic pawn.
+        }
         if (pawn2 == null || talkRequest.Recipient?.Name == null || !pawn2.CanDisplayTalk())
         {
             talkRequest.Recipient = null;
@@ -59,8 +84,18 @@ public static class TalkService
 
         // Select the most relevant pawns for the conversation context.
         List<Pawn> pawns = new List<Pawn> { talkRequest.Initiator, talkRequest.Recipient }
-            .Where(p => p != null)
-            .Concat(nearbyPawns.Where(p => Cache.Get(p).CanDisplayTalk()))
+            .Where(p => p != null
+                && (p.RaceProps?.Humanlike ?? false)
+                && !(p.RaceProps?.IsMechanoid ?? false)
+                && !p.IsColonyMech
+                && p.Awake() 
+                && Cache.Get(p).CanDisplayTalk())
+            .Concat(nearbyPawns.Where(p =>
+                p != null
+                && (p.RaceProps?.Humanlike ?? false)
+                && !(p.RaceProps?.IsMechanoid ?? false)
+                && !p.IsColonyMech
+                && Cache.Get(p).CanDisplayTalk()))
             .Distinct()
             .Take(3)
             .ToList();
