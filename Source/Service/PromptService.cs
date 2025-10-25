@@ -256,7 +256,7 @@ public static class PromptService
         {
             if (pawns.Count == 1) 
                 sb.Append($"{shortName} short monologue");
-            else if (pawns[0].IsInCombat())
+            else if (pawns[0].IsInCombat() || pawns[0].GetMapRole() == MapRole.Invading)
             {
                 if (talkRequest.TalkType != TalkType.Urgent && !pawns[0].InMentalState)
                 {
@@ -264,9 +264,9 @@ public static class PromptService
                 }
                 talkRequest.TalkType = TalkType.Urgent;
                 if (pawns[0].IsSlave || pawns[0].IsPrisoner)
-                    sb.Append($"{shortName} dialogue short (worry/survival)");
+                    sb.Append($"{shortName} dialogue short (worry)");
                 else 
-                    sb.Append($"{shortName} dialogue short, urgent tone (survival/command)");
+                    sb.Append($"{shortName} dialogue short, urgent tone ({pawns[0].GetMapRole().ToString().ToLower()}/command)");
             }
             else
             {

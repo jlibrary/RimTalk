@@ -85,10 +85,16 @@ public static class PawnService
         if (pawn == null) return null;
         if (pawn.IsPrisoner) return "Prisoner";
         if (pawn.IsSlave) return "Slave";
-        if (pawn.IsInvader()) return includeFaction && pawn.Faction != null ? $"Invader Group({pawn.Faction.Name})" : "Invader";
+        if (pawn.IsInvader()) 
+            if (pawn.GetMapRole() == MapRole.Invading) 
+                return includeFaction && pawn.Faction != null ? $"Invader Group({pawn.Faction.Name})" : "Invader";
+            else 
+                return "Settlement Defender";
         if (pawn.IsVisitor()) return includeFaction && pawn.Faction != null ? $"Visitor Group({pawn.Faction.Name})" : "Visitor";
         if (pawn.IsQuestLodger()) return "Lodger";
-        if (pawn.IsFreeColonist) return "Colonist";
+        if (pawn.IsFreeColonist) 
+            if (pawn.GetMapRole() == MapRole.Invading) return "Colonist";
+            else return "Invader";
         return "Unknown";
     }
         
@@ -159,22 +165,33 @@ public static class PawnService
             parts.Add("Nearby people: none");
         }
 
-        if (IsVisitor(pawn))
+        if (pawn.IsVisitor())
         {
             parts.Add("Visiting user colony");
         }
 
-        if (IsInvader(pawn))
+        if (pawn.IsFreeColonist && pawn.GetMapRole() == MapRole.Invading)
         {
-            if (pawn.GetLord()?.LordJob is LordJob_StageThenAttack || pawn.GetLord()?.LordJob is LordJob_Siege)
+            parts.Add("You are away from colony, attacking to capture enemy settlement");
+        }
+        else if (pawn.IsInvader())
+        {
+            if (pawn.GetMapRole() == MapRole.Invading)
             {
-                parts.Add("waiting to invade user colony");
+                if (pawn.GetLord()?.LordJob is LordJob_StageThenAttack || pawn.GetLord()?.LordJob is LordJob_Siege)
+                {
+                    parts.Add("waiting to invade user colony");
+                }
+                else
+                {
+                    parts.Add("invading user colony");
+                }
             }
             else
             {
-                parts.Add("invading user colony");
+                parts.Add("Fighting to protect your home from being captured");
             }
-            
+
             return (string.Join("\n", parts), isInDanger);
         }
 
@@ -204,7 +221,7 @@ public static class PawnService
         if (pawn == null) return null;
         
         // Get all targets on the map that are hostile to the player faction
-        var hostileTargets = pawn.Map.attackTargetsCache.TargetsHostileToFaction(Faction.OfPlayer);
+        var hostileTargets = pawn.Map.attackTargetsCache.TargetsHostileToFaction(pawn.Faction);
 
         Pawn closestPawn = null;
         float closestDistSq = float.MaxValue;
@@ -212,7 +229,7 @@ public static class PawnService
         foreach (IAttackTarget target in hostileTargets)
         {
             // First, check if the target is considered an active threat by the game's logic
-            if (GenHostility.IsActiveThreatTo(target, Faction.OfPlayer))
+            if (GenHostility.IsActiveThreatTo(target, pawn.Faction))
             {
                 if (target.Thing is Pawn threatPawn)
                 {
@@ -290,6 +307,42 @@ public static class PawnService
         }
 
         return activity;
+    }
+
+    public static MapRole GetMapRole(this Pawn pawn)
+    {
+        if (pawn?.Map == null || pawn.Faction == null)
+            return MapRole.None;
+
+        Map map = pawn.Map;
+        Faction mapFaction = map.ParentFaction;
+
+        // --- 1. If map belongs to player
+        if (mapFaction == Faction.OfPlayer)
+        {
+            if (pawn.Faction == Faction.OfPlayer)
+                return MapRole.Defending; // player colonist
+            if (pawn.Faction.HostileTo(Faction.OfPlayer))
+                return MapRole.Invading; // raider
+            return MapRole.Visiting; // friendly trader or visitor
+        }
+
+        // --- 2. If map belongs to another faction
+        if (mapFaction != null && mapFaction != Faction.OfPlayer)
+        {
+            // Pawn belongs to map owner faction -> defending their home
+            if (pawn.Faction == mapFaction)
+                return MapRole.Defending;
+
+            // Player pawn or allied pawn entering hostile base -> invading
+            if (pawn.Faction == Faction.OfPlayer || pawn.Faction.HostileTo(mapFaction))
+                return MapRole.Invading;
+
+            return MapRole.Visiting; // neutral interaction
+        }
+
+        // --- 3. If map has no owner (encounter map, wilderness)
+        return MapRole.None;
     }
     
     public static string GetPrisonerSlaveStatus(this Pawn pawn)
