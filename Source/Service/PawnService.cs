@@ -35,12 +35,12 @@ public static class PawnService
                (settings.AllowOtherFactionsToTalk && pawn.IsVisitor()) ||
                (settings.AllowEnemiesToTalk && pawn.IsInvader());
     }
-    
+
     public static HashSet<Hediff> GetHediffs(this Pawn pawn)
     {
         return pawn?.health.hediffSet.hediffs.Where(hediff => hediff.Visible).ToHashSet();
     }
-        
+
     public static bool IsInDanger(this Pawn pawn, bool includeMentalState = false)
     {
         if (pawn == null) return false;
@@ -57,14 +57,14 @@ public static class PawnService
         // Check severe Hediffs
         foreach (var h in pawn.health.hediffSet.hediffs)
         {
-            if (h.Visible && (h.CurStage?.lifeThreatening == true || 
+            if (h.Visible && (h.CurStage?.lifeThreatening == true ||
                               h.def.lethalSeverity > 0 && h.Severity > h.def.lethalSeverity * 0.8f))
                 return true;
         }
 
         return false;
     }
-        
+
     public static bool IsInCombat(this Pawn pawn)
     {
         if (pawn == null) return false;
@@ -75,7 +75,7 @@ public static class PawnService
         // 2. Stance busy with attack verb
         if (pawn.stances?.curStance is Stance_Busy busy && busy.verb != null)
             return true;
-        
+
         Pawn hostilePawn = pawn.GetHostilePawnNearBy();
         return hostilePawn != null && pawn.Position.DistanceTo(hostilePawn.Position) <= 20f;
     }
@@ -85,19 +85,18 @@ public static class PawnService
         if (pawn == null) return null;
         if (pawn.IsPrisoner) return "Prisoner";
         if (pawn.IsSlave) return "Slave";
-        if (pawn.IsInvader()) 
-            if (pawn.GetMapRole() == MapRole.Invading) 
+        if (pawn.IsInvader())
+            if (pawn.GetMapRole() == MapRole.Invading)
                 return includeFaction && pawn.Faction != null ? $"Invader Group({pawn.Faction.Name})" : "Invader";
-            else 
+            else
                 return "Settlement Defender";
-        if (pawn.IsVisitor()) return includeFaction && pawn.Faction != null ? $"Visitor Group({pawn.Faction.Name})" : "Visitor";
+        if (pawn.IsVisitor())
+            return includeFaction && pawn.Faction != null ? $"Visitor Group({pawn.Faction.Name})" : "Visitor";
         if (pawn.IsQuestLodger()) return "Lodger";
-        if (pawn.IsFreeColonist) 
-            if (pawn.GetMapRole() == MapRole.Invading) return "Colonist";
-            else return "Invader";
+        if (pawn.IsFreeColonist) return pawn.GetMapRole() == MapRole.Invading ? "Invader" : "Colonist";
         return "Unknown";
     }
-        
+
     public static bool IsVisitor(this Pawn pawn)
     {
         return pawn?.Faction != null && pawn.Faction != Faction.OfPlayer && !pawn.HostileTo(Faction.OfPlayer);
@@ -111,11 +110,11 @@ public static class PawnService
     public static (string, bool) GetPawnStatusFull(this Pawn pawn, List<Pawn> nearbyPawns)
     {
         if (pawn == null) return (null, false);
-        
+
         bool isInDanger = false;
-            
+
         List<string> parts = new List<string>();
-            
+
         // --- 1. Add status ---
         parts.Add($"{pawn.LabelShort} ({pawn.GetActivity()})");
 
@@ -123,7 +122,7 @@ public static class PawnService
         {
             isInDanger = true;
         }
-            
+
         // --- 2. Nearby pawns ---
         if (nearbyPawns.Any())
         {
@@ -142,18 +141,20 @@ public static class PawnService
 
             // Names of nearby pawns
             var nearbyNames = nearbyPawns
-                .Select(nearbyPawn => 
+                .Select(nearbyPawn =>
                 {
                     string name = $"{nearbyPawn.LabelShort}({nearbyPawn.GetRole()})";
                     if (Cache.Get(nearbyPawn) is not null)
                     {
                         name = $"{name} ({nearbyPawn.GetActivity().StripTags()})";
                     }
+
                     return name;
                 })
                 .ToList();
 
-            string nearbyText = nearbyNames.Count == 0 ? "none"
+            string nearbyText = nearbyNames.Count == 0
+                ? "none"
                 : nearbyNames.Count > 3
                     ? string.Join(", ", nearbyNames.Take(3)) + ", and others"
                     : string.Join(", ", nearbyNames);
@@ -209,17 +210,17 @@ public static class PawnService
                 parts.Add("Alert: hostiles in the area");
             isInDanger = true;
         }
-            
+
         if (!isInDanger)
             parts.Add(Constant.Prompt);
 
         return (string.Join("\n", parts), isInDanger);
     }
-        
+
     public static Pawn GetHostilePawnNearBy(this Pawn pawn)
     {
         if (pawn == null) return null;
-        
+
         // Get all targets on the map that are hostile to the player faction
         var hostileTargets = pawn.Map.attackTargetsCache.TargetsHostileToFaction(pawn.Faction);
 
@@ -234,9 +235,10 @@ public static class PawnService
                 if (target.Thing is Pawn threatPawn)
                 {
                     Lord lord = threatPawn.GetLord();
-                        
+
                     // === 1. EXCLUDE TACTICALLY RETREATING PAWNS ===
-                    if (lord != null && (lord.CurLordToil is LordToil_ExitMapFighting || lord.CurLordToil is LordToil_ExitMap))
+                    if (lord != null && (lord.CurLordToil is LordToil_ExitMapFighting ||
+                                         lord.CurLordToil is LordToil_ExitMap))
                     {
                         continue;
                     }
@@ -261,7 +263,7 @@ public static class PawnService
 
         return closestPawn;
     }
-        
+
     // Using a HashSet for better readability and maintainability.
     private static readonly HashSet<string> ResearchJobDefNames =
     [
@@ -274,7 +276,7 @@ public static class PawnService
         "RR_InterrogatePrisoner",
         "RR_LearnRemotely"
     ];
-    
+
     private static string GetActivity(this Pawn pawn)
     {
         if (pawn == null) return null;
@@ -326,29 +328,26 @@ public static class PawnService
                 return MapRole.Invading; // raider
             return MapRole.Visiting; // friendly trader or visitor
         }
-
+        
+        if (mapFaction == null || mapFaction == Faction.OfPlayer) return MapRole.None;
+        
         // --- 2. If map belongs to another faction
-        if (mapFaction != null && mapFaction != Faction.OfPlayer)
-        {
-            // Pawn belongs to map owner faction -> defending their home
-            if (pawn.Faction == mapFaction)
-                return MapRole.Defending;
+        
+        // Pawn belongs to map owner faction -> defending their home
+        if (pawn.Faction == mapFaction)
+            return MapRole.Defending;
 
-            // Player pawn or allied pawn entering hostile base -> invading
-            if (pawn.Faction == Faction.OfPlayer || pawn.Faction.HostileTo(mapFaction))
-                return MapRole.Invading;
+        // Player pawn or allied pawn entering hostile base -> invading
+        if (pawn.Faction == Faction.OfPlayer || pawn.Faction.HostileTo(mapFaction))
+            return MapRole.Invading;
 
-            return MapRole.Visiting; // neutral interaction
-        }
-
-        // --- 3. If map has no owner (encounter map, wilderness)
-        return MapRole.None;
+        return MapRole.Visiting; // neutral interaction
     }
-    
+
     public static string GetPrisonerSlaveStatus(this Pawn pawn)
     {
         if (pawn == null) return null;
-        
+
         string result = "";
 
         if (pawn.IsPrisoner)
