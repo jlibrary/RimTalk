@@ -172,6 +172,10 @@
     <RimTalk.DebugWindow.HeaderTimestamp>時間戳</RimTalk.DebugWindow.HeaderTimestamp>
     <RimTalk.DebugWindow.HeaderTimeMs>時間（毫秒）</RimTalk.DebugWindow.HeaderTimeMs>
     <RimTalk.DebugWindow.HeaderTokens>權杖</RimTalk.DebugWindow.HeaderTokens>
+    <RimTalk.DebugWindow.HeaderState>狀態</RimTalk.DebugWindow.HeaderState>
+    <RimTalk.DebugWindow.Pending>等待</RimTalk.DebugWindow.Pending>
+    <RimTalk.DebugWindow.Ignored>已忽略</RimTalk.DebugWindow.Ignored>
+    <RimTalk.DebugWindow.Spoken>已說出</RimTalk.DebugWindow.Spoken>
     <RimTalk.DebugWindow.TooltipPromptResponse>提示：\n{0}\n\n回應：\n{1}</RimTalk.DebugWindow.TooltipPromptResponse>
     
     <!-- Overlay.cs -->

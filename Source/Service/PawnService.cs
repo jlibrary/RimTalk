@@ -3,7 +3,6 @@ using System.Linq;
 using RimTalk.Data;
 using RimWorld;
 using Verse;
-using Verse.AI;
 using Verse.AI.Group;
 using Cache = RimTalk.Data.Cache;
 
@@ -33,7 +32,7 @@ public static class PawnService
                (settings.AllowSlavesToTalk && pawn.IsSlave) ||
                (settings.AllowPrisonersToTalk && pawn.IsPrisoner) ||
                (settings.AllowOtherFactionsToTalk && pawn.IsVisitor()) ||
-               (settings.AllowEnemiesToTalk && pawn.IsInvader());
+               (settings.AllowEnemiesToTalk && pawn.IsEnemy());
     }
 
     public static HashSet<Hediff> GetHediffs(this Pawn pawn)
@@ -85,11 +84,11 @@ public static class PawnService
         if (pawn == null) return null;
         if (pawn.IsPrisoner) return "Prisoner";
         if (pawn.IsSlave) return "Slave";
-        if (pawn.IsInvader())
+        if (pawn.IsEnemy())
             if (pawn.GetMapRole() == MapRole.Invading)
-                return includeFaction && pawn.Faction != null ? $"Invader Group({pawn.Faction.Name})" : "Invader";
+                return includeFaction && pawn.Faction != null ? $"Enemy Group({pawn.Faction.Name})" : "Enemy";
             else
-                return "Settlement Defender";
+                return "Enemy Defender";
         if (pawn.IsVisitor())
             return includeFaction && pawn.Faction != null ? $"Visitor Group({pawn.Faction.Name})" : "Visitor";
         if (pawn.IsQuestLodger()) return "Lodger";
@@ -102,7 +101,7 @@ public static class PawnService
         return pawn?.Faction != null && pawn.Faction != Faction.OfPlayer && !pawn.HostileTo(Faction.OfPlayer);
     }
 
-    public static bool IsInvader(this Pawn pawn)
+    public static bool IsEnemy(this Pawn pawn)
     {
         return pawn != null && pawn.HostileTo(Faction.OfPlayer);
     }
@@ -175,7 +174,7 @@ public static class PawnService
         {
             parts.Add("You are away from colony, attacking to capture enemy settlement");
         }
-        else if (pawn.IsInvader())
+        else if (pawn.IsEnemy())
         {
             if (pawn.GetMapRole() == MapRole.Invading)
             {
@@ -222,42 +221,38 @@ public static class PawnService
         if (pawn == null) return null;
 
         // Get all targets on the map that are hostile to the player faction
-        var hostileTargets = pawn.Map.attackTargetsCache.TargetsHostileToFaction(pawn.Faction);
+        var hostileTargets = pawn.Map.attackTargetsCache?.TargetsHostileToFaction(pawn.Faction);
 
         Pawn closestPawn = null;
         float closestDistSq = float.MaxValue;
 
-        foreach (IAttackTarget target in hostileTargets)
+        if (hostileTargets == null) return null;
+        foreach (var target in hostileTargets.Where(target => GenHostility.IsActiveThreatTo(target, pawn.Faction)))
         {
-            // First, check if the target is considered an active threat by the game's logic
-            if (GenHostility.IsActiveThreatTo(target, pawn.Faction))
+            if (target.Thing is not Pawn threatPawn) continue;
+            Lord lord = threatPawn.GetLord();
+
+            // === 1. EXCLUDE TACTICALLY RETREATING PAWNS ===
+            if (lord != null && (lord.CurLordToil is LordToil_ExitMapFighting ||
+                                 lord.CurLordToil is LordToil_ExitMap))
             {
-                if (target.Thing is Pawn threatPawn)
-                {
-                    Lord lord = threatPawn.GetLord();
+                continue;
+            }
 
-                    // === 1. EXCLUDE TACTICALLY RETREATING PAWNS ===
-                    if (lord != null && (lord.CurLordToil is LordToil_ExitMapFighting ||
-                                         lord.CurLordToil is LordToil_ExitMap))
-                    {
-                        continue;
-                    }
+            // === 2. EXCLUDE ROAMING MECH CLUSTER PAWNS ===
+            if (threatPawn.RaceProps.IsMechanoid && lord != null &&
+                lord.CurLordToil is LordToil_DefendPoint)
+            {
+                continue;
+            }
 
-                    // === 2. EXCLUDE ROAMING MECH CLUSTER PAWNS ===
-                    if (threatPawn.RaceProps.IsMechanoid && lord != null && lord.CurLordToil is LordToil_DefendPoint)
-                    {
-                        continue;
-                    }
+            // === 3. CALCULATE DISTANCE FOR VALID THREATS ===
+            float distSq = pawn.Position.DistanceToSquared(threatPawn.Position);
 
-                    // === 3. CALCULATE DISTANCE FOR VALID THREATS ===
-                    float distSq = pawn.Position.DistanceToSquared(threatPawn.Position);
-
-                    if (distSq < closestDistSq)
-                    {
-                        closestDistSq = distSq;
-                        closestPawn = threatPawn;
-                    }
-                }
+            if (distSq < closestDistSq)
+            {
+                closestDistSq = distSq;
+                closestPawn = threatPawn;
             }
         }
 
@@ -313,35 +308,19 @@ public static class PawnService
 
     public static MapRole GetMapRole(this Pawn pawn)
     {
-        if (pawn?.Map == null || pawn.Faction == null)
+        if (pawn?.Map == null)
             return MapRole.None;
 
         Map map = pawn.Map;
         Faction mapFaction = map.ParentFaction;
-
-        // --- 1. If map belongs to player
-        if (mapFaction == Faction.OfPlayer)
-        {
-            if (pawn.Faction == Faction.OfPlayer)
-                return MapRole.Defending; // player colonist
-            if (pawn.Faction.HostileTo(Faction.OfPlayer))
-                return MapRole.Invading; // raider
-            return MapRole.Visiting; // friendly trader or visitor
-        }
         
-        if (mapFaction == null || mapFaction == Faction.OfPlayer) return MapRole.None;
+        if (mapFaction == pawn.Faction || map.IsPlayerHome)
+            return MapRole.Defending; // player colonist
         
-        // --- 2. If map belongs to another faction
-        
-        // Pawn belongs to map owner faction -> defending their home
-        if (pawn.Faction == mapFaction)
-            return MapRole.Defending;
-
-        // Player pawn or allied pawn entering hostile base -> invading
-        if (pawn.Faction == Faction.OfPlayer || pawn.Faction.HostileTo(mapFaction))
+        if (pawn.Faction.HostileTo(mapFaction))
             return MapRole.Invading;
-
-        return MapRole.Visiting; // neutral interaction
+            
+        return MapRole.Visiting; // friendly trader or visitor
     }
 
     public static string GetPrisonerSlaveStatus(this Pawn pawn)

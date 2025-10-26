@@ -63,7 +63,7 @@ public static class PromptService
             sb.AppendLine(xenotypeInfo);
         }
 
-        if (infoLevel != InfoLevel.Short && !pawn.IsVisitor() && !pawn.IsInvader())
+        if (infoLevel != InfoLevel.Short && !pawn.IsVisitor() && !pawn.IsEnemy())
         {
             if (ModsConfig.BiotechActive && pawn.genes?.GenesListForReading != null)
             {
@@ -99,7 +99,7 @@ public static class PromptService
         }
 
         //// INVADER AND VISITOR STOP
-        if (pawn.IsInvader() || pawn.IsVisitor())
+        if (pawn.IsEnemy() || pawn.IsVisitor())
             return sb.ToString();
 
         if (pawn.story.Childhood != null)
@@ -177,7 +177,7 @@ public static class PromptService
             sb.AppendLine($"Personality: {personality}");
 
         //// INVADER STOP
-        if (pawn.IsInvader())
+        if (pawn.IsEnemy())
             return sb.ToString();
 
         var m = pawn.needs?.mood;

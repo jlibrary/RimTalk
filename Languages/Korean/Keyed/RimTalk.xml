@@ -172,6 +172,10 @@
     <RimTalk.DebugWindow.HeaderTimestamp>시간</RimTalk.DebugWindow.HeaderTimestamp>
     <RimTalk.DebugWindow.HeaderTimeMs>시간(ms)</RimTalk.DebugWindow.HeaderTimeMs>
     <RimTalk.DebugWindow.HeaderTokens>토큰</RimTalk.DebugWindow.HeaderTokens>
+    <RimTalk.DebugWindow.HeaderState>상태</RimTalk.DebugWindow.HeaderState>
+    <RimTalk.DebugWindow.Pending>대기</RimTalk.DebugWindow.Pending>
+    <RimTalk.DebugWindow.Ignored>무시됨</RimTalk.DebugWindow.Ignored>
+    <RimTalk.DebugWindow.Spoken>말함</RimTalk.DebugWindow.Spoken>
     <RimTalk.DebugWindow.TooltipPromptResponse>프롬프트:\n{0}\n\n응답:\n{1}</RimTalk.DebugWindow.TooltipPromptResponse>
     
     <!-- Overlay.cs -->

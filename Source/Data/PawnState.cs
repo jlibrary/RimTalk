@@ -103,6 +103,9 @@ public class PawnState(Pawn pawn)
         var talkResponse = TalkResponses[0];
         TalkHistory.AddIgnored(talkResponse.Id);
         TalkResponses.Remove(talkResponse);
+        
+        var log = ApiHistory.GetApiLog(talkResponse.Id);
+        if (log != null) log.SpokenTick = -1;
     }
 
     public void IgnoreAllTalkResponses(List<TalkType> keepTypes = null)

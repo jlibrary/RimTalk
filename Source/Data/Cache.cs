@@ -103,7 +103,7 @@ public static class Cache
             else if (p.IsSlave) totalSlaveWeight += weight;
             else if (p.IsPrisoner) totalPrisonerWeight += weight;
             else if (p.IsVisitor()) totalVisitorWeight += weight;
-            else if (p.IsInvader()) totalEnemyWeight += weight;
+            else if (p.IsEnemy()) totalEnemyWeight += weight;
         }
 
         // Use the colonist group weight as baseline. If it's zero, fall back to the heaviest group.
@@ -144,7 +144,7 @@ public static class Cache
             if (p.IsSlave) return weight * slaveScaleFactor;
             if (p.IsPrisoner) return weight * prisonerScaleFactor;
             if (p.IsVisitor()) return weight * visitorScaleFactor;
-            if (p.IsInvader()) return weight * enemyScaleFactor;
+            if (p.IsEnemy()) return weight * enemyScaleFactor;
             return 0;
         });
 
@@ -159,7 +159,7 @@ public static class Cache
             else if (pawn.IsSlave) cumulativeWeight += currentPawnWeight * slaveScaleFactor;
             else if (pawn.IsPrisoner) cumulativeWeight += currentPawnWeight * prisonerScaleFactor;
             else if (pawn.IsVisitor()) cumulativeWeight += currentPawnWeight * visitorScaleFactor;
-            else if (pawn.IsInvader()) cumulativeWeight += currentPawnWeight * enemyScaleFactor;
+            else if (pawn.IsEnemy()) cumulativeWeight += currentPawnWeight * enemyScaleFactor;
 
             if (randomWeight < cumulativeWeight)
             {

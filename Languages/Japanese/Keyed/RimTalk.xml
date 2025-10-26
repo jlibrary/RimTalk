@@ -172,6 +172,10 @@
     <RimTalk.DebugWindow.HeaderTimestamp>タイムスタンプ</RimTalk.DebugWindow.HeaderTimestamp>
     <RimTalk.DebugWindow.HeaderTimeMs>時間(ms)</RimTalk.DebugWindow.HeaderTimeMs>
     <RimTalk.DebugWindow.HeaderTokens>トークン</RimTalk.DebugWindow.HeaderTokens>
+    <RimTalk.DebugWindow.HeaderState>状態</RimTalk.DebugWindow.HeaderState>
+    <RimTalk.DebugWindow.Pending>保留</RimTalk.DebugWindow.Pending>
+    <RimTalk.DebugWindow.Ignored>無視</RimTalk.DebugWindow.Ignored>
+    <RimTalk.DebugWindow.Spoken>発言済み</RimTalk.DebugWindow.Spoken>
     <RimTalk.DebugWindow.TooltipPromptResponse>プロンプト：\n{0}\n\n応答：\n{1}</RimTalk.DebugWindow.TooltipPromptResponse>
     
     <!-- Overlay.cs -->

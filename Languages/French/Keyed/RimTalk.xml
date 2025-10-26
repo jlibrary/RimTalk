@@ -172,6 +172,10 @@
     <RimTalk.DebugWindow.HeaderTimestamp>Horodatage</RimTalk.DebugWindow.HeaderTimestamp>
     <RimTalk.DebugWindow.HeaderTimeMs>Temps(ms)</RimTalk.DebugWindow.HeaderTimeMs>
     <RimTalk.DebugWindow.HeaderTokens>Jetons</RimTalk.DebugWindow.HeaderTokens>
+    <RimTalk.DebugWindow.HeaderState>État</RimTalk.DebugWindow.HeaderState>
+    <RimTalk.DebugWindow.Pending>En attente</RimTalk.DebugWindow.Pending>
+    <RimTalk.DebugWindow.Ignored>Ignoré</RimTalk.DebugWindow.Ignored>
+    <RimTalk.DebugWindow.Spoken>Prononcé</RimTalk.DebugWindow.Spoken>
     <RimTalk.DebugWindow.TooltipPromptResponse>Prompt :\n{0}\n\nRéponse :\n{1}</RimTalk.DebugWindow.TooltipPromptResponse>
     
     <!-- Overlay.cs -->

@@ -172,6 +172,10 @@
     <RimTalk.DebugWindow.HeaderTimestamp>Временная метка</RimTalk.DebugWindow.HeaderTimestamp>
     <RimTalk.DebugWindow.HeaderTimeMs>Время (мс)</RimTalk.DebugWindow.HeaderTimeMs>
     <RimTalk.DebugWindow.HeaderTokens>Токены</RimTalk.DebugWindow.HeaderTokens>
+    <RimTalk.DebugWindow.HeaderState>Состояние</RimTalk.DebugWindow.HeaderState>
+    <RimTalk.DebugWindow.Pending>Ожидание</RimTalk.DebugWindow.Pending>
+    <RimTalk.DebugWindow.Ignored>Игнорировано</RimTalk.DebugWindow.Ignored>
+    <RimTalk.DebugWindow.Spoken>Произнесено</RimTalk.DebugWindow.Spoken>
     <RimTalk.DebugWindow.TooltipPromptResponse>Запрос:\n{0}\n\nОтвет:\n{1}</RimTalk.DebugWindow.TooltipPromptResponse>
     
     <!-- Overlay.cs -->

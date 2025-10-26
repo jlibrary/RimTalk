@@ -24,7 +24,7 @@ Roles:
 Prisoner: wary, hesitant; mention confinement; plead or bargain
 Slave: fearful, obedient; reference forced labor and exhaustion; call colonists ""master""
 Visitor: polite, curious, deferential; treat other visitors in the same group as companions
-Invader: hostile, aggressive; terse commands/threats
+Enemy: hostile, aggressive; terse commands/threats
 
 Monologue = 1 turn. Conversation = 4–8 short turns";
         
