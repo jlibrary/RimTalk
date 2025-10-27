@@ -10,6 +10,50 @@ namespace RimTalk.Service;
 
 public static class PawnService
 {
+
+    public enum EnemyClass
+    {
+        None = 0,
+        NonViolent, // baby
+        Violent     // enemy
+    }
+
+    // Get life status
+    public static bool IsBabyOrChild(this Pawn pawn)
+    {
+        if (pawn == null) return false;
+
+        try
+        {
+            var stage = pawn.DevelopmentalStage;
+            return stage == DevelopmentalStage.Newborn
+                || stage == DevelopmentalStage.Baby
+                || stage == DevelopmentalStage.Child;
+        }
+        catch
+        {
+            var lifeStage = pawn.ageTracker?.CurLifeStage;
+            var label = lifeStage?.defName?.ToLowerInvariant() ?? string.Empty;
+            if (label.Contains("baby") || label.Contains("newborn") || label.Contains("child"))
+                return true;
+
+            var chronologicalYears = pawn.ageTracker?.AgeChronologicalYearsFloat ?? 0f;
+            return chronologicalYears < 13f;
+        }
+    }
+
+    public static EnemyClass GetEnemyClass(this Pawn pawn)
+    {
+        if (pawn == null) return EnemyClass.None;
+        if (!pawn.HostileTo(Faction.OfPlayer)) return EnemyClass.None;
+
+        if (pawn.IsBabyOrChild())
+            return EnemyClass.NonViolent;
+
+        return EnemyClass.Violent;
+    }
+    
+
     public static bool IsTalkEligible(this Pawn pawn)
     {
         if (pawn.DestroyedOrNull() || !pawn.Spawned || pawn.Dead)
@@ -79,21 +123,27 @@ public static class PawnService
         return hostilePawn != null && pawn.Position.DistanceTo(hostilePawn.Position) <= 20f;
     }
 
-    public static string GetRole(this Pawn pawn, bool includeFaction = false)
+    public static string GetRole(this Pawn pawn)
     {
-        if (pawn == null) return null;
-        if (pawn.IsPrisoner) return "Prisoner";
-        if (pawn.IsSlave) return "Slave";
-        if (pawn.IsEnemy())
-            if (pawn.GetMapRole() == MapRole.Invading)
-                return includeFaction && pawn.Faction != null ? $"Enemy Group({pawn.Faction.Name})" : "Enemy";
-            else
-                return "Enemy Defender";
-        if (pawn.IsVisitor())
-            return includeFaction && pawn.Faction != null ? $"Visitor Group({pawn.Faction.Name})" : "Visitor";
-        if (pawn.IsQuestLodger()) return "Lodger";
-        if (pawn.IsFreeColonist) return pawn.GetMapRole() == MapRole.Invading ? "Invader" : "Colonist";
-        return "Unknown";
+        var mapRole = pawn.GetMapRole();
+        if (mapRole == MapRole.Invading && pawn.HostileTo(Faction.OfPlayer))
+        {
+            var enemyClass = pawn.GetEnemyClass();
+            return enemyClass switch
+            {
+                EnemyClass.NonViolent => "Enemy (Non-violent, Fleeing)",
+                EnemyClass.Violent    => "Enemy (Violent, Attacking)",
+                _                     => "Enemy"
+            };
+        }
+
+        
+        return mapRole switch
+        {
+            MapRole.Defending => "Defender",
+            MapRole.Visiting  => "Visitor",
+            _                 => "Neutral"
+        };
     }
 
     public static bool IsVisitor(this Pawn pawn)
@@ -110,8 +160,47 @@ public static class PawnService
     {
         if (pawn == null) return (null, false);
 
-        bool isInDanger = false;
+        bool IsBabyOrChild(Pawn p)
+        {
+            try
+            {
+                // Biotec: Newborn/Baby/Child/Adult
+                var st = p.DevelopmentalStage;
+                return st == DevelopmentalStage.Newborn || st == DevelopmentalStage.Baby || st == DevelopmentalStage.Child;
+            }
+            catch
+            {
+                var label = p.ageTracker?.CurLifeStage?.defName?.ToLowerInvariant() ?? string.Empty;
+                if (label.Contains("baby") || label.Contains("newborn") || label.Contains("child")) return true;
+                var years = p.ageTracker?.AgeChronologicalYearsFloat ?? 0f;
+                return years < 13f;
+            }
+        }
 
+        bool IsViolenceDisabled(Pawn p)
+        {
+            if (p?.story == null) return false;
+            WorkTags disabled;
+            try { disabled = p.story.DisabledWorkTagsBackstoryTraitsAndGenes; }
+            catch { disabled = p.story.DisabledWorkTagsBackstoryAndTraits; }
+            return (disabled & WorkTags.Violent) != 0;
+        }
+
+        string GetEnemySubPrompt(Pawn p, bool isStaging)
+        {
+            if (IsBabyOrChild(p) || IsViolenceDisabled(p))
+            {
+                return isStaging
+                    ? "Prompt: Hostile non-combatant detected (baby/child or violence-disabled). They will avoid combat and attempt to flee once the raid starts."
+                    : "Prompt: Hostile non-combatant (baby/child or violence-disabled). Behavior: flee/avoid combat.";
+            }
+
+            return isStaging
+                ? "Prompt: Armed hostile is staging (pre-raid). Expect an attack soon. Prepare defenses, cover, chokepoints, and retreat plans."
+                : "Prompt: Armed hostile is attacking. Prioritize defensive positions, cover, chokepoints, and medical support.";
+        }
+
+        bool isInDanger = false;
         List<string> parts = new List<string>();
 
         // --- 1. Add status ---
@@ -125,7 +214,6 @@ public static class PawnService
         // --- 2. Nearby pawns ---
         if (nearbyPawns.Any())
         {
-            // Collect critical statuses of nearby pawns
             var nearbyNotableStatuses = nearbyPawns
                 .Where(nearbyPawn => nearbyPawn.Faction == pawn.Faction && nearbyPawn.IsInDanger(true))
                 .Take(2)
@@ -138,7 +226,6 @@ public static class PawnService
                 isInDanger = true;
             }
 
-            // Names of nearby pawns
             var nearbyNames = nearbyPawns
                 .Select(nearbyPawn =>
                 {
@@ -147,7 +234,6 @@ public static class PawnService
                     {
                         name = $"{name} ({nearbyPawn.GetActivity().StripTags()})";
                     }
-
                     return name;
                 })
                 .ToList();
@@ -178,7 +264,9 @@ public static class PawnService
         {
             if (pawn.GetMapRole() == MapRole.Invading)
             {
-                if (pawn.GetLord()?.LordJob is LordJob_StageThenAttack || pawn.GetLord()?.LordJob is LordJob_Siege)
+                bool isStaging = pawn.GetLord()?.LordJob is LordJob_StageThenAttack || pawn.GetLord()?.LordJob is LordJob_Siege;
+
+                if (isStaging)
                 {
                     parts.Add("waiting to invade user colony");
                 }
@@ -186,10 +274,13 @@ public static class PawnService
                 {
                     parts.Add("invading user colony");
                 }
+
+                parts.Add(GetEnemySubPrompt(pawn, isStaging));
             }
             else
             {
                 parts.Add("Fighting to protect your home from being captured");
+                parts.Add(GetEnemySubPrompt(pawn, isStaging: false));
             }
 
             return (string.Join("\n", parts), isInDanger);
@@ -214,7 +305,7 @@ public static class PawnService
             parts.Add(Constant.Prompt);
 
         return (string.Join("\n", parts), isInDanger);
-    }
+}
 
     public static Pawn GetHostilePawnNearBy(this Pawn pawn)
     {
@@ -313,16 +404,30 @@ public static class PawnService
 
         Map map = pawn.Map;
         Faction mapFaction = map.ParentFaction;
-        
-        if (mapFaction == pawn.Faction || map.IsPlayerHome)
-            return MapRole.Defending; // player colonist
-        
-        if (pawn.Faction.HostileTo(mapFaction))
-            return MapRole.Invading;
-            
-        return MapRole.Visiting; // friendly trader or visitor
-    }
 
+        if (map.IsPlayerHome)
+        {
+            // player
+            if (pawn.Faction == Faction.OfPlayer)
+                return MapRole.Defending;
+
+            // Enemy
+            if (pawn.HostileTo(Faction.OfPlayer))
+                return MapRole.Invading;
+
+            // Visitor
+            return MapRole.Visiting;
+        }
+
+        // Non player unit
+        if (mapFaction != null && pawn.Faction == mapFaction)
+            return MapRole.Defending;
+
+        if (pawn.Faction != null && mapFaction != null && pawn.Faction.HostileTo(mapFaction))
+            return MapRole.Invading;
+
+        return MapRole.Visiting;
+    }
     public static string GetPrisonerSlaveStatus(this Pawn pawn)
     {
         if (pawn == null) return null;

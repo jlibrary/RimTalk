@@ -1,90 +1,131 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <PropertyGroup>
+    <GameVersion Condition=" '$(GameVersion)' == '' ">1.6</GameVersion>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+    <RootNamespace>RimTalk</RootNamespace>
+    <AssemblyName>RimTalk</AssemblyName>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+
+    <RimWorldDir Condition=" '$(RimWorldDir)' == '' ">$(RIMWORLD_DIR)</RimWorldDir>
+
+    <OutputPath>$(GameVersion)/Assemblies</OutputPath>
+    <ModFolderName>RimTalk</ModFolderName>
+    <LangVersion>default</LangVersion>
+    <EnableBubbles>true</EnableBubbles>
+  </PropertyGroup>
+
+  <!-- Define version constants based on GameVersion -->
+  <PropertyGroup>
+    <DefineConstants>$(DefineConstants);V$(GameVersion.Replace('.', '_'))</DefineConstants>
+  </PropertyGroup>
+
+  <!-- Release build configuration -->
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <Optimize>false</Optimize>
+    <DebugSymbols>true</DebugSymbols>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <!-- ===== Bubbles (Windows) scripts & paths (Lib/) ===== -->
+  <PropertyGroup>
+    <BubblesLibDir>$(ProjectDir)Lib\</BubblesLibDir>
+    <BubblesScript>$(BubblesLibDir)fetch-bubbles.ps1</BubblesScript>
+    <BubblesDll>$(BubblesLibDir)Bubbles.dll</BubblesDll>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Core RimWorld & UnityEngine libraries (via ref package) -->
+    <PackageReference Include="Krafs.Rimworld.Ref" Version="$(GameVersion).*-*" PrivateAssets="All" />
+    <!-- Harmony API -->
+    <PackageReference Include="Lib.Harmony.Ref" Version="2.*" PrivateAssets="All"/>
+  </ItemGroup>
+
+  <!-- Remove BubblePatch.cs when bubble is disabled -->
+  <ItemGroup Condition=" '$(EnableBubbles)' == 'false' ">
+    <Compile Remove="Source/Patch/BubblePatch.cs"/>
+  </ItemGroup>
+
+  <!-- =========================
+       Windows-only Bubbles flow
+       ========================= -->
+
+  <!-- Before Build on Windows: fetch Lib\Bubbles.dll via PowerShell script if missing -->
+  <Target Name="FetchBubblesWindows"
+          BeforeTargets="Build"
+          Condition=" '$(EnableBubbles)' == 'true'
+                      AND '$(OS)' == 'Windows_NT'
+                      AND Exists('$(BubblesScript)')
+                      AND !Exists('$(BubblesDll)') ">
+    <Message Text="Fetching Bubbles.dll via $(BubblesScript) ..." Importance="high" />
+    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(BubblesScript)&quot;" />
+  </Target>
+
+  <!-- On Windows, reference Lib\Bubbles.dll if present -->
+  <ItemGroup Condition=" '$(EnableBubbles)' == 'true'
+                        AND '$(OS)' == 'Windows_NT'
+                        AND Exists('$(BubblesDll)') ">
+    <Reference Include="Bubbles">
+      <HintPath>$(BubblesDll)</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- On Windows, if Bubbles.dll still missing, exclude BubblePatch.cs to avoid compile errors -->
+  <ItemGroup Condition=" '$(EnableBubbles)' == 'true'
+                        AND '$(OS)' == 'Windows_NT'
+                        AND !Exists('$(BubblesDll)') ">
+    <Compile Remove="Source/Patch/BubblePatch.cs" />
+  </ItemGroup>
+
+  <!-- =========================
+       MacOS (unchanged behavior, expect Lib/Bubbles.dll if you use it there)
+       ========================= -->
+  <ItemGroup Condition=" '$(EnableBubbles)' == 'true' AND '$(OS)' != 'Windows_NT' ">
+    <Reference Include="Bubbles">
+      <HintPath>Lib/Bubbles.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Deploy to RimWorld client -->
+  <Target Name="DeployToModsFolder" AfterTargets="Build" Condition=" '$(BuildingWithScript)' != 'true' AND '$(RimWorldDir)' != '' ">
+    <CallTarget Targets="WinDeploy" Condition=" '$(OS)' == 'Windows_NT' "/>
+    <CallTarget Targets="MacDeploy" Condition=" '$(OS)' != 'Windows_NT' "/>
+  </Target>
+
+  <!-- Deploy to RimWorld client (macOS) -->
+  <Target Name="MacDeploy">
     <PropertyGroup>
-        <GameVersion Condition=" '$(GameVersion)' == '' ">1.6</GameVersion>
-        <OutputType>Library</OutputType>
-        <TargetFramework>net48</TargetFramework>
-        <PlatformTarget>x64</PlatformTarget>
-        <RootNamespace>RimTalk</RootNamespace>
-        <AssemblyName>RimTalk</AssemblyName>
-        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-
-        <RimWorldDir Condition=" '$(RimWorldDir)' == '' ">$(RIMWORLD_DIR)</RimWorldDir>
-
-        <OutputPath>$(GameVersion)/Assemblies</OutputPath>
-        <ModFolderName>RimTalk</ModFolderName>
-        <LangVersion>default</LangVersion>
-        <EnableBubbles>true</EnableBubbles>
+      <DeployPath>$(RimWorldDir)/RimWorldMac.app/Mods/RimTalk/</DeployPath>
     </PropertyGroup>
+    <MakeDir Directories="$(DeployPath)"/>
+    <Exec Command='rsync -a --delete --checksum "$(ProjectDir)About/"     "$(DeployPath)About/"'/>
+    <Exec Command='rsync -a --delete --checksum "$(ProjectDir)Defs/"      "$(DeployPath)Defs/"'/>
+    <Exec Command='rsync -a --delete --checksum "$(ProjectDir)Languages/" "$(DeployPath)Languages/"'/>
+    <Exec Command='rsync -a --delete --checksum "$(ProjectDir)Textures/"  "$(DeployPath)Textures/"'/>
+    <Exec Command='rsync -a --delete --checksum "$(ProjectDir)$(GameVersion)/"       "$(DeployPath)$(GameVersion)/"'/>
+    <Message Text="--- macOS deployment finished successfully ---" Importance="high"/>
+  </Target>
 
-    <!-- Define version constants based on GameVersion -->
+  <!-- Deploy to RimWorld client (Windows) -->
+  <Target Name="WinDeploy">
     <PropertyGroup>
-        <DefineConstants>$(DefineConstants);V$(GameVersion.Replace('.', '_'))</DefineConstants>
+      <WinModPath>$(RimWorldDir)\Mods\RimTalk\</WinModPath>
     </PropertyGroup>
-
-    <!-- Release build configuration -->
-    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-        <Optimize>false</Optimize>
-        <DebugSymbols>true</DebugSymbols>
-        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    </PropertyGroup>
-
+    <Message Text="Copying to $(WinModPath)" Importance="high"/>
     <ItemGroup>
-        <!-- Core RimWorld & UnityEngine libraries -->
-        <PackageReference Include="Krafs.Rimworld.Ref" Version="$(GameVersion).*-*" PrivateAssets="All" />
-        <!-- Harmony API -->
-        <PackageReference Include="Lib.Harmony.Ref" Version="2.*" PrivateAssets="All"/>
+      <_CopyDirs Include="About;Defs;Languages;Textures;$(GameVersion)"/>
     </ItemGroup>
-
-    <!-- Remove BubblePatch.cs when bubble is disabled -->
-    <ItemGroup Condition=" '$(EnableBubbles)' == 'false' ">
-        <Compile Remove="Source/Patch/BubblePatch.cs"/>
-    </ItemGroup>
-
-    <!-- Include Bubble library when bubble is enabled -->
-    <ItemGroup Condition=" '$(EnableBubbles)' == 'true' ">
-        <Reference Include="Bubbles">
-            <HintPath>Libs/Bubbles.dll</HintPath>
-            <Private>false</Private>
-        </Reference>
-    </ItemGroup>
-
-    <!-- Deploy to RimWorld client -->
-    <Target Name="DeployToModsFolder" AfterTargets="Build" Condition=" '$(BuildingWithScript)' != 'true' AND '$(RimWorldDir)' != '' ">
-        <CallTarget Targets="WinDeploy" Condition=" '$(OS)' == 'Windows_NT' "/>
-        <CallTarget Targets="MacDeploy" Condition=" '$(OS)' != 'Windows_NT' "/>
-    </Target>
-
-    <!-- Deploy to RimWorld client (macOS) -->
-    <Target Name="MacDeploy">
-        <PropertyGroup>
-            <DeployPath>$(RimWorldDir)/RimWorldMac.app/Mods/RimTalk/</DeployPath>
-        </PropertyGroup>
-        <MakeDir Directories="$(DeployPath)"/>
-        <Exec Command='rsync -a --delete --checksum "$(ProjectDir)About/"     "$(DeployPath)About/"'/>
-        <Exec Command='rsync -a --delete --checksum "$(ProjectDir)Defs/"      "$(DeployPath)Defs/"'/>
-        <Exec Command='rsync -a --delete --checksum "$(ProjectDir)Languages/" "$(DeployPath)Languages/"'/>
-        <Exec Command='rsync -a --delete --checksum "$(ProjectDir)Textures/"  "$(DeployPath)Textures/"'/>
-        <Exec Command='rsync -a --delete --checksum "$(ProjectDir)$(GameVersion)/"       "$(DeployPath)$(GameVersion)/"'/>
-        <Message Text="--- macOS deployment finished successfully ---" Importance="high"/>
-    </Target>
-
-    <!-- Deploy to RimWorld client (Windows) -->
-    <Target Name="WinDeploy">
-        <PropertyGroup>
-            <WinModPath>$(RimWorldDir)\Mods\RimTalk\</WinModPath>
-        </PropertyGroup>
-        <Message Text="Copying to $(WinModPath)" Importance="high"/>
-        <ItemGroup>
-            <_CopyDirs Include="About;Defs;Languages;Textures;$(GameVersion)"/>
-        </ItemGroup>
-        <MakeDir Directories="$(WinModPath)"/>
-        <Exec Command='robocopy "$(ProjectDir)About"     "$(WinModPath)About" /MIR' IgnoreExitCode="true"/>
-        <Exec Command='robocopy "$(ProjectDir)Defs"      "$(WinModPath)Defs" /MIR' IgnoreExitCode="true"/>
-        <Exec Command='robocopy "$(ProjectDir)Languages" "$(WinModPath)Languages" /MIR' IgnoreExitCode="true"/>
-        <Exec Command='robocopy "$(ProjectDir)Textures"  "$(WinModPath)Textures" /MIR' IgnoreExitCode="true"/>
-        <Exec Command='robocopy "$(ProjectDir)$(GameVersion)"       "$(WinModPath)$(GameVersion)" /MIR' IgnoreExitCode="true"/>
-        <Message Text="--- Windows deployment finished successfully ---" Importance="high"/>
-    </Target>
+    <MakeDir Directories="$(WinModPath)"/>
+    <Exec Command='robocopy "$(ProjectDir)About"     "$(WinModPath)About" /MIR' IgnoreExitCode="true"/>
+    <Exec Command='robocopy "$(ProjectDir)Defs"      "$(WinModPath)Defs" /MIR' IgnoreExitCode="true"/>
+    <Exec Command='robocopy "$(ProjectDir)Languages" "$(WinModPath)Languages" /MIR' IgnoreExitCode="true"/>
+    <Exec Command='robocopy "$(ProjectDir)Textures"  "$(WinModPath)Textures" /MIR' IgnoreExitCode="true"/>
+    <Exec Command='robocopy "$(ProjectDir)$(GameVersion)"       "$(WinModPath)$(GameVersion)" /MIR' IgnoreExitCode="true"/>
+    <Message Text="--- Windows deployment finished successfully ---" Importance="high"/>
+  </Target>
 
 </Project>
