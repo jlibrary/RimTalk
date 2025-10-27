@@ -52,7 +52,7 @@ public static class PromptService
         var genderAndAge = Regex.Replace(pawn.MainDesc(false), @"\(\d+\)", "");
         sb.AppendLine($"{name} {title} ({genderAndAge})");
 
-        var role = $"Role: {pawn.GetRole(true)}";
+        var role = $"Role: {pawn.GetRole()}";
         sb.AppendLine(role);
 
         if (ModsConfig.BiotechActive && pawn.genes?.Xenotype != null)
@@ -245,12 +245,26 @@ public static class PromptService
         // Add the conversation part
         if (talkRequest.TalkType == TalkType.User)
         {
-            if (talkRequest.Initiator == talkRequest.Recipient)
-                sb.Append(
-                    $"A voice from beyond says '{pawns[0].LabelShort}({pawns[0].GetRole()}):{talkRequest.Prompt}'");
-            else
-                sb.Append(
-                    $"{pawns[1].LabelShort}({pawns[1].GetRole()}) said to '{pawns[0].LabelShort}({pawns[0].GetRole()}):{talkRequest.Prompt}'. Generate multi turn dialogues, starting with {pawns[0].LabelShort}, ");
+            // players[0]=A(initiator), players[1]=B(recipient), others could interrupt talk.
+            var a = pawns[1];
+            var b = pawns[0];
+            var aName = $"{a.LabelShort}({a.GetRole()})";
+            var bName = $"{b.LabelShort}({b.GetRole()})";
+            var others = pawns.Skip(2).Where(p => p != null)
+                              .Select(p => $"{p.LabelShort}({p.GetRole()})");
+            var participants = string.Join(", ", new[] { aName, bName }.Concat(others));
+            var playerMsg = (talkRequest.Prompt ?? string.Empty).Trim();
+
+            sb.AppendLine($"Participants (allowed speakers): {participants}");
+            sb.AppendLine("Setting: in-game short dialogue");
+            sb.AppendLine();
+            sb.AppendLine("ALREADY SAID (do NOT repeat):");
+            sb.AppendLine($"{aName}: \"{playerMsg}\"  (to {bName})");
+            sb.AppendLine();
+            sb.AppendLine($"DIRECTIVES");
+            sb.AppendLine($"- Continue naturally after the above line.");
+            sb.AppendLine($"- The first reply is most likely from {bName}.");
+            sb.AppendLine($"- Keep it brief (2–4 lines). No stage directions or narrator.");
         }
         else
         {
