@@ -9,102 +9,102 @@ using RimWorld;
 
 namespace RimLife
 {
-    // Pawn物种信息
-    public readonly struct SpeciesInfo
-    {
-        public SpeciesInfo(Pawn pawn)
-        {
-            if (pawn.RaceProps.Humanlike)
-            {
-                PawnType = PawnType.Character;
-            }
-            else if (pawn.RaceProps.Animal)
-            {
-                PawnType = PawnType.Animal;
-            }
-            else if (pawn.RaceProps.IsMechanoid)
-            {
-                PawnType = PawnType.Mechanoid;
-            }
-            else if (pawn.RaceProps.Insect)
-            {
-                PawnType = PawnType.Insect;
-            }
-            else
-            {
-                PawnType = PawnType.Other;
-            }
+	// Represents the species information of a Pawn.
+	public readonly struct SpeciesInfo
+	{
+		// --- Public Properties ---
+		public PawnType PawnType { get; }
+		public string SpeciesName { get; }
+		public float BodySize { get; }
+		public float LifeExpectancy { get; }
+		public HashSet<string> SpecialBodyPartDefNames { get; }
 
-            LifeExpectancy = pawn.RaceProps.lifeExpectancy;
-            SpeciesName = pawn.def.label;
-            BodySize = pawn.RaceProps.baseBodySize;
+		// --- Constructor ---
+		public SpeciesInfo(Pawn pawn)
+		{
+			if (pawn == null)
+			{
+				PawnType = PawnType.Other;
+				SpeciesName = "Unknown";
+				BodySize = 0;
+				LifeExpectancy = 0;
+				SpecialBodyPartDefNames = new HashSet<string>();
+				return;
+			}
 
-            SpecialBodyPartDefNames = ComputeSpecialBodyPartDefNames(pawn);
-        }
+			var race = pawn.RaceProps;
+			if (race.Humanlike) PawnType = PawnType.Character;
+			else if (race.Animal) PawnType = PawnType.Animal;
+			else if (race.IsMechanoid) PawnType = PawnType.Mechanoid;
+			else if (race.Insect) PawnType = PawnType.Insect;
+			else PawnType = PawnType.Other;
 
-        // JSON 输出
-        public string ToStringFull()
-        {
-            var jw = new Tool.JsonWriter(128)
-                .Prop("species", SpeciesName)
-                .Prop("type", PawnType.ToString())
-                .Prop("bodySize", BodySize, "0.##")
-                .Prop("lifeExpectancy", LifeExpectancy, "0");
+			SpeciesName = pawn.def.label;
+			BodySize = race.baseBodySize;
+			LifeExpectancy = race.lifeExpectancy;
 
-            if (SpecialBodyPartDefNames.Count > 0)
-            {
-                jw = jw.Array("specialParts", SpecialBodyPartDefNames);
-            }
+			SpecialBodyPartDefNames = ComputeSpecialBodyPartDefNames(pawn);
+		}
 
-            return jw.Close();
-        }
+		// --- Public Methods ---
 
-        public PawnType PawnType { get; }
-        public string SpeciesName { get; }
-        public float BodySize { get; }
-        public float LifeExpectancy { get; }
+		// Returns a full JSON representation of the species info.
+		public string ToStringFull()
+		{
+			var jw = new Tool.JsonWriter(128)
+				.Prop("Species", SpeciesName)
+				.Prop("Type", PawnType.ToString())
+				.Prop("BodySize", BodySize, "0.##")
+				.Prop("LifeExpectancy", LifeExpectancy, "0");
 
-        public HashSet<string> SpecialBodyPartDefNames { get; }
+			if (SpecialBodyPartDefNames.Any())
+			{
+				jw.Array("SpecialParts", SpecialBodyPartDefNames);
+			}
 
-        private static HashSet<string> ComputeSpecialBodyPartDefNames(Pawn pawn)
-        {
-            try
-            {
-                var baseline = GetBaselineBodyPartDefNames(pawn);
-                if (baseline != null && baseline.Count > 0)
-                {
-                    var current = pawn.RaceProps?.body?.AllParts
-                        ?.Select(p => p.def?.defName)
-                        .Where(n => !string.IsNullOrEmpty(n))
-                        .ToList() ?? new List<string>();
+			return jw.Close();
+		}
 
-                    return new HashSet<string>(current.Where(n => !baseline.Contains(n)));
-                }
-            }
-            catch
-            {
-                // 忽略异常以提升兼容性（其他模组可能影响定义）
-            }
-            return new HashSet<string>();
-        }
+		// --- Private Static Methods ---
 
-        private static HashSet<string> GetBaselineBodyPartDefNames(Pawn pawn)
-        {
-            try
-            {
-                if (pawn?.RaceProps?.Humanlike == true && ThingDefOf.Human?.race?.body != null)
-                {
-                    var humanBody = ThingDefOf.Human.race.body;
-                    return new HashSet<string>(humanBody.AllParts
-                        .Select(p => p.def?.defName)
-                        .Where(n => !string.IsNullOrEmpty(n)));
-                }
-            }
-            catch
-            {
-                // 忽略异常以提升兼容性
-            }
-            return null;
-        }
-    }
+		private static HashSet<string> ComputeSpecialBodyPartDefNames(Pawn pawn)
+		{
+			try
+			{
+				var baselineParts = GetBaselineHumanBodyPartDefNames();
+				if (baselineParts == null || !baselineParts.Any()) return new HashSet<string>();
+
+				var currentParts = pawn.RaceProps?.body?.AllParts
+					?.Select(p => p.def?.defName)
+					.Where(n => !string.IsNullOrEmpty(n))
+					.ToList() ?? new List<string>();
+
+				// Return parts that are not in the human baseline
+				return new HashSet<string>(currentParts.Except(baselineParts));
+			}
+			catch (System.Exception)
+			{
+				// Ignore exceptions for mod compatibility
+				return new HashSet<string>();
+			}
+		}
+
+		private static HashSet<string> GetBaselineHumanBodyPartDefNames()
+		{
+			try
+			{
+				var humanBody = ThingDefOf.Human?.race?.body;
+				if (humanBody == null) return null;
+
+				return new HashSet<string>(humanBody.AllParts
+					.Select(p => p.def?.defName)
+					.Where(n => !string.IsNullOrEmpty(n)));
+			}
+			catch (System.Exception)
+			{
+				// Ignore exceptions for mod compatibility
+				return null;
+			}
+		}
+	}
 }
