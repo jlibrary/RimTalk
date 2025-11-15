@@ -14,3 +14,4 @@ Directory.Build.props
 ## Interaction bubble library
 Libs/Bubbles.dll
 !Libs/Bubbles.sh
+/.vs
