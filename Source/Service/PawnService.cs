@@ -64,6 +64,7 @@ public static class PawnService
         return false;
     }
 
+    // 功能：判断Pawn是否正在战斗中
     public static bool IsInCombat(this Pawn pawn)
     {
         if (pawn == null) return false;
@@ -306,6 +307,7 @@ public static class PawnService
         return activity;
     }
 
+    // 功能：获取Pawn在当前地图中的角色身份
     public static MapRole GetMapRole(this Pawn pawn)
     {
         if (pawn?.Map == null)
