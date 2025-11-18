@@ -318,6 +318,7 @@ public partial class Settings
                 new FloatMenuOption(AIProvider.OpenAI.ToString(), () => { config.Provider = AIProvider.OpenAI; config.SelectedModel = Data.Constant.ChooseModel; }),
                 new FloatMenuOption(AIProvider.DeepSeek.ToString(), () => { config.Provider = AIProvider.DeepSeek; config.SelectedModel = Data.Constant.ChooseModel; }),
                 new FloatMenuOption(AIProvider.OpenRouter.ToString(), () => { config.Provider = AIProvider.OpenRouter; config.SelectedModel = Data.Constant.ChooseModel; }),
+                new FloatMenuOption(AIProvider.Player2.ToString(), () => { config.Provider = AIProvider.Player2; config.SelectedModel = "Default"; }),
                 new FloatMenuOption(AIProvider.Custom.ToString(), () => { config.Provider = AIProvider.Custom; config.SelectedModel = "Custom"; })
             };
             Find.WindowStack.Add(new FloatMenu(providerOptions));
@@ -366,40 +367,45 @@ public partial class Settings
     }
 
     private void ShowModelSelectionMenu(ApiConfig config)
+{
+    if (string.IsNullOrWhiteSpace(config.ApiKey))
     {
-        if (string.IsNullOrWhiteSpace(config.ApiKey))
-        {
-            Find.WindowStack.Add(new FloatMenu(new List<FloatMenuOption> { new FloatMenuOption("RimTalk.Settings.EnterApiKey".Translate(), null) }));
-            return;
-        }
-
-        if (config.Provider == AIProvider.Google)
-        {
-            List<FloatMenuOption> options = ModelOptions.Select(model => new FloatMenuOption(model, () => config.SelectedModel = model)).ToList();
-            Find.WindowStack.Add(new FloatMenu(options));
-        }
-        else
-        {
-            string url = GetModelApiUrl(config.Provider);
-            if (url == null) return;
-
-            FetchModels(config.ApiKey, url).ContinueWith(task =>
-            {
-                var models = task.Result;
-                List<FloatMenuOption> options = new List<FloatMenuOption>();
-                if (models != null && models.Any())
-                {
-                    options.AddRange(models.Select(model => new FloatMenuOption(model, () => config.SelectedModel = model)));
-                }
-                else
-                {
-                    options.Add(new FloatMenuOption("(no models found - check API Key)", null));
-                }
-                options.Add(new FloatMenuOption("Custom", () => config.SelectedModel = "Custom"));
-                Find.WindowStack.Add(new FloatMenu(options));
-            }, TaskScheduler.FromCurrentSynchronizationContext());
-        }
+        Find.WindowStack.Add(new FloatMenu(new List<FloatMenuOption> { new FloatMenuOption("RimTalk.Settings.EnterApiKey".Translate(), null) }));
+        return;
     }
+
+    if (config.Provider == AIProvider.Google)
+    {
+        List<FloatMenuOption> options = ModelOptions.Select(model => new FloatMenuOption(model, () => config.SelectedModel = model)).ToList();
+        Find.WindowStack.Add(new FloatMenu(options));
+    }
+    else if (config.Provider == AIProvider.Player2)
+    {
+        config.SelectedModel = "Default";
+        return;
+    }
+    else
+    {
+        string url = GetModelApiUrl(config.Provider);
+        if (url == null) return;
+
+        FetchModels(config.ApiKey, url).ContinueWith(task =>
+        {
+            var models = task.Result;
+            List<FloatMenuOption> options = new List<FloatMenuOption>();
+            if (models != null && models.Any())
+            {
+                options.AddRange(models.Select(model => new FloatMenuOption(model, () => config.SelectedModel = model)));
+            }
+            else
+            {
+                options.Add(new FloatMenuOption("(no models found - check API Key)", null));
+            }
+            options.Add(new FloatMenuOption("Custom", () => config.SelectedModel = "Custom"));
+            Find.WindowStack.Add(new FloatMenu(options));
+        }, TaskScheduler.FromCurrentSynchronizationContext());
+    }
+}
 
     private string GetModelApiUrl(AIProvider provider)
     {
@@ -408,6 +414,7 @@ public partial class Settings
             case AIProvider.OpenAI: return "https://api.openai.com/v1/models";
             case AIProvider.DeepSeek: return "https://api.deepseek.com/models";
             case AIProvider.OpenRouter: return "https://openrouter.ai/api/v1/models";
+            case AIProvider.Player2: return null;
             default: return null;
         }
     }
