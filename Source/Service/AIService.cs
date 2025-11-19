@@ -5,6 +5,7 @@ using RimTalk.Client;
 using RimTalk.Data;
 using RimTalk.Error;
 using RimTalk.Util;
+using Verse;
 
 namespace RimTalk.Service;
 
@@ -61,11 +62,18 @@ public static class AIService
             try
             {
                 if (payload == null) throw new Exception();
-                JsonUtil.DeserializeFromJson<List<TalkResponse>>(payload.Response);
+                
+                var responses = JsonUtil.DeserializeFromJson<List<TalkResponse>>(payload.Response);
+                if (responses == null || responses.Count == 0)
+                {
+                    var single = new TalkResponse(Source.Data.TalkType.Other, request.Initiator.Name.ToStringFull ?? "Player", payload.Response);
+                    responses = new List<TalkResponse> { single };
+                }
             }
-            catch
+            catch (Exception ex)
             {
-                initApiLog.Response = "Failed";
+                Logger.Warning($"[AIService] Failed to parse payload.Response: {ex}");
+                initApiLog.Response = payload?.Response ?? "Failed"; 
                 return;
             }
             
