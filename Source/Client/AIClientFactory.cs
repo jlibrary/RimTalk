@@ -1,5 +1,6 @@
 using RimTalk.Client.Gemini;
 using RimTalk.Client.OpenAI;
+using RimTalk.Client.Player2;
 
 namespace RimTalk.Client;
 
@@ -37,6 +38,8 @@ public static class AIClientFactory
                 return new OpenAIClient("https://api.deepseek.com" + OpenAIClient.OpenAIPath, config.SelectedModel, config.ApiKey);
             case AIProvider.OpenRouter:
                 return new OpenAIClient("https://openrouter.ai/api" + OpenAIClient.OpenAIPath, config.SelectedModel, config.ApiKey);
+            case AIProvider.Player2:
+                return new Player2Client(config.ApiKey);
             case AIProvider.Local:
                 return new OpenAIClient(config.BaseUrl, config.CustomModelName);
             case AIProvider.Custom:

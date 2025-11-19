@@ -6,6 +6,7 @@ public enum AIProvider
     OpenAI,
     DeepSeek,
     OpenRouter,
+    Player2,
     Local,
     Custom,
     None
