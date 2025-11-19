@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using RimTalk.Client;
 using RimTalk.Data;
 using RimTalk.Error;
-using RimTalk.Source.Data;
 using RimTalk.Util;
 
 namespace RimTalk.Service;
@@ -31,31 +30,14 @@ public static class AIService
         _busy = true;
         try
         {
-            bool isUserTalk = request?.TalkType == TalkType.User
-                              && request?.Initiator != null
-                              && request?.Recipient != null;
-            bool firstAiLine = true;
             var payload = await AIErrorHandler.HandleWithRetry(() =>
             {
                 var client = AIClientFactory.GetAIClient();
                 return client.GetStreamingChatCompletionAsync<TalkResponse>(_instruction, currentMessages,
                     talkResponse =>
                     {
-                        if (isUserTalk && firstAiLine)
-                        {
-                           var name = talkResponse.Name;
-                            var aName = request.Initiator.LabelShort;
-                            var bName = request.Recipient.LabelShort;
-                            bool invalid = string.IsNullOrEmpty(name)
-                                           || (!name.Equals(aName, StringComparison.OrdinalIgnoreCase)
-                                               && !name.Equals(bName, StringComparison.OrdinalIgnoreCase));
-                            if (invalid)
-                                talkResponse.Name = bName;
-                        }
-
                         if (!players.TryGetValue(talkResponse.Name, out var player))
                         {
-                            // Origin fallback
                             return;
                         }
 
@@ -72,7 +54,6 @@ public static class AIService
                         lastApiLog = newApiLog;
 
                         onPlayerResponseReceived?.Invoke(player, talkResponse);
-                        firstAiLine = false;
                     });
             });
 
