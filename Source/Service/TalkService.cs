@@ -218,8 +218,12 @@ public static class TalkService
     /// <summary>
     /// Dequeues a talk and updates its history as either spoken or ignored.
     /// </summary>
-    public static TalkResponse ConsumeTalk(PawnState pawnState)
+    private static TalkResponse ConsumeTalk(PawnState pawnState)
     {
+        // Failsafe check
+        if (pawnState.TalkResponses.Empty()) 
+            return new TalkResponse(TalkType.Other, null, "");
+        
         var talkResponse = pawnState.TalkResponses.First();
         pawnState.TalkResponses.Remove(talkResponse);
         TalkHistory.AddSpoken(talkResponse.Id);

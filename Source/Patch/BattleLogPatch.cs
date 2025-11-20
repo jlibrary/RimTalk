@@ -90,7 +90,7 @@ public static class BattleLogPatch
         {
             // --- Fallback Path ---
             // The fast path failed, likely due to a game update. 
-            Logger.ErrorOnce($"RimTalk: Battle prompt generation failed.\n {ex.Message}", entry.GetHashCode());
+            Logger.ErrorOnce($"Battle prompt generation failed.\n {ex.Message}", entry.GetHashCode());
                 
             // Use the original slow method and strip out any rich text tags.
             return entry.ToGameStringFromPOV(initiator).StripTags();
