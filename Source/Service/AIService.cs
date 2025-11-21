@@ -61,20 +61,37 @@ public static class AIService
             // Try deserializing once again with all streaming chunks to make sure a correct format was returned
             try
             {
-                if (payload == null) throw new Exception();
-                
                 var responses = JsonUtil.DeserializeFromJson<List<TalkResponse>>(payload.Response);
+                // Add more parsing roles
                 if (responses == null || responses.Count == 0)
                 {
-                    var single = new TalkResponse(Source.Data.TalkType.Other, request.Initiator.Name.ToStringFull ?? "Player", payload.Response);
-                    responses = new List<TalkResponse> { single };
+                    try
+                    {
+                        var single = JsonUtil.DeserializeFromJson<TalkResponse>(payload.Response);
+                        if (single != null)
+                        {
+                            responses = new List<TalkResponse> { single };
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Warning($"[AIService] Failed to parse payload.Response as TalkResponse: {ex}");
+                    }
+                }
+
+                if (responses == null || responses.Count == 0)
+                {
+                    var fallback = new TalkResponse(
+                        Source.Data.TalkType.Other,
+                        request.Initiator?.Name.ToStringFull ?? "Player",
+                        payload.Response
+                    );
+                    responses = new List<TalkResponse> { fallback };
                 }
             }
             catch (Exception ex)
             {
-                Logger.Warning($"[AIService] Failed to parse payload.Response: {ex}");
-                initApiLog.Response = payload?.Response ?? "Failed"; 
-                return;
+                Logger.Warning($"[AIService] Failed to parse payload.Response as List<TalkResponse>: {ex}");
             }
             
             ApiHistory.UpdatePayload(initApiLog.Id, payload);
