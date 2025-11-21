@@ -263,10 +263,29 @@ public static class PromptService
                     talkRequest.Prompt = null;
                 }
                 talkRequest.TalkType = TalkType.Urgent;
-                if (pawns[0].IsSlave || pawns[0].IsPrisoner)
-                    sb.Append($"{shortName} dialogue short (worry)");
-                else 
-                    sb.Append($"{shortName} dialogue short, urgent tone ({pawns[0].GetMapRole().ToString().ToLower()}/command)");
+                bool isPrisonerOrSlave = pawns[0].IsSlave || pawns[0].IsPrisoner;
+                bool hasNearbyHostile = false;
+                    if (isPrisonerOrSlave && pawns[0].Map != null)
+                        {
+                            var mapPawns = pawns[0].Map.mapPawns.AllPawnsSpawned;
+                            hasNearbyHostile = mapPawns.Any(p =>
+                                p.HostileTo(pawns[0]) &&
+                                p.Spawned &&
+                                p.Position.InHorDistOf(pawns[0].Position, 25f));
+                        }
+
+                    if (isPrisonerOrSlave && hasNearbyHostile)
+                    {
+                        sb.Append($"{shortName} dialogue short (worry)");
+                    }
+                    else if (isPrisonerOrSlave)
+                    {
+                        sb.Append($"{shortName} dialogue short");
+                    }
+                    else
+                    {
+                        sb.Append($"{shortName} dialogue short, urgent tone ({pawns[0].GetMapRole().ToString().ToLower()}/command)");
+                    }
             }
             else
             {
