@@ -83,17 +83,12 @@ public class PawnState(Pawn pawn)
         if (!Settings.Get().DisplayTalkWhenDrafted && Pawn.Drafted)
             return false;
 
-        return Pawn.Awake()
-               && !Pawn.Dead
-               && Pawn.CurJobDef != JobDefOf.LayDown
-               && Pawn.CurJobDef != JobDefOf.LayDownAwake
-               && Pawn.CurJobDef != JobDefOf.LayDownResting
-               && TalkInitiationWeight > 0;
+        return !Pawn.Dead && TalkInitiationWeight > 0;
     }
 
     public bool CanGenerateTalk()
     {
-        return !IsGeneratingTalk && CanDisplayTalk() && TalkResponses.Empty() 
+        return !IsGeneratingTalk && CanDisplayTalk() && Pawn.Awake() && TalkResponses.Empty() 
                && CommonUtil.HasPassed(LastTalkTick, Settings.Get().TalkInterval);;
     }
     
