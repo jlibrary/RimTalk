@@ -80,6 +80,8 @@
     <RimTalk.Settings.DisplayTalkWhenDraftedTooltip>ポーンが徴兵されている時もRimTalkの吹き出しを表示します。これは会話生成中、一時的に吹き出しMODの設定を上書きします。</RimTalk.Settings.DisplayTalkWhenDraftedTooltip>
     <RimTalk.Settings.AllowCustomConversation>プレイヤー作成の会話を許可</RimTalk.Settings.AllowCustomConversation>
     <RimTalk.Settings.AllowCustomConversationTooltip>自分でセリフを入力してキャラクター同士の会話を始めたり、特定のキャラクターと直接話すことができます。対象のキャラクターを右クリックして会話を開始します。</RimTalk.Settings.AllowCustomConversationTooltip>
+    <RimTalk.Settings.ContinueDialogueWhileSleeping>睡眠中も会話を続ける</RimTalk.Settings.ContinueDialogueWhileSleeping>
+    <RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>有効にすると、ポーンが眠っていても生成されたすべての会話を続けます。</RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>
     
     <RimTalk.Settings.AllowSlavesToTalk>奴隷の会話を許可</RimTalk.Settings.AllowSlavesToTalk>
     <RimTalk.Settings.AllowSlavesToTalkTooltip>これを有効にすると、奴隷がAI生成の会話を行えるようになります。</RimTalk.Settings.AllowSlavesToTalkTooltip>

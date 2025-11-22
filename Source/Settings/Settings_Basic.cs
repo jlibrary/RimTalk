@@ -56,7 +56,7 @@ public partial class Settings
 
         // Get a rect for the entire checkbox section. We'll manually manage the layout within this.
         // The height is an estimate; we will adjust the main listing's Y position later.
-        Rect checkboxSectionRect = listingStandard.GetRect(160f);
+        Rect checkboxSectionRect = listingStandard.GetRect(200f);
 
         // --- Left Column ---
         Rect leftColumnRect = new Rect(checkboxSectionRect.x, checkboxSectionRect.y, columnWidth,
@@ -79,6 +79,10 @@ public partial class Settings
         leftListing.CheckboxLabeled("RimTalk.Settings.AllowCustomConversation".Translate().ToString(),
             ref settings.AllowCustomConversation,
             "RimTalk.Settings.AllowCustomConversationTooltip".Translate().ToString());
+        leftListing.Gap(12f);
+        leftListing.CheckboxLabeled("RimTalk.Settings.ContinueDialogueWhileSleeping".Translate().ToString(),
+            ref settings.ContinueDialogueWhileSleeping,
+            "RimTalk.Settings.ContinueDialogueWhileSleepingTooltip".Translate().ToString());
 
         leftListing.End();
 
@@ -105,7 +109,7 @@ public partial class Settings
 
         // Advance the main listing standard's vertical position based on the taller of the two columns.
         float tallerColumnHeight = Mathf.Max(leftListing.CurHeight, rightListing.CurHeight);
-        listingStandard.Gap(tallerColumnHeight - 160f); // Adjust for the initial GetRect height
+        listingStandard.Gap(tallerColumnHeight - 200f); // Adjust for the initial GetRect height
 
         listingStandard.Gap(12f);
 
@@ -198,6 +202,7 @@ public partial class Settings
             settings.AllowOtherFactionsToTalk = false;
             settings.AllowEnemiesToTalk = false;
             settings.AllowCustomConversation = true;
+            settings.ContinueDialogueWhileSleeping = false;
             settings.UseSimpleConfig = true;
             settings.DisableAiAtSpeed = 0;
             settings.ButtonDisplay = ButtonDisplayMode.Tab;

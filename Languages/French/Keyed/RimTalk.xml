@@ -80,7 +80,9 @@
     <RimTalk.Settings.DisplayTalkWhenDraftedTooltip>Affiche les bulles RimTalk même lorsque les pions sont recrutés. Cela remplace temporairement les paramètres du mod de bulles lors de la génération de dialogue.</RimTalk.Settings.DisplayTalkWhenDraftedTooltip>
     <RimTalk.Settings.AllowCustomConversation>Autoriser les conversations créées par le joueur</RimTalk.Settings.AllowCustomConversation>
     <RimTalk.Settings.AllowCustomConversationTooltip>Permet de lancer des dialogues personnalisés entre personnages ou de parler directement à un personnage en écrivant vos propres répliques. Faites un clic droit sur un colon pour commencer une conversation.</RimTalk.Settings.AllowCustomConversationTooltip>
-    
+    <RimTalk.Settings.ContinueDialogueWhileSleeping>Continuer le dialogue pendant le sommeil</RimTalk.Settings.ContinueDialogueWhileSleeping>
+    <RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>Si activé, les pions continueront à prononcer toutes les répliques générées même s'ils s'endorment.</RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>
+
     <RimTalk.Settings.AllowSlavesToTalk>Autoriser les esclaves à parler</RimTalk.Settings.AllowSlavesToTalk>
     <RimTalk.Settings.AllowSlavesToTalkTooltip>Activez ceci pour permettre aux esclaves d'avoir des conversations générées par l'IA.</RimTalk.Settings.AllowSlavesToTalkTooltip>
     <RimTalk.Settings.AllowPrisonersToTalk>Autoriser les prisonniers à parler</RimTalk.Settings.AllowPrisonersToTalk>

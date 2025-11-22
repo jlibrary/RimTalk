@@ -80,7 +80,9 @@
     <RimTalk.Settings.DisplayTalkWhenDraftedTooltip>Shows RimTalk bubbles even when pawns are drafted. This temporarily overrides bubble mod settings during talk generation.</RimTalk.Settings.DisplayTalkWhenDraftedTooltip>
     <RimTalk.Settings.AllowCustomConversation>Allow Player-Created Conversations</RimTalk.Settings.AllowCustomConversation>
     <RimTalk.Settings.AllowCustomConversationTooltip>Allows you to start custom dialogues between characters or talk directly to a character by writing your own lines. Right-click a pawn to begin a conversation.</RimTalk.Settings.AllowCustomConversationTooltip>
-    
+    <RimTalk.Settings.ContinueDialogueWhileSleeping>Continue Dialogue While Sleeping</RimTalk.Settings.ContinueDialogueWhileSleeping>
+    <RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>If enabled, pawns will continue speaking all generated lines even if they fall asleep.</RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>
+
     <RimTalk.Settings.AllowSlavesToTalk>Allow Slaves to Talk</RimTalk.Settings.AllowSlavesToTalk>
     <RimTalk.Settings.AllowSlavesToTalkTooltip>Enable this to allow slaves to have AI-generated conversations.</RimTalk.Settings.AllowSlavesToTalkTooltip>
     <RimTalk.Settings.AllowPrisonersToTalk>Allow Prisoners to Talk</RimTalk.Settings.AllowPrisonersToTalk>

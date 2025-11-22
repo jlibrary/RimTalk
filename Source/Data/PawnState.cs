@@ -81,8 +81,13 @@ public class PawnState(Pawn pawn)
         {
             return false;
         }
+        
+        RimTalkSettings settings = Settings.Get();
 
-        if (!Settings.Get().DisplayTalkWhenDrafted && Pawn.Drafted)
+        if (!settings.DisplayTalkWhenDrafted && Pawn.Drafted)
+            return false;
+
+        if (!settings.ContinueDialogueWhileSleeping && !Pawn.Awake())
             return false;
 
         return !Pawn.Dead && TalkInitiationWeight > 0;

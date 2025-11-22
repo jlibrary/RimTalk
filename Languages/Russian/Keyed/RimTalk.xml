@@ -80,6 +80,8 @@
     <RimTalk.Settings.DisplayTalkWhenDraftedTooltip>Показывает пузыри RimTalk, даже когда пешки призваны. Это временно переопределяет настройки мода пузырей во время генерации разговора.</RimTalk.Settings.DisplayTalkWhenDraftedTooltip>
     <RimTalk.Settings.AllowCustomConversation>Разрешить пользовательские разговоры</RimTalk.Settings.AllowCustomConversation>
     <RimTalk.Settings.AllowCustomConversationTooltip>Позволяет вам начинать собственные диалоги между персонажами или напрямую разговаривать с выбранным персонажем, вводя свои реплики. Щёлкните правой кнопкой мыши по персонажу, чтобы начать разговор.</RimTalk.Settings.AllowCustomConversationTooltip>
+    <RimTalk.Settings.ContinueDialogueWhileSleeping>Продолжать диалог во сне</RimTalk.Settings.ContinueDialogueWhileSleeping>
+    <RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>Если включено, персонажи будут произносить все сгенерированные реплики, даже если они засыпают.</RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>
 
     <RimTalk.Settings.AllowSlavesToTalk>Разрешить рабам говорить</RimTalk.Settings.AllowSlavesToTalk>
     <RimTalk.Settings.AllowSlavesToTalkTooltip>Включите, чтобы разрешить рабам вести разговоры, сгенерированные ИИ.</RimTalk.Settings.AllowSlavesToTalkTooltip>

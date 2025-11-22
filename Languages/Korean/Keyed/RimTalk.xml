@@ -80,7 +80,9 @@
     <RimTalk.Settings.DisplayTalkWhenDraftedTooltip>정착민이 소집되었을 때도 RimTalk 말풍선을 표시합니다. 이는 대화 생성 중에 일시적으로 말풍선 모드 설정을 덮어씁니다.</RimTalk.Settings.DisplayTalkWhenDraftedTooltip>
     <RimTalk.Settings.AllowCustomConversation>유저 지정 대화 허용</RimTalk.Settings.AllowCustomConversation>
     <RimTalk.Settings.AllowCustomConversationTooltip>사용자가 직접 대사를 작성해 캐릭터 간 대화를 시작하거나, 특정 캐릭터와 대화할 수 있습니다. 대화를 시작하려면 원하는 캐릭터를 우클릭하세요.</RimTalk.Settings.AllowCustomConversationTooltip>
-    
+    <RimTalk.Settings.ContinueDialogueWhileSleeping>자는 동안 대화 계속</RimTalk.Settings.ContinueDialogueWhileSleeping>
+    <RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>활성화하면, 폰이 잠들어도 생성된 모든 대화를 계속 진행합니다.</RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>
+
     <RimTalk.Settings.AllowSlavesToTalk>노예가 말하도록 허용</RimTalk.Settings.AllowSlavesToTalk>
     <RimTalk.Settings.AllowSlavesToTalkTooltip>이 옵션을 활성화하면 노예가 AI 생성 대화를 할 수 있습니다.</RimTalk.Settings.AllowSlavesToTalkTooltip>
     <RimTalk.Settings.AllowPrisonersToTalk>수감자가 말하도록 허용</RimTalk.Settings.AllowPrisonersToTalk>

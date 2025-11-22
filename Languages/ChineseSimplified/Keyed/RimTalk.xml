@@ -80,7 +80,9 @@
     <RimTalk.Settings.DisplayTalkWhenDraftedTooltip>即使角色被征召，也显示 RimTalk 气泡。这会在生成对话时临时覆盖气泡模组的设置。</RimTalk.Settings.DisplayTalkWhenDraftedTooltip>
     <RimTalk.Settings.AllowCustomConversation>允许玩家自定义对话</RimTalk.Settings.AllowCustomConversation>
     <RimTalk.Settings.AllowCustomConversationTooltip>允许你通过输入台词在角色之间发起自定义对话，或直接与某个角色交谈。右键点击角色即可开始对话。</RimTalk.Settings.AllowCustomConversationTooltip>
-    
+    <RimTalk.Settings.ContinueDialogueWhileSleeping>睡觉时继续对话</RimTalk.Settings.ContinueDialogueWhileSleeping>
+    <RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>启用后，即使角色入睡，也会继续显示所有生成的对话。</RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>
+
     <RimTalk.Settings.AllowSlavesToTalk>允许奴隶交谈</RimTalk.Settings.AllowSlavesToTalk>
     <RimTalk.Settings.AllowSlavesToTalkTooltip>启用此项以允许奴隶进行 AI 生成的对话。</RimTalk.Settings.AllowSlavesToTalkTooltip>
     <RimTalk.Settings.AllowPrisonersToTalk>允许囚犯交谈</RimTalk.Settings.AllowPrisonersToTalk>
