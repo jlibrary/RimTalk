@@ -227,9 +227,17 @@ public static class PawnService
         float closestDistSq = float.MaxValue;
 
         if (hostileTargets == null) return null;
+
         foreach (var target in hostileTargets.Where(target => GenHostility.IsActiveThreatTo(target, pawn.Faction)))
         {
             if (target.Thing is not Pawn threatPawn) continue;
+            if (threatPawn.Downed) continue;
+            if (pawn.IsPrisoner)
+            {
+                // Prevent prisoners from recognizing host faction or other prisoner from hostile faction as a threat
+                if (threatPawn.Faction == pawn.HostFaction || threatPawn.IsPrisoner) continue;
+            }
+
             Lord lord = threatPawn.GetLord();
 
             // === 1. EXCLUDE TACTICALLY RETREATING PAWNS ===
@@ -313,13 +321,13 @@ public static class PawnService
 
         Map map = pawn.Map;
         Faction mapFaction = map.ParentFaction;
-        
+
         if (mapFaction == pawn.Faction || (map.IsPlayerHome && pawn.Faction == Faction.OfPlayer))
             return MapRole.Defending; // player colonist
-        
+
         if (pawn.Faction.HostileTo(mapFaction))
             return MapRole.Invading;
-            
+
         return MapRole.Visiting; // friendly trader or visitor
     }
 
