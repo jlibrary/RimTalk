@@ -15,6 +15,7 @@ public static class PawnService
         if (pawn.IsPlayer()) return true;
         if (pawn.DestroyedOrNull() || !pawn.Spawned || pawn.Dead) return false;
         if (!pawn.RaceProps.Humanlike) return false;
+        if (pawn.ageTracker?.CurLifeStage?.developmentalStage < DevelopmentalStage.Child) return false;
         if (pawn.RaceProps.intelligence < Intelligence.Humanlike) return false;
         if (!pawn.health.capacities.CapableOf(PawnCapacityDefOf.Talking)) return false;
         if (pawn.skills?.GetSkill(SkillDefOf.Social) == null) return false;
