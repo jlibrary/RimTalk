@@ -7,6 +7,7 @@ using RimWorld;
 using UnityEngine;
 using Verse;
 using Verse.AI;
+using Cache = RimTalk.Data.Cache;
 
 namespace RimTalk.Patch;
 
@@ -35,11 +36,11 @@ public static class FloatMenuPatch
         
         IntVec3 cell = IntVec3.FromVector3(clickPos);
         
-        // Check if clicked on or near the selected pawn (talk to self)
+        // Check if clicked on or near the selected pawn (player talking to pawn)
         float distanceToSelf = pawn.Position.DistanceTo(cell);
         if (distanceToSelf <= ClickRadius)
         {
-            AddTalkOption(__result, pawn, pawn);
+            AddTalkOption(__result, Cache.GetPlayer(), pawn);
             return; // Don't check for other pawns if we're clicking on ourselves
         }
 
@@ -63,14 +64,11 @@ public static class FloatMenuPatch
 
     private static void AddTalkOption(List<FloatMenuOption> result, Pawn initiator, Pawn target)
     {
-        Pawn localInitiator = initiator;
-        Pawn localTarget = target;
-        
         result.Add(new FloatMenuOption(
             "RimTalk.FloatMenu.ChatWith".Translate(target.LabelShortCap),
             delegate 
             { 
-                Find.WindowStack.Add(new CustomDialogueWindow(localInitiator, localTarget)); 
+                Find.WindowStack.Add(new CustomDialogueWindow(initiator, target)); 
             },
             MenuOptionPriority.Default,
             null,

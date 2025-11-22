@@ -28,8 +28,8 @@ public class CustomDialogueWindow : Window
     {
         Text.Font = GameFont.Small;
         
-        string labelText = _initiator == _recipient
-            ? "RimTalk.FloatMenu.WhatToSayToSelf".Translate(_initiator.LabelShortCap)
+        string labelText = _initiator.IsPlayer()
+            ? "RimTalk.FloatMenu.WhatToSayToSelf".Translate(_recipient.LabelShortCap)
             : "RimTalk.FloatMenu.WhatToSayToOther".Translate(_initiator.LabelShortCap, _recipient.LabelShortCap);
         
         Widgets.Label(new Rect(0f, 0f, inRect.width, 25f), labelText);

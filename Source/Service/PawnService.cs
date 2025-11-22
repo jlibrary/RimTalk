@@ -12,20 +12,12 @@ public static class PawnService
 {
     public static bool IsTalkEligible(this Pawn pawn)
     {
-        if (pawn.DestroyedOrNull() || !pawn.Spawned || pawn.Dead)
-            return false;
-
-        if (!pawn.RaceProps.Humanlike)
-            return false;
-
-        if (pawn.RaceProps.intelligence < Intelligence.Humanlike)
-            return false;
-
-        if (!pawn.health.capacities.CapableOf(PawnCapacityDefOf.Talking))
-            return false;
-
-        if (pawn.skills?.GetSkill(SkillDefOf.Social) == null)
-            return false;
+        if (pawn.IsPlayer()) return true;
+        if (pawn.DestroyedOrNull() || !pawn.Spawned || pawn.Dead) return false;
+        if (!pawn.RaceProps.Humanlike) return false;
+        if (pawn.RaceProps.intelligence < Intelligence.Humanlike) return false;
+        if (!pawn.health.capacities.CapableOf(PawnCapacityDefOf.Talking)) return false;
+        if (pawn.skills?.GetSkill(SkillDefOf.Social) == null) return false;
 
         RimTalkSettings settings = Settings.Get();
         return pawn.IsFreeColonist ||
@@ -42,7 +34,7 @@ public static class PawnService
 
     public static bool IsInDanger(this Pawn pawn, bool includeMentalState = false)
     {
-        if (pawn == null) return false;
+        if (pawn == null || pawn.IsPlayer()) return false;
         if (pawn.Dead) return true;
         if (pawn.Downed) return true;
         if (!pawn.health.capacities.CapableOf(PawnCapacityDefOf.Moving)) return true;
@@ -82,6 +74,7 @@ public static class PawnService
     public static string GetRole(this Pawn pawn, bool includeFaction = false)
     {
         if (pawn == null) return null;
+        if (pawn.IsPlayer()) return "Voice from beyond";
         if (pawn.IsPrisoner) return "Prisoner";
         if (pawn.IsSlave) return "Slave";
         if (pawn.IsEnemy())
@@ -360,6 +353,11 @@ public static class PawnService
         }
 
         return result.TrimEnd();
+    }
+
+    public static bool IsPlayer(this Pawn pawn)
+    {
+        return pawn == Cache.GetPlayer();
     }
 
     private static string DescribeResistance(float value)

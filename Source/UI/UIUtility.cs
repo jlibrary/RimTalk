@@ -1,6 +1,6 @@
+using RimTalk.Service;
 using UnityEngine;
 using Verse;
-using Cache = RimTalk.Data.Cache;
 
 namespace RimTalk.UI
 {
@@ -20,7 +20,10 @@ namespace RimTalk.UI
                 var originalColor = GUI.color;
                 Widgets.DrawHighlightIfMouseover(rect);
 
-                GUI.color = pawn.Dead ? Color.gray : PawnNameColorUtility.PawnNameColorOf(pawn);
+                GUI.color =
+                    pawn.IsPlayer() ? new Color(1f, 0.75f, 0.8f) :
+                    pawn.Dead ? Color.gray :
+                    PawnNameColorUtility.PawnNameColorOf(pawn);
 
                 Widgets.Label(rect, $"[{pawnName}]");
 

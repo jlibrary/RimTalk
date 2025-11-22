@@ -11,11 +11,11 @@ public static class CustomDialogueService
 {
     private const float TalkDistance = 20f;
     public static readonly Dictionary<Pawn, PendingDialogue> PendingDialogues = new();
-    
+
     public static void Tick()
     {
         List<Pawn> toRemove = [];
-        
+
         foreach (var (initiator, dialogue) in PendingDialogues)
         {
             // Check if pawn is still valid
@@ -26,11 +26,11 @@ public static class CustomDialogueService
             }
 
             if (!CanTalk(initiator, dialogue.Recipient)) continue;
-            
+
             ExecuteDialogue(initiator, dialogue.Recipient, dialogue.Message);
             toRemove.Add(initiator);
         }
-        
+
         foreach (Pawn pawn in toRemove)
         {
             PendingDialogues.Remove(pawn);
@@ -44,27 +44,33 @@ public static class CustomDialogueService
         return (room1 != null && room2 != null && room1 == room2) ||
                (room1 == null && room2 == null); // Both outdoors
     }
-    
+
     public static bool CanTalk(Pawn initiator, Pawn recipient)
     {
-        // Talking to oneself is always allowed
-        if (initiator == recipient) return true;
-        
+        // Player talking to a pawn is always allowed
+        if (initiator.IsPlayer()) return true;
+
         float distance = initiator.Position.DistanceTo(recipient.Position);
         return distance <= TalkDistance && InSameRoom(initiator, recipient);
     }
-    
+
     public static void ExecuteDialogue(Pawn initiator, Pawn recipient, string message)
     {
         PawnState initiatorState = Cache.Get(initiator);
         if (initiatorState == null || !initiatorState.CanDisplayTalk())
             return;
-        
+
         PawnState recipientState = Cache.Get(recipient);
         if (recipientState != null && recipientState.CanDisplayTalk())
             recipientState.AddTalkRequest(message, initiator, TalkType.User);
 
-        if (initiator != recipient)
+        if (initiator.IsPlayer())
+        {
+            ApiLog apiLog = ApiHistory.AddUserHistory("RimTalk.CustomDialogue.Player".Translate(), message);
+            apiLog.SpokenTick = GenTicks.TicksGame;
+            Overlay.NotifyLogUpdated();
+        }
+        else
         {
             ApiLog apiLog = ApiHistory.AddUserHistory(initiator.LabelShort, message);
             TalkResponse talkResponse = new(TalkType.User, initiator.LabelShort, message)
@@ -73,18 +79,11 @@ public static class CustomDialogueService
             };
             Cache.Get(initiator).TalkResponses.Insert(0, talkResponse);
         }
-        else
-        {
-            ApiLog apiLog = ApiHistory.AddUserHistory("RimTalk.CustomDialogue.Player".Translate(), message);
-            apiLog.SpokenTick = GenTicks.TicksGame;
-            Overlay.NotifyLogUpdated();
-        }
     }
-    
+
     public class PendingDialogue(Pawn recipient, string message)
     {
         public readonly Pawn Recipient = recipient;
         public readonly string Message = message;
     }
 }
-
