@@ -30,7 +30,7 @@ Monologue = 1 turn. Conversation = 4–8 short turns";
         
     private const string JsonInstruction = @"
 
-Return JSON array only, with objects containing ""name"" and ""text"" string keys";
+Return JSONL/NDJSON only, with objects containing ""name"" and ""text"" string keys";
 
     // Get the current instruction from settings or fallback to default, always append JSON instruction
     public static string Instruction =>

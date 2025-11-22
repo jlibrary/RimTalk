@@ -8,6 +8,9 @@ using RimTalk.Util;
 
 namespace RimTalk.Service;
 
+// WARNING:
+// This class defines core logic and has a significant impact on system behavior.
+// In most cases, you should NOT modify this file.
 public static class AIService
 {
     private static string _instruction = "";
@@ -57,22 +60,15 @@ public static class AIService
                     });
             });
 
-            // Try deserializing once again with all streaming chunks to make sure a correct format was returned
-            try
-            {
-                if (payload == null) throw new Exception();
-                JsonUtil.DeserializeFromJson<List<TalkResponse>>(payload.Response);
-            }
-            catch
+            if (payload == null || string.IsNullOrEmpty(initApiLog.Response))
             {
                 initApiLog.Response = "Failed";
-                return;
             }
             
             ApiHistory.UpdatePayload(initApiLog.Id, payload);
 
             Stats.IncrementCalls();
-            Stats.IncrementTokens(payload.TokenCount);
+            Stats.IncrementTokens(payload?.TokenCount ?? 0);
 
             _firstInstruction = false;
         }
@@ -98,6 +94,7 @@ public static class AIService
             return null;
         }
 
+        // This needs to be changed if JSONL is used
         var talkResponses = JsonUtil.DeserializeFromJson<List<TalkResponse>>(payload.Response);
 
         if (talkResponses != null)
