@@ -104,6 +104,10 @@ public partial class Settings
         rightListing.Gap(12f);
         rightListing.CheckboxLabeled("RimTalk.Settings.AllowEnemiesToTalk".Translate().ToString(),
             ref settings.AllowEnemiesToTalk, "RimTalk.Settings.AllowEnemiesToTalkTooltip".Translate().ToString());
+        rightListing.Gap(12f);
+        rightListing.CheckboxLabeled("RimTalk.Settings.AllowBabiesToTalk".Translate().ToString(),
+            ref settings.AllowBabiesToTalk, "RimTalk.Settings.AllowBabiesToTalkTooltip".Translate().ToString());
+
 
         rightListing.End();
 
@@ -201,6 +205,7 @@ public partial class Settings
             settings.AllowPrisonersToTalk = true;
             settings.AllowOtherFactionsToTalk = false;
             settings.AllowEnemiesToTalk = false;
+            settings.AllowBabiesToTalk = false;
             settings.AllowCustomConversation = true;
             settings.ContinueDialogueWhileSleeping = false;
             settings.UseSimpleConfig = true;
