@@ -15,22 +15,17 @@ public static class PawnService
         if (pawn.IsPlayer()) return true;
         if (pawn.DestroyedOrNull() || !pawn.Spawned || pawn.Dead) return false;
         if (!pawn.RaceProps.Humanlike) return false;
-        RimTalkSettings settings = Settings.Get();
-        if (!settings.AllowBabiesToTalk &&
-            pawn.ageTracker?.CurLifeStage?.developmentalStage < DevelopmentalStage.Child)
-        {
-            return false;
-        }
-
         if (pawn.RaceProps.intelligence < Intelligence.Humanlike) return false;
         if (!pawn.health.capacities.CapableOf(PawnCapacityDefOf.Talking)) return false;
         if (pawn.skills?.GetSkill(SkillDefOf.Social) == null) return false;
 
+        RimTalkSettings settings = Settings.Get();
         return pawn.IsFreeColonist ||
-            (settings.AllowSlavesToTalk && pawn.IsSlave) ||
-            (settings.AllowPrisonersToTalk && pawn.IsPrisoner) ||
-            (settings.AllowOtherFactionsToTalk && pawn.IsVisitor()) ||
-            (settings.AllowEnemiesToTalk && pawn.IsEnemy());
+               (settings.AllowSlavesToTalk && pawn.IsSlave) ||
+               (settings.AllowPrisonersToTalk && pawn.IsPrisoner) ||
+               (settings.AllowOtherFactionsToTalk && pawn.IsVisitor()) ||
+               (settings.AllowEnemiesToTalk && pawn.IsEnemy()) ||
+               (settings.AllowBabiesToTalk && pawn.IsBaby());
     }
     public static HashSet<Hediff> GetHediffs(this Pawn pawn)
     {
@@ -102,6 +97,11 @@ public static class PawnService
     public static bool IsEnemy(this Pawn pawn)
     {
         return pawn != null && pawn.HostileTo(Faction.OfPlayer);
+    }
+
+    public static bool IsBaby(this Pawn pawn)
+    {
+        return pawn.ageTracker?.CurLifeStage?.developmentalStage < DevelopmentalStage.Child;
     }
 
     public static (string, bool) GetPawnStatusFull(this Pawn pawn, List<Pawn> nearbyPawns)

@@ -187,7 +187,7 @@ public static class PromptService
             return sb.ToString();
 
         var m = pawn.needs?.mood;
-        var mood = pawn.Downed
+        var mood = pawn.Downed && !pawn.IsBaby()
             ? "Critical: Downed (in pain/distress)"
             : pawn.InMentalState
                 ? $"Mood: {pawn.MentalState?.InspectLine} (in mental break)"
@@ -279,7 +279,7 @@ public static class PromptService
 
             if (pawns[0].InMentalState)
                 sb.Append($"\nbe dramatic (mental break)");
-            else if (pawns[0].Downed)
+            else if (pawns[0].Downed && !pawns[0].IsBaby())
                 sb.Append($"\n(downed in pain. Short, strained dialogue)");
             else
                 sb.Append($"\n{talkRequest.Prompt}");

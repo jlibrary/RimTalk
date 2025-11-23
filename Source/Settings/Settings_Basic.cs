@@ -205,7 +205,7 @@ public partial class Settings
             settings.AllowPrisonersToTalk = true;
             settings.AllowOtherFactionsToTalk = false;
             settings.AllowEnemiesToTalk = false;
-            settings.AllowBabiesToTalk = false;
+            settings.AllowBabiesToTalk = true;
             settings.AllowCustomConversation = true;
             settings.ContinueDialogueWhileSleeping = false;
             settings.UseSimpleConfig = true;
