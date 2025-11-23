@@ -91,6 +91,8 @@
     <RimTalk.Settings.AllowOtherFactionsToTalkTooltip>이 옵션을 활성화하면 다른 세력의 구성원이 AI 생성 대화를 할 수 있습니다.</RimTalk.Settings.AllowOtherFactionsToTalkTooltip>
     <RimTalk.Settings.AllowEnemiesToTalk>적들이 말하도록 허용</RimTalk.Settings.AllowEnemiesToTalk>
     <RimTalk.Settings.AllowEnemiesToTalkTooltip>이 옵션을 활성화하면 적들이 AI 생성 대화를 할 수 있습니다.</RimTalk.Settings.AllowEnemiesToTalkTooltip>
+    <RimTalk.Settings.AllowBabiesToTalk>영아와 유아가 말하도록 허용</RimTalk.Settings.AllowBabiesToTalk>
+    <RimTalk.Settings.AllowBabiesToTalkTooltip>이 옵션을 활성화하면 영아와 유아가 AI 생성 대화를 할 수 있습니다.</RimTalk.Settings.AllowBabiesToTalkTooltip>
     <RimTalk.Settings.PauseAtSpeed>고속에서 AI 일시정지</RimTalk.Settings.PauseAtSpeed>
     <RimTalk.Settings.DisableAiAtSpeedTooltip>API 호출을 줄이기 위해 게임 속도가 이 수준 이상으로 설정되면 AI가 일시정지됩니다.</RimTalk.Settings.DisableAiAtSpeedTooltip>
     <RimTalk.Settings.Disabled>비활성화됨</RimTalk.Settings.Disabled>

@@ -15,19 +15,23 @@ public static class PawnService
         if (pawn.IsPlayer()) return true;
         if (pawn.DestroyedOrNull() || !pawn.Spawned || pawn.Dead) return false;
         if (!pawn.RaceProps.Humanlike) return false;
-        if (pawn.ageTracker?.CurLifeStage?.developmentalStage < DevelopmentalStage.Child) return false;
+        RimTalkSettings settings = Settings.Get();
+        if (!settings.AllowBabiesToTalk &&
+            pawn.ageTracker?.CurLifeStage?.developmentalStage < DevelopmentalStage.Child)
+        {
+            return false;
+        }
+
         if (pawn.RaceProps.intelligence < Intelligence.Humanlike) return false;
         if (!pawn.health.capacities.CapableOf(PawnCapacityDefOf.Talking)) return false;
         if (pawn.skills?.GetSkill(SkillDefOf.Social) == null) return false;
 
-        RimTalkSettings settings = Settings.Get();
         return pawn.IsFreeColonist ||
-               (settings.AllowSlavesToTalk && pawn.IsSlave) ||
-               (settings.AllowPrisonersToTalk && pawn.IsPrisoner) ||
-               (settings.AllowOtherFactionsToTalk && pawn.IsVisitor()) ||
-               (settings.AllowEnemiesToTalk && pawn.IsEnemy());
+            (settings.AllowSlavesToTalk && pawn.IsSlave) ||
+            (settings.AllowPrisonersToTalk && pawn.IsPrisoner) ||
+            (settings.AllowOtherFactionsToTalk && pawn.IsVisitor()) ||
+            (settings.AllowEnemiesToTalk && pawn.IsEnemy());
     }
-
     public static HashSet<Hediff> GetHediffs(this Pawn pawn)
     {
         return pawn?.health.hediffSet.hediffs.Where(hediff => hediff.Visible).ToHashSet();
