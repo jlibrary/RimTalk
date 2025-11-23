@@ -72,6 +72,7 @@ public static class Cache
     {
         PawnCache.Clear();
         NameCache.Clear();
+        _playerPawn = null;
     }
 
     private static double GetScaleFactor(double groupWeight, double baselineWeight)
