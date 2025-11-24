@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using HarmonyLib;
+using RimLife;
 using RimTalk.Data;
 using RimTalk.Source.Data;
 using RimTalk.Util;
@@ -31,7 +32,7 @@ public static class PromptService
         {
             // Main pawn gets more detail, others get basic info
             InfoLevel infoLevel = pawn == pawns[0] ? InfoLevel.Normal : InfoLevel.Short;
-            string pawnContext = CreatePawnContext(pawn, infoLevel);
+            string pawnContext = CreatePawnProContext(pawn, infoLevel);
             Cache.Get(pawn).Context = pawnContext;
             count++;
             context.AppendLine();
@@ -147,6 +148,18 @@ public static class PromptService
         }
 
         return sb.ToString();
+    }
+
+    public static string CreatePawnProContext(Pawn pawn, InfoLevel infoLevel = InfoLevel.Normal)
+    {
+        var p_pro = new PawnPro(pawn);
+        return infoLevel switch
+        {
+            InfoLevel.Short => p_pro.ToStringLite(),
+            InfoLevel.Normal => p_pro.ToStringLite(),
+            InfoLevel.Full => p_pro.ToStringFull(),
+            _ => p_pro.ToStringCore(),
+        };
     }
 
     public static string CreatePawnContext(Pawn pawn, InfoLevel infoLevel = InfoLevel.Normal)
