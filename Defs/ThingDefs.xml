@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+    <ThingDef ParentName="ResourceBase">
+        <defName>VocalLinkCatalyst</defName>
+        <label>Vocal Link Catalyst</label>
+        <description>A single-use item that grants the creature the ability to speak in ways it couldn’t before.</description>
+        <graphicData>
+            <texPath>UI/VoiceLinkCatalyst</texPath>
+            <graphicClass>Graphic_Single</graphicClass>
+        </graphicData>
+        <thingClass>ThingWithComps</thingClass>
+        <useHitPoints>true</useHitPoints>
+        <statBases>
+            <MaxHitPoints>80</MaxHitPoints>
+            <MarketValue>400</MarketValue>
+            <Mass>0.2</Mass>
+            <Flammability>0.2</Flammability>
+            <DeteriorationRate>2.0</DeteriorationRate>
+        </statBases>
+        <stackLimit>10</stackLimit>
+        <thingCategories>
+            <li>Drugs</li>
+        </thingCategories>
+        <thingSetMakerTags>
+            <li>RewardStandardLowFreq</li>
+        </thingSetMakerTags>
+        <comps>
+            <li Class="CompProperties_Usable">
+                <useJob>UseItem</useJob>
+                <useLabel>Use {0_label}</useLabel>
+                <useDuration>0</useDuration>
+                <showUseGizmo>true</showUseGizmo>
+            </li>
+            <li Class="CompProperties_Targetable">
+                <compClass>RimTalk.Properties.CompTargetable_NonHuman</compClass>
+                <cannotHaveHediff>VocalLinkImplant</cannotHaveHediff>
+            </li>
+            <li Class="RimTalk.Properties.CompProperties_TargetEffectInstallVocalLink">
+                <hediffDef>VocalLinkImplant</hediffDef>
+                <soundOnUsed>MechSerumUsed</soundOnUsed>
+            </li>
+        </comps>
+        <tradeTags>
+            <li>AnimalExotic</li>
+            <li>ExoticMisc</li>
+            <li>Artifact</li>
+            <li>Bionic</li>
+            <li>Serum</li>
+        </tradeTags>
+    </ThingDef>
+</Defs>

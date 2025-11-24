@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+    <VocalLinkCatalyst.label>Catalyseur de lien vocal</VocalLinkCatalyst.label>
+    <VocalLinkCatalyst.description>Un objet à usage unique qui confère à la créature la capacité de parler d'une manière qu'elle ne pouvait pas auparavant.</VocalLinkCatalyst.description>
+    <VocalLinkCatalyst.comps.CompUsable.useLabel>Utiliser {0_label}</VocalLinkCatalyst.comps.CompUsable.useLabel>
+</LanguageData>

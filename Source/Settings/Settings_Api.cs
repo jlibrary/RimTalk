@@ -91,7 +91,7 @@ public partial class Settings
         GUI.color = Color.white;
         Text.Font = GameFont.Small;
 
-        listingStandard.Gap(12f);
+        listingStandard.Gap();
 
         // Show Advanced Settings button
         Rect advancedButtonRect = listingStandard.GetRect(30f);
@@ -120,7 +120,7 @@ public partial class Settings
             settings.UseSimpleConfig = true;
         }
 
-        listingStandard.Gap(12f);
+        listingStandard.Gap();
 
         // Cloud providers option with description
         Rect radioRect1 = listingStandard.GetRect(24f);
@@ -157,7 +157,7 @@ public partial class Settings
         GUI.color = Color.white;
         Text.Font = GameFont.Small;
 
-        listingStandard.Gap(12f);
+        listingStandard.Gap();
 
         // Draw appropriate section based on selection
         if (settings.UseCloudProviders)

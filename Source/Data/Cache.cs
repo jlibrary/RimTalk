@@ -26,7 +26,15 @@ public static class Cache
 
     public static PawnState Get(Pawn pawn)
     {
-        return pawn == null ? null : PawnCache.GetValueOrDefault(pawn);
+        if (pawn == null) return null;
+
+        if (PawnCache.TryGetValue(pawn, out var state)) return state;
+
+        if (!pawn.IsTalkEligible()) return null;
+        
+        PawnCache[pawn] = new PawnState(pawn);
+        NameCache[pawn.LabelShort] = pawn;
+        return PawnCache[pawn];
     }
 
     /// <summary>
@@ -105,7 +113,7 @@ public static class Cache
         foreach (var p in pawnList)
         {
             var weight = Get(p)?.TalkInitiationWeight ?? 0.0;
-            if (p.IsFreeNonSlaveColonist) totalColonistWeight += weight;
+            if (p.IsFreeNonSlaveColonist || p.HasVocalLink()) totalColonistWeight += weight;
             else if (p.IsSlave) totalSlaveWeight += weight;
             else if (p.IsPrisoner) totalPrisonerWeight += weight;
             else if (p.IsVisitor()) totalVisitorWeight += weight;
@@ -146,7 +154,7 @@ public static class Cache
         var effectiveTotalWeight = pawnList.Sum(p =>
         {
             var weight = Get(p)?.TalkInitiationWeight ?? 0.0;
-            if (p.IsFreeNonSlaveColonist) return weight * colonistScaleFactor;
+            if (p.IsFreeNonSlaveColonist || p.HasVocalLink()) return weight * colonistScaleFactor;
             if (p.IsSlave) return weight * slaveScaleFactor;
             if (p.IsPrisoner) return weight * prisonerScaleFactor;
             if (p.IsVisitor()) return weight * visitorScaleFactor;
@@ -161,7 +169,7 @@ public static class Cache
         {
             var currentPawnWeight = Get(pawn)?.TalkInitiationWeight ?? 0.0;
 
-            if (pawn.IsFreeNonSlaveColonist) cumulativeWeight += currentPawnWeight * colonistScaleFactor;
+            if (pawn.IsFreeNonSlaveColonist || pawn.HasVocalLink()) cumulativeWeight += currentPawnWeight * colonistScaleFactor;
             else if (pawn.IsSlave) cumulativeWeight += currentPawnWeight * slaveScaleFactor;
             else if (pawn.IsPrisoner) cumulativeWeight += currentPawnWeight * prisonerScaleFactor;
             else if (pawn.IsVisitor()) cumulativeWeight += currentPawnWeight * visitorScaleFactor;

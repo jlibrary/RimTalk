@@ -29,6 +29,7 @@ public class RimTalkSettings : ModSettings
     public bool AllowCustomConversation = true;
     public bool ContinueDialogueWhileSleeping = false;
     public bool AllowBabiesToTalk = true;
+    public bool AllowNonHumanToTalk = true;
     public int DisableAiAtSpeed = 0;
     public ButtonDisplayMode ButtonDisplay = ButtonDisplayMode.Tab;
 
@@ -161,6 +162,7 @@ public class RimTalkSettings : ModSettings
         Scribe_Values.Look(ref DisableAiAtSpeed, "DisableAiAtSpeed", 0);
         Scribe_Collections.Look(ref EnabledArchivableTypes, "enabledArchivableTypes", LookMode.Value, LookMode.Value);
         Scribe_Values.Look(ref AllowBabiesToTalk, "allowBabiesToTalk", true);
+        Scribe_Values.Look(ref AllowNonHumanToTalk, "allowNonHumanToTalk", true);
 
         // Debug window settings
         Scribe_Values.Look(ref ButtonDisplay, "buttonDisplay", ButtonDisplayMode.Tab, true);

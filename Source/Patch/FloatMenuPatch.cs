@@ -51,7 +51,7 @@ public static class FloatMenuPatch
         {
             if (thing is Pawn targetPawn && 
                 targetPawn != pawn && 
-                targetPawn.RaceProps.Humanlike)
+                (targetPawn.RaceProps.Humanlike || targetPawn.HasVocalLink()))
             {
                 if (pawn.IsTalkEligible() && pawn.CanReach(targetPawn, PathEndMode.Touch, Danger.None))
                 {

@@ -152,7 +152,13 @@ public partial class Settings : Mod
 
         sb.AppendLine(settings.CustomInstruction);
         sb.AppendLine(settings.AllowSimultaneousConversations.ToString());
-
+        sb.AppendLine(settings.AllowSlavesToTalk.ToString());
+        sb.AppendLine(settings.AllowPrisonersToTalk.ToString());
+        sb.AppendLine(settings.AllowOtherFactionsToTalk.ToString());
+        sb.AppendLine(settings.AllowEnemiesToTalk.ToString());
+        sb.AppendLine(settings.AllowBabiesToTalk.ToString());
+        sb.AppendLine(settings.AllowNonHumanToTalk.ToString());
+        
         return sb.ToString().GetHashCode();
     }
 

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+    <HediffDef>
+        <defName>RimTalk_PersonaData</defName>
+        <label>RimTalk Persona</label>
+        <description>Technical hediff for storing RimTalk data. Not visible in-game.</description>
+        <hediffClass>RimTalk.Data.Hediff_Persona</hediffClass>
+        <defaultLabelColor>(0.8, 0.8, 0.8)</defaultLabelColor>
+        <isBad>false</isBad>
+        <everCurableByItem>false</everCurableByItem>
+        <scenarioCanAdd>false</scenarioCanAdd>
+    </HediffDef>
+    <HediffDef>
+        <defName>VocalLinkImplant</defName>
+        <label>vocal link implant</label>
+        <description>This implant lets the creature speak in ways it couldn’t before.\n\nClick to modify persona.</description>
+        <hediffClass>HediffWithComps</hediffClass>
+        <isBad>false</isBad>
+        <defaultLabelColor>(0.5, 1.0, 0.5)</defaultLabelColor>
+    </HediffDef>
+</Defs>

@@ -75,7 +75,7 @@ public partial class Settings
                     }
                 }
 
-                listingStandard.Gap(12f);
+                listingStandard.Gap();
             }
         }
         else

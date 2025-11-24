@@ -61,8 +61,9 @@ public static class PromptService
         var genderAndAge = Regex.Replace(pawn.MainDesc(false), @"\(\d+\)", "");
         sb.AppendLine($"{name} {title} ({genderAndAge})");
 
-        var role = $"Role: {pawn.GetRole(true)}";
-        sb.AppendLine(role);
+        var role = pawn.GetRole(true);
+        if (role != null)
+            sb.AppendLine($"Role: {role}");
 
         if (ModsConfig.BiotechActive && pawn.genes?.Xenotype != null)
         {
@@ -127,7 +128,7 @@ public static class PromptService
             sb.AppendLine(adulthood);
         }
 
-        var traits = "Traits: ";
+        var traits = "";
         foreach (Trait trait in pawn.story?.traits?.TraitsSorted ?? Enumerable.Empty<Trait>())
         {
             foreach (var degreeData in trait.def.degreeDatas.Where(degreeData => degreeData.degree == trait.Degree))
@@ -139,7 +140,8 @@ public static class PromptService
             }
         }
 
-        sb.AppendLine(traits);
+        if (traits != "")
+            sb.AppendLine($"Traits: {traits}");
 
         if (infoLevel != InfoLevel.Short)
         {
@@ -158,9 +160,8 @@ public static class PromptService
     public static string CreatePawnContext(Pawn pawn, InfoLevel infoLevel = InfoLevel.Normal)
     {
         StringBuilder sb = new StringBuilder();
-
-        if (pawn.RaceProps.Humanlike)
-            sb.Append(CreatePawnBackstory(pawn, infoLevel));
+        
+        sb.Append(CreatePawnBackstory(pawn, infoLevel));
 
         // add Health
         var method = AccessTools.Method(typeof(HealthCardUtility), "VisibleHediffs");
@@ -187,20 +188,24 @@ public static class PromptService
             return sb.ToString();
 
         var m = pawn.needs?.mood;
-        var mood = pawn.Downed && !pawn.IsBaby()
-            ? "Critical: Downed (in pain/distress)"
-            : pawn.InMentalState
-                ? $"Mood: {pawn.MentalState?.InspectLine} (in mental break)"
-                : $"Mood: {m?.MoodString ?? "N/A"} ({(int)((m?.CurLevelPercentage ?? 0) * 100)}%)";
-        sb.AppendLine(mood);
+        if (m?.MoodString != null)
+        {
+            var mood = pawn.Downed && !pawn.IsBaby()
+                ? "Critical: Downed (in pain/distress)"
+                : pawn.InMentalState
+                    ? $"Mood: {pawn.MentalState?.InspectLine} (in mental break)"
+                    : $"Mood: {m.MoodString} ({(int)(m.CurLevelPercentage * 100)}%)";
+            sb.AppendLine(mood);
+        }
 
-        var thoughts = "Memory: ";
+        var thoughts = "";
         foreach (Thought thought in GetThoughts(pawn).Keys)
         {
             thoughts += $"{Sanitize(thought.LabelCap)}, ";
         }
 
-        sb.AppendLine(thoughts);
+        if (thoughts != "")
+            sb.AppendLine($"Memory: {thoughts}");
 
         if (pawn.IsSlave || pawn.IsPrisoner)
             sb.AppendLine(pawn.GetPrisonerSlaveStatus());
@@ -221,9 +226,9 @@ public static class PromptService
 
         if (infoLevel != InfoLevel.Short)
         {
-            var equipment = "Equipment: ";
+            var equipments = "";
             if (pawn.equipment?.Primary != null)
-                equipment += $"Weapon: {pawn.equipment.Primary.LabelCap}, ";
+                equipments += $"Weapon: {pawn.equipment.Primary.LabelCap}, ";
 
             var wornApparel = pawn.apparel?.WornApparel;
             var apparelLabels =
@@ -231,11 +236,11 @@ public static class PromptService
 
             if (apparelLabels.Any())
             {
-                equipment += $"Apparel: {string.Join(", ", apparelLabels)}";
+                equipments += $"Apparel: {string.Join(", ", apparelLabels)}";
             }
 
-            if (equipment != "Equipment: ")
-                sb.AppendLine(equipment);
+            if (equipments != "")
+                sb.AppendLine($"Equipments: {equipments}");
         }
 
         return sb.ToString();

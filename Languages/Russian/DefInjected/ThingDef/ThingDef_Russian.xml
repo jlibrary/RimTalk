@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+    <VocalLinkCatalyst.label>Катализатор голосовой связи</VocalLinkCatalyst.label>
+    <VocalLinkCatalyst.description>Одноразовый предмет, который дает существу способность говорить способами, которые были невозможны раньше.</VocalLinkCatalyst.description>
+    <VocalLinkCatalyst.comps.CompUsable.useLabel>Использовать {0_label}</VocalLinkCatalyst.comps.CompUsable.useLabel>
+</LanguageData>

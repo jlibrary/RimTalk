@@ -8,24 +8,22 @@ namespace RimTalk.Data;
 
 public class Hediff_Persona : Hediff
 {
-    public const string RimtalkHediff = "RimTalk_PersonaData";
+    private const string RimtalkHediff = "RimTalk_PersonaData";
+    private Dictionary<string, int> _spokenThoughtTicks = new();
     public string Personality;
     public float TalkInitiationWeight = 1.0f;
-    public Dictionary<string, int> SpokenThoughtTicks = new();
-    
     public override bool Visible => false;
-    public override string Label => "RimTalk Persona Data";
-
+    
     public override void ExposeData()
     {
         base.ExposeData();
         Scribe_Values.Look(ref Personality, "Personality");
         Scribe_Values.Look(ref TalkInitiationWeight, "TalkInitiationWeight", 1.0f);
-        Scribe_Collections.Look(ref SpokenThoughtTicks, "SpokenThoughtTicks", LookMode.Value, LookMode.Value);
+        Scribe_Collections.Look(ref _spokenThoughtTicks, "SpokenThoughtTicks", LookMode.Value, LookMode.Value);
         
-        if (SpokenThoughtTicks == null)
+        if (_spokenThoughtTicks == null)
         {
-            SpokenThoughtTicks = new Dictionary<string, int>();
+            _spokenThoughtTicks = new Dictionary<string, int>();
         }
     }
     
@@ -33,15 +31,17 @@ public class Hediff_Persona : Hediff
     {
         var def = DefDatabase<HediffDef>.GetNamedSilentFail(RimtalkHediff);
         if (pawn?.health?.hediffSet == null || def == null) return null;
-    
-        var hediff = pawn.health.hediffSet.GetFirstHediffOfDef(def) as Hediff_Persona;
-    
-        if (hediff == null)
+
+        if (pawn.health.hediffSet.GetFirstHediffOfDef(def) is not Hediff_Persona hediff)
         {
             hediff = (Hediff_Persona)HediffMaker.MakeHediff(def, pawn);
         
             // Assign a random personality on creation
-            PersonalityData randomPersonalityData = Constant.Personalities.RandomElement();
+            PersonalityData randomPersonalityData =
+                pawn.RaceProps.Humanlike ? Constant.Personalities.RandomElement()
+                : pawn.RaceProps.Animal ? Constant.PersonaAnimal
+                : pawn.RaceProps.IsMechanoid ? Constant.PersonaMech
+                : Constant.PersonaNonHuman;
             hediff.Personality = randomPersonalityData.Persona;
         
             if (pawn.IsSlave || pawn.IsPrisoner || pawn.IsVisitor() || pawn.IsEnemy())
@@ -57,10 +57,7 @@ public class Hediff_Persona : Hediff
         }
     
         // Ensure dictionary is initialized (for both new and existing hediffs)
-        if (hediff.SpokenThoughtTicks == null)
-        {
-            hediff.SpokenThoughtTicks = new Dictionary<string, int>();
-        }
+        hediff._spokenThoughtTicks ??= new Dictionary<string, int>();
     
         return hediff;
     }
@@ -76,7 +73,7 @@ public class Hediff_Persona : Hediff
         // Randomize interval from 1 to 2.5 days
         int randomInterval = Random.Range(60000, 150000);
     
-        if (SpokenThoughtTicks.TryGetValue(key, out int lastTick))
+        if (_spokenThoughtTicks.TryGetValue(key, out int lastTick))
         {
             if (currentTick - lastTick < randomInterval)
             {
@@ -84,7 +81,7 @@ public class Hediff_Persona : Hediff
             }
         }
     
-        SpokenThoughtTicks[key] = currentTick;
+        _spokenThoughtTicks[key] = currentTick;
 
         // Also mark for nearby pawns so they don't talk about the same thing
         var nearbyPawns = PawnSelector.GetAllNearByPawns(thought.pawn);
@@ -94,7 +91,7 @@ public class Hediff_Persona : Hediff
             var hediff = GetOrAddNew(p);
             if (hediff != null)
             {
-                hediff.SpokenThoughtTicks[key] = currentTick;
+                hediff._spokenThoughtTicks[key] = currentTick;
             }
         }
 

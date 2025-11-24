@@ -13,6 +13,7 @@ public static class PawnService
     public static bool IsTalkEligible(this Pawn pawn)
     {
         if (pawn.IsPlayer()) return true;
+        if (pawn.HasVocalLink()) return true;
         if (pawn.DestroyedOrNull() || !pawn.Spawned || pawn.Dead) return false;
         if (!pawn.RaceProps.Humanlike) return false;
         if (pawn.RaceProps.intelligence < Intelligence.Humanlike) return false;
@@ -86,7 +87,7 @@ public static class PawnService
             return includeFaction && pawn.Faction != null ? $"Visitor Group({pawn.Faction.Name})" : "Visitor";
         if (pawn.IsQuestLodger()) return "Lodger";
         if (pawn.IsFreeColonist) return pawn.GetMapRole() == MapRole.Invading ? "Invader" : "Colonist";
-        return "Unknown";
+        return null;
     }
 
     public static bool IsVisitor(this Pawn pawn)
@@ -363,6 +364,11 @@ public static class PawnService
     public static bool IsPlayer(this Pawn pawn)
     {
         return pawn == Cache.GetPlayer();
+    }
+
+    public static bool HasVocalLink(this Pawn pawn)
+    {
+        return Settings.Get().AllowNonHumanToTalk && pawn.health.hediffSet.HasHediff(Constant.VocalLinkDef);
     }
 
     private static string DescribeResistance(float value)

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+    <VocalLinkCatalyst.label>聲音鏈接催化劑</VocalLinkCatalyst.label>
+    <VocalLinkCatalyst.description>一次性物品，賦予生物前所未有的說話能力。</VocalLinkCatalyst.description>
+    <VocalLinkCatalyst.comps.CompUsable.useLabel>使用{0_label}</VocalLinkCatalyst.comps.CompUsable.useLabel>
+</LanguageData>

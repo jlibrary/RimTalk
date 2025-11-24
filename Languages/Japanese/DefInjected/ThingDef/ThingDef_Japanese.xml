@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+    <VocalLinkCatalyst.label>ボーカルリンク触媒</VocalLinkCatalyst.label>
+    <VocalLinkCatalyst.description>生物に以前は不可能だった方法で話す能力を与える使い捨てアイテム。</VocalLinkCatalyst.description>
+    <VocalLinkCatalyst.comps.CompUsable.useLabel>{0_label}を使用</VocalLinkCatalyst.comps.CompUsable.useLabel>
+</LanguageData>

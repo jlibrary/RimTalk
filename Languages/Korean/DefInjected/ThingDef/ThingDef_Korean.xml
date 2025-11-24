@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+    <VocalLinkCatalyst.label>음성 연결 촉매</VocalLinkCatalyst.label>
+    <VocalLinkCatalyst.description>생물에게 이전에는 불가능했던 방식으로 말할 수 있는 능력을 부여하는 일회용 아이템입니다.</VocalLinkCatalyst.description>
+    <VocalLinkCatalyst.comps.CompUsable.useLabel>{0_label} 사용</VocalLinkCatalyst.comps.CompUsable.useLabel>
+</LanguageData>
