@@ -18,7 +18,7 @@ public static class BioTabPersonalityPatch
 
     private static void AddPersonaElement(Pawn pawn)
     {
-        if (pawn?.RaceProps?.Humanlike != true || !pawn.IsFreeColonist)
+        if (!pawn.IsColonist && !pawn.IsPrisonerOfColony)
         {
             return;
         }
