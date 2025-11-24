@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
 using RimTalk.Data;
+using RimTalk.Service;
 using RimTalk.UI;
 using RimWorld;
 using UnityEngine;
@@ -18,10 +19,8 @@ public static class BioTabPersonalityPatch
 
     private static void AddPersonaElement(Pawn pawn)
     {
-        if (!pawn.IsColonist && !pawn.IsPrisonerOfColony)
-        {
+        if (!pawn.IsColonist && !pawn.IsPrisonerOfColony && !pawn.HasVocalLink())
             return;
-        }
 
         var tmpStackElements =
             (List<GenUI.AnonymousStackElement>)AccessTools.Field(typeof(CharacterCardUtility), "tmpStackElements")

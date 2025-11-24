@@ -15,7 +15,6 @@ public class CompTargetable_NonHuman : CompTargetable
             canTargetPawns = true,
             canTargetBuildings = false,
             canTargetAnimals = true,
-            canTargetHumans = false,
             canTargetMechs = true,
             canTargetSelf = true
         };
