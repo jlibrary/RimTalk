@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using RimTalk.Data;
 using RimTalk.Error;
 using RimTalk.Util;
+using RimWorld;
 using UnityEngine.Networking;
 using Verse;
 
@@ -14,26 +15,221 @@ namespace RimTalk.Client.Player2;
 public class Player2Client : IAIClient
 {
     private readonly string _apiKey;
+    private readonly bool _isLocalConnection;
     private const string GameClientId = "019a8368-b00b-72bc-b367-2825079dc6fb";
     private const string BaseUrl = "https://api.player2.game/v1";
+    private const string LocalUrl = "http://localhost:4315/v1";
     private static DateTime _lastHealthCheck = DateTime.MinValue;
     private static bool _healthCheckActive = false;
 
-    public Player2Client(string apiKey)
+    /// <summary>
+    /// Factory method that attempts local Player2 app detection before falling back to manual API key.
+    /// This provides the best user experience by auto-detecting the Player2 desktop app when available.
+    /// </summary>
+    /// <param name="fallbackApiKey">Manual API key to use if local app is not detected</param>
+    /// <returns>Configured Player2Client instance</returns>
+    public static async Task<Player2Client> CreateAsync(string fallbackApiKey = null)
+    {
+        try
+        {
+            // 1. First attempt: Try to detect and use local Player2 app (zero-config experience)
+            string localKey = await TryGetLocalPlayer2Key();
+            if (!string.IsNullOrEmpty(localKey))
+            {
+                Logger.Debug("Player2 local app detected, using local connection");
+                ShowPlayer2LocalDetectedNotification();
+                return new Player2Client(localKey, isLocal: true);
+            }
+
+            // 2. Fallback: Use manually provided API key from settings
+            if (!string.IsNullOrEmpty(fallbackApiKey))
+            {
+                Logger.Debug("Using manual Player2 API key");
+                return new Player2Client(fallbackApiKey, isLocal: false);
+            }
+
+            // 3. Neither local app nor manual key available
+            ShowPlayer2LocalNotFoundNotification();
+            throw new Exception("Player2 not available: no local app running and no API key provided");
+        }
+        catch (Exception ex)
+        {
+            Logger.Error($"Failed to create Player2 client: {ex.Message}");
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Private constructor - use CreateAsync() instead for proper initialization
+    /// </summary>
+    private Player2Client(string apiKey, bool isLocal)
     {
         _apiKey = apiKey;
+        _isLocalConnection = isLocal;
         
-        if (!_healthCheckActive && !string.IsNullOrEmpty(apiKey))
+        // Only start health check for remote connections (local connections don't require periodic checks)
+        if (!_healthCheckActive && !string.IsNullOrEmpty(apiKey) && !isLocal)
         {
             _healthCheckActive = true;
             StartHealthCheck();
         }
     }
 
+    /// <summary>
+    /// Shows notification when Player2 local app is detected and used automatically
+    /// </summary>
+    private static void ShowPlayer2LocalDetectedNotification()
+    {
+        try
+        {
+            // Schedule notification on main thread
+            LongEventHandler.ExecuteWhenFinished(() =>
+            {
+                try
+                {
+                    Messages.Message(
+                        "RimTalk: Player2 desktop app detected! Using automatic authentication (no API key needed).",
+                        MessageTypeDefOf.PositiveEvent
+                    );
+                    Logger.Message("RimTalk: ✓ Successfully connected to local Player2 app");
+                }
+                catch (Exception ex)
+                {
+                    Logger.Warning($"Error showing Player2 detection notification: {ex.Message}");
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            Logger.Warning($"Error scheduling Player2 detection notification: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Shows notification when Player2 local app is not found
+    /// </summary>
+    private static void ShowPlayer2LocalNotFoundNotification()
+    {
+        try
+        {
+            LongEventHandler.ExecuteWhenFinished(() =>
+            {
+                try
+                {
+                    Messages.Message(
+                        "RimTalk: Player2 desktop app not found. Please start Player2 app or add API key manually.",
+                        MessageTypeDefOf.CautionInput
+                    );
+                    Logger.Message("RimTalk: Player2 local app not available, manual API key required");
+                }
+                catch (Exception ex)
+                {
+                    Logger.Warning($"Error showing Player2 not found notification: {ex.Message}");
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            Logger.Warning($"Error scheduling Player2 not found notification: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Attempts to detect and authenticate with a local Player2 desktop app.
+    /// This provides the optimal user experience as it requires no manual API key setup.
+    /// </summary>
+    /// <returns>API key from local app, or null if app is not running/available</returns>
+    private static async Task<string> TryGetLocalPlayer2Key()
+    {
+        try
+        {
+            Logger.Debug("Checking for local Player2 app...");
+            
+            // First verify the app is running with a health check
+            using (var healthRequest = UnityWebRequest.Get("http://localhost:4315/v1/health"))
+            {
+                healthRequest.timeout = 2;
+                
+                var asyncOperation = healthRequest.SendWebRequest();
+                var startTime = DateTime.Now;
+                
+                while (!asyncOperation.isDone)
+                {
+                    if (DateTime.Now.Subtract(startTime).TotalSeconds > 2)
+                        break;
+                    await Task.Delay(50);
+                }
+
+                if (healthRequest.responseCode != 200)
+                {
+                    Logger.Debug("Player2 local app health check failed");
+                    return null;
+                }
+                
+                Logger.Debug("Player2 local app health check passed");
+            }
+
+            // If health check passed, get API key through local authentication
+            string loginUrl = $"http://localhost:4315/v1/login/web/{GameClientId}";
+            byte[] bodyRaw = Encoding.UTF8.GetBytes("{}");
+
+            using (var webRequest = new UnityWebRequest(loginUrl, "POST"))
+            {
+                webRequest.uploadHandler = new UploadHandlerRaw(bodyRaw);
+                webRequest.downloadHandler = new DownloadHandlerBuffer();
+                webRequest.SetRequestHeader("Content-Type", "application/json");
+                webRequest.timeout = 3;
+
+                var asyncOperation = webRequest.SendWebRequest();
+                var startTime = DateTime.Now;
+                
+                while (!asyncOperation.isDone)
+                {
+                    if (DateTime.Now.Subtract(startTime).TotalSeconds > 3)
+                        break;
+                    await Task.Delay(50);
+                }
+
+                if (webRequest.responseCode == 200)
+                {
+                    string responseText = webRequest.downloadHandler.text;
+                    var response = JsonUtil.DeserializeFromJson<LocalPlayer2Response>(responseText);
+                    
+                    if (!string.IsNullOrEmpty(response?.p2Key))
+                    {
+                        Logger.Message("[Player2] ✓ Local app authenticated successfully");
+                        return response.p2Key;
+                    }
+                    else
+                    {
+                        Logger.Warning("Player2 local app responded but no API key in response");
+                    }
+                }
+                else
+                {
+                    Logger.Debug($"Player2 local login failed: {webRequest.responseCode}");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.Debug($"Local Player2 detection failed: {ex.Message}");
+        }
+        
+        return null;
+    }
+
+    /// <summary>
+    /// Returns the appropriate API base URL based on connection type
+    /// </summary>
+    private string GetApiUrl() => _isLocalConnection ? LocalUrl : BaseUrl;
+
     public async Task<Payload> GetStreamingChatCompletionAsync<T>(string instruction,
         List<(Role role, string message)> messages, Action<T> onResponseParsed) where T : class
     {
-        await EnsureHealthCheck();
+        // Only perform health checks for remote connections (local connections don't need them)
+        if (!_isLocalConnection)
+            await EnsureHealthCheck();
         
         var allMessages = BuildMessages(instruction, messages);
         var request = new Player2Request
@@ -55,11 +251,11 @@ public class Player2Client : IAIClient
 
         try
         {
-            Logger.Debug($"Player2 API streaming request: {BaseUrl}/chat/completions\n{jsonContent}");
+            Logger.Debug($"Player2 API streaming request ({(_isLocalConnection ? "local" : "remote")}): {GetApiUrl()}/chat/completions\n{jsonContent}");
 
             byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonContent);
 
-            using var webRequest = new UnityWebRequest($"{BaseUrl}/chat/completions", "POST");
+            using var webRequest = new UnityWebRequest($"{GetApiUrl()}/chat/completions", "POST");
             webRequest.uploadHandler = new UploadHandlerRaw(bodyRaw);
             webRequest.downloadHandler = streamingHandler;
             webRequest.SetRequestHeader("Content-Type", "application/json");
@@ -98,7 +294,9 @@ public class Player2Client : IAIClient
     public async Task<Payload> GetChatCompletionAsync(string instruction,
         List<(Role role, string message)> messages)
     {
-        await EnsureHealthCheck();
+        // Only perform health checks for remote connections (local connections don't need them)
+        if (!_isLocalConnection)
+            await EnsureHealthCheck();
         
         var allMessages = BuildMessages(instruction, messages);
         var request = new Player2Request
@@ -118,11 +316,11 @@ public class Player2Client : IAIClient
     {
         try
         {
-            Logger.Debug($"Player2 API request: {BaseUrl}/chat/completions\n{jsonContent}");
+            Logger.Debug($"Player2 API request ({(_isLocalConnection ? "local" : "remote")}): {GetApiUrl()}/chat/completions\n{jsonContent}");
 
             byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonContent);
 
-            using var webRequest = new UnityWebRequest($"{BaseUrl}/chat/completions", "POST");
+            using var webRequest = new UnityWebRequest($"{GetApiUrl()}/chat/completions", "POST");
             webRequest.uploadHandler = new UploadHandlerRaw(bodyRaw);
             webRequest.downloadHandler = new DownloadHandlerBuffer();
             webRequest.SetRequestHeader("Content-Type", "application/json");
@@ -192,14 +390,17 @@ public class Player2Client : IAIClient
         }
     }
 
+    /// <summary>
+    /// Health check functionality - only runs for remote connections as local connections don't require periodic monitoring
+    /// </summary>
     private async void StartHealthCheck()
     {
         while (_healthCheckActive && Current.Game != null)
         {
             try
             {
-                await Task.Delay(60000);
-                if (_healthCheckActive && !string.IsNullOrEmpty(_apiKey))
+                await Task.Delay(60000); // Check every 60 seconds as required by Player2 API
+                if (_healthCheckActive && !string.IsNullOrEmpty(_apiKey) && !_isLocalConnection)
                 {
                     await PerformHealthCheck();
                 }
@@ -221,11 +422,11 @@ public class Player2Client : IAIClient
 
     private async Task PerformHealthCheck()
     {
-        if (string.IsNullOrEmpty(_apiKey)) return;
+        if (string.IsNullOrEmpty(_apiKey) || _isLocalConnection) return;
 
         try
         {
-            using var webRequest = new UnityWebRequest($"{BaseUrl}/health", "GET");
+            using var webRequest = new UnityWebRequest($"{GetApiUrl()}/health", "GET");
             webRequest.downloadHandler = new DownloadHandlerBuffer();
             webRequest.SetRequestHeader("Authorization", $"Bearer {_apiKey}");
             webRequest.SetRequestHeader("X-Game-Client-Id", GameClientId);
@@ -259,4 +460,14 @@ public class Player2Client : IAIClient
     {
         _healthCheckActive = false;
     }
+}
+
+/// <summary>
+/// Data model for deserializing local Player2 app authentication response
+/// </summary>
+[System.Runtime.Serialization.DataContract]
+public class LocalPlayer2Response
+{
+    [System.Runtime.Serialization.DataMember(Name = "p2Key")]
+    public string p2Key { get; set; }
 }

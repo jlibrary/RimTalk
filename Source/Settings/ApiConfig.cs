@@ -27,7 +27,13 @@ public class ApiConfig : IExposable
         if (!IsEnabled) return false;
             
         if (Settings.Get().UseCloudProviders)
+        {
+            // Player2 can work without API key (local app detection)
+            if (Provider == AIProvider.Player2)
+                return SelectedModel != Constant.ChooseModel;
+                
             return !string.IsNullOrWhiteSpace(ApiKey) && SelectedModel != Constant.ChooseModel;
+        }
         else
             return !string.IsNullOrWhiteSpace(BaseUrl);
     }

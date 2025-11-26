@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using RimTalk.Client.OpenAI;
 using RimTalk.Util;
+using RimWorld;
 using UnityEngine;
 using UnityEngine.Networking;
 using Verse;
@@ -314,16 +315,103 @@ public partial class Settings
         {
             List<FloatMenuOption> providerOptions = new List<FloatMenuOption>
             {
-                new FloatMenuOption(AIProvider.Google.ToString(), () => { config.Provider = AIProvider.Google; config.SelectedModel = Data.Constant.ChooseModel; }),
-                new FloatMenuOption(AIProvider.OpenAI.ToString(), () => { config.Provider = AIProvider.OpenAI; config.SelectedModel = Data.Constant.ChooseModel; }),
-                new FloatMenuOption(AIProvider.DeepSeek.ToString(), () => { config.Provider = AIProvider.DeepSeek; config.SelectedModel = Data.Constant.ChooseModel; }),
-                new FloatMenuOption(AIProvider.OpenRouter.ToString(), () => { config.Provider = AIProvider.OpenRouter; config.SelectedModel = Data.Constant.ChooseModel; }),
-                new FloatMenuOption(AIProvider.Player2.ToString(), () => { config.Provider = AIProvider.Player2; config.SelectedModel = "Default"; }),
-                new FloatMenuOption(AIProvider.Custom.ToString(), () => { config.Provider = AIProvider.Custom; config.SelectedModel = "Custom"; })
+                new FloatMenuOption(AIProvider.Google.ToString(), () => { 
+                    config.Provider = AIProvider.Google; 
+                    config.SelectedModel = Data.Constant.ChooseModel; 
+                }),
+                new FloatMenuOption(AIProvider.OpenAI.ToString(), () => { 
+                    config.Provider = AIProvider.OpenAI; 
+                    config.SelectedModel = Data.Constant.ChooseModel; 
+                }),
+                new FloatMenuOption(AIProvider.DeepSeek.ToString(), () => { 
+                    config.Provider = AIProvider.DeepSeek; 
+                    config.SelectedModel = Data.Constant.ChooseModel; 
+                }),
+                new FloatMenuOption(AIProvider.OpenRouter.ToString(), () => { 
+                    config.Provider = AIProvider.OpenRouter; 
+                    config.SelectedModel = Data.Constant.ChooseModel; 
+                }),
+                new FloatMenuOption(AIProvider.Player2.ToString(), () => { 
+                    config.Provider = AIProvider.Player2; 
+                    config.SelectedModel = "Default";
+                    // Immediately check Player2 status when selected
+                    CheckPlayer2StatusAndNotify();
+                }),
+                new FloatMenuOption(AIProvider.Custom.ToString(), () => { 
+                    config.Provider = AIProvider.Custom; 
+                    config.SelectedModel = "Custom"; 
+                })
             };
             Find.WindowStack.Add(new FloatMenu(providerOptions));
         }
         x += 105f;
+    }
+
+    /// <summary>
+    /// Checks Player2 desktop app status and shows immediate notification
+    /// </summary>
+    private void CheckPlayer2StatusAndNotify()
+    {
+        Task.Run(async () =>
+        {
+            try
+            {
+                bool isAvailable = await IsPlayer2LocalAppAvailableAsync();
+                
+                LongEventHandler.ExecuteWhenFinished(() =>
+                {
+                    if (isAvailable)
+                    {
+                        Messages.Message(
+                            "RimTalk: Player2 desktop app detected and ready for use!", 
+                            MessageTypeDefOf.PositiveEvent
+                        );
+                        Logger.Message("RimTalk: Player2 desktop app status check - Available");
+                    }
+                    else
+                    {
+                        Messages.Message(
+                            "RimTalk: Player2 desktop app not detected. Install and start Player2 app, or add API key manually.", 
+                            MessageTypeDefOf.CautionInput
+                        );
+                        Logger.Message("RimTalk: Player2 desktop app status check - Not available");
+                    }
+                });
+            }
+            catch (System.Exception ex)
+            {
+                Logger.Warning($"RimTalk: Error checking Player2 status: {ex.Message}");
+            }
+        });
+    }
+
+    /// <summary>
+    /// Async helper to check if Player2 local app is available
+    /// </summary>
+    private async Task<bool> IsPlayer2LocalAppAvailableAsync()
+    {
+        try
+        {
+            using (var webRequest = UnityWebRequest.Get("http://localhost:4315/v1/health"))
+            {
+                webRequest.timeout = 2;
+                var asyncOperation = webRequest.SendWebRequest();
+                
+                var startTime = System.DateTime.Now;
+                while (!asyncOperation.isDone)
+                {
+                    if (System.DateTime.Now.Subtract(startTime).TotalSeconds > 2)
+                        break;
+                    await Task.Delay(50);
+                }
+
+                return webRequest.responseCode == 200;
+            }
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     private void DrawApiKeyInput(ref float x, float y, float height, ApiConfig config)
@@ -367,45 +455,46 @@ public partial class Settings
     }
 
     private void ShowModelSelectionMenu(ApiConfig config)
-{
-    if (string.IsNullOrWhiteSpace(config.ApiKey))
     {
-        Find.WindowStack.Add(new FloatMenu(new List<FloatMenuOption> { new FloatMenuOption("RimTalk.Settings.EnterApiKey".Translate(), null) }));
-        return;
-    }
-
-    if (config.Provider == AIProvider.Google)
-    {
-        List<FloatMenuOption> options = ModelOptions.Select(model => new FloatMenuOption(model, () => config.SelectedModel = model)).ToList();
-        Find.WindowStack.Add(new FloatMenu(options));
-    }
-    else if (config.Provider == AIProvider.Player2)
-    {
-        config.SelectedModel = "Default";
-        return;
-    }
-    else
-    {
-        string url = GetModelApiUrl(config.Provider);
-        if (url == null) return;
-
-        FetchModels(config.ApiKey, url).ContinueWith(task =>
+        // Allow Player2 to work without API key (local app detection)
+        if (string.IsNullOrWhiteSpace(config.ApiKey) && config.Provider != AIProvider.Player2)
         {
-            var models = task.Result;
-            List<FloatMenuOption> options = new List<FloatMenuOption>();
-            if (models != null && models.Any())
-            {
-                options.AddRange(models.Select(model => new FloatMenuOption(model, () => config.SelectedModel = model)));
-            }
-            else
-            {
-                options.Add(new FloatMenuOption("(no models found - check API Key)", null));
-            }
-            options.Add(new FloatMenuOption("Custom", () => config.SelectedModel = "Custom"));
+            Find.WindowStack.Add(new FloatMenu(new List<FloatMenuOption> { new FloatMenuOption("RimTalk.Settings.EnterApiKey".Translate(), null) }));
+            return;
+        }
+
+        if (config.Provider == AIProvider.Google)
+        {
+            List<FloatMenuOption> options = ModelOptions.Select(model => new FloatMenuOption(model, () => config.SelectedModel = model)).ToList();
             Find.WindowStack.Add(new FloatMenu(options));
-        }, TaskScheduler.FromCurrentSynchronizationContext());
+        }
+        else if (config.Provider == AIProvider.Player2)
+        {
+            config.SelectedModel = "Default";
+            return;
+        }
+        else
+        {
+            string url = GetModelApiUrl(config.Provider);
+            if (url == null) return;
+
+            FetchModels(config.ApiKey, url).ContinueWith(task =>
+            {
+                var models = task.Result;
+                List<FloatMenuOption> options = new List<FloatMenuOption>();
+                if (models != null && models.Any())
+                {
+                    options.AddRange(models.Select(model => new FloatMenuOption(model, () => config.SelectedModel = model)));
+                }
+                else
+                {
+                    options.Add(new FloatMenuOption("(no models found - check API Key)", null));
+                }
+                options.Add(new FloatMenuOption("Custom", () => config.SelectedModel = "Custom"));
+                Find.WindowStack.Add(new FloatMenu(options));
+            }, TaskScheduler.FromCurrentSynchronizationContext());
+        }
     }
-}
 
     private string GetModelApiUrl(AIProvider provider)
     {
