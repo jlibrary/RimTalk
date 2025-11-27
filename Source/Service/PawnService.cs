@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using RimTalk.Data;
 using RimWorld;
 using Verse;
+using Verse.AI;
 using Verse.AI.Group;
 using Cache = RimTalk.Data.Cache;
 
@@ -107,71 +109,93 @@ public static class PawnService
 
     public static (string, bool) GetPawnStatusFull(this Pawn pawn, List<Pawn> nearbyPawns)
     {
-        if (pawn == null) return (null, false);
+        if (pawn == null)
+            return (null, false);
+
+        // special-case for "player pawn"
+        if (pawn.IsPlayer())
+            return ("Voice from beyond", false);
 
         bool isInDanger = false;
+        var lines = new List<string>();
 
-        List<string> parts = new List<string>();
+        // collect all "relevant pawns"
+        var relevantPawns = new List<Pawn> { pawn };
+        if (nearbyPawns != null)
+            relevantPawns.AddRange(nearbyPawns);
 
-        // --- 1. Add status ---
-        parts.Add($"{pawn.LabelShort} ({pawn.GetActivity()})");
+        if (pawn.CurJob != null)
+            AddJobTargetsToRelevantPawns(pawn.CurJob, relevantPawns);
 
-        if (IsInDanger(pawn))
+        if (nearbyPawns != null)
         {
-            isInDanger = true;
+            foreach (var near in nearbyPawns)
+            {
+                if (near.CurJob != null)
+                    AddJobTargetsToRelevantPawns(near.CurJob, relevantPawns);
+            }
         }
 
-        // --- 2. Nearby pawns ---
-        if (nearbyPawns.Any())
+        // first line uses name + activity AFTER name replacement
+        string activity = ReplacePawnNames(pawn.GetActivity());
+        string name = ReplacePawnNames(pawn.LabelShort);
+        lines.Add($"{name} {activity}");
+
+        if (pawn.IsInDanger())
+            isInDanger = true;
+
+        // Nearby critical statuses: same logic, but wrapped in ReplacePawnNames(...)
+        if (nearbyPawns != null && nearbyPawns.Any())
         {
-            // Collect critical statuses of nearby pawns
-            var nearbyNotableStatuses = nearbyPawns
-                .Where(nearbyPawn => nearbyPawn.Faction == pawn.Faction && nearbyPawn.IsInDanger(true))
+            var nearbyNotable = nearbyPawns
+                .Where(p => p.Faction == pawn.Faction && p.IsInDanger(true))
                 .Take(2)
-                .Select(other => $"{other.LabelShort} in {other.GetActivity().Replace("\n", "; ")}")
-                .ToList();
-
-            if (nearbyNotableStatuses.Any())
-            {
-                parts.Add("People in condition nearby: " + string.Join("; ", nearbyNotableStatuses));
-                isInDanger = true;
-            }
-
-            // Names of nearby pawns
-            var nearbyNames = nearbyPawns
-                .Select(nearbyPawn =>
+                .Select(other =>
                 {
-                    string name = $"{nearbyPawn.LabelShort}({nearbyPawn.GetRole()})";
-                    if (Cache.Get(nearbyPawn) is not null)
-                    {
-                        name = $"{name} ({nearbyPawn.GetActivity().StripTags()})";
-                    }
-
-                    return name;
+                    string otherActivity = ReplacePawnNames(other.GetActivity());
+                    return $"{ReplacePawnNames(other.LabelShort)} in {otherActivity.Replace("\n", "; ")}";
                 })
                 .ToList();
 
-            string nearbyText = nearbyNames.Count == 0
-                ? "none"
-                : nearbyNames.Count > 3
-                    ? string.Join(", ", nearbyNames.Take(3)) + ", and others"
-                    : string.Join(", ", nearbyNames);
+            if (nearbyNotable.Any())
+            {
+                lines.Add("People in condition nearby: " + string.Join("; ", nearbyNotable));
+                isInDanger = true;
+            }
 
-            parts.Add($"Nearby: {nearbyText}");
+            var nearbyList = nearbyPawns
+                .Select(p =>
+                {
+                    string s = ReplacePawnNames(p.LabelShort);
+                    if (Cache.Get(p) != null)
+                    {
+                        string a = ReplacePawnNames(p.GetActivity());
+                        s = $"{s} {a.StripTags()}";
+                    }
+                    return s;
+                })
+                .ToList();
+
+            string nearbyStr =
+                nearbyList.Count == 0 ? "none" :
+                nearbyList.Count > 3 ? string.Join(", ", nearbyList.Take(3)) + ", and others" :
+                string.Join(", ", nearbyList);
+
+            lines.Add("Nearby: " + nearbyStr);
         }
         else
         {
-            parts.Add("Nearby people: none");
+            lines.Add("Nearby people: none");
         }
 
         if (pawn.IsVisitor())
         {
-            parts.Add("Visiting user colony");
+            lines.Add("Visiting user colony");
         }
 
         if (pawn.IsFreeColonist && pawn.GetMapRole() == MapRole.Invading)
         {
-            parts.Add("You are away from colony, attacking to capture enemy settlement");
+            lines.Add("You are away from colony, attacking to capture enemy settlement");
         }
         else if (pawn.IsEnemy())
         {
@@ -179,19 +203,19 @@ public static class PawnService
             {
                 if (pawn.GetLord()?.LordJob is LordJob_StageThenAttack || pawn.GetLord()?.LordJob is LordJob_Siege)
                 {
-                    parts.Add("waiting to invade user colony");
+                    lines.Add("waiting to invade user colony");
                 }
                 else
                 {
-                    parts.Add("invading user colony");
+                    lines.Add("invading user colony");
                 }
             }
             else
             {
-                parts.Add("Fighting to protect your home from being captured");
+                lines.Add("Fighting to protect your home from being captured");
             }
 
-            return (string.Join("\n", parts), isInDanger);
+            return (string.Join("\n", lines), isInDanger);
         }
 
         // --- 3. Enemy proximity / combat info ---
@@ -201,19 +225,44 @@ public static class PawnService
             float distance = pawn.Position.DistanceTo(nearestHostile.Position);
 
             if (distance <= 10f)
-                parts.Add("Threat: Engaging in battle!");
+                lines.Add("Threat: Engaging in battle!");
             else if (distance <= 20f)
-                parts.Add("Threat: Hostiles are dangerously close!");
+                lines.Add("Threat: Hostiles are dangerously close!");
             else
-                parts.Add("Alert: hostiles in the area");
+                lines.Add("Alert: hostiles in the area");
             isInDanger = true;
         }
 
         if (!isInDanger)
-            parts.Add(Constant.Prompt);
+            lines.Add("Act based on role and context"); // NOTE: literal string instead of Constant.Prompt
 
-        return (string.Join("\n", parts), isInDanger);
+        return (string.Join("\n", lines), isInDanger);
+
+        // local helper to replace LabelShort with decorated names
+        string ReplacePawnNames(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+                return input;
+
+            var map = new Dictionary<string, string>();
+            foreach (var rp in relevantPawns)
+            {
+                string key = rp.LabelShort;
+                string value = PromptService.GetDecoratedName(rp);
+                if (!map.ContainsKey(key))
+                    map[key] = value;
+            }
+
+            // longer names first to avoid partial replacement
+            var ordered = map.OrderByDescending(kv => kv.Key.Length).ToList();
+            string result = input;
+            foreach (var kv in ordered)
+                result = result.Replace(kv.Key, kv.Value);
+
+            return result;
+        }
     }
+
 
     public static Pawn GetHostilePawnNearBy(this Pawn pawn)
     {
@@ -311,6 +360,50 @@ public static class PawnService
         }
 
         return activity;
+    }
+
+    // NEW: recursively collect all pawn targets from the given job
+    private static void AddJobTargetsToRelevantPawns(Job job, List<Pawn> relevantPawns)
+    {
+        if (job == null) return;
+
+        var targetIndices = new List<TargetIndex>();
+        foreach (TargetIndex ind in Enum.GetValues(typeof(TargetIndex)))
+        {
+            try
+            {
+                if (job.GetTarget(ind) != (LocalTargetInfo)(Thing)null)
+                    targetIndices.Add(ind);
+            }
+            catch
+            {
+                // ignore invalid indices
+            }
+        }
+
+        foreach (var ind in targetIndices)
+        {
+            var target = job.GetTarget(ind);
+            if (target.HasThing && target.Thing is Pawn pawn && !relevantPawns.Contains(pawn))
+            {
+                relevantPawns.Add(pawn);
+                if (pawn.CurJob != null)
+                {
+                    AddJobTargetsToRelevantPawns(pawn.CurJob, relevantPawns);
+                }
+            }
+        }
+    }
+
+    public static string GetColonyTimeStatus(this Pawn pawn)
+    {
+        // If the pawn has eaten very little since joining the colony,
+        // mark them as "new" 
+        if (pawn.records == null)
+            return null;
+
+        float daysInColony = pawn.records.GetValue(RecordDefOf.NutritionEaten) / 96f;
+        return daysInColony < 0.5f ? "new" : null;
     }
 
     public static MapRole GetMapRole(this Pawn pawn)

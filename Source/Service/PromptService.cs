@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,6 +8,7 @@ using RimTalk.Data;
 using RimTalk.Source.Data;
 using RimTalk.Util;
 using RimWorld;
+using UnityEngine;
 using Verse;
 using Verse.AI.Group;
 
@@ -41,7 +43,7 @@ public static class PromptService
                 pawnContext = CreatePawnContext(pawn, infoLevel);
             }
 
-            Cache.Get(pawn).Context = pawnContext;
+            Data.Cache.Get(pawn).Context = pawnContext;
             count++;
             context.AppendLine();
             context.AppendLine($"[Person {count} START]");
@@ -179,7 +181,7 @@ public static class PromptService
         if (healthInfo != "")
             sb.AppendLine($"Health: {healthInfo}");
 
-        var personality = Cache.Get(pawn).Personality;
+        var personality = Data.Cache.Get(pawn).Personality;
         if (personality != null)
             sb.AppendLine($"Personality: {personality}");
 
@@ -252,8 +254,6 @@ public static class PromptService
         CommonUtil.InGameData gameData = CommonUtil.GetInGameData();
 
         string shortName = $"{pawns[0].LabelShort}({pawns[0].GetRole()})";
-
-        // Add the conversation part
         if (talkRequest.TalkType == TalkType.User)
         {
             sb.Append($"{pawns[1].LabelShort}({pawns[1].GetRole()}) said to '{pawns[0].LabelShort}({pawns[0].GetRole()}): {talkRequest.Prompt}'.");
@@ -290,27 +290,159 @@ public static class PromptService
                 sb.Append($"\n{talkRequest.Prompt}");
         }
 
-
-        // add pawn status
         sb.Append($"\n{status}");
-
-        string locationStatus = GetPawnLocationStatus(pawns[0]);
-        if (!string.IsNullOrEmpty(locationStatus))
-            sb.Append($"\nLocation: {locationStatus}");
-
-        // add time
         sb.Append($"\nTime: {gameData.Hour12HString}");
-
-        // add date
         sb.Append($"\nToday: {gameData.DateString}");
-
-        // add season
         sb.Append($"\nSeason: {gameData.SeasonString}");
-
-        // add weather
         sb.Append($"\nWeather: {gameData.WeatherString}");
 
-        // add language assurance
+        Pawn pawn = pawns[0];
+        Map map = pawn.Map;
+
+        string locationStatus = GetPawnLocationStatus(pawn);
+        if (!string.IsNullOrEmpty(locationStatus))
+        {
+            int currentTemperature = Mathf.RoundToInt(pawn.Position.GetTemperature(map));
+            string roomRole = string.Empty;
+            Room room = pawn.GetRoom();
+            if (room != null && !room.PsychologicallyOutdoors)
+                roomRole = room.Role?.label ?? "Room";
+
+            if (string.IsNullOrEmpty(roomRole))
+                sb.Append($"\nLocation: {locationStatus};{currentTemperature}C");
+            else
+                sb.Append($"\nLocation: {locationStatus};{currentTemperature}C;{roomRole}");
+        }
+
+        TerrainDef terrain = pawn.Position.GetTerrain(map);
+        if (terrain != null)
+            sb.Append($"\nFloor: {terrain.LabelCap}");
+
+        Building wall = FindWallInFrontAndBack(pawn, 8);
+        if (wall != null)
+            sb.Append($"\nWall: {wall.LabelCap}");
+
+        List<IntVec3> nearbyCells = new();
+        IntVec3 facing = pawn.Rotation.FacingCell;
+        for (int i = 1; i <= 5; i++)
+        {
+            IntVec3 targetCell = pawn.Position + facing * i;
+            for (int offset = -1; offset <= 1; offset++)
+            {
+                IntVec3 c = new IntVec3(targetCell.x + offset, targetCell.y, targetCell.z);
+                if (c.InBounds(map))
+                    nearbyCells.Add(c);
+            }
+        }
+
+        float beautySum = 0f;
+        int cellCount = nearbyCells.Count;
+        if (cellCount > 0)
+        {
+            foreach (IntVec3 c in nearbyCells)
+                beautySum += BeautyUtility.CellBeauty(c, map);
+            string beautyDescription = GetBeautyDescription(beautySum / cellCount);
+            sb.Append("\nbeauty: " + beautyDescription);
+        }
+
+        Room pawnRoom = pawn.GetRoom();
+        if (pawnRoom != null && !pawnRoom.PsychologicallyOutdoors)
+        {
+            string cleanliness = GetCleanlinessDescription(pawnRoom.GetStat(RoomStatDefOf.Cleanliness));
+            sb.Append("\nclean " + cleanliness);
+        }
+
+        List<string> items = new();
+        HashSet<Thing> seenThings = new();
+        foreach (IntVec3 c in nearbyCells.OrderBy(_ => Rand.Value).ToList())
+        {
+            if (items.Count >= 3)
+                break;
+
+            List<Thing> thingsHere = c.GetThingList(pawn.Map);
+            if (thingsHere == null || thingsHere.Count == 0)
+                continue;
+
+            bool hasPawnOrAnimal = false;
+            HashSet<ThingDef> thingDefs = new();
+            foreach (Thing thing in thingsHere)
+            {
+                if (thing != null && thing.def != null && thingDefs.Add(thing.def) &&
+                    thing.def.category != ThingCategory.Building && thing.def.category != ThingCategory.Plant &&
+                    thing.def.category != ThingCategory.Item && !thing.def.IsFilth)
+                {
+                    hasPawnOrAnimal = true;
+                    break;
+                }
+            }
+
+            if (hasPawnOrAnimal)
+                continue;
+
+            List<Thing> candidateThings = new();
+            HashSet<ThingCategory> categories = new();
+            foreach (Thing thing in thingsHere)
+            {
+                if (thing == null || thing.def == null)
+                    continue;
+
+                bool isValidCategory = thing.def.category == ThingCategory.Building ||
+                                       thing.def.category == ThingCategory.Plant ||
+                                       thing.def.category == ThingCategory.Item ||
+                                       thing.def.IsFilth;
+
+                if (!isValidCategory)
+                    continue;
+
+                if (thing.def.category == ThingCategory.Building && IsWall(thing))
+                    continue;
+
+                if (categories.Add(thing.def.category))
+                    candidateThings.Add(thing);
+            }
+
+            if (candidateThings.Count == 0)
+                continue;
+
+            Thing picked = candidateThings.RandomElement();
+            if (seenThings.Contains(picked))
+                continue;
+
+            if (picked is Building_Storage storage)
+            {
+                List<Thing> stored = new();
+                foreach (IntVec3 cell in storage.AllSlotCells())
+                {
+                    List<Thing> contents = cell.GetThingList(pawn.Map);
+                    stored.AddRange(contents);
+                }
+
+                List<Thing> distinctStored = stored.Distinct().ToList();
+                if (distinctStored.Count == 0)
+                {
+                    seenThings.Add(storage);
+                }
+                else
+                {
+                    string storedSample = string.Join(", ", distinctStored.OrderBy(_ => Rand.Value).Take(3).Select(i => i.LabelCap));
+                    string storageLabel = $"{storage.LabelCap} ({storedSample})";
+                    seenThings.Add(storage);
+                    items.Add(storageLabel);
+                }
+            }
+            else
+            {
+                seenThings.Add(picked);
+                items.Add(picked.LabelCap);
+            }
+        }
+
+        if (items.Count > 0)
+            sb.Append("\nitems: " + string.Join(", ", items));
+
+        float wealthTotal = pawn.Map.wealthWatcher.WealthTotal;
+        sb.Append("\nwealth " + GetWealthDescription(wealthTotal));
+
         if (AIService.IsFirstInstruction())
             sb.Append($"\nin {Constant.Lang}");
 
@@ -336,6 +468,99 @@ public static class PromptService
         return thoughts
             .GroupBy(t => t.def.defName)
             .ToDictionary(g => g.First(), g => g.Sum(t => t.MoodOffset()));
+    }
+
+    public static string GetDecoratedName(Pawn pawn)
+    {
+        if (!pawn.RaceProps.Humanlike)
+            return $"{pawn.LabelShort}(Age:{pawn.ageTracker.AgeBiologicalYears};Race:{pawn.def.LabelCap})";
+        return $"{pawn.LabelShort}(Age:{pawn.ageTracker.AgeBiologicalYears};{pawn.gender.GetLabel()};ID:{pawn.GetRole(true)};{GetRaceLabel(pawn)})";
+    }
+
+    private static string GetRaceLabel(Pawn pawn)
+    {
+        return ModsConfig.BiotechActive && pawn.genes?.Xenotype != null
+            ? pawn.genes.Xenotype.LabelCap
+            : pawn.def.LabelCap;
+    }
+
+    private static string GetBeautyDescription(float beauty)
+    {
+        return beauty switch
+        {
+            > 100f => "wondrously", 
+            > 20f => "impressive",
+            > 10f => "beautiful",
+            > 5f => "decent",
+            > -1f => "general",
+            > -5f => "awful",
+            > -20f => "very awful",
+            _ => "disgusting"
+        };
+    }
+
+    private static string GetCleanlinessDescription(float cleanliness)
+    {
+        return cleanliness switch
+        {
+            > 1.5f => "spotless",
+            > 0.5f => "clean",
+            > -0.5f => "neat",
+            > -1.5f => "a bit dirty",
+            > -2.5f => "dirty",
+            > -5f => "very dirty",
+            _ => "foul"
+        };
+    }
+
+    private static Building FindWallInFrontAndBack(Pawn pawn, int range)
+    {
+        if (pawn.Map == null)
+            return null;
+
+        Rot4 forward = pawn.Rotation;
+        List<IntVec3> cells = new();
+        for (int i = 1; i <= range; i++)
+            cells.Add(pawn.Position + forward.FacingCell * i);
+
+        Rot4 backward = forward.Opposite;
+        for (int i = 1; i <= range; i++)
+            cells.Add(pawn.Position + backward.FacingCell * i);
+
+        foreach (IntVec3 c in cells)
+        {
+            if (!c.InBounds(pawn.Map))
+                continue;
+
+            Building edifice = c.GetEdifice(pawn.Map);
+            if (edifice != null && IsWall(edifice))
+                return edifice;
+        }
+
+        return null;
+    }
+
+    private static bool IsWall(Thing thing)
+    {
+        GraphicData data = thing.def.graphicData;
+        return data != null && data.linkFlags.HasFlag((Enum)LinkFlags.Wall);
+    }
+
+    private static string GetWealthDescription(float wealthTotal)
+    {
+        return wealthTotal switch
+        {
+            < 50_000f => "impecunious",
+            < 100_000f => "needy",
+            < 200_000f => "just rid of starving",
+            < 300_000f => "moderately prosperous",
+            < 400_000f => "rich",
+            < 600_000f => "luxurious",
+            < 1_000_000f => "extravagant",
+            < 1_500_000f => "treasures fill the home",
+            < 2_000_000f => "as rich as glitter world",
+            _ => "richest in the galaxy"
+        };
     }
 
     private static string Sanitize(string text, Pawn pawn = null)
