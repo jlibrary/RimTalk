@@ -21,12 +21,13 @@ public static class PawnService
         if (pawn.skills?.GetSkill(SkillDefOf.Social) == null) return false;
 
         RimTalkSettings settings = Settings.Get();
+        if (!settings.AllowBabiesToTalk && pawn.IsBaby()) return false;
+        
         return pawn.IsFreeColonist ||
                (settings.AllowSlavesToTalk && pawn.IsSlave) ||
                (settings.AllowPrisonersToTalk && pawn.IsPrisoner) ||
                (settings.AllowOtherFactionsToTalk && pawn.IsVisitor()) ||
-               (settings.AllowEnemiesToTalk && pawn.IsEnemy()) ||
-               (settings.AllowBabiesToTalk && pawn.IsBaby());
+               (settings.AllowEnemiesToTalk && pawn.IsEnemy());
     }
     public static HashSet<Hediff> GetHediffs(this Pawn pawn)
     {
