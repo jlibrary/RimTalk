@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using RimTalk.Client.OpenAI;
+using RimTalk.Data;
 using RimTalk.Util;
 using RimWorld;
 using UnityEngine;
@@ -15,6 +17,7 @@ public partial class Settings
 {
     private static readonly string[] ModelOptions =
     {
+        "gemini-3-pro-preview",
         "gemini-2.5-pro",
         "gemini-2.5-flash", 
         "gemini-2.5-flash-lite",
@@ -34,28 +37,26 @@ public partial class Settings
         }
 
         var models = new List<string>();
-        using (var webRequest = UnityWebRequest.Get(url))
+        using var webRequest = UnityWebRequest.Get(url);
+        webRequest.SetRequestHeader("Authorization", "Bearer " + apiKey);
+        var asyncOperation = webRequest.SendWebRequest();
+
+        while (!asyncOperation.isDone)
         {
-            webRequest.SetRequestHeader("Authorization", "Bearer " + apiKey);
-            var asyncOperation = webRequest.SendWebRequest();
+            await Task.Delay(100);
+        }
 
-            while (!asyncOperation.isDone)
+        if (webRequest.isNetworkError || webRequest.isHttpError)
+        {
+            Logger.Error($"Failed to fetch models: {webRequest.error}");
+        }
+        else
+        {
+            var response = JsonUtil.DeserializeFromJson<OpenAIModelsResponse>(webRequest.downloadHandler.text);
+            if (response != null)
             {
-                await Task.Delay(100);
-            }
-
-            if (webRequest.isNetworkError || webRequest.isHttpError)
-            {
-                Logger.Error($"Failed to fetch models: {webRequest.error}");
-            }
-            else
-            {
-                var response = JsonUtil.DeserializeFromJson<OpenAIModelsResponse>(webRequest.downloadHandler.text);
-                if (response != null)
-                {
-                    models = response.Data.Select(m => m.Id).ToList();
-                    ModelCache[url] = models;
-                }
+                models = response.Data.Select(m => m.Id).ToList();
+                ModelCache[url] = models;
             }
         }
 
@@ -292,18 +293,14 @@ public partial class Settings
         Rect upButtonRect = new Rect(x, y, 24f, height);
         if (Widgets.ButtonText(upButtonRect, "▲") && index > 0)
         {
-            var temp = configs[index];
-            configs[index] = configs[index - 1];
-            configs[index - 1] = temp;
+            (configs[index], configs[index - 1]) = (configs[index - 1], configs[index]);
         }
         x += 30f;
 
         Rect downButtonRect = new Rect(x, y, 24f, height);
         if (Widgets.ButtonText(downButtonRect, "▼") && index < configs.Count - 1)
         {
-            var temp = configs[index];
-            configs[index] = configs[index + 1];
-            configs[index + 1] = temp;
+            (configs[index], configs[index + 1]) = (configs[index + 1], configs[index]);
         }
         x += 30f;
     }
@@ -313,35 +310,39 @@ public partial class Settings
         Rect providerRect = new Rect(x, y, 100f, height);
         if (Widgets.ButtonText(providerRect, config.Provider.ToString()))
         {
-            List<FloatMenuOption> providerOptions = new List<FloatMenuOption>
-            {
-                new FloatMenuOption(AIProvider.Google.ToString(), () => { 
-                    config.Provider = AIProvider.Google; 
-                    config.SelectedModel = Data.Constant.ChooseModel; 
+            List<FloatMenuOption> providerOptions =
+            [
+                new(nameof(AIProvider.Google), () => {
+                    config.Provider = AIProvider.Google;
+                    config.SelectedModel = Constant.ChooseModel;
                 }),
-                new FloatMenuOption(AIProvider.OpenAI.ToString(), () => { 
-                    config.Provider = AIProvider.OpenAI; 
-                    config.SelectedModel = Data.Constant.ChooseModel; 
+                new(nameof(AIProvider.OpenAI), () => {
+                    config.Provider = AIProvider.OpenAI;
+                    config.SelectedModel = Constant.ChooseModel;
                 }),
-                new FloatMenuOption(AIProvider.DeepSeek.ToString(), () => { 
-                    config.Provider = AIProvider.DeepSeek; 
-                    config.SelectedModel = Data.Constant.ChooseModel; 
+                new(nameof(AIProvider.DeepSeek), () => {
+                    config.Provider = AIProvider.DeepSeek;
+                    config.SelectedModel = Constant.ChooseModel;
                 }),
-                new FloatMenuOption(AIProvider.OpenRouter.ToString(), () => { 
-                    config.Provider = AIProvider.OpenRouter; 
-                    config.SelectedModel = Data.Constant.ChooseModel; 
+                new(nameof(AIProvider.Grok), () => {
+                    config.Provider = AIProvider.Grok;
+                    config.SelectedModel = Constant.ChooseModel;
                 }),
-                new FloatMenuOption(AIProvider.Player2.ToString(), () => { 
-                    config.Provider = AIProvider.Player2; 
+                new(nameof(AIProvider.OpenRouter), () => {
+                    config.Provider = AIProvider.OpenRouter;
+                    config.SelectedModel = Constant.ChooseModel;
+                }),
+                new(nameof(AIProvider.Player2), () => {
+                    config.Provider = AIProvider.Player2;
                     config.SelectedModel = "Default";
                     // Immediately check Player2 status when selected
                     CheckPlayer2StatusAndNotify();
                 }),
-                new FloatMenuOption(AIProvider.Custom.ToString(), () => { 
-                    config.Provider = AIProvider.Custom; 
-                    config.SelectedModel = "Custom"; 
+                new(nameof(AIProvider.Custom), () => {
+                    config.Provider = AIProvider.Custom;
+                    config.SelectedModel = "Custom";
                 })
-            };
+            ];
             Find.WindowStack.Add(new FloatMenu(providerOptions));
         }
         x += 105f;
@@ -378,7 +379,7 @@ public partial class Settings
                     }
                 });
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Logger.Warning($"RimTalk: Error checking Player2 status: {ex.Message}");
             }
@@ -392,21 +393,19 @@ public partial class Settings
     {
         try
         {
-            using (var webRequest = UnityWebRequest.Get("http://localhost:4315/v1/health"))
-            {
-                webRequest.timeout = 2;
-                var asyncOperation = webRequest.SendWebRequest();
+            using var webRequest = UnityWebRequest.Get("http://localhost:4315/v1/health");
+            webRequest.timeout = 2;
+            var asyncOperation = webRequest.SendWebRequest();
                 
-                var startTime = System.DateTime.Now;
-                while (!asyncOperation.isDone)
-                {
-                    if (System.DateTime.Now.Subtract(startTime).TotalSeconds > 2)
-                        break;
-                    await Task.Delay(50);
-                }
-
-                return webRequest.responseCode == 200;
+            var startTime = DateTime.Now;
+            while (!asyncOperation.isDone)
+            {
+                if (DateTime.Now.Subtract(startTime).TotalSeconds > 2)
+                    break;
+                await Task.Delay(50);
             }
+
+            return webRequest.responseCode == 200;
         }
         catch
         {
@@ -441,7 +440,7 @@ public partial class Settings
             Rect backButton = new Rect(modelRect.xMax + 5, y, 24, height);
             if (Widgets.ButtonText(backButton, "X"))
             {
-                config.SelectedModel = Data.Constant.ChooseModel;
+                config.SelectedModel = Constant.ChooseModel;
             }
         }
         else
@@ -459,7 +458,7 @@ public partial class Settings
         // Allow Player2 to work without API key (local app detection)
         if (string.IsNullOrWhiteSpace(config.ApiKey) && config.Provider != AIProvider.Player2)
         {
-            Find.WindowStack.Add(new FloatMenu(new List<FloatMenuOption> { new FloatMenuOption("RimTalk.Settings.EnterApiKey".Translate(), null) }));
+            Find.WindowStack.Add(new FloatMenu([new FloatMenuOption("RimTalk.Settings.EnterApiKey".Translate(), null)]));
             return;
         }
 
@@ -471,7 +470,6 @@ public partial class Settings
         else if (config.Provider == AIProvider.Player2)
         {
             config.SelectedModel = "Default";
-            return;
         }
         else
         {
@@ -502,8 +500,9 @@ public partial class Settings
         {
             case AIProvider.OpenAI: return "https://api.openai.com/v1/models";
             case AIProvider.DeepSeek: return "https://api.deepseek.com/models";
+            case AIProvider.Grok: return "https://api.x.ai/v1/models";
             case AIProvider.OpenRouter: return "https://openrouter.ai/api/v1/models";
-            case AIProvider.Player2: return null;
+            case AIProvider.Player2:
             default: return null;
         }
     }
@@ -560,6 +559,5 @@ public partial class Settings
         // Model text field (200px)
         Rect modelRect = new Rect(x, y, 200f, height);
         config.CustomModelName = Widgets.TextField(modelRect, config.CustomModelName);
-        x += 205f;
     }
 }
