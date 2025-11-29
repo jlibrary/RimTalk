@@ -227,13 +227,13 @@ public static class PromptService
                 }
                 else
                 {
-                    // others
+                    // Player talk to Pawn
                     var other = pawns.FirstOrDefault(p => p != mainPawn);
                     if (other != null)
                     {
                         sb.Append(
                             $"{other.LabelShort}({other.GetRole()}) said to {shortName}: \"{talkRequest.Prompt}\".\n" +
-                            $"Generate multi-turn dialogue continuing after this line " +
+                            $"Generate one-turn dialogue continuing after this line " +
                             $"(do not repeat the initial line), starting with {shortName}."
                         );
                     }
