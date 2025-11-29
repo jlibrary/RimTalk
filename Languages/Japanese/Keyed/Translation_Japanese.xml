@@ -201,6 +201,8 @@
     <RimTalk.FloatMenu.ChatWith>{0}とチャット</RimTalk.FloatMenu.ChatWith>
     <RimTalk.FloatMenu.WhatToSayToSelf>{0}に何を言いたいですか？</RimTalk.FloatMenu.WhatToSayToSelf>
     <RimTalk.FloatMenu.WhatToSayToOther>{0}に{1}に何を言わせたいですか？</RimTalk.FloatMenu.WhatToSayToOther>
+    <RimTalk.FloatMenu.SelfTalk>独り言：{0}</RimTalk.FloatMenu.SelfTalk>
+    <RimTalk.FloatMenu.WhatToSayToSelf_Mono>{0}にどんな独り言を言わせますか？</RimTalk.FloatMenu.WhatToSayToSelf_Mono>
     <RimTalk.FloatMenu.Send>送信</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>キャンセル</RimTalk.FloatMenu.Cancel>
 

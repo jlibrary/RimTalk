@@ -41,7 +41,11 @@ public static class FloatMenuPatch
         if (distanceToSelf <= ClickRadius)
         {
             AddTalkOption(__result, Cache.GetPlayer(), pawn);
-            return; // Don't check for other pawns if we're clicking on ourselves
+            if (pawn.IsTalkEligible())
+            {
+                AddSelfTalkOption(__result, pawn);
+            }
+            return; 
         }
 
         // Check for other pawns in a radius around click position
@@ -73,6 +77,20 @@ public static class FloatMenuPatch
             MenuOptionPriority.Default,
             null,
             target
+        ));
+    }
+
+    private static void AddSelfTalkOption(List<FloatMenuOption> result, Pawn pawn)
+    {
+        result.Add(new FloatMenuOption(
+            "RimTalk.FloatMenu.SelfTalk".Translate(pawn.LabelShortCap),
+            delegate
+            {
+                Find.WindowStack.Add(new CustomDialogueWindow(pawn, pawn, true));
+            },
+            MenuOptionPriority.Default,
+            null,
+            pawn
         ));
     }
 }

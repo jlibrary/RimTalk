@@ -11,13 +11,15 @@ public class CustomDialogueWindow : Window
 {
     private readonly Pawn _initiator;
     private readonly Pawn _recipient;
+    private readonly bool _selfTalk;
     private string _text = "";
     private const string TextFieldControlName = "CustomTalkTextField";
 
-    public CustomDialogueWindow(Pawn initiator, Pawn recipient)
+    public CustomDialogueWindow(Pawn initiator, Pawn recipient, bool selfTalk = false)
     {
         _initiator = initiator;
         _recipient = recipient;
+        _selfTalk = selfTalk; 
         doCloseX = true;
         draggable = true;
         absorbInputAroundWindow = false;
@@ -28,10 +30,24 @@ public class CustomDialogueWindow : Window
     public override void DoWindowContents(Rect inRect)
     {
         Text.Font = GameFont.Small;
-        
-        string labelText = _initiator.IsPlayer()
-            ? "RimTalk.FloatMenu.WhatToSayToSelf".Translate(_recipient.LabelShortCap)
-            : "RimTalk.FloatMenu.WhatToSayToOther".Translate(_initiator.LabelShortCap, _recipient.LabelShortCap);
+
+        string labelText;
+        if (_initiator == _recipient)
+        {
+            // Talk to itself
+            labelText = "RimTalk.FloatMenu.WhatToSayToItSelf".Translate(_initiator.LabelShortCap);
+        }
+        else if (_initiator.IsPlayer())
+        {
+            // Player talk to pawn
+            labelText = "RimTalk.FloatMenu.WhatToSayToSelf".Translate(_recipient.LabelShortCap);
+        }
+        else
+        {
+            // Pawn talk to pawn
+            labelText = "RimTalk.FloatMenu.WhatToSayToOther"
+                .Translate(_initiator.LabelShortCap, _recipient.LabelShortCap);
+        }
         
         Widgets.Label(new Rect(0f, 0f, inRect.width, 25f), labelText);
 
@@ -80,6 +96,12 @@ public class CustomDialogueWindow : Window
 
     private void SendDialogue(string dialogue)
     {
+         if (_selfTalk)
+        {
+            CustomDialogueService.ExecuteSelfTalk(_initiator, dialogue);
+            return;
+        }
+
         if (CustomDialogueService.CanTalk(_initiator, _recipient))
         {
             // Already close and in same room (or talking to self) - execute immediately

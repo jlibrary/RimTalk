@@ -201,6 +201,8 @@
     <RimTalk.FloatMenu.ChatWith>与{0}聊天</RimTalk.FloatMenu.ChatWith>
     <RimTalk.FloatMenu.WhatToSayToSelf>你想对{0}说什么？</RimTalk.FloatMenu.WhatToSayToSelf>
     <RimTalk.FloatMenu.WhatToSayToOther>你想让{0}对{1}说什么？</RimTalk.FloatMenu.WhatToSayToOther>
+    <RimTalk.FloatMenu.SelfTalk>自言自语：{0}</RimTalk.FloatMenu.SelfTalk>
+    <RimTalk.FloatMenu.WhatToSayToItSelf>{0} 打算自言自语些什么？</RimTalk.FloatMenu.WhatToSayToSelf>
     <RimTalk.FloatMenu.Send>发送</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>取消</RimTalk.FloatMenu.Cancel>
 

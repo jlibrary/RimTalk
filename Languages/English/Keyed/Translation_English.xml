@@ -200,6 +200,8 @@
     <RimTalk.FloatMenu.ChatWith>Chat with {0}</RimTalk.FloatMenu.ChatWith>
     <RimTalk.FloatMenu.WhatToSayToSelf>What do you want to say to {0}?</RimTalk.FloatMenu.WhatToSayToSelf>
     <RimTalk.FloatMenu.WhatToSayToOther>What do you want {0} to say to {1}?</RimTalk.FloatMenu.WhatToSayToOther>
+    <RimTalk.FloatMenu.WhatToSayToSelf>Talk to itself: {0}</RimTalk.FloatMenu.WhatToSayToSelf>
+    <RimTalk.FloatMenu.WhatToSayToOther>What do you want {0} to say to itself?</RimTalk.FloatMenu.WhatToSayToOther>
     <RimTalk.FloatMenu.Send>Send</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>Cancel</RimTalk.FloatMenu.Cancel>
 

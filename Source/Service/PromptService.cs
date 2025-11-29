@@ -208,10 +208,46 @@ public static class PromptService
 
         // Dialogue type
         if (talkRequest.TalkType == TalkType.User)
-        {
-            sb.Append($"{pawns[1].LabelShort}({pawns[1].GetRole()}) said to '{shortName}: {talkRequest.Prompt}'.");
-            sb.Append($"Generate multi turn dialogues starting after this (do not repeat initial dialogue), beginning with {mainPawn.LabelShort}");
-        }
+            {
+                // Initiator == Recipient
+                bool isSelfTalk = talkRequest.Initiator != null
+                                && talkRequest.Initiator == talkRequest.Recipient;
+
+                if (isSelfTalk)
+                {
+                    // Talktoitself
+                    sb.Append(
+                        $"{shortName} is talking to themselves and just said: \"{talkRequest.Prompt}\".\n" +
+                        $"Continue {shortName}'s inner monologue in first person, " +
+                        "keeping the tone consistent. " +
+                        "Reply only with what this pawn says next (one or two short lines)."
+                    );
+
+                    talkRequest.IsMonologue = true;
+                }
+                else
+                {
+                    // others
+                    var other = pawns.FirstOrDefault(p => p != mainPawn);
+                    if (other != null)
+                    {
+                        sb.Append(
+                            $"{other.LabelShort}({other.GetRole()}) said to {shortName}: \"{talkRequest.Prompt}\".\n" +
+                            $"Generate multi-turn dialogue continuing after this line " +
+                            $"(do not repeat the initial line), starting with {shortName}."
+                        );
+                    }
+                    else
+                    {
+                        // fallback
+                        sb.Append(
+                            $"{shortName} just said: \"{talkRequest.Prompt}\" to themselves.\n" +
+                            $"Continue {shortName}'s self-talk in first person, one or two short lines."
+                        );
+                        talkRequest.IsMonologue = true;
+                    }
+                }
+            }
         else
         {
             if (pawns.Count == 1)

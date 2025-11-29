@@ -82,6 +82,23 @@ public static class CustomDialogueService
         }
     }
 
+    public static void ExecuteSelfTalk(Pawn pawn, string message)
+    {
+        PawnState state = Cache.Get(pawn);
+        if (state == null || !state.CanDisplayTalk())
+            return;
+
+        state.AddTalkRequest(message, pawn, TalkType.User);
+
+        ApiLog apiLog = ApiHistory.AddUserHistory(pawn.LabelShort, message);
+
+        TalkResponse talkResponse = new(TalkType.User, pawn.LabelShort, message)
+        {
+            Id = apiLog.Id
+        };
+        state.TalkResponses.Insert(0, talkResponse);
+    }
+
     public class PendingDialogue(Pawn recipient, string message)
     {
         public readonly Pawn Recipient = recipient;

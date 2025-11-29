@@ -201,6 +201,8 @@
     <RimTalk.FloatMenu.ChatWith>{0}와 대화하기</RimTalk.FloatMenu.ChatWith>
     <RimTalk.FloatMenu.WhatToSayToSelf>{0}에게 무엇을 말하고 싶으세요?</RimTalk.FloatMenu.WhatToSayToSelf>
     <RimTalk.FloatMenu.WhatToSayToOther>{0}가 {1}에게 무엇을 말하기를 원하세요?</RimTalk.FloatMenu.WhatToSayToOther>
+    <RimTalk.FloatMenu.SelfTalk>혼잣말: {0}</RimTalk.FloatMenu.SelfTalk>
+    <RimTalk.FloatMenu.WhatToSayToSelf_Mono>{0}에게 어떤 혼잣말을 하게 하고 싶으신가요?</RimTalk.FloatMenu.WhatToSayToSelf_Mono>
     <RimTalk.FloatMenu.Send>보내기</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>취소</RimTalk.FloatMenu.Cancel>
 

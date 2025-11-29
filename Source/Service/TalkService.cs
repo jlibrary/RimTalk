@@ -171,8 +171,20 @@ public static class TalkService
             }
 
             // Skip this talk if its parent was ignored or the pawn is currently unable to speak.
-            if (TalkHistory.IsTalkIgnored(talk.ParentTalkId) || !pawnState.CanDisplayTalk())
+            if (TalkHistory.IsTalkIgnored(talk.ParentTalkId))
             {
+                pawnState.IgnoreTalkResponse();
+                continue;
+            }
+            if (!pawnState.CanDisplayTalk())
+            {
+                if (talk.TalkType == TalkType.User)
+                {
+                    // Player Putin
+                    continue;
+                }
+
+                // Fallback
                 pawnState.IgnoreTalkResponse();
                 continue;
             }
@@ -190,8 +202,14 @@ public static class TalkService
             }
 
             // Enforce a delay for replies to make conversations feel more natural.
-            int parentTalkTick = TalkHistory.GetSpokenTick(talk.ParentTalkId);
-            if (parentTalkTick == -1 || !CommonUtil.HasPassed(parentTalkTick, replyInterval)) continue;
+            if (talk.ParentTalkId != Guid.Empty || talk.TalkType != TalkType.User)
+            {
+                int parentTalkTick = TalkHistory.GetSpokenTick(talk.ParentTalkId);
+                if (parentTalkTick == -1 || !CommonUtil.HasPassed(parentTalkTick, replyInterval))
+                {
+                    continue;
+                }
+            }
 
             // Create the interaction log entry, which triggers the display of the talk bubble in-game.
             InteractionDef intDef = DefDatabase<InteractionDef>.GetNamed("RimTalkInteraction");

@@ -201,6 +201,8 @@
     <RimTalk.FloatMenu.ChatWith>Общаться с {0}</RimTalk.FloatMenu.ChatWith>
     <RimTalk.FloatMenu.WhatToSayToSelf>Что вы хотите сказать {0}?</RimTalk.FloatMenu.WhatToSayToSelf>
     <RimTalk.FloatMenu.WhatToSayToOther>Что вы хотите, чтобы {0} сказал {1}?</RimTalk.FloatMenu.WhatToSayToOther>
+    <RimTalk.FloatMenu.SelfTalk>Саморазговор: {0}</RimTalk.FloatMenu.SelfTalk>
+    <RimTalk.FloatMenu.WhatToSayToSelf_Mono>Что вы хотите, чтобы {0} сказал самому себе?</RimTalk.FloatMenu.WhatToSayToSelf_Mono>
     <RimTalk.FloatMenu.Send>Отправить</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>Отмена</RimTalk.FloatMenu.Cancel>
 
