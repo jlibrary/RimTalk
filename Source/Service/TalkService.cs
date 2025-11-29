@@ -106,7 +106,7 @@ public static class TalkService
                 playerDict,
                 (pawn, talkResponse) =>
                 {
-                    Logger.Debug($"Streamed {pawn.LabelShort}: {talkResponse.TalkType}: {talkResponse.Text}");
+                    Logger.Debug($"Streamed: {talkResponse}");
 
                     PawnState pawnState = Cache.Get(pawn);
                     talkResponse.Name = pawnState.Pawn.LabelShort;
@@ -193,11 +193,8 @@ public static class TalkService
             int parentTalkTick = TalkHistory.GetSpokenTick(talk.ParentTalkId);
             if (parentTalkTick == -1 || !CommonUtil.HasPassed(parentTalkTick, replyInterval)) continue;
 
-            // Create the interaction log entry, which triggers the display of the talk bubble in-game.
-            InteractionDef intDef = DefDatabase<InteractionDef>.GetNamed("RimTalkInteraction");
-            var playLogEntryInteraction = new PlayLogEntry_RimTalkInteraction(intDef, pawn, pawn, null);
-
-            Find.PlayLog.Add(playLogEntryInteraction);
+            CreateInteraction(pawn, talk);
+            
             break; // Display only one talk per tick to prevent overwhelming the screen.
         }
     }
@@ -223,7 +220,7 @@ public static class TalkService
     {
         // Failsafe check
         if (pawnState.TalkResponses.Empty()) 
-            return new TalkResponse(TalkType.Other, null, "");
+            return new TalkResponse(TalkType.Other, null!, "");
         
         var talkResponse = pawnState.TalkResponses.First();
         pawnState.TalkResponses.Remove(talkResponse);
@@ -234,6 +231,30 @@ public static class TalkService
 
         Overlay.NotifyLogUpdated();
         return talkResponse;
+    }
+
+    private static void CreateInteraction(Pawn pawn, TalkResponse talk)
+    {
+        // Create the interaction log entry, which triggers the display of the talk bubble in-game.
+        InteractionDef intDef = DefDatabase<InteractionDef>.GetNamed("RimTalkInteraction");
+        var recipient = talk.GetTarget() ?? pawn;
+        var playLogEntryInteraction = new PlayLogEntry_RimTalkInteraction(intDef, pawn, recipient, null);
+
+        Find.PlayLog.Add(playLogEntryInteraction);
+
+        InteractionDef vanillaDef = talk.GetInteractionType().ToInteractionDef();
+        if (Settings.Get().ApplyMoodAndSocialEffects && vanillaDef != null && pawn != recipient)
+        {
+            if (vanillaDef.recipientThought != null)
+            {
+                recipient.needs?.mood?.thoughts?.memories?.TryGainMemory(vanillaDef.recipientThought, pawn);
+            }
+
+            if (vanillaDef.initiatorThought != null)
+            {
+                recipient.needs?.mood?.thoughts?.memories?.TryGainMemory(vanillaDef.initiatorThought, pawn);
+            }
+        }
     }
 
     private static bool AnyPawnHasPendingResponses()

@@ -4,7 +4,6 @@ namespace RimTalk.Data;
 
 public static class Constant
 {
-    public const string ModTag = "[RimTalk]";
     public const string DefaultCloudModel = "gemma-3-27b-it";
     public const string FallbackCloudModel = "gemma-3-12b-it";
     public const string ChooseModel = "(choose model)";
@@ -13,42 +12,61 @@ public static class Constant
     public static readonly HediffDef VocalLinkDef = DefDatabase<HediffDef>.GetNamed("VocalLinkImplant");
 
     public static readonly string DefaultInstruction =
-        $@"Role-play RimWorld character per profile
+        $"""
+         Role-play RimWorld character per profile
 
-Rules:
-Preserve original names (no translation)
-Keep dialogue short ({Lang} only, 1-2 sentences)
-Show concern for sick/mental issues
-Never mention another character's personal name unless they share the same role
-Do not talk to sleeping person
+         Rules:
+         Preserve original names (no translation)
+         Keep dialogue short ({Lang} only, 1-2 sentences)
+         Show concern for sick/mental issues
+         Never mention another character's personal name unless they share the same role
+         Do not talk to sleeping person
 
-Roles:
-Prisoner: wary, hesitant; mention confinement; plead or bargain
-Slave: fearful, obedient; reference forced labor and exhaustion; call colonists ""master""
-Visitor: polite, curious, deferential; treat other visitors in the same group as companions
-Enemy: hostile, aggressive; terse commands/threats
+         Roles:
+         Prisoner: wary, hesitant; mention confinement; plead or bargain
+         Slave: fearful, obedient; reference forced labor and exhaustion; call colonists "master"
+         Visitor: polite, curious, deferential; treat other visitors in the same group as companions
+         Enemy: hostile, aggressive; terse commands/threats
 
-Monologue = 1 turn. Conversation = 4-8 short turns";
+         Monologue = 1 turn. Conversation = 4-8 short turns
+         """;
 
-    private const string JsonInstruction = @"
-
-Return JSONL/NDJSON only, with objects containing ""name"" and ""text"" string keys";
+    private const string JsonInstruction = """
+                                           Output JSONL.
+                                           Required keys: "name", "text".
+                                           """;
+    
+    private const string SocialInstruction = """
+                                           Optional keys (Include only if social interaction occurs):
+                                           "act": Insult, Slight, Chat, Kind
+                                           "target": targetName
+                                           """;
 
     // Get the current instruction from settings or fallback to default, always append JSON instruction
-    public static string Instruction =>
-        (string.IsNullOrWhiteSpace(Settings.Get().CustomInstruction)
-            ? DefaultInstruction
-            : Settings.Get().CustomInstruction) + JsonInstruction;
+    public static string Instruction
+    {
+        get
+        {
+            var settings = Settings.Get();
+            var baseInstruction = string.IsNullOrWhiteSpace(settings.CustomInstruction)
+                ? DefaultInstruction
+                : settings.CustomInstruction;
+        
+            return baseInstruction + "\n" + JsonInstruction + (settings.ApplyMoodAndSocialEffects ? "\n" + SocialInstruction : "");
+        }
+    }
 
     public const string Prompt =
         "Act based on role and context";
 
     public static readonly string PersonaGenInstruction =
-        $@"Create a funny persona (to be used as conversation style) in {Lang}. Must be short in 1 sentence.
-Include: how they speak, their main attitude, and one weird quirk that makes them memorable.
-Be specific and bold, avoid boring traits.
-Also determine chattiness: 0.1-0.5 (quiet), 0.6-1.4 (normal), 1.5-2.0 (chatty).
-Must return JSON only, with fields 'persona' (string) and 'chattiness' (float).";
+        $"""
+         Create a funny persona (to be used as conversation style) in {Lang}. Must be short in 1 sentence.
+         Include: how they speak, their main attitude, and one weird quirk that makes them memorable.
+         Be specific and bold, avoid boring traits.
+         Also determine chattiness: 0.1-0.5 (quiet), 0.6-1.4 (normal), 1.5-2.0 (chatty).
+         Must return JSON only, with fields 'persona' (string) and 'chattiness' (float).
+         """;
 
     public static readonly PersonalityData[] Personalities =
     [
@@ -103,9 +121,11 @@ Must return JSON only, with fields 'persona' (string) and 'chattiness' (float)."
     ];
 
     public static readonly PersonalityData PersonaAnimal =
-        new ("RimTalk.Persona.Animal".Translate(), 0.3f);
+        new("RimTalk.Persona.Animal".Translate(), 0.3f);
+
     public static readonly PersonalityData PersonaMech =
-        new ("RimTalk.Persona.Mech".Translate(), 0.3f);
+        new("RimTalk.Persona.Mech".Translate(), 0.3f);
+
     public static readonly PersonalityData PersonaNonHuman =
-        new ("RimTalk.Persona.NonHuman".Translate(), 0.3f);
+        new("RimTalk.Persona.NonHuman".Translate(), 0.3f);
 }

@@ -99,7 +99,9 @@
     <RimTalk.Settings.AllowBabiesToTalkTooltip>Включите, чтобы младенцы и маленькие дети могли участвовать в разговорах, сгенерированные ИИ.</RimTalk.Settings.AllowBabiesToTalkTooltip>
     <RimTalk.Settings.AllowNonHumanToTalk>Разрешить говорить не людям</RimTalk.Settings.AllowNonHumanToTalk>
     <RimTalk.Settings.AllowNonHumanToTalkTooltip>Позволяет животным, механоидом и пользовательским расам говорить после установки Катализатора голосовой связи, полученного у торговцев.</RimTalk.Settings.AllowNonHumanToTalkTooltip>
-    
+    <RimTalk.Settings.ApplyMoodAndSocialEffects>Влияние на настроение и социальные связи</RimTalk.Settings.ApplyMoodAndSocialEffects>
+    <RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>Диалоги могут влиять на настроение и отношения колонистов в зависимости от тона разговора.</RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>
+
     <RimTalk.Settings.PauseAtSpeed>Приостанавливать ИИ на высокой скорости</RimTalk.Settings.PauseAtSpeed>
     <RimTalk.Settings.DisableAiAtSpeedTooltip>Чтобы уменьшить количество вызовов API, ИИ будет приостановлен, когда скорость игры установлена на этот уровень или выше.</RimTalk.Settings.DisableAiAtSpeedTooltip>
     <RimTalk.Settings.Disabled>Отключено</RimTalk.Settings.Disabled>
@@ -178,6 +180,7 @@
     <RimTalk.DebugWindow.StatusBusy>Занято</RimTalk.DebugWindow.StatusBusy>
     <RimTalk.DebugWindow.HeaderPawn>Пешка</RimTalk.DebugWindow.HeaderPawn>
     <RimTalk.DebugWindow.HeaderResponse>Ответ</RimTalk.DebugWindow.HeaderResponse>
+    <RimTalk.DebugWindow.HeaderInteractionType>Тип</RimTalk.DebugWindow.HeaderInteractionType>
     <RimTalk.DebugWindow.HeaderStatus>Статус</RimTalk.DebugWindow.HeaderStatus>
     <RimTalk.DebugWindow.HeaderLastTalk>Последний разговор</RimTalk.DebugWindow.HeaderLastTalk>
     <RimTalk.DebugWindow.HeaderRequests>Запросы</RimTalk.DebugWindow.HeaderRequests>

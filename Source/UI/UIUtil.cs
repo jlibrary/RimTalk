@@ -69,16 +69,10 @@ public static class UIUtil
         try
         {
             var sb = new StringBuilder();
-            sb.AppendLine("Timestamp,Pawn,Response,Tokens,ElapsedMs,Prompt,Contexts");
+            sb.AppendLine("Timestamp,Pawn,Response,Type,Tokens,ElapsedMs,Prompt,Contexts");
 
             foreach (var log in apiLogs)
             {
-                // Sanitize standard strings
-                string cleanResponse = (log.Response ?? "").Replace("\"", "\"\"");
-                string cleanPrompt = (log.Prompt ?? "").Replace("\"", "\"\"");
-                string cleanPawn = (log.Name ?? "Unknown").Replace("\"", "\"\"");
-
-                // Process Contexts
                 string combinedContexts = "";
                 if (log.Contexts != null && log.Contexts.Any())
                 {
@@ -87,7 +81,7 @@ public static class UIUtil
                 }
 
                 sb.AppendLine(
-                    $"\"{log.Timestamp}\",\"{cleanPawn}\",\"{cleanResponse}\",{log.TokenCount},{log.ElapsedMs},\"{cleanPrompt}\",\"{combinedContexts}\"");
+                    $"\"{log.Timestamp}\",\"{log.Name}\",\"{log.Response}\",\"{log.InteractionType}\",{log.TokenCount},{log.ElapsedMs},\"{log.Prompt}\",\"{combinedContexts}\"");
             }
 
             string fileName = $"RimTalk_Export_{DateTime.Now:yyyyMMdd_HHmmss}.csv";

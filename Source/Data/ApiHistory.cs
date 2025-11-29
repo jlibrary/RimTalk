@@ -13,7 +13,7 @@ public class ApiLog(string name, string prompt, string response, Payload payload
     public List<string> Contexts { get; set; } = contexts ?? [];
     public string Prompt { get; set; } = prompt;
     public string Response { get; set; } = response;
-
+    public string InteractionType;
     public bool IsFirstDialogue;
     public string RequestPayload { get; set; } = payload?.Request;
     public string ResponsePayload { get; set; } = payload?.Response;
@@ -68,7 +68,7 @@ public static class ApiHistory
         }
     }
 
-    public static ApiLog AddResponse(Guid id, string response, string name = null, Payload payload = null, int elapsedMs = 0)
+    public static ApiLog AddResponse(Guid id, string response, string name, string interactionType, Payload payload = null, int elapsedMs = 0)
     {
         if (!History.TryGetValue(id, out var originalLog)) return null;
 
@@ -77,6 +77,7 @@ public static class ApiHistory
         {
             originalLog.Name = name ?? originalLog.Name;
             originalLog.Response = response;
+            originalLog.InteractionType = interactionType;
             originalLog.RequestPayload = payload?.Request;
             originalLog.ResponsePayload = payload?.Response;
             originalLog.TokenCount = payload?.TokenCount ?? 0;
@@ -87,6 +88,7 @@ public static class ApiHistory
         // multi-turn messages
         var newLog = new ApiLog(name, originalLog.Prompt, response, payload, DateTime.Now, originalLog.Contexts);
         History[newLog.Id] = newLog;
+        newLog.InteractionType = interactionType;
         newLog.ElapsedMs = elapsedMs;
         newLog.ConversationId = originalLog.ConversationId;
         return newLog;

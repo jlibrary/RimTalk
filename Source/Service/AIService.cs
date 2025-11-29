@@ -40,9 +40,7 @@ public static class AIService
                     talkResponse =>
                     {
                         if (!players.TryGetValue(talkResponse.Name, out var player))
-                        {
                             return;
-                        }
 
                         talkResponse.TalkType = request.TalkType;
 
@@ -51,7 +49,7 @@ public static class AIService
                         if (lastApiLog == initApiLog)
                             elapsedMs -= lastApiLog.ElapsedMs;
                         
-                        var newApiLog = ApiHistory.AddResponse(initApiLog.Id, talkResponse.Text, talkResponse.Name, elapsedMs:elapsedMs);
+                        var newApiLog = ApiHistory.AddResponse(initApiLog.Id, talkResponse.Text, talkResponse.Name, talkResponse.InteractionRaw, elapsedMs:elapsedMs);
                         talkResponse.Id = newApiLog.Id;
                         
                         lastApiLog = newApiLog;
@@ -101,7 +99,7 @@ public static class AIService
         {
             foreach (var talkResponse in talkResponses)
             {
-                apiLog = ApiHistory.AddResponse(apiLog.Id, talkResponse.Text, talkResponse.Name, payload);
+                apiLog = ApiHistory.AddResponse(apiLog.Id, talkResponse.Text, talkResponse.Name, talkResponse.InteractionRaw, payload);
                 talkResponse.Id = apiLog.Id;
             }
         }
@@ -128,7 +126,7 @@ public static class AIService
 
         var jsonData = JsonUtil.DeserializeFromJson<T>(payload.Response);
 
-        ApiHistory.AddResponse(apiLog.Id, jsonData.ToString(), payload: payload);
+        ApiHistory.AddResponse(apiLog.Id, jsonData.GetText(), null, null, payload: payload);
 
         return jsonData;
     }

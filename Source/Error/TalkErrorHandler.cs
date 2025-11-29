@@ -8,7 +8,7 @@ namespace RimTalk.Error;
 
 public static class AIErrorHandler
 {
-    public static bool QuotaWarningShown;
+    private static bool _quotaWarningShown;
 
     public static async Task<T> HandleWithRetry<T>(Func<Task<T>> operation)
     {
@@ -37,14 +37,12 @@ public static class AIErrorHandler
                 {
                     Logger.Warning($"Retry failed: {retryEx.Message}");
                     HandleFinalFailure(ex);
-                    return default(T);
+                    return default;
                 }
             }
-            else
-            {
-                HandleFinalFailure(ex);
-                return default(T);
-            }
+
+            HandleFinalFailure(ex);
+            return default;
         }
     }
 
@@ -52,16 +50,16 @@ public static class AIErrorHandler
     {
         if (settings.UseSimpleConfig)
         {
-            return !settings.IsUsingFallbackModel;
+            if (settings.IsUsingFallbackModel) return false;
+            settings.IsUsingFallbackModel = true;
+            return true;
         }
-        else if (settings.UseCloudProviders)
-        {
-            int originalIndex = settings.CurrentCloudConfigIndex;
-            settings.TryNextConfig();
-            return settings.CurrentCloudConfigIndex != originalIndex;
-        }
-            
-        return false;
+
+        if (!settings.UseCloudProviders) return false;
+        int originalIndex = settings.CurrentCloudConfigIndex;
+        settings.TryNextConfig();
+        return settings.CurrentCloudConfigIndex != originalIndex;
+
     }
 
     private static void HandleFinalFailure(Exception ex)
@@ -78,28 +76,28 @@ public static class AIErrorHandler
 
     public static void ResetQuotaWarning()
     {
-        QuotaWarningShown = false;
+        _quotaWarningShown = false;
     }
 
-    public static void ShowQuotaWarning(Exception ex)
+    private static void ShowQuotaWarning(Exception ex)
     {
-        if (!QuotaWarningShown)
+        if (!_quotaWarningShown)
         {
-            QuotaWarningShown = true;
+            _quotaWarningShown = true;
             string message = "RimTalk.TalkService.QuotaExceeded".Translate();
             Messages.Message(message, MessageTypeDefOf.NeutralEvent, false);
             Logger.Warning(ex.Message);
         }
     }
 
-    public static void ShowGenerationWarning(Exception ex)
+    private static void ShowGenerationWarning(Exception ex)
     {
         Logger.Warning(ex.StackTrace);
         string message = $"{"RimTalk.TalkService.GenerationFailed".Translate()}: {ex.Message}";
         Messages.Message(message, MessageTypeDefOf.NeutralEvent, false);
     }
 
-    public static void ShowRetryMessage(Exception ex, string nextModel)
+    private static void ShowRetryMessage(Exception ex, string nextModel)
     {
         string messageKey = ex is QuotaExceededException ? "RimTalk.TalkService.QuotaReached" : "RimTalk.TalkService.APIError";
         string message = $"{messageKey.Translate()}. {"RimTalk.TalkService.TryingNextAPI".Translate(nextModel)}";

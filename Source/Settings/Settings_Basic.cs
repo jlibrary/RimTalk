@@ -83,6 +83,10 @@ public partial class Settings
         leftListing.CheckboxLabeled("RimTalk.Settings.ContinueDialogueWhileSleeping".Translate().ToString(),
             ref settings.ContinueDialogueWhileSleeping,
             "RimTalk.Settings.ContinueDialogueWhileSleepingTooltip".Translate().ToString());
+        leftListing.Gap();
+        leftListing.CheckboxLabeled("RimTalk.Settings.ApplyMoodAndSocialEffects".Translate().ToString(),
+            ref settings.ApplyMoodAndSocialEffects,
+            "RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip".Translate().ToString());
 
         leftListing.End();
 
@@ -211,6 +215,7 @@ public partial class Settings
             settings.AllowNonHumanToTalk = true;
             settings.AllowCustomConversation = true;
             settings.ContinueDialogueWhileSleeping = false;
+            settings.ApplyMoodAndSocialEffects = false;
             settings.UseSimpleConfig = true;
             settings.DisableAiAtSpeed = 0;
             settings.ButtonDisplay = ButtonDisplayMode.Tab;

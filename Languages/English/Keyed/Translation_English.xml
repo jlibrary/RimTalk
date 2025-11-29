@@ -98,6 +98,8 @@
     <RimTalk.Settings.AllowBabiesToTalkTooltip>Enable this option to allow infants and toddlers to participate in AI-generated conversations.</RimTalk.Settings.AllowBabiesToTalkTooltip>
     <RimTalk.Settings.AllowNonHumanToTalk>Allow Non-Humans to Talk</RimTalk.Settings.AllowNonHumanToTalk>
     <RimTalk.Settings.AllowNonHumanToTalkTooltip>Enable non-human creatures (animals, mechanoids, or custom races) to talk if they have been given a Vocal Link Catalyst, which can be acquired from merchants.</RimTalk.Settings.AllowNonHumanToTalkTooltip>
+    <RimTalk.Settings.ApplyMoodAndSocialEffects>Apply Mood and Social Effects</RimTalk.Settings.ApplyMoodAndSocialEffects>
+    <RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>Dialogue can affect pawns’ mood and relationships based on conversation sentiment.</RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>
 
     <RimTalk.Settings.PauseAtSpeed>Pause AI on High Speed</RimTalk.Settings.PauseAtSpeed>
     <RimTalk.Settings.DisableAiAtSpeedTooltip>To reduce API calls, the AI will be paused when game speed is set to this level or higher.</RimTalk.Settings.DisableAiAtSpeedTooltip>
@@ -177,6 +179,7 @@
     <RimTalk.DebugWindow.StatusBusy>Busy</RimTalk.DebugWindow.StatusBusy>
     <RimTalk.DebugWindow.HeaderPawn>Pawn</RimTalk.DebugWindow.HeaderPawn>
     <RimTalk.DebugWindow.HeaderResponse>Response</RimTalk.DebugWindow.HeaderResponse>
+    <RimTalk.DebugWindow.HeaderInteractionType>Type</RimTalk.DebugWindow.HeaderInteractionType>
     <RimTalk.DebugWindow.HeaderStatus>Status</RimTalk.DebugWindow.HeaderStatus>
     <RimTalk.DebugWindow.HeaderLastTalk>Last Talk</RimTalk.DebugWindow.HeaderLastTalk>
     <RimTalk.DebugWindow.HeaderRequests>Requests</RimTalk.DebugWindow.HeaderRequests>

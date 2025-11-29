@@ -1,33 +1,33 @@
-using RimTalk.Data;
 using Verse;
 
 namespace RimTalk.Util;
 
 public static class Logger
 {
+    private const string ModTag = "[RimTalk]";
     public static void Message(string message)
     {
-        Log.Message($"{Constant.ModTag} {message}\n\n");
+        Log.Message($"{ModTag} {message}\n\n");
     }
         
     public static void Debug(string message)
     {
         if (Prefs.LogVerbose)
-            Log.Message($"{Constant.ModTag} {message}\n\n");
+            Log.Message($"{ModTag} {message}\n\n");
     }
         
     public static void Warning(string message)
     {
-        Log.Warning($"{Constant.ModTag} {message}\n\n");
+        Log.Warning($"{ModTag} {message}\n\n");
     }
         
     public static void Error(string message)
     {
-        Log.Error($"{Constant.ModTag} {message}\n\n");
+        Log.Error($"{ModTag} {message}\n\n");
     }
 
     public static void ErrorOnce(string text, int key)
     {
-        Log.ErrorOnce($"{Constant.ModTag} {text}\n\n", key);
+        Log.ErrorOnce($"{ModTag} {text}\n\n", key);
     }
 }

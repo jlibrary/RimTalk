@@ -9,7 +9,7 @@ public class PersonalityData(string persona, float chattiness = 1.0f) : IJsonDat
 
     [DataMember(Name = "chattiness")] public float Chattiness { get; set; } = chattiness;
 
-    public override string ToString()
+    public string GetText()
     {
         return Persona;
     }

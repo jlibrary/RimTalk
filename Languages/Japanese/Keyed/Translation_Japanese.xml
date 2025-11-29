@@ -99,6 +99,8 @@
     <RimTalk.Settings.AllowBabiesToTalkTooltip>これを有効にすると、乳児や幼児がAI生成の会話を行えるようになります。</RimTalk.Settings.AllowBabiesToTalkTooltip>
     <RimTalk.Settings.AllowNonHumanToTalk>非人間が話すことを許可</RimTalk.Settings.AllowNonHumanToTalk>
     <RimTalk.Settings.AllowNonHumanToTalkTooltip>動物、メカノイド、カスタム種族が、商人からCatalyseur de lien vocal/聲音鏈接催化劑/음성 연결 촉매/Катализатор голосовой связиを入手した場合に話すことを許可します。</RimTalk.Settings.AllowNonHumanToTalkTooltip>
+    <RimTalk.Settings.ApplyMoodAndSocialEffects>ムードと社会的影響を適用</RimTalk.Settings.ApplyMoodAndSocialEffects>
+    <RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>会話に応じて入植者のムードや関係性に影響を与えることがあります。</RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>
 
     <RimTalk.Settings.PauseAtSpeed>高速時にAIを一時停止</RimTalk.Settings.PauseAtSpeed>
     <RimTalk.Settings.DisableAiAtSpeedTooltip>API呼び出しを減らすため、ゲーム速度がこのレベル以上に設定されるとAIは一時停止します。</RimTalk.Settings.DisableAiAtSpeedTooltip>
@@ -178,6 +180,7 @@
     <RimTalk.DebugWindow.StatusBusy>Busy</RimTalk.DebugWindow.StatusBusy>
     <RimTalk.DebugWindow.HeaderPawn>ポーン</RimTalk.DebugWindow.HeaderPawn>
     <RimTalk.DebugWindow.HeaderResponse>応答</RimTalk.DebugWindow.HeaderResponse>
+    <RimTalk.DebugWindow.HeaderInteractionType>タイプ</RimTalk.DebugWindow.HeaderInteractionType>
     <RimTalk.DebugWindow.HeaderStatus>ステータス</RimTalk.DebugWindow.HeaderStatus>
     <RimTalk.DebugWindow.HeaderLastTalk>最終会話</RimTalk.DebugWindow.HeaderLastTalk>
     <RimTalk.DebugWindow.HeaderRequests>リクエスト</RimTalk.DebugWindow.HeaderRequests>

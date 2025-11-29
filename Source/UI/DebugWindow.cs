@@ -19,6 +19,7 @@ public class DebugWindow : Window
     private const float TimeColumnWidth = 80f;
     private const float TokensColumnWidth = 80f;
     private const float StateColumnWidth = 80f;
+    private const float InteractionTypeColumnWidth = 80f; 
     private const float ColumnPadding = 10f;
 
     private const float GroupedPawnNameWidth = 80f;
@@ -29,8 +30,7 @@ public class DebugWindow : Window
     private const float GroupedStatusWidth = 80f;
 
     private readonly string _generating = "RimTalk.DebugWindow.Generating".Translate();
-
-
+    
     private Vector2 _tableScrollPosition;
 
     private string _aiStatus;
@@ -47,7 +47,7 @@ public class DebugWindow : Window
     private string _sortColumn;
     private bool _sortAscending;
     private readonly List<string> _expandedPawns;
-    private readonly HashSet<Guid> _expandedRequests = new();
+    private readonly HashSet<Guid> _expandedRequests = [];
 
     // Custom style for a smaller font
     private GUIStyle _contextStyle;
@@ -68,7 +68,7 @@ public class DebugWindow : Window
         _expandedPawns = [];
     }
 
-    public override Vector2 InitialSize => new Vector2(1000f, 600f);
+    public override Vector2 InitialSize => new(1000f, 600f);
 
     public override void PreClose()
     {
@@ -399,8 +399,7 @@ public class DebugWindow : Window
 
             Widgets.Label(new Rect(currentX, rowRect.y, GroupedChattinessWidth, RowHeight),
                 pawnState.TalkInitiationWeight.ToString("F2"));
-
-
+            
             if (Widgets.ButtonInvisible(rowRect))
             {
                 if (isExpanded) _expandedPawns.Remove(pawnKey);
@@ -484,6 +483,10 @@ public class DebugWindow : Window
             "RimTalk.DebugWindow.HeaderResponse".Translate());
         currentX += responseColumnWidth + ColumnPadding;
 
+        Widgets.Label(new Rect(currentX, rect.y, InteractionTypeColumnWidth, rect.height),
+            "RimTalk.DebugWindow.HeaderInteractionType".Translate());
+        currentX += InteractionTypeColumnWidth + ColumnPadding;
+
         Widgets.Label(new Rect(currentX, rect.y, TimeColumnWidth, rect.height),
             "RimTalk.DebugWindow.HeaderTimeMs".Translate());
         currentX += TimeColumnWidth + ColumnPadding;
@@ -529,6 +532,10 @@ public class DebugWindow : Window
             var responseRect = new Rect(currentX, rowRect.y, responseColumnWidth, RowHeight);
             Widgets.Label(responseRect, resp);
             currentX += responseColumnWidth + ColumnPadding;
+
+            string interactionType = request.InteractionType ?? "-";
+            Widgets.Label(new Rect(currentX, rowRect.y, InteractionTypeColumnWidth, RowHeight), interactionType);
+            currentX += InteractionTypeColumnWidth + ColumnPadding;
 
             string elapsedMsText = request.Response == null
                 ? ""
@@ -685,8 +692,8 @@ public class DebugWindow : Window
 
     private float CalculateResponseColumnWidth(float totalWidth, bool includePawnColumn)
     {
-        float fixedWidth = TimestampColumnWidth + TimeColumnWidth + TokensColumnWidth + StateColumnWidth;
-        int columnGaps = 5;
+        float fixedWidth = TimestampColumnWidth + TimeColumnWidth + TokensColumnWidth + StateColumnWidth + InteractionTypeColumnWidth;
+        int columnGaps = 6;
 
         if (includePawnColumn)
         {

@@ -99,6 +99,8 @@
     <RimTalk.Settings.AllowBabiesToTalkTooltip>Activez ceci pour permettre aux nourrissons et aux tout-petits des conversations générées par l'IA.</RimTalk.Settings.AllowBabiesToTalkTooltip>
     <RimTalk.Settings.AllowNonHumanToTalk>Permettre aux non-humains de parler</RimTalk.Settings.AllowNonHumanToTalk>
     <RimTalk.Settings.AllowNonHumanToTalkTooltip>Permet aux animaux, mécanoïdes et races personnalisées de parler lorsqu'ils sont implantés avec un Catalyseur de lien vocal provenant des marchands.</RimTalk.Settings.AllowNonHumanToTalkTooltip>
+    <RimTalk.Settings.ApplyMoodAndSocialEffects>Modifier l'humeur et les relations sociales</RimTalk.Settings.ApplyMoodAndSocialEffects>
+    <RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>Les dialogues peuvent affecter l'humeur et les relations des colons en fonction du ton de la conversation.</RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>
 
     <RimTalk.Settings.PauseAtSpeed>Mettre l'IA en pause à haute vitesse</RimTalk.Settings.PauseAtSpeed>
     <RimTalk.Settings.DisableAiAtSpeedTooltip>Pour réduire les appels à l'API, l'IA sera mise en pause lorsque la vitesse du jeu est réglée sur ce niveau ou plus.</RimTalk.Settings.DisableAiAtSpeedTooltip>
@@ -178,6 +180,7 @@
     <RimTalk.DebugWindow.StatusBusy>Occupé</RimTalk.DebugWindow.StatusBusy>
     <RimTalk.DebugWindow.HeaderPawn>Pion</RimTalk.DebugWindow.HeaderPawn>
     <RimTalk.DebugWindow.HeaderResponse>Réponse</RimTalk.DebugWindow.HeaderResponse>
+    <RimTalk.DebugWindow.HeaderInteractionType>Type</RimTalk.DebugWindow.HeaderInteractionType>
     <RimTalk.DebugWindow.HeaderStatus>Statut</RimTalk.DebugWindow.HeaderStatus>
     <RimTalk.DebugWindow.HeaderLastTalk>Dernière conv.</RimTalk.DebugWindow.HeaderLastTalk>
     <RimTalk.DebugWindow.HeaderRequests>Requêtes</RimTalk.DebugWindow.HeaderRequests>

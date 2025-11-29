@@ -99,6 +99,8 @@
     <RimTalk.Settings.AllowBabiesToTalkTooltip>启用此项以允许婴幼儿进行 AI 生成的对话。</RimTalk.Settings.AllowBabiesToTalkTooltip>
     <RimTalk.Settings.AllowNonHumanToTalk>允许非人类说话</RimTalk.Settings.AllowNonHumanToTalk>
     <RimTalk.Settings.AllowNonHumanToTalkTooltip>启用非人类生物（动物、机械人或自定义种族）在获得商人提供的Vocal Link Catalyst后说话。</RimTalk.Settings.AllowNonHumanToTalkTooltip>
+    <RimTalk.Settings.ApplyMoodAndSocialEffects>影响心情与社交</RimTalk.Settings.ApplyMoodAndSocialEffects>
+    <RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>对话会根据内容影响殖民者的心情和关系。</RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>
 
     <RimTalk.Settings.PauseAtSpeed>高速时暂停 AI</RimTalk.Settings.PauseAtSpeed>
     <RimTalk.Settings.DisableAiAtSpeedTooltip>为减少 API 调用，当游戏速度设置为此级别或更高级别时，AI 将暂停。</RimTalk.Settings.DisableAiAtSpeedTooltip>
@@ -178,6 +180,7 @@
     <RimTalk.DebugWindow.StatusBusy>Busy</RimTalk.DebugWindow.StatusBusy>
     <RimTalk.DebugWindow.HeaderPawn>角色</RimTalk.DebugWindow.HeaderPawn>
     <RimTalk.DebugWindow.HeaderResponse>回应</RimTalk.DebugWindow.HeaderResponse>
+    <RimTalk.DebugWindow.HeaderInteractionType>类型</RimTalk.DebugWindow.HeaderInteractionType>
     <RimTalk.DebugWindow.HeaderStatus>状态</RimTalk.DebugWindow.HeaderStatus>
     <RimTalk.DebugWindow.HeaderLastTalk>上次谈话</RimTalk.DebugWindow.HeaderLastTalk>
     <RimTalk.DebugWindow.HeaderRequests>请求</RimTalk.DebugWindow.HeaderRequests>

@@ -4,11 +4,9 @@
     <defName>RimTalkInteraction</defName>
     <label>rimtalk</label>
     <symbol>Things/Mote/SpeechSymbols/Chitchat</symbol>
-    <initiatorThought>Chitchat</initiatorThought>
-    <recipientThought>Chitchat</recipientThought>
     <logRulesInitiator>
       <rulesStrings>
-        <li>r_logentry->[INITIATOR_nameDef] talked.</li>
+        <li>r_logentry->[INITIATOR_nameDef] spoke.</li>
       </rulesStrings>
     </logRulesInitiator>
   </InteractionDef>

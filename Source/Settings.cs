@@ -164,6 +164,7 @@ public partial class Settings : Mod
         sb.AppendLine(settings.AllowEnemiesToTalk.ToString());
         sb.AppendLine(settings.AllowBabiesToTalk.ToString());
         sb.AppendLine(settings.AllowNonHumanToTalk.ToString());
+        sb.AppendLine(settings.ApplyMoodAndSocialEffects.ToString());
         
         return sb.ToString().GetHashCode();
     }
