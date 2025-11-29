@@ -267,31 +267,55 @@ public static class PawnService
 
     public static Pawn GetHostilePawnNearBy(this Pawn pawn)
     {
-        if (pawn == null) return null;
+        if (pawn == null || pawn.Map == null) return null;
 
-        // Get all targets on the map that are hostile to the player faction
-        var hostileTargets = pawn.Map.attackTargetsCache?.TargetsHostileToFaction(pawn.Faction);
+        // 1. Choose a faction
+        Faction referenceFaction;
+
+        if (pawn.IsPrisoner || pawn.IsSlave || pawn.IsFreeColonist || pawn.IsVisitor() || pawn.IsQuestLodger())
+        {
+            // Prisoners, colonists, use player faction
+            referenceFaction = Faction.OfPlayer;
+        }
+        else
+        {
+            // enemies, wildmans, use own faction
+            referenceFaction = pawn.Faction;
+        }
+
+        if (referenceFaction == null) return null;
+
+        var hostileTargets = pawn.Map.attackTargetsCache?.TargetsHostileToFaction(referenceFaction);
+        if (hostileTargets == null) return null;
 
         Pawn closestPawn = null;
         float closestDistSq = float.MaxValue;
 
-        if (hostileTargets == null) return null;
-
-        foreach (var target in hostileTargets.Where(target => GenHostility.IsActiveThreatTo(target, pawn.Faction)))
+        foreach (var target in hostileTargets)
         {
+            if (!GenHostility.IsActiveThreatTo(target, referenceFaction))
+                continue;
+
             if (target.Thing is not Pawn threatPawn) continue;
             if (threatPawn.Downed) continue;
-            if (pawn.IsPrisoner)
-            {
-                // Prevent prisoners from recognizing host faction or other prisoner from hostile faction as a threat
-                if (threatPawn.Faction == pawn.HostFaction || threatPawn.IsPrisoner) continue;
-            }
+
+            // --- 2. filter hostile ---
+
+            // a. filter normal colonist
+            if (threatPawn.IsPrisoner && threatPawn.HostFaction == Faction.OfPlayer)
+                continue;
+            if (threatPawn.IsSlave && threatPawn.HostFaction == Faction.OfPlayer)
+                continue;
+
+            // b. filter normal prisoner
+            if (pawn.IsPrisoner && threatPawn.IsPrisoner)
+                continue;
 
             Lord lord = threatPawn.GetLord();
 
             // === 1. EXCLUDE TACTICALLY RETREATING PAWNS ===
             if (lord != null && (lord.CurLordToil is LordToil_ExitMapFighting ||
-                                 lord.CurLordToil is LordToil_ExitMap))
+                                lord.CurLordToil is LordToil_ExitMap))
             {
                 continue;
             }
@@ -315,6 +339,7 @@ public static class PawnService
 
         return closestPawn;
     }
+
 
     // Using a HashSet for better readability and maintainability.
     private static readonly HashSet<string> ResearchJobDefNames =
