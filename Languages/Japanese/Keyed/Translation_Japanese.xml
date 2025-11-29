@@ -162,6 +162,8 @@
     <RimTalk.DebugWindow.StatusIdle>待機中</RimTalk.DebugWindow.StatusIdle>
     <RimTalk.DebugWindow.GroupByPawn>ポーンごとにグループ化</RimTalk.DebugWindow.GroupByPawn>
     <RimTalk.DebugWindow.ModSettings>MOD設定</RimTalk.DebugWindow.ModSettings>
+    <RimTalk.DebugWindow.Export>エクスポート</RimTalk.DebugWindow.Export>
+    <RimTalk.DebugWindow.Reset>ログ初期化</RimTalk.DebugWindow.Reset>
     <RimTalk.DebugWindow.EnableRimTalk>RimTalkを有効にする</RimTalk.DebugWindow.EnableRimTalk>
     <RimTalk.DebugWindow.AIStatus>AIステータス：</RimTalk.DebugWindow.AIStatus>
     <RimTalk.DebugWindow.TotalCalls>総呼び出し回数：</RimTalk.DebugWindow.TotalCalls>

@@ -162,6 +162,8 @@
     <RimTalk.DebugWindow.StatusIdle>Ожидание</RimTalk.DebugWindow.StatusIdle>
     <RimTalk.DebugWindow.GroupByPawn>Группировать по пешке</RimTalk.DebugWindow.GroupByPawn>
     <RimTalk.DebugWindow.ModSettings>Настройки мода</RimTalk.DebugWindow.ModSettings>
+    <RimTalk.DebugWindow.Export>Экспорт</RimTalk.DebugWindow.Export>
+    <RimTalk.DebugWindow.Reset>Сброс лога</RimTalk.DebugWindow.Reset>
     <RimTalk.DebugWindow.EnableRimTalk>Включить RimTalk</RimTalk.DebugWindow.EnableRimTalk>
     <RimTalk.DebugWindow.AIStatus>Статус ИИ:</RimTalk.DebugWindow.AIStatus>
     <RimTalk.DebugWindow.TotalCalls>Всего вызовов:</RimTalk.DebugWindow.TotalCalls>

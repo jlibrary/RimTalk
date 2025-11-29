@@ -169,20 +169,40 @@ public class DebugWindow : Window
         // --- Right-aligned controls (Global Actions) ---
         float rightEdgeX = rect.xMax - 15;
 
-        // Mod Settings button
-        var modSettingsButtonRect = new Rect(rightEdgeX - 120f, rect.y, 120f, 24f);
+        // 1. Mod Settings button
+        var modSettingsButtonRect = new Rect(rightEdgeX - 110f, rect.y, 110f, 24f);
         if (Widgets.ButtonText(modSettingsButtonRect, "RimTalk.DebugWindow.ModSettings".Translate()))
         {
             Find.WindowStack.Add(new Dialog_ModSettings(LoadedModManager.GetMod<Settings>()));
         }
 
         rightEdgeX -= modSettingsButtonRect.width + ColumnPadding;
+        
+        // 2. Export Button
+        var exportButtonRect = new Rect(rightEdgeX - 110f, rect.y, 110f, 24f);
+        if (Widgets.ButtonText(exportButtonRect, "RimTalk.DebugWindow.Export".Translate()))
+        {
+            UIUtil.ExportLogs(_requests);
+        }
 
-        // "Enable AI Talk" checkbox
+        rightEdgeX -= exportButtonRect.width + ColumnPadding;
+
+        // 3. Clear/Delete Button (Red warning color)
+        var clearButtonRect = new Rect(rightEdgeX - 110f, rect.y, 110f, 24f);
+        var prevColor = GUI.color;
+        GUI.color = new Color(1f, 0.4f, 0.4f); // Light Red
+        if (Widgets.ButtonText(clearButtonRect, "RimTalk.DebugWindow.Reset".Translate()))
+        {
+            Reset();
+        }
+        GUI.color = prevColor;
+        
+        rightEdgeX -= clearButtonRect.width + ColumnPadding;
+        
+        // 4. "Enable AI Talk" checkbox
         bool modEnabled = settings.IsEnabled;
-        var enabledCheckboxRect = new Rect(rightEdgeX - 150f, rect.y, 130f, 24f);
-        Widgets.CheckboxLabeled(enabledCheckboxRect, "RimTalk.DebugWindow.EnableRimTalk".Translate(),
-            ref modEnabled);
+        var enabledCheckboxRect = new Rect(rightEdgeX - 130f, rect.y, 130f, 24f);
+        Widgets.CheckboxLabeled(enabledCheckboxRect, "RimTalk.DebugWindow.EnableRimTalk".Translate(), ref modEnabled);
         settings.IsEnabled = modEnabled;
     }
 
@@ -545,6 +565,7 @@ public class DebugWindow : Window
                     statusColor = Color.green;
                     break;
             }
+
             statusText = request.Response == null ? null : statusText;
 
             GUI.color = statusColor;
@@ -755,5 +776,14 @@ public class DebugWindow : Window
         }
 
         return "";
+    }
+    
+    private void Reset()
+    {
+        TalkHistory.Clear();
+        Stats.Reset();
+        ApiHistory.Clear();
+        UpdateData();
+        Messages.Message("Conversation history cleared.", MessageTypeDefOf.TaskCompletion, false);
     }
 }

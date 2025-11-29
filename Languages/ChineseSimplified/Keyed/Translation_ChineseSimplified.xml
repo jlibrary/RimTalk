@@ -162,6 +162,8 @@
     <RimTalk.DebugWindow.StatusIdle>闲置</RimTalk.DebugWindow.StatusIdle>
     <RimTalk.DebugWindow.GroupByPawn>按角色分组</RimTalk.DebugWindow.GroupByPawn>
     <RimTalk.DebugWindow.ModSettings>模组设置</RimTalk.DebugWindow.ModSettings>
+    <RimTalk.DebugWindow.Export>导出</RimTalk.DebugWindow.Export>
+    <RimTalk.DebugWindow.Reset>重置日志</RimTalk.DebugWindow.Reset>
     <RimTalk.DebugWindow.EnableRimTalk>启用 RimTalk</RimTalk.DebugWindow.EnableRimTalk>
     <RimTalk.DebugWindow.AIStatus>AI 状态：</RimTalk.DebugWindow.AIStatus>
     <RimTalk.DebugWindow.TotalCalls>总调用次数：</RimTalk.DebugWindow.TotalCalls>

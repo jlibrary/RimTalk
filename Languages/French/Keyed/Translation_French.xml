@@ -162,6 +162,8 @@
     <RimTalk.DebugWindow.StatusIdle>Inactif</RimTalk.DebugWindow.StatusIdle>
     <RimTalk.DebugWindow.GroupByPawn>Grouper par Pion</RimTalk.DebugWindow.GroupByPawn>
     <RimTalk.DebugWindow.ModSettings>Paramètres du Mod</RimTalk.DebugWindow.ModSettings>
+    <RimTalk.DebugWindow.Export>Exporter</RimTalk.DebugWindow.Export>
+    <RimTalk.DebugWindow.Reset>Réinit. logs</RimTalk.DebugWindow.Reset>
     <RimTalk.DebugWindow.EnableRimTalk>Activer RimTalk</RimTalk.DebugWindow.EnableRimTalk>
     <RimTalk.DebugWindow.AIStatus>Statut IA :</RimTalk.DebugWindow.AIStatus>
     <RimTalk.DebugWindow.TotalCalls>Appels Totaux :</RimTalk.DebugWindow.TotalCalls>

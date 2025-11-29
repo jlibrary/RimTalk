@@ -162,6 +162,8 @@
     <RimTalk.DebugWindow.StatusIdle>대기 중</RimTalk.DebugWindow.StatusIdle>
     <RimTalk.DebugWindow.GroupByPawn>정착민별로 그룹화</RimTalk.DebugWindow.GroupByPawn>
     <RimTalk.DebugWindow.ModSettings>모드 설정</RimTalk.DebugWindow.ModSettings>
+    <RimTalk.DebugWindow.Export>내보내기</RimTalk.DebugWindow.Export>
+    <RimTalk.DebugWindow.Reset>로그 초기화</RimTalk.DebugWindow.Reset>
     <RimTalk.DebugWindow.EnableRimTalk>RimTalk 활성화</RimTalk.DebugWindow.EnableRimTalk>
     <RimTalk.DebugWindow.AIStatus>AI 상태:</RimTalk.DebugWindow.AIStatus>
     <RimTalk.DebugWindow.TotalCalls>총 호출 수:</RimTalk.DebugWindow.TotalCalls>
