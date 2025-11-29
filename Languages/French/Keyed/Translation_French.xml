@@ -157,6 +157,34 @@
     <RimTalk.Settings.EnterApiKey>(entrez une clé api valide pour récupérer les modèles)</RimTalk.Settings.EnterApiKey>
     <RimTalk_Settings_Api_BaseUrlInfo>Si vous ne fournissez que la base (par ex., http://localhost:1234), /v1/chat/completions sera ajouté automatiquement. Si vous entrez le chemin complet, il sera utilisé tel quel.</RimTalk_Settings_Api_BaseUrlInfo>
 
+    <!-- Settings_Context.cs -->
+    <RimTalk.Settings.ContextFilterDescription>Sélectionnez les détails sur les pions et leur environnement qui doivent être envoyés comme contexte pour la génération de dialogues.</RimTalk.Settings.ContextFilterDescription>
+    <RimTalk.Settings.ContextFilterTip>Conseil : Plus n'est pas toujours mieux. Trop d'informations peuvent distraire l'IA ou la bloquer sur des détails non pertinents.</RimTalk.Settings.ContextFilterTip>
+    <RimTalk.Settings.ContextFilter>Filtre de contexte</RimTalk.Settings.ContextFilter>
+    <RimTalk.Settings.PawnInfo>Infos sur le pion</RimTalk.Settings.PawnInfo>
+    <RimTalk.Settings.IncludeRace>La race</RimTalk.Settings.IncludeRace>
+    <RimTalk.Settings.IncludeNotableGenes>Les gènes notables</RimTalk.Settings.IncludeNotableGenes>
+    <RimTalk.Settings.IncludeIdeology>L'idéologie et les mèmes</RimTalk.Settings.IncludeIdeology>
+    <RimTalk.Settings.IncludeBackstory>L'histoire</RimTalk.Settings.IncludeBackstory>
+    <RimTalk.Settings.IncludeTraits>Les traits</RimTalk.Settings.IncludeTraits>
+    <RimTalk.Settings.IncludeSkills>Les compétences</RimTalk.Settings.IncludeSkills>
+    <RimTalk.Settings.IncludeHealth>La santé</RimTalk.Settings.IncludeHealth>
+    <RimTalk.Settings.IncludeMood>L'humeur</RimTalk.Settings.IncludeMood>
+    <RimTalk.Settings.IncludeThoughts>Les pensées et la mémoire</RimTalk.Settings.IncludeThoughts>
+    <RimTalk.Settings.IncludePrisonerSlaveStatus>La résistance et la volonté des prisonniers/esclaves</RimTalk.Settings.IncludePrisonerSlaveStatus>
+    <RimTalk.Settings.IncludeRelations>Les relations</RimTalk.Settings.IncludeRelations>
+    <RimTalk.Settings.IncludeEquipment>L'équipement</RimTalk.Settings.IncludeEquipment>
+    <RimTalk.Settings.Environment>Environnement</RimTalk.Settings.Environment>
+    <RimTalk.Settings.IncludeTimeAndDate>L'heure et la date</RimTalk.Settings.IncludeTimeAndDate>
+    <RimTalk.Settings.IncludeSeason>La saison</RimTalk.Settings.IncludeSeason>
+    <RimTalk.Settings.IncludeWeather>La météo</RimTalk.Settings.IncludeWeather>
+    <RimTalk.Settings.IncludeLocationAndTemperature>Le lieu et la température</RimTalk.Settings.IncludeLocationAndTemperature>
+    <RimTalk.Settings.IncludeTerrain>Le terrain</RimTalk.Settings.IncludeTerrain>
+    <RimTalk.Settings.IncludeBeauty>La beauté de la cellule</RimTalk.Settings.IncludeBeauty>
+    <RimTalk.Settings.IncludeCleanliness>La propreté</RimTalk.Settings.IncludeCleanliness>
+    <RimTalk.Settings.IncludeSurroundings>Les objets à proximité</RimTalk.Settings.IncludeSurroundings>
+    <RimTalk.Settings.IncludeWealth>La richesse de la colonie</RimTalk.Settings.IncludeWealth>
+
     <!-- DebugWindow.cs -->
     <RimTalk.DebugWindow.Generating>[Génération...]</RimTalk.DebugWindow.Generating>
     <RimTalk.DebugWindow.StatusDisabled>Désactivé</RimTalk.DebugWindow.StatusDisabled>

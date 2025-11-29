@@ -157,6 +157,34 @@
     <RimTalk.Settings.EnterApiKey>（モデルを取得するには有効なAPIキーを入力してください）</RimTalk.Settings.EnterApiKey>
     <RimTalk_Settings_Api_BaseUrlInfo>ベースURLのみ（例：http://localhost:1234）を指定した場合、/v1/chat/completionsが自動的に追加されます。完全なパスを入力した場合は、入力された通りに使用されます。</RimTalk_Settings_Api_BaseUrlInfo>
 
+    <!-- Settings_Context.cs -->
+    <RimTalk.Settings.ContextFilterDescription>対話生成のコンテキストとして送信する、ポーンとその環境に関する詳細を選択します。</RimTalk.Settings.ContextFilterDescription>
+    <RimTalk.Settings.ContextFilterTip>ヒント: 多いほど良いとは限りません。情報が多すぎると、AI が無関係な詳細に気を取られたり、行き詰まったりする可能性があります。</RimTalk.Settings.ContextFilterTip>
+    <RimTalk.Settings.ContextFilter>コンテキストフィルター</RimTalk.Settings.ContextFilter>
+    <RimTalk.Settings.PawnInfo>ポーン情報</RimTalk.Settings.PawnInfo>
+    <RimTalk.Settings.IncludeRace>種族</RimTalk.Settings.IncludeRace>
+    <RimTalk.Settings.IncludeNotableGenes>注目すべき遺伝子</RimTalk.Settings.IncludeNotableGenes>
+    <RimTalk.Settings.IncludeIdeology>イデオロギーとミーム</RimTalk.Settings.IncludeIdeology>
+    <RimTalk.Settings.IncludeBackstory>バックストーリー</RimTalk.Settings.IncludeBackstory>
+    <RimTalk.Settings.IncludeTraits>特性</RimTalk.Settings.IncludeTraits>
+    <RimTalk.Settings.IncludeSkills>スキル</RimTalk.Settings.IncludeSkills>
+    <RimTalk.Settings.IncludeHealth>健康状態</RimTalk.Settings.IncludeHealth>
+    <RimTalk.Settings.IncludeMood>気分</RimTalk.Settings.IncludeMood>
+    <RimTalk.Settings.IncludeThoughts>思考と記憶</RimTalk.Settings.IncludeThoughts>
+    <RimTalk.Settings.IncludePrisonerSlaveStatus>囚人/奴隷の抵抗と意志</RimTalk.Settings.IncludePrisonerSlaveStatus>
+    <RimTalk.Settings.IncludeRelations>関係</RimTalk.Settings.IncludeRelations>
+    <RimTalk.Settings.IncludeEquipment>装備</RimTalk.Settings.IncludeEquipment>
+    <RimTalk.Settings.Environment>環境</RimTalk.Settings.Environment>
+    <RimTalk.Settings.IncludeTimeAndDate>日時</RimTalk.Settings.IncludeTimeAndDate>
+    <RimTalk.Settings.IncludeSeason>季節</RimTalk.Settings.IncludeSeason>
+    <RimTalk.Settings.IncludeWeather>天気</RimTalk.Settings.IncludeWeather>
+    <RimTalk.Settings.IncludeLocationAndTemperature>場所と温度</RimTalk.Settings.IncludeLocationAndTemperature>
+    <RimTalk.Settings.IncludeTerrain>地形</RimTalk.Settings.IncludeTerrain>
+    <RimTalk.Settings.IncludeBeauty>セルの美しさ</RimTalk.Settings.IncludeBeauty>
+    <RimTalk.Settings.IncludeCleanliness>清潔さ</RimTalk.Settings.IncludeCleanliness>
+    <RimTalk.Settings.IncludeSurroundings>近くのアイテム</RimTalk.Settings.IncludeSurroundings>
+    <RimTalk.Settings.IncludeWealth>コロニーの富</RimTalk.Settings.IncludeWealth>
+
     <!-- DebugWindow.cs -->
     <RimTalk.DebugWindow.Generating>[生成中...]</RimTalk.DebugWindow.Generating>
     <RimTalk.DebugWindow.StatusDisabled>無効</RimTalk.DebugWindow.StatusDisabled>

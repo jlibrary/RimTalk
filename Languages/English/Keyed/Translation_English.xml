@@ -61,6 +61,7 @@
     <RimTalk.Persona.Drifter>Drifter – Detached and aloof. Casual tone, avoids attachment.</RimTalk.Persona.Drifter>
     <RimTalk.Persona.Perfectionist>Perfectionist – Demanding and critical. Insists on doing things right.</RimTalk.Persona.Perfectionist>
     <RimTalk.Persona.Vengeful>Vengeful – Grudge-holding and intense. Obsessed with revenge.</RimTalk.Persona.Vengeful>
+    
     <RimTalk.Persona.Animal>Animal: simple, emotional, instinct-first - short, sensory sentences about smell, hunger, danger.</RimTalk.Persona.Animal>
     <RimTalk.Persona.Mech>Robot: cold, logical, data-driven - terse diagnostics, probabilities, and efficiency-focused responses.</RimTalk.Persona.Mech>
     <RimTalk.Persona.NonHuman>Non-human: cryptic, metaphorical, reality-bending - speaks in visions, echoes, and uncanny images.</RimTalk.Persona.NonHuman>
@@ -155,6 +156,34 @@
     <RimTalk.Settings.ModelLabel>Model:</RimTalk.Settings.ModelLabel>
     <RimTalk.Settings.EnterApiKey>(enter valid api key to fetch models)</RimTalk.Settings.EnterApiKey>
     <RimTalk_Settings_Api_BaseUrlInfo>If you provide only the base (e.g., http://localhost:1234), /v1/chat/completions will be added automatically. If you enter the full path, it will be used exactly as entered.</RimTalk_Settings_Api_BaseUrlInfo>
+
+    <!-- Settings_Context.cs -->
+    <RimTalk.Settings.ContextFilterDescription>Select what details about pawns and their environment should be sent as context for dialogue generation.</RimTalk.Settings.ContextFilterDescription>
+    <RimTalk.Settings.ContextFilterTip>Tip: More isn't always better. Too much information can make the AI get distracted or stuck on irrelevant details.</RimTalk.Settings.ContextFilterTip>   
+    <RimTalk.Settings.ContextFilter>Context Filter</RimTalk.Settings.ContextFilter>
+    <RimTalk.Settings.PawnInfo>Pawn Info</RimTalk.Settings.PawnInfo>
+    <RimTalk.Settings.IncludeRace>Race</RimTalk.Settings.IncludeRace>
+    <RimTalk.Settings.IncludeNotableGenes>Notable Genes</RimTalk.Settings.IncludeNotableGenes>
+    <RimTalk.Settings.IncludeIdeology>Ideology &amp; Memes</RimTalk.Settings.IncludeIdeology>
+    <RimTalk.Settings.IncludeBackstory>Backstory</RimTalk.Settings.IncludeBackstory>
+    <RimTalk.Settings.IncludeTraits>Traits</RimTalk.Settings.IncludeTraits>
+    <RimTalk.Settings.IncludeSkills>Skills</RimTalk.Settings.IncludeSkills>
+    <RimTalk.Settings.IncludeHealth>Health</RimTalk.Settings.IncludeHealth>
+    <RimTalk.Settings.IncludeMood>Mood</RimTalk.Settings.IncludeMood>
+    <RimTalk.Settings.IncludeThoughts>Thoughts &amp; Memory</RimTalk.Settings.IncludeThoughts>
+    <RimTalk.Settings.IncludePrisonerSlaveStatus>Prisoner/Slave Resistance &amp; Will</RimTalk.Settings.IncludePrisonerSlaveStatus>
+    <RimTalk.Settings.IncludeRelations>Relations</RimTalk.Settings.IncludeRelations>
+    <RimTalk.Settings.IncludeEquipment>Equipment</RimTalk.Settings.IncludeEquipment>
+    <RimTalk.Settings.Environment>Environment</RimTalk.Settings.Environment>
+    <RimTalk.Settings.IncludeTimeAndDate>Time &amp; Date</RimTalk.Settings.IncludeTimeAndDate>
+    <RimTalk.Settings.IncludeSeason>Season</RimTalk.Settings.IncludeSeason>
+    <RimTalk.Settings.IncludeWeather>Weather</RimTalk.Settings.IncludeWeather>
+    <RimTalk.Settings.IncludeLocationAndTemperature>Location &amp; Temperature</RimTalk.Settings.IncludeLocationAndTemperature>
+    <RimTalk.Settings.IncludeTerrain>Terrain</RimTalk.Settings.IncludeTerrain>
+    <RimTalk.Settings.IncludeBeauty>Cell Beauty</RimTalk.Settings.IncludeBeauty>
+    <RimTalk.Settings.IncludeCleanliness>Cleanliness</RimTalk.Settings.IncludeCleanliness>
+    <RimTalk.Settings.IncludeSurroundings>Nearby Items</RimTalk.Settings.IncludeSurroundings>
+    <RimTalk.Settings.IncludeWealth>Colony Wealth</RimTalk.Settings.IncludeWealth>
     
     <!-- DebugWindow.cs -->
     <RimTalk.DebugWindow.Generating>[Generating...]</RimTalk.DebugWindow.Generating>

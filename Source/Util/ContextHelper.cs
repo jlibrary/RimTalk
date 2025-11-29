@@ -42,36 +42,6 @@ public static class ContextHelper
         return $"{pawn.LabelShort}(Age:{pawn.ageTracker.AgeBiologicalYears};{pawn.gender.GetLabel()};ID:{pawn.GetRole(true)};{race})";
     }
 
-    public static Building FindWallInFrontAndBack(Pawn pawn, int range)
-    {
-        if (pawn.Map == null)
-            return null;
-
-        var forward = pawn.Rotation;
-        var backward = forward.Opposite;
-
-        for (int i = 1; i <= range; i++)
-        {
-            var forwardCell = pawn.Position + forward.FacingCell * i;
-            if (forwardCell.InBounds(pawn.Map))
-            {
-                var edifice = forwardCell.GetEdifice(pawn.Map);
-                if (edifice != null && IsWall(edifice))
-                    return edifice;
-            }
-
-            var backwardCell = pawn.Position + backward.FacingCell * i;
-            if (backwardCell.InBounds(pawn.Map))
-            {
-                var edifice = backwardCell.GetEdifice(pawn.Map);
-                if (edifice != null && IsWall(edifice))
-                    return edifice;
-            }
-        }
-
-        return null;
-    }
-
     public static bool IsWall(Thing thing)
     {
         var data = thing.def.graphicData;

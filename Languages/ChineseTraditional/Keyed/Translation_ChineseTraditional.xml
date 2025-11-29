@@ -157,6 +157,34 @@
     <RimTalk.Settings.EnterApiKey>（輸入有效的 API 金鑰以獲取模型）</RimTalk.Settings.EnterApiKey>
     <RimTalk_Settings_Api_BaseUrlInfo>如果您只提供基礎 URL（例如 http://localhost:1234），將自動新增 /v1/chat/completions。如果您輸入完整路徑，將完全按照輸入使用。</RimTalk_Settings_Api_BaseUrlInfo>
 
+    <!-- Settings_Context.cs -->
+    <RimTalk.Settings.ContextFilterDescription>選擇應發送哪些關於殖民者及其環境的詳細資訊作為對話生成的上下文。</RimTalk.Settings.ContextFilterDescription>
+    <RimTalk.Settings.ContextFilterTip>提示：資訊並非越多越好。過多的資訊可能會讓 AI 分心或糾結於不相關的細節。</RimTalk.Settings.ContextFilterTip>
+    <RimTalk.Settings.ContextFilter>上下文過濾器</RimTalk.Settings.ContextFilter>
+    <RimTalk.Settings.PawnInfo>殖民者資訊</RimTalk.Settings.PawnInfo>
+    <RimTalk.Settings.IncludeRace>種族</RimTalk.Settings.IncludeRace>
+    <RimTalk.Settings.IncludeNotableGenes>顯性基因</RimTalk.Settings.IncludeNotableGenes>
+    <RimTalk.Settings.IncludeIdeology>思想和模因</RimTalk.Settings.IncludeIdeology>
+    <RimTalk.Settings.IncludeBackstory>背景故事</RimTalk.Settings.IncludeBackstory>
+    <RimTalk.Settings.IncludeTraits>特性</RimTalk.Settings.IncludeTraits>
+    <RimTalk.Settings.IncludeSkills>技能</RimTalk.Settings.IncludeSkills>
+    <RimTalk.Settings.IncludeHealth>健康狀況</RimTalk.Settings.IncludeHealth>
+    <RimTalk.Settings.IncludeMood>心情</RimTalk.Settings.IncludeMood>
+    <RimTalk.Settings.IncludeThoughts>想法和記憶</RimTalk.Settings.IncludeThoughts>
+    <RimTalk.Settings.IncludePrisonerSlaveStatus>囚犯/奴隸的抵抗和意志</RimTalk.Settings.IncludePrisonerSlaveStatus>
+    <RimTalk.Settings.IncludeRelations>人際關係</RimTalk.Settings.IncludeRelations>
+    <RimTalk.Settings.IncludeEquipment>裝備</RimTalk.Settings.IncludeEquipment>
+    <RimTalk.Settings.Environment>環境</RimTalk.Settings.Environment>
+    <RimTalk.Settings.IncludeTimeAndDate>時間和日期</RimTalk.Settings.IncludeTimeAndDate>
+    <RimTalk.Settings.IncludeSeason>季節</RimTalk.Settings.IncludeSeason>
+    <RimTalk.Settings.IncludeWeather>天氣</RimTalk.Settings.IncludeWeather>
+    <RimTalk.Settings.IncludeLocationAndTemperature>地點和溫度</RimTalk.Settings.IncludeLocationAndTemperature>
+    <RimTalk.Settings.IncludeTerrain>地形</RimTalk.Settings.IncludeTerrain>
+    <RimTalk.Settings.IncludeBeauty>單元格美觀度</RimTalk.Settings.IncludeBeauty>
+    <RimTalk.Settings.IncludeCleanliness>清潔度</RimTalk.Settings.IncludeCleanliness>
+    <RimTalk.Settings.IncludeSurroundings>附近的物品</RimTalk.Settings.IncludeSurroundings>
+    <RimTalk.Settings.IncludeWealth>殖民地財富</RimTalk.Settings.IncludeWealth>
+
     <!-- DebugWindow.cs -->
     <RimTalk.DebugWindow.Generating>[正在生成...]</RimTalk.DebugWindow.Generating>
     <RimTalk.DebugWindow.StatusDisabled>已禁用</RimTalk.DebugWindow.StatusDisabled>

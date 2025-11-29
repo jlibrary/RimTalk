@@ -157,6 +157,34 @@
     <RimTalk.Settings.EnterApiKey>(введите действительный ключ API для получения моделей)</RimTalk.Settings.EnterApiKey>
     <RimTalk_Settings_Api_BaseUrlInfo>Если вы укажете только базу (например, http://localhost:1234), /v1/chat/completions будет добавлено автоматически. Если вы введете полный путь, он будет использован в точности как введен.</RimTalk_Settings_Api_BaseUrlInfo>
 
+    <!-- Settings_Context.cs -->
+    <RimTalk.Settings.ContextFilterDescription>Выберите, какие сведения о пешках и их окружении должны отправляться в качестве контекста для генерации диалогов.</RimTalk.Settings.ContextFilterDescription>
+    <RimTalk.Settings.ContextFilterTip>Совет: больше не всегда лучше. Слишком много информации может отвлечь ИИ или зациклить его на несущественных деталях.</RimTalk.Settings.ContextFilterTip>
+    <RimTalk.Settings.ContextFilter>Фильтр контекста</RimTalk.Settings.ContextFilter>
+    <RimTalk.Settings.PawnInfo>Информация о пешке</RimTalk.Settings.PawnInfo>
+    <RimTalk.Settings.IncludeRace>Расу</RimTalk.Settings.IncludeRace>
+    <RimTalk.Settings.IncludeNotableGenes>Заметные гены</RimTalk.Settings.IncludeNotableGenes>
+    <RimTalk.Settings.IncludeIdeology>Идеологию и мемы</RimTalk.Settings.IncludeIdeology>
+    <RimTalk.Settings.IncludeBackstory>Предысторию</RimTalk.Settings.IncludeBackstory>
+    <RimTalk.Settings.IncludeTraits>Черты характера</RimTalk.Settings.IncludeTraits>
+    <RimTalk.Settings.IncludeSkills>Навыки</RimTalk.Settings.IncludeSkills>
+    <RimTalk.Settings.IncludeHealth>Здоровье</RimTalk.Settings.IncludeHealth>
+    <RimTalk.Settings.IncludeMood>Настроение</RimTalk.Settings.IncludeMood>
+    <RimTalk.Settings.IncludeThoughts>Мысли и память</RimTalk.Settings.IncludeThoughts>
+    <RimTalk.Settings.IncludePrisonerSlaveStatus>Сопротивление и волю заключенных/рабов</RimTalk.Settings.IncludePrisonerSlaveStatus>
+    <RimTalk.Settings.IncludeRelations>Отношения</RimTalk.Settings.IncludeRelations>
+    <RimTalk.Settings.IncludeEquipment>Снаряжение</RimTalk.Settings.IncludeEquipment>
+    <RimTalk.Settings.Environment>Окружающая среда</RimTalk.Settings.Environment>
+    <RimTalk.Settings.IncludeTimeAndDate>Время и дату</RimTalk.Settings.IncludeTimeAndDate>
+    <RimTalk.Settings.IncludeSeason>Время года</RimTalk.Settings.IncludeSeason>
+    <RimTalk.Settings.IncludeWeather>Погоду</RimTalk.Settings.IncludeWeather>
+    <RimTalk.Settings.IncludeLocationAndTemperature>Местоположение и температуру</RimTalk.Settings.IncludeLocationAndTemperature>
+    <RimTalk.Settings.IncludeTerrain>Местность</RimTalk.Settings.IncludeTerrain>
+    <RimTalk.Settings.IncludeBeauty>Красоту ячейки</RimTalk.Settings.IncludeBeauty>
+    <RimTalk.Settings.IncludeCleanliness>Чистоту</RimTalk.Settings.IncludeCleanliness>
+    <RimTalk.Settings.IncludeSurroundings>Близлежащие предметы</RimTalk.Settings.IncludeSurroundings>
+    <RimTalk.Settings.IncludeWealth>Богатство колонии</RimTalk.Settings.IncludeWealth>
+
     <!-- DebugWindow.cs -->
     <RimTalk.DebugWindow.Generating>[Генерация...]</RimTalk.DebugWindow.Generating>
     <RimTalk.DebugWindow.StatusDisabled>Отключено</RimTalk.DebugWindow.StatusDisabled>

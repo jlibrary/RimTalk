@@ -44,6 +44,7 @@ public static class PromptService
 
     public static string CreatePawnBackstory(Pawn pawn, InfoLevel infoLevel = InfoLevel.Normal)
     {
+        var contextSettings = Settings.Get().Context;
         var sb = new StringBuilder();
         var name = pawn.LabelShort;
         var title = pawn.story?.title == null ? "" : $"({pawn.story.title})";
@@ -54,11 +55,12 @@ public static class PromptService
         if (role != null)
             sb.AppendLine($"Role: {role}");
 
-        if (ModsConfig.BiotechActive && pawn.genes?.Xenotype != null)
+        if (contextSettings.IncludeRace && ModsConfig.BiotechActive && pawn.genes?.Xenotype != null)
             sb.AppendLine($"Race: {pawn.genes.Xenotype.LabelCap}");
 
+
         // Notable genes (Normal/Full only, not for enemies/visitors)
-        if (infoLevel != InfoLevel.Short && !pawn.IsVisitor() && !pawn.IsEnemy() && 
+        if (contextSettings.IncludeNotableGenes && infoLevel != InfoLevel.Short && !pawn.IsVisitor() && !pawn.IsEnemy() && 
             ModsConfig.BiotechActive && pawn.genes?.GenesListForReading != null)
         {
             var notableGenes = pawn.genes.GenesListForReading
@@ -70,7 +72,7 @@ public static class PromptService
         }
 
         // Ideology
-        if (ModsConfig.IdeologyActive && pawn.ideo?.Ideo != null)
+        if (contextSettings.IncludeIdeology && ModsConfig.IdeologyActive && pawn.ideo?.Ideo != null)
         {
             var ideo = pawn.ideo.Ideo;
             sb.AppendLine($"Ideology: {ideo.name}");
@@ -89,34 +91,40 @@ public static class PromptService
             return sb.ToString();
 
         // Backstory
-        if (pawn.story?.Childhood != null)
-            sb.AppendLine(ContextHelper.FormatBackstory("Childhood", pawn.story.Childhood, pawn, infoLevel));
+        if (contextSettings.IncludeBackstory)
+        {
+            if (pawn.story?.Childhood != null)
+                sb.AppendLine(ContextHelper.FormatBackstory("Childhood", pawn.story.Childhood, pawn, infoLevel));
 
-        if (pawn.story?.Adulthood != null)
-            sb.AppendLine(ContextHelper.FormatBackstory("Adulthood", pawn.story.Adulthood, pawn, infoLevel));
+            if (pawn.story?.Adulthood != null)
+                sb.AppendLine(ContextHelper.FormatBackstory("Adulthood", pawn.story.Adulthood, pawn, infoLevel));
+        }
 
         // Traits
-        var traits = new List<string>();
-        foreach (var trait in pawn.story?.traits?.TraitsSorted ?? Enumerable.Empty<Trait>())
+        if (contextSettings.IncludeTraits)
         {
-            var degreeData = trait.def.degreeDatas.FirstOrDefault(d => d.degree == trait.Degree);
-            if (degreeData != null)
+            var traits = new List<string>();
+            foreach (var trait in pawn.story?.traits?.TraitsSorted ?? Enumerable.Empty<Trait>())
             {
-                var traitText = infoLevel == InfoLevel.Full
-                    ? $"{degreeData.label}:{ContextHelper.Sanitize(degreeData.description, pawn)}"
-                    : degreeData.label;
-                traits.Add(traitText);
+                var degreeData = trait.def.degreeDatas.FirstOrDefault(d => d.degree == trait.Degree);
+                if (degreeData != null)
+                {
+                    var traitText = infoLevel == InfoLevel.Full
+                        ? $"{degreeData.label}:{ContextHelper.Sanitize(degreeData.description, pawn)}"
+                        : degreeData.label;
+                    traits.Add(traitText);
+                }
+            }
+
+            if (traits.Any())
+            {
+                var separator = infoLevel == InfoLevel.Full ? "\n" : ",";
+                sb.AppendLine($"Traits: {string.Join(separator, traits)}");
             }
         }
 
-        if (traits.Any())
-        {
-            var separator = infoLevel == InfoLevel.Full ? "\n" : ",";
-            sb.AppendLine($"Traits: {string.Join(separator, traits)}");
-        }
-
         // Skills
-        if (infoLevel != InfoLevel.Short)
+        if (contextSettings.IncludeSkills && infoLevel != InfoLevel.Short)
         {
             var skills = pawn.skills?.skills?.Select(s => $"{s.def.label}: {s.Level}");
             if (skills?.Any() == true)
@@ -128,17 +136,21 @@ public static class PromptService
 
     private static string CreatePawnContext(Pawn pawn, InfoLevel infoLevel = InfoLevel.Normal)
     {
+        var contextSettings = Settings.Get().Context;
         var sb = new StringBuilder();
         sb.Append(CreatePawnBackstory(pawn, infoLevel));
 
         // Health
-        var hediffs = (IEnumerable<Hediff>)VisibleHediffsMethod.Invoke(null, [pawn, false]);
-        var healthInfo = string.Join(",", hediffs
-            .GroupBy(h => h.def)
-            .Select(g => $"{g.Key.label}({string.Join(",", g.Select(h => h.Part?.Label ?? ""))})"));
+        if (contextSettings.IncludeHealth)
+        {
+            var hediffs = (IEnumerable<Hediff>)VisibleHediffsMethod.Invoke(null, [pawn, false]);
+            var healthInfo = string.Join(",", hediffs
+                .GroupBy(h => h.def)
+                .Select(g => $"{g.Key.label}({string.Join(",", g.Select(h => h.Part?.Label ?? ""))})"));
 
-        if (!string.IsNullOrEmpty(healthInfo))
-            sb.AppendLine($"Health: {healthInfo}");
+            if (!string.IsNullOrEmpty(healthInfo))
+                sb.AppendLine($"Health: {healthInfo}");
+        }
 
         var personality = Cache.Get(pawn).Personality;
         if (personality != null)
@@ -149,23 +161,29 @@ public static class PromptService
             return sb.ToString();
 
         // Mood
-        var m = pawn.needs?.mood;
-        if (m?.MoodString != null)
+        if (contextSettings.IncludeMood)
         {
-            string mood = pawn.Downed && !pawn.IsBaby()
-                ? "Critical: Downed (in pain/distress)"
-                : pawn.InMentalState
-                    ? $"Mood: {pawn.MentalState?.InspectLine} (in mental break)"
-                    : $"Mood: {m.MoodString} ({(int)(m.CurLevelPercentage * 100)}%)";
-            sb.AppendLine(mood);
+            var m = pawn.needs?.mood;
+            if (m?.MoodString != null)
+            {
+                string mood = pawn.Downed && !pawn.IsBaby()
+                    ? "Critical: Downed (in pain/distress)"
+                    : pawn.InMentalState
+                        ? $"Mood: {pawn.MentalState?.InspectLine} (in mental break)"
+                        : $"Mood: {m.MoodString} ({(int)(m.CurLevelPercentage * 100)}%)";
+                sb.AppendLine(mood);
+            }
         }
 
         // Thoughts
-        var thoughts = ContextHelper.GetThoughts(pawn).Keys.Select(t => ContextHelper.Sanitize(t.LabelCap));
-        if (thoughts.Any())
-            sb.AppendLine($"Memory: {string.Join(", ", thoughts)}");
+        if (contextSettings.IncludeThoughts)
+        {
+            var thoughts = ContextHelper.GetThoughts(pawn).Keys.Select(t => ContextHelper.Sanitize(t.LabelCap));
+            if (thoughts.Any())
+                sb.AppendLine($"Memory: {string.Join(", ", thoughts)}");
+        }
 
-        if (pawn.IsSlave || pawn.IsPrisoner)
+        if (contextSettings.IncludePrisonerSlaveStatus && (pawn.IsSlave || pawn.IsPrisoner))
             sb.AppendLine(pawn.GetPrisonerSlaveStatus());
 
         // Visitor activity
@@ -179,21 +197,22 @@ public static class PromptService
             }
         }
 
-        sb.AppendLine(RelationsService.GetRelationsString(pawn));
+        if (contextSettings.IncludeRelations)
+            sb.AppendLine(RelationsService.GetRelationsString(pawn));
 
         // Equipment
-        if (infoLevel != InfoLevel.Short)
+        if (contextSettings.IncludeEquipment && infoLevel != InfoLevel.Short)
         {
-            var equipments = new List<string>();
+            var equipment = new List<string>();
             if (pawn.equipment?.Primary != null)
-                equipments.Add($"Weapon: {pawn.equipment.Primary.LabelCap}");
+                equipment.Add($"Weapon: {pawn.equipment.Primary.LabelCap}");
 
             var apparelLabels = pawn.apparel?.WornApparel?.Select(a => a.LabelCap);
             if (apparelLabels?.Any() == true)
-                equipments.Add($"Apparel: {string.Join(", ", apparelLabels)}");
+                equipment.Add($"Apparel: {string.Join(", ", apparelLabels)}");
 
-            if (equipments.Any())
-                sb.AppendLine($"Equipments: {string.Join(", ", equipments)}");
+            if (equipment.Any())
+                sb.AppendLine($"Equipment: {string.Join(", ", equipment)}");
         }
 
         return sb.ToString();
@@ -201,6 +220,7 @@ public static class PromptService
 
     public static void DecoratePrompt(TalkRequest talkRequest, List<Pawn> pawns, string status)
     {
+        var contextSettings = Settings.Get().Context;
         var sb = new StringBuilder();
         var gameData = CommonUtil.GetInGameData();
         var mainPawn = pawns[0];
@@ -244,53 +264,67 @@ public static class PromptService
 
         // Time and weather
         sb.Append($"\n{status}");
-        sb.Append($"\nTime: {gameData.Hour12HString}");
-        sb.Append($"\nToday: {gameData.DateString}");
-        sb.Append($"\nSeason: {gameData.SeasonString}");
-        sb.Append($"\nWeather: {gameData.WeatherString}");
+        if (contextSettings.IncludeTimeAndDate)
+        {
+            sb.Append($"\nTime: {gameData.Hour12HString}");
+            sb.Append($"\nToday: {gameData.DateString}");
+        }
+        if (contextSettings.IncludeSeason)
+            sb.Append($"\nSeason: {gameData.SeasonString}");
+        if (contextSettings.IncludeWeather)
+            sb.Append($"\nWeather: {gameData.WeatherString}");
 
         // Location
-        var locationStatus = ContextHelper.GetPawnLocationStatus(mainPawn);
-        if (!string.IsNullOrEmpty(locationStatus))
+        if (contextSettings.IncludeLocationAndTemperature)
         {
-            var temperature = Mathf.RoundToInt(mainPawn.Position.GetTemperature(mainPawn.Map));
-            var room = mainPawn.GetRoom();
-            var roomRole = room is { PsychologicallyOutdoors: false } ? room.Role?.label ?? "Room" : "";
+            var locationStatus = ContextHelper.GetPawnLocationStatus(mainPawn);
+            if (!string.IsNullOrEmpty(locationStatus))
+            {
+                var temperature = Mathf.RoundToInt(mainPawn.Position.GetTemperature(mainPawn.Map));
+                var room = mainPawn.GetRoom();
+                var roomRole = room is { PsychologicallyOutdoors: false } ? room.Role?.label ?? "Room" : "";
 
-            sb.Append(string.IsNullOrEmpty(roomRole)
-                ? $"\nLocation: {locationStatus};{temperature}C"
-                : $"\nLocation: {locationStatus};{temperature}C;{roomRole}");
+                sb.Append(string.IsNullOrEmpty(roomRole)
+                    ? $"\nLocation: {locationStatus};{temperature}C"
+                    : $"\nLocation: {locationStatus};{temperature}C;{roomRole}");
+            }
         }
 
         // Environment
-        var terrain = mainPawn.Position.GetTerrain(mainPawn.Map);
-        if (terrain != null)
-            sb.Append($"\nTerrain: {terrain.LabelCap}");
-
-        var wall = ContextHelper.FindWallInFrontAndBack(mainPawn, 8);
-        if (wall != null)
-            sb.Append($"\nWall: {wall.LabelCap}");
-
-        var nearbyCells = ContextHelper.GetNearbyCells(mainPawn);
-        if (nearbyCells.Count > 0)
+        if (contextSettings.IncludeTerrain)
         {
-            var beautySum = nearbyCells.Sum(c => BeautyUtility.CellBeauty(c, mainPawn.Map));
-            sb.Append($"\nCellBeauty: {Describer.Beauty(beautySum / nearbyCells.Count)}");
+            var terrain = mainPawn.Position.GetTerrain(mainPawn.Map);
+            if (terrain != null)
+                sb.Append($"\nTerrain: {terrain.LabelCap}");
+        }
+
+        if (contextSettings.IncludeBeauty)
+        {
+            var nearbyCells = ContextHelper.GetNearbyCells(mainPawn);
+            if (nearbyCells.Count > 0)
+            {
+                var beautySum = nearbyCells.Sum(c => BeautyUtility.CellBeauty(c, mainPawn.Map));
+                sb.Append($"\nCellBeauty: {Describer.Beauty(beautySum / nearbyCells.Count)}");
+            }
         }
 
         var pawnRoom = mainPawn.GetRoom();
-        if (pawnRoom is { PsychologicallyOutdoors: false })
+        if (contextSettings.IncludeCleanliness && pawnRoom is { PsychologicallyOutdoors: false })
             sb.Append($"\nCleanliness: {Describer.Cleanliness(pawnRoom.GetStat(RoomStatDefOf.Cleanliness))}");
 
         // Surroundings
-        var items = ContextHelper.CollectNearbyItems(mainPawn, 3);
-        if (items.Any())
+        if (contextSettings.IncludeSurroundings)
         {
-            var grouped = items.GroupBy(i => i).Select(g => g.Count() > 1 ? $"{g.Key} x {g.Count()}" : g.Key);
-            sb.Append($"\nSurroundings: {string.Join(", ", grouped)}");
+            var items = ContextHelper.CollectNearbyItems(mainPawn, 3);
+            if (items.Any())
+            {
+                var grouped = items.GroupBy(i => i).Select(g => g.Count() > 1 ? $"{g.Key} x {g.Count()}" : g.Key);
+                sb.Append($"\nSurroundings: {string.Join(", ", grouped)}");
+            }
         }
 
-        sb.Append($"\nWealth: {Describer.Wealth(mainPawn.Map.wealthWatcher.WealthTotal)}");
+        if (contextSettings.IncludeWealth)
+            sb.Append($"\nWealth: {Describer.Wealth(mainPawn.Map.wealthWatcher.WealthTotal)}");
 
         if (AIService.IsFirstInstruction())
             sb.Append($"\nin {Constant.Lang}");

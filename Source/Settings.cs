@@ -24,6 +24,7 @@ public partial class Settings : Mod
     {
         Basic,
         AIInstruction,
+        Context,
         EventFilter
     }
     public enum ButtonDisplayMode
@@ -171,11 +172,12 @@ public partial class Settings : Mod
 
     private void DrawTabButtons(Rect rect)
     {
-        float tabWidth = rect.width / 3f;
+        float tabWidth = rect.width / 4f;
 
         Rect basicTabRect = new Rect(rect.x, rect.y, tabWidth, 30f);
         Rect instructionTabRect = new Rect(rect.x + tabWidth, rect.y, tabWidth, 30f);
-        Rect filterTabRect = new Rect(rect.x + tabWidth * 2, rect.y, tabWidth, 30f);
+        Rect contextTabRect = new Rect(rect.x + tabWidth * 2, rect.y, tabWidth, 30f);
+        Rect filterTabRect = new Rect(rect.x + tabWidth * 3, rect.y, tabWidth, 30f);
 
         // Basic Settings Tab
         GUI.color = _currentTab == SettingsTab.Basic ? Color.white : Color.gray;
@@ -189,6 +191,13 @@ public partial class Settings : Mod
         if (Widgets.ButtonText(instructionTabRect, "RimTalk.Settings.AIInstruction".Translate()))
         {
             _currentTab = SettingsTab.AIInstruction;
+        }
+
+        // Context Tab
+        GUI.color = _currentTab == SettingsTab.Context ? Color.white : Color.gray;
+        if (Widgets.ButtonText(contextTabRect, "RimTalk.Settings.ContextFilter".Translate()))
+        {
+            _currentTab = SettingsTab.Context;
         }
 
         // Event Filter Tab
@@ -228,6 +237,9 @@ public partial class Settings : Mod
             case SettingsTab.AIInstruction:
                 DrawAIInstructionSettings(listing);
                 break;
+            case SettingsTab.Context:
+                DrawContextFilterSettings(listing);
+                break;
             case SettingsTab.EventFilter:
                 DrawEventFilterSettings(listing);
                 break;
@@ -251,6 +263,9 @@ public partial class Settings : Mod
                 break;
             case SettingsTab.AIInstruction:
                 DrawAIInstructionSettings(listing);
+                break;
+            case SettingsTab.Context:
+                DrawContextFilterSettings(listing);
                 break;
             case SettingsTab.EventFilter:
                 DrawEventFilterSettings(listing);

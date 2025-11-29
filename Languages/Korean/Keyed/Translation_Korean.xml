@@ -157,6 +157,34 @@
     <RimTalk.Settings.EnterApiKey>(모델을 가져오려면 유효한 API 키를 입력하세요)</RimTalk.Settings.EnterApiKey>
     <RimTalk_Settings_Api_BaseUrlInfo>기본 URL만 제공하면(예: http://localhost:1234), /v1/chat/completions가 자동으로 추가됩니다. 전체 경로를 입력하면 입력한 그대로 사용됩니다.</RimTalk_Settings_Api_BaseUrlInfo>
 
+    <!-- Settings_Context.cs -->
+    <RimTalk.Settings.ContextFilterDescription>대화 생성을 위한 컨텍스트로 전송되어야 하는 폰과 그 환경에 대한 세부 정보를 선택합니다.</RimTalk.Settings.ContextFilterDescription>
+    <RimTalk.Settings.ContextFilterTip>팁: 많을수록 항상 좋은 것은 아닙니다. 너무 많은 정보는 AI가 관련 없는 세부 사항에 정신이 팔리거나 막히게 할 수 있습니다.</RimTalk.Settings.ContextFilterTip>
+    <RimTalk.Settings.ContextFilter>컨텍스트 필터</RimTalk.Settings.ContextFilter>
+    <RimTalk.Settings.PawnInfo>폰 정보</RimTalk.Settings.PawnInfo>
+    <RimTalk.Settings.IncludeRace>인종</RimTalk.Settings.IncludeRace>
+    <RimTalk.Settings.IncludeNotableGenes>주요 유전자</RimTalk.Settings.IncludeNotableGenes>
+    <RimTalk.Settings.IncludeIdeology>이념 및 밈</RimTalk.Settings.IncludeIdeology>
+    <RimTalk.Settings.IncludeBackstory>배경 이야기</RimTalk.Settings.IncludeBackstory>
+    <RimTalk.Settings.IncludeTraits>특성</RimTalk.Settings.IncludeTraits>
+    <RimTalk.Settings.IncludeSkills>기술</RimTalk.Settings.IncludeSkills>
+    <RimTalk.Settings.IncludeHealth>건강 상태</RimTalk.Settings.IncludeHealth>
+    <RimTalk.Settings.IncludeMood>기분</RimTalk.Settings.IncludeMood>
+    <RimTalk.Settings.IncludeThoughts>생각 및 기억</RimTalk.Settings.IncludeThoughts>
+    <RimTalk.Settings.IncludePrisonerSlaveStatus>죄수/노예 저항 및 의지</RimTalk.Settings.IncludePrisonerSlaveStatus>
+    <RimTalk.Settings.IncludeRelations>관계</RimTalk.Settings.IncludeRelations>
+    <RimTalk.Settings.IncludeEquipment>장비</RimTalk.Settings.IncludeEquipment>
+    <RimTalk.Settings.Environment>환경</RimTalk.Settings.Environment>
+    <RimTalk.Settings.IncludeTimeAndDate>시간 및 날짜</RimTalk.Settings.IncludeTimeAndDate>
+    <RimTalk.Settings.IncludeSeason>계절</RimTalk.Settings.IncludeSeason>
+    <RimTalk.Settings.IncludeWeather>날씨</RimTalk.Settings.IncludeWeather>
+    <RimTalk.Settings.IncludeLocationAndTemperature>위치 및 온도</RimTalk.Settings.IncludeLocationAndTemperature>
+    <RimTalk.Settings.IncludeTerrain>지형</RimTalk.Settings.IncludeTerrain>
+    <RimTalk.Settings.IncludeBeauty>세포 아름다움</RimTalk.Settings.IncludeBeauty>
+    <RimTalk.Settings.IncludeCleanliness>청결도</RimTalk.Settings.IncludeCleanliness>
+    <RimTalk.Settings.IncludeSurroundings>주변 아이템</RimTalk.Settings.IncludeSurroundings>
+    <RimTalk.Settings.IncludeWealth>식민지 자산</RimTalk.Settings.IncludeWealth>
+
     <!-- DebugWindow.cs -->
     <RimTalk.DebugWindow.Generating>[생성 중...]</RimTalk.DebugWindow.Generating>
     <RimTalk.DebugWindow.StatusDisabled>비활성화됨</RimTalk.DebugWindow.StatusDisabled>
