@@ -26,6 +26,12 @@ public partial class Settings : Mod
         AIInstruction,
         EventFilter
     }
+    public enum ButtonDisplayMode
+    {
+        Tab,
+        Toggle,
+        None
+    }
 
     private SettingsTab _currentTab = SettingsTab.Basic;
 

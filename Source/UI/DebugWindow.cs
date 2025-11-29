@@ -350,7 +350,7 @@ public class DebugWindow : Window
 
             var pawnNameRect = new Rect(currentX, rowRect.y, GroupedPawnNameWidth, RowHeight);
 
-            UIUtility.DrawClickablePawnName(pawnNameRect, pawnKey, pawnState.Pawn);
+            UIUtil.DrawClickablePawnName(pawnNameRect, pawnKey, pawnState.Pawn);
 
             currentX += GroupedPawnNameWidth + ColumnPadding;
 
@@ -501,7 +501,7 @@ public class DebugWindow : Window
                 var pawnNameRect = new Rect(currentX, rowRect.y, PawnColumnWidth, RowHeight);
                 var pawn = _pawnStates.FirstOrDefault(p => p.Pawn.LabelShort == pawnName)?.Pawn;
 
-                UIUtility.DrawClickablePawnName(pawnNameRect, pawnName, pawn);
+                UIUtil.DrawClickablePawnName(pawnNameRect, pawnName, pawn);
 
                 currentX += PawnColumnWidth + ColumnPadding;
             }

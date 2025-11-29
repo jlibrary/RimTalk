@@ -11,7 +11,7 @@ public static class MainTabsPatch
         if (__instance.def?.defName == "RimTalkDebug")
         {
             var settings = Settings.Get();
-            if (settings.ButtonDisplay != ButtonDisplayMode.Tab)
+            if (settings.ButtonDisplay != Settings.ButtonDisplayMode.Tab)
             {
                 __result = false;
             }

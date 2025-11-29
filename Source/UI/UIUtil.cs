@@ -1,10 +1,10 @@
-using RimTalk.Service;
+using RimTalk.Util;
 using UnityEngine;
 using Verse;
 
 namespace RimTalk.UI
 {
-    public static class UIUtility
+    public static class UIUtil
     {
         /// <summary>
         /// Draws a pawn's name that is clickable to jump to their location.

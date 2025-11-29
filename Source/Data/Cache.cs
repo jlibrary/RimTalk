@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using RimTalk.Service;
+using RimTalk.Util;
 using RimWorld;
 using Verse;
 using Random = System.Random;

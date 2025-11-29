@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
-using RimTalk.Service;
 using RimTalk.UI;
+using RimTalk.Util;
 using RimWorld;
 using UnityEngine;
 using Verse;

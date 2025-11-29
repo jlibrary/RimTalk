@@ -1,9 +1,9 @@
-using HarmonyLib;
-using Verse;
-using RimTalk.Service;
 using System;
+using HarmonyLib;
 using RimTalk.Data;
 using RimTalk.Source.Data;
+using RimTalk.Util;
+using Verse;
 
 namespace RimTalk.Patch;
 

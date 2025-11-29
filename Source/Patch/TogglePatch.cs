@@ -19,7 +19,7 @@ namespace RimTalk.Patch
 
             var settings = Settings.Get();
 
-            if (settings.ButtonDisplay != ButtonDisplayMode.Toggle)
+            if (settings.ButtonDisplay != Settings.ButtonDisplayMode.Toggle)
             {
                 return;
             }

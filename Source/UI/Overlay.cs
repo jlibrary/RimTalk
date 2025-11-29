@@ -408,7 +408,7 @@ public class Overlay : MapComponent
                 var dialogueRect = new Rect(nameRect.xMax, rowRect.y, rowRect.width - message.NameWidth,
                     rowRect.height);
 
-                UIUtility.DrawClickablePawnName(nameRect, message.PawnName, message.PawnInstance);
+                UIUtil.DrawClickablePawnName(nameRect, message.PawnName, message.PawnInstance);
 
                 // GUI.color = message.TextColor;
                 Widgets.Label(dialogueRect, "  " + message.Dialogue);

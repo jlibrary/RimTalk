@@ -8,9 +8,9 @@ using Verse.AI;
 using Verse.AI.Group;
 using Cache = RimTalk.Data.Cache;
 
-namespace RimTalk.Service;
+namespace RimTalk.Util;
 
-public static class PawnService
+public static class PawnUtil
 {
     public static bool IsTalkEligible(this Pawn pawn)
     {
@@ -130,11 +130,8 @@ public static class PawnService
 
         if (nearbyPawns != null)
         {
-            foreach (var near in nearbyPawns)
-            {
-                if (near.CurJob != null)
-                    AddJobTargetsToRelevantPawns(near.CurJob, relevantPawns);
-            }
+            foreach (var near in nearbyPawns.Where(near => near.CurJob != null))
+                AddJobTargetsToRelevantPawns(near.CurJob, relevantPawns);
         }
 
         // first line uses name + activity AFTER name replacement
@@ -185,36 +182,23 @@ public static class PawnService
             lines.Add("Nearby: " + nearbyStr);
         }
         else
-        {
             lines.Add("Nearby people: none");
-        }
 
         if (pawn.IsVisitor())
-        {
             lines.Add("Visiting user colony");
-        }
 
         if (pawn.IsFreeColonist && pawn.GetMapRole() == MapRole.Invading)
-        {
             lines.Add("You are away from colony, attacking to capture enemy settlement");
-        }
+        
         else if (pawn.IsEnemy())
         {
             if (pawn.GetMapRole() == MapRole.Invading)
-            {
                 if (pawn.GetLord()?.LordJob is LordJob_StageThenAttack || pawn.GetLord()?.LordJob is LordJob_Siege)
-                {
                     lines.Add("waiting to invade user colony");
-                }
                 else
-                {
                     lines.Add("invading user colony");
-                }
-            }
             else
-            {
                 lines.Add("Fighting to protect your home from being captured");
-            }
 
             return (string.Join("\n", lines), isInDanger);
         }
@@ -249,25 +233,22 @@ public static class PawnService
             foreach (var rp in relevantPawns)
             {
                 string key = rp.LabelShort;
-                string value = PromptService.GetDecoratedName(rp);
+                string value = ContextHelper.GetDecoratedName(rp);
                 if (!map.ContainsKey(key))
                     map[key] = value;
             }
 
             // longer names first to avoid partial replacement
             var ordered = map.OrderByDescending(kv => kv.Key.Length).ToList();
-            string result = input;
-            foreach (var kv in ordered)
-                result = result.Replace(kv.Key, kv.Value);
-
-            return result;
+            
+            return ordered.Aggregate(input, (current, kv) => current.Replace(kv.Key, kv.Value));
         }
     }
 
 
     public static Pawn GetHostilePawnNearBy(this Pawn pawn)
     {
-        if (pawn == null || pawn.Map == null) return null;
+        if (pawn?.Map == null) return null;
 
         // 1. Choose a faction
         Faction referenceFaction;
@@ -291,11 +272,8 @@ public static class PawnService
         Pawn closestPawn = null;
         float closestDistSq = float.MaxValue;
 
-        foreach (var target in hostileTargets)
+        foreach (var target in hostileTargets.Where(target => GenHostility.IsActiveThreatTo(target, referenceFaction)))
         {
-            if (!GenHostility.IsActiveThreatTo(target, referenceFaction))
-                continue;
-
             if (target.Thing is not Pawn threatPawn) continue;
             if (threatPawn.Downed) continue;
 
@@ -314,18 +292,12 @@ public static class PawnService
             Lord lord = threatPawn.GetLord();
 
             // === 1. EXCLUDE TACTICALLY RETREATING PAWNS ===
-            if (lord != null && (lord.CurLordToil is LordToil_ExitMapFighting ||
-                                lord.CurLordToil is LordToil_ExitMap))
-            {
+            if (lord != null && lord.CurLordToil is LordToil_ExitMapFighting or LordToil_ExitMap)
                 continue;
-            }
 
             // === 2. EXCLUDE ROAMING MECH CLUSTER PAWNS ===
-            if (threatPawn.RaceProps.IsMechanoid && lord != null &&
-                lord.CurLordToil is LordToil_DefendPoint)
-            {
+            if (threatPawn.RaceProps.IsMechanoid && lord is { CurLordToil: LordToil_DefendPoint })
                 continue;
-            }
 
             // === 3. CALCULATE DISTANCE FOR VALID THREATS ===
             float distSq = pawn.Position.DistanceToSquared(threatPawn.Position);
@@ -407,9 +379,8 @@ public static class PawnService
             }
         }
 
-        foreach (var ind in targetIndices)
+        foreach (var target in targetIndices.Select(job.GetTarget))
         {
-            var target = job.GetTarget(ind);
             if (target.HasThing && target.Thing is Pawn pawn && !relevantPawns.Contains(pawn))
             {
                 relevantPawns.Add(pawn);
@@ -421,20 +392,9 @@ public static class PawnService
         }
     }
 
-    public static string GetColonyTimeStatus(this Pawn pawn)
-    {
-        // If the pawn has eaten very little since joining the colony,
-        // mark them as "new" 
-        if (pawn.records == null)
-            return null;
-
-        float daysInColony = pawn.records.GetValue(RecordDefOf.NutritionEaten) / 96f;
-        return daysInColony < 0.5f ? "new" : null;
-    }
-
     public static MapRole GetMapRole(this Pawn pawn)
     {
-        if (pawn?.Map == null)
+        if (pawn?.Map == null || pawn.IsPrisonerOfColony)
             return MapRole.None;
 
         Map map = pawn.Map;
@@ -459,11 +419,11 @@ public static class PawnService
         {
             // === Resistance (for recruitment) ===
             float resistance = pawn.guest.resistance;
-            result += $"Resistance: {resistance:0.0} ({DescribeResistance(resistance)})\n";
+            result += $"Resistance: {resistance:0.0} ({Describer.Resistance(resistance)})\n";
 
             // === Will (for enslavement) ===
             float will = pawn.guest.will;
-            result += $"Will: {will:0.0} ({DescribeWill(will)})\n";
+            result += $"Will: {will:0.0} ({Describer.Will(will)})\n";
         }
 
         // === Suppression (slave compliance, if applicable) ===
@@ -473,7 +433,7 @@ public static class PawnService
             if (suppressionNeed != null)
             {
                 float suppression = suppressionNeed.CurLevelPercentage * 100f;
-                result += $"Suppression: {suppression:0.0}% ({DescribeSuppression(suppression)})\n";
+                result += $"Suppression: {suppression:0.0}% ({Describer.Suppression(suppression)})\n";
             }
         }
 
@@ -488,31 +448,5 @@ public static class PawnService
     public static bool HasVocalLink(this Pawn pawn)
     {
         return Settings.Get().AllowNonHumanToTalk && pawn.health.hediffSet.HasHediff(Constant.VocalLinkDef);
-    }
-
-    private static string DescribeResistance(float value)
-    {
-        if (value <= 0f) return "Completely broken, ready to join";
-        if (value < 2f) return "Barely resisting, close to giving in";
-        if (value < 6f) return "Weakened, but still cautious";
-        if (value < 12f) return "Strong-willed, requires effort";
-        return "Extremely defiant, will take a long time";
-    }
-
-    private static string DescribeWill(float value)
-    {
-        if (value <= 0f) return "No will left, ready for slavery";
-        if (value < 2f) return "Weak-willed, easy to enslave";
-        if (value < 6f) return "Moderate will, may resist a little";
-        if (value < 12f) return "Strong will, difficult to enslave";
-        return "Unyielding, very hard to enslave";
-    }
-
-    private static string DescribeSuppression(float value)
-    {
-        if (value < 20f) return "Openly rebellious, likely to resist or escape";
-        if (value < 50f) return "Unstable, may push boundaries";
-        if (value < 80f) return "Generally obedient, but watchful";
-        return "Completely cowed, unlikely to resist";
     }
 }

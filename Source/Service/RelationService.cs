@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using RimTalk.Util;
 using RimWorld;
 using Verse;
 
