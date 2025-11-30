@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <!-- =================== RimTalk: Non-social mood from AI talk =================== -->
+
+  <ThoughtDef Abstract="True" Name="RimTalkThoughtBase">
+    <thoughtClass>Thought_Memory</thoughtClass>
+    <durationDays>0.4</durationDays> 
+    <stackLimit>2</stackLimit>
+    <stackedEffectMultiplier>0.75</stackedEffectMultiplier>
+
+    <validWhileDespawned>true</validWhileDespawned>
+    <nullifyingTraits>
+      <li>Psychopath</li>
+    </nullifyingTraits>
+    <nullifyingHediffs>
+      <li MayRequire="Ludeon.RimWorld.Anomaly">Inhumanized</li>
+    </nullifyingHediffs>
+  </ThoughtDef>
+
+  <ThoughtDef ParentName="RimTalkThoughtBase">
+    <defName>RimTalk_KindWords</defName>
+    <stages>
+      <li>
+        <label>was encouraged by words</label>
+        <description>
+          Someone's words were genuinely kind and encouraging.
+        </description>
+        <baseMoodEffect>6</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef ParentName="RimTalkThoughtBase">
+    <defName>RimTalk_Chitchat</defName>
+    <stages>
+      <li>
+        <label>had a pleasant talk</label>
+        <description>
+          It felt good to talk and share some thoughts.
+        </description>
+        <baseMoodEffect>2</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+  <ThoughtDef ParentName="RimTalkThoughtBase">
+    <defName>RimTalk_InsultedMood</defName>
+    <stages>
+      <li>
+        <label>was hurt by someone's words</label>
+        <description>
+          Those words were harsh and hard to forget.
+        </description>
+        <baseMoodEffect>-6</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+
+</Defs>

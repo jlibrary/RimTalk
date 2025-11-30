@@ -242,20 +242,31 @@ public static class TalkService
 
         Find.PlayLog.Add(playLogEntryInteraction);
 
-        InteractionDef vanillaDef = talk.GetInteractionType().ToInteractionDef();
-        if (Settings.Get().ApplyMoodAndSocialEffects && vanillaDef != null && pawn != recipient)
+        var settings = Settings.Get();
+        var interactionType = talk.GetInteractionType();
+        InteractionDef? vanillaDef = interactionType.ToInteractionDef();
+
+        if (settings.ApplyMoodAndSocialEffects)
         {
-            if (vanillaDef.recipientThought != null)
+            if (vanillaDef != null && pawn != recipient)
             {
-                recipient.needs?.mood?.thoughts?.memories?.TryGainMemory(vanillaDef.recipientThought, pawn);
+                if (vanillaDef.recipientThought != null)
+                {
+                    recipient.needs?.mood?.thoughts?.memories?
+                        .TryGainMemory(vanillaDef.recipientThought, pawn);
+                }
+
+                if (vanillaDef.initiatorThought != null)
+                {
+                    pawn.needs?.mood?.thoughts?.memories?
+                        .TryGainMemory(vanillaDef.initiatorThought, recipient);
+                }
             }
 
-            if (vanillaDef.initiatorThought != null)
-            {
-                recipient.needs?.mood?.thoughts?.memories?.TryGainMemory(vanillaDef.initiatorThought, pawn);
-            }
+            RimTalkThoughtUtility.ApplyNonSocialMoodEffects(pawn, recipient, interactionType);
         }
     }
+
 
     private static bool AnyPawnHasPendingResponses()
     {
