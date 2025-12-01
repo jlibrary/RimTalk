@@ -91,6 +91,8 @@ public class Overlay : MapComponent
             Text.fontStyles[(int)gameFont].fontSize = (int)settings.OverlayFontSize;
             Text.Anchor = TextAnchor.UpperLeft;
 
+            // Use the same contraction as when drawing to ensure calculation and drawing are consistent
+            // contentRect = inRect.ContractedBy(5f), so width is inRect.width - 10f
             float contentWidth = settings.OverlayRectNonDebug.width - 10f;
 
             var newCache = new List<CachedMessageLine>();
@@ -104,7 +106,38 @@ public class Overlay : MapComponent
                 string pawnName = message.Name ?? "Unknown";
                 string dialogue = message.Response ?? "";
                 string formattedName = $"[{pawnName}]";
-                string fullMessage = $"{formattedName}  {dialogue}";
+                
+                // Calculate name width
+                float nameWidth = Text.CalcSize(formattedName).x;
+                
+                // Calculate available width for dialogue (subtract name width)
+                // Note: Use contentWidth here instead of subtracting safety margin to ensure calculation and drawing use the same width
+                float availableDialogueWidth = contentWidth - nameWidth;
+                if (availableDialogueWidth < 0)
+                {
+                    availableDialogueWidth = contentWidth * 0.5f; // If name is too long, at least give dialogue half the space
+                }
+                
+                // Add safety margin to prevent text from being cut off at boundaries (effective for all languages)
+                // Use a slightly smaller width when calculating height, making the calculated height more conservative to ensure text is fully displayed
+                // This is particularly important for Chinese characters, wide characters (such as Japanese, Korean), and text with certain fonts
+                const float safetyMargin = 3f;
+                float dialogueWidthForCalc = Mathf.Max(0f, availableDialogueWidth - safetyMargin);
+                
+                // Calculate dialogue height separately (including the two leading spaces)
+                // This method is more accurate than calculating with the full message, as name and dialogue are drawn separately in practice
+                string dialogueWithSpaces = "  " + dialogue;
+                float dialogueHeight = Text.CalcHeight(dialogueWithSpaces, dialogueWidthForCalc);
+                
+                // Calculate name height (usually one line, but long names in some languages may require multiple lines)
+                float nameHeight = Text.CalcHeight(formattedName, nameWidth);
+                
+                // Use the larger of the two heights to ensure text is fully displayed
+                float lineHeight = Mathf.Max(dialogueHeight, nameHeight);
+                
+                // Add extra line height buffer to prevent text from being cut off vertically
+                // This benefits all languages, especially when line spacing calculations for certain fonts are not precise enough
+                lineHeight += 2f;
 
                 var foundPawn = Cache.GetByName(pawnName)?.Pawn ??
                                 Find.CurrentMap?.mapPawns?.AllPawns?.FirstOrDefault(p =>
@@ -116,8 +149,8 @@ public class Overlay : MapComponent
                 {
                     PawnName = pawnName,
                     Dialogue = dialogue,
-                    NameWidth = Text.CalcSize(formattedName).x,
-                    LineHeight = Text.CalcHeight(fullMessage, contentWidth),
+                    NameWidth = nameWidth,
+                    LineHeight = lineHeight,
                     PawnInstance = foundPawn,
                     TextColor = settings.AllowSimultaneousConversations && message.ConversationId >= 0 ? TextColors[message.ConversationId % TextColors.Length] : Color.white
                 });
@@ -405,8 +438,12 @@ public class Overlay : MapComponent
                 var rowRect = new Rect(contentRect.x, currentY, contentRect.width, message.LineHeight);
 
                 var nameRect = new Rect(rowRect.x, rowRect.y, message.NameWidth, rowRect.height);
-                var dialogueRect = new Rect(nameRect.xMax, rowRect.y, rowRect.width - message.NameWidth,
-                    rowRect.height);
+                // Calculate dialogue area width, ensuring consistency with the logic used when calculating height
+                // Use actual available width, but not exceeding the width used in calculation (which already includes safety margin)
+                float dialogueWidth = rowRect.width - message.NameWidth;
+                // Ensure dialogue area does not exceed boundaries
+                dialogueWidth = Mathf.Max(0f, dialogueWidth);
+                var dialogueRect = new Rect(nameRect.xMax, rowRect.y, dialogueWidth, rowRect.height);
 
                 UIUtil.DrawClickablePawnName(nameRect, message.PawnName, message.PawnInstance);
 
