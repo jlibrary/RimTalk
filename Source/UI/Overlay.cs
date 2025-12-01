@@ -13,17 +13,6 @@ namespace RimTalk.UI;
 public class Overlay : MapComponent
 {
     public static event Action OnLogUpdated;
-
-    private static readonly Color[] TextColors =
-    [
-        new(1f, 0.95f, 0.7f),
-        new(0.75f, 1f, 0.75f),
-        new(1f, 0.75f, 0.85f),
-        new(0.7f, 0.85f, 1f),
-        new(1f, 0.85f, 0.7f),
-        new(0.85f, 0.75f, 1f)
-    ];
-
     public static void NotifyLogUpdated()
     {
         OnLogUpdated?.Invoke();
@@ -36,7 +25,6 @@ public class Overlay : MapComponent
         public float NameWidth;
         public float LineHeight;
         public Pawn PawnInstance;
-        public Color TextColor;
     }
 
     private bool _isDragging;
@@ -56,7 +44,7 @@ public class Overlay : MapComponent
     private const float OptionsBarHeight = 30f;
     private const float ResizeHandleSize = 24f;
     private const float DropdownWidth = 200f;
-    private const float DropdownHeight = 190f;
+    private const float DropdownHeight = 220f;
     private const int MaxMessagesInLog = 10;
 
     public Overlay(Map map) : base(map)
@@ -77,7 +65,7 @@ public class Overlay : MapComponent
 
     private void UpdateAndRecalculateCache()
     {
-        var settings = LoadedModManager.GetMod<Settings>().GetSettings<RimTalkSettings>();
+        var settings = RimTalkSettings.Instance;;
         var allRequests = ApiHistory.GetAll().ToList();
 
         var originalFont = Text.Font;
@@ -91,8 +79,6 @@ public class Overlay : MapComponent
             Text.fontStyles[(int)gameFont].fontSize = (int)settings.OverlayFontSize;
             Text.Anchor = TextAnchor.UpperLeft;
 
-            // Use the same contraction as when drawing to ensure calculation and drawing are consistent
-            // contentRect = inRect.ContractedBy(5f), so width is inRect.width - 10f
             float contentWidth = settings.OverlayRectNonDebug.width - 10f;
 
             var newCache = new List<CachedMessageLine>();
@@ -107,36 +93,22 @@ public class Overlay : MapComponent
                 string dialogue = message.Response ?? "";
                 string formattedName = $"[{pawnName}]";
                 
-                // Calculate name width
                 float nameWidth = Text.CalcSize(formattedName).x;
-                
-                // Calculate available width for dialogue (subtract name width)
-                // Note: Use contentWidth here instead of subtracting safety margin to ensure calculation and drawing use the same width
                 float availableDialogueWidth = contentWidth - nameWidth;
+                
                 if (availableDialogueWidth < 0)
                 {
-                    availableDialogueWidth = contentWidth * 0.5f; // If name is too long, at least give dialogue half the space
+                    availableDialogueWidth = contentWidth * 0.5f;
                 }
                 
-                // Add safety margin to prevent text from being cut off at boundaries (effective for all languages)
-                // Use a slightly smaller width when calculating height, making the calculated height more conservative to ensure text is fully displayed
-                // This is particularly important for Chinese characters, wide characters (such as Japanese, Korean), and text with certain fonts
                 const float safetyMargin = 3f;
                 float dialogueWidthForCalc = Mathf.Max(0f, availableDialogueWidth - safetyMargin);
                 
-                // Calculate dialogue height separately (including the two leading spaces)
-                // This method is more accurate than calculating with the full message, as name and dialogue are drawn separately in practice
                 string dialogueWithSpaces = "  " + dialogue;
                 float dialogueHeight = Text.CalcHeight(dialogueWithSpaces, dialogueWidthForCalc);
-                
-                // Calculate name height (usually one line, but long names in some languages may require multiple lines)
                 float nameHeight = Text.CalcHeight(formattedName, nameWidth);
-                
-                // Use the larger of the two heights to ensure text is fully displayed
                 float lineHeight = Mathf.Max(dialogueHeight, nameHeight);
                 
-                // Add extra line height buffer to prevent text from being cut off vertically
-                // This benefits all languages, especially when line spacing calculations for certain fonts are not precise enough
                 lineHeight += 2f;
 
                 var foundPawn = Cache.GetByName(pawnName)?.Pawn ??
@@ -152,7 +124,6 @@ public class Overlay : MapComponent
                     NameWidth = nameWidth,
                     LineHeight = lineHeight,
                     PawnInstance = foundPawn,
-                    TextColor = settings.AllowSimultaneousConversations && message.ConversationId >= 0 ? TextColors[message.ConversationId % TextColors.Length] : Color.white
                 });
             }
 
@@ -172,7 +143,7 @@ public class Overlay : MapComponent
     {
         if (Current.ProgramState != ProgramState.Playing) return;
 
-        var settings = LoadedModManager.GetMod<Settings>().GetSettings<RimTalkSettings>();
+        var settings = RimTalkSettings.Instance;
         if (!settings.OverlayEnabled) return;
 
         ref Rect currentOverlayRect = ref settings.OverlayRectNonDebug;
@@ -198,6 +169,8 @@ public class Overlay : MapComponent
 
         bool isMouseOver = Mouse.IsOver(currentOverlayRect);
 
+        GUI.depth = settings.OverlayDrawAboveUI ? 0 : 100; 
+        
         GUI.BeginGroup(currentOverlayRect);
         var inRect = new Rect(Vector2.zero, currentOverlayRect.size);
 
@@ -264,7 +237,7 @@ public class Overlay : MapComponent
         {
             if (_isDragging || _isResizing)
             {
-                LoadedModManager.GetMod<Settings>().GetSettings<RimTalkSettings>().Write();
+                RimTalkSettings.Instance.Write();
             }
 
             _isDragging = false;
@@ -308,10 +281,9 @@ public class Overlay : MapComponent
         float iconSize = rect.height - 4f;
         var localIconRect = new Rect(rect.width - iconSize - 2f, 2f, iconSize, iconSize);
 
-        var settings = LoadedModManager.GetMod<Settings>().GetSettings<RimTalkSettings>();
+        var settings = RimTalkSettings.Instance;
 
         const float minIconOpacity = 0.3f;
-
         float effectiveOpacity = Mathf.Max(settings.OverlayOpacity, minIconOpacity);
 
         var iconTexture = ContentFinder<Texture2D>.Get("UI/Icons/Options/OptionsGeneral");
@@ -330,8 +302,7 @@ public class Overlay : MapComponent
         TooltipHandler.TipRegion(localIconRect, "RimTalk.Overlay.Option".Translate());
     }
 
-    private void DrawSettingsCheckbox(Listing_Standard listing, string label, bool initialValue,
-        Action<bool> onValueChanged)
+    private void DrawSettingsCheckbox(Listing_Standard listing, string label, bool initialValue, Action<bool> onValueChanged)
     {
         bool currentValue = initialValue;
         listing.CheckboxLabeled(label, ref currentValue);
@@ -343,7 +314,7 @@ public class Overlay : MapComponent
 
     private void DrawSettingsDropdown()
     {
-        var settings = LoadedModManager.GetMod<Settings>().GetSettings<RimTalkSettings>();
+        var settings = RimTalkSettings.Instance;
 
         Widgets.DrawBoxSolid(_settingsDropdownRect, new Color(0.15f, 0.15f, 0.15f, 0.95f));
 
@@ -355,23 +326,29 @@ public class Overlay : MapComponent
             settings.IsEnabled = value;
             settings.Write();
         });
+        
+        listing.Gap(6);
+        
+        bool overlayDrawAboveUI = settings.OverlayDrawAboveUI;
+        listing.CheckboxLabeled("RimTalk.Overlay.DrawAboveUI".Translate(), ref overlayDrawAboveUI);
+        if (overlayDrawAboveUI != settings.OverlayDrawAboveUI)
+        {
+            settings.OverlayDrawAboveUI = overlayDrawAboveUI;
+            settings.Write();
+        }
 
         listing.Gap(6);
 
-        listing.Label("RimTalk.Overlay.Opacity".Translate() + ": " +
-                      settings.OverlayOpacity.ToString("P0"));
+        listing.Label("RimTalk.Overlay.Opacity".Translate() + ": " + settings.OverlayOpacity.ToString("P0"));
         settings.OverlayOpacity = listing.Slider(settings.OverlayOpacity, 0f, 1.0f);
 
-        listing.Label("RimTalk.Overlay.FontSize".Translate() + ": " +
-                      settings.OverlayFontSize.ToString("F0"));
-
+        listing.Label("RimTalk.Overlay.FontSize".Translate() + ": " + settings.OverlayFontSize.ToString("F0"));
         float newFontSize = listing.Slider(Mathf.Round(settings.OverlayFontSize), 10f, 24f);
         if (Mathf.Round(newFontSize) != Mathf.Round(settings.OverlayFontSize))
         {
             _isCacheDirty = true;
             settings.OverlayFontSize = newFontSize;
         }
-
 
         listing.Gap(12);
 
@@ -380,8 +357,7 @@ public class Overlay : MapComponent
         float buttonWidth = (buttonRowRect.width - (buttonGap * 2)) / 2f;
 
         var debugRect = new Rect(buttonRowRect.x, buttonRowRect.y, buttonWidth, buttonRowRect.height);
-        var settingsButtonRect = new Rect(debugRect.xMax + buttonGap, buttonRowRect.y, buttonWidth,
-            buttonRowRect.height);
+        var settingsButtonRect = new Rect(debugRect.xMax + buttonGap, buttonRowRect.y, buttonWidth, buttonRowRect.height);
 
         if (Widgets.ButtonText(debugRect, "RimTalk.Overlay.Debug".Translate()))
         {
@@ -389,7 +365,6 @@ public class Overlay : MapComponent
             {
                 Find.WindowStack.Add(new DebugWindow());
             }
-
             _showSettingsDropdown = false;
         }
 
@@ -402,7 +377,6 @@ public class Overlay : MapComponent
         listing.End();
     }
 
-
     private void DrawMessageLog(Rect inRect)
     {
         if (_isCacheDirty)
@@ -411,11 +385,9 @@ public class Overlay : MapComponent
         }
 
         var contentRect = inRect.ContractedBy(5f);
+        if (_cachedMessagesForLog == null || !_cachedMessagesForLog.Any()) return;
 
-        if (_cachedMessagesForLog == null || !_cachedMessagesForLog.Any())
-            return;
-
-        var settings = LoadedModManager.GetMod<Settings>().GetSettings<RimTalkSettings>();
+        var settings = RimTalkSettings.Instance;
         var originalFont = Text.Font;
         var originalAnchor = Text.Anchor;
         var gameFont = GameFont.Small;
@@ -432,24 +404,15 @@ public class Overlay : MapComponent
             foreach (var message in _cachedMessagesForLog)
             {
                 currentY -= message.LineHeight;
-
                 if (currentY < contentRect.y) break;
 
                 var rowRect = new Rect(contentRect.x, currentY, contentRect.width, message.LineHeight);
-
                 var nameRect = new Rect(rowRect.x, rowRect.y, message.NameWidth, rowRect.height);
-                // Calculate dialogue area width, ensuring consistency with the logic used when calculating height
-                // Use actual available width, but not exceeding the width used in calculation (which already includes safety margin)
-                float dialogueWidth = rowRect.width - message.NameWidth;
-                // Ensure dialogue area does not exceed boundaries
-                dialogueWidth = Mathf.Max(0f, dialogueWidth);
+                float dialogueWidth = Mathf.Max(0f, rowRect.width - message.NameWidth);
                 var dialogueRect = new Rect(nameRect.xMax, rowRect.y, dialogueWidth, rowRect.height);
 
                 UIUtil.DrawClickablePawnName(nameRect, message.PawnName, message.PawnInstance);
-
-                // GUI.color = message.TextColor;
                 Widgets.Label(dialogueRect, "  " + message.Dialogue);
-                // GUI.color = Color.white;
             }
         }
         finally
@@ -465,15 +428,27 @@ public class Overlay : MapComponent
 public static class OverlayPatch
 {
     private static bool _skip;
-
-    static void Postfix()
+    private static void DrawOverlay(bool isPrefixExecution)
     {
-        if (Current.ProgramState != ProgramState.Playing) return;
-
         _skip = !_skip;
         if (_skip) return;
+        if (Current.ProgramState != ProgramState.Playing) return;
 
+        var settings = RimTalkSettings.Instance;
+        if (settings.OverlayDrawAboveUI == isPrefixExecution) return;
         var mapComp = Find.CurrentMap?.GetComponent<Overlay>();
         mapComp?.MapComponentOnGUI();
+    }
+
+    [HarmonyPrefix]
+    public static void Prefix()
+    {
+        DrawOverlay(true);
+    }
+
+    [HarmonyPostfix]
+    public static void Postfix()
+    {
+        DrawOverlay(false);
     }
 }

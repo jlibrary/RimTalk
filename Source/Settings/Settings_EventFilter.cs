@@ -66,7 +66,7 @@ public partial class Settings
                         GUI.color = Color.red;
                     }
 
-                    listingStandard.CheckboxLabeled(typeName, ref newEnabled);
+                    listingStandard.CheckboxLabeled(typeName, ref newEnabled, typeName);
                     GUI.color = Color.white;
 
                     if (newEnabled != isEnabled)

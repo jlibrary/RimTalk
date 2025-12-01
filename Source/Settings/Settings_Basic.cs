@@ -46,7 +46,7 @@ public partial class Settings
         Widgets.Label(cooldownLabelRect, cooldownLabel);
         settings.TalkInterval = (int)listingStandard.Slider(settings.TalkInterval, 1, 60);
 
-        listingStandard.Gap();
+        listingStandard.Gap(6f);
 
         // --- Checkboxes in two columns ---
 
@@ -67,23 +67,23 @@ public partial class Settings
         leftListing.CheckboxLabeled("RimTalk.Settings.OverrideInteractions".Translate().ToString(),
             ref settings.ProcessNonRimTalkInteractions,
             "RimTalk.Settings.OverrideInteractionsTooltip".Translate().ToString());
-        leftListing.Gap();
+        leftListing.Gap(6f);
         leftListing.CheckboxLabeled("RimTalk.Settings.AllowSimultaneousConversations".Translate().ToString(),
             ref settings.AllowSimultaneousConversations,
             "RimTalk.Settings.AllowSimultaneousConversationsTooltip".Translate().ToString());
-        leftListing.Gap();
+        leftListing.Gap(6f);
         leftListing.CheckboxLabeled("RimTalk.Settings.DisplayTalkWhenDrafted".Translate().ToString(),
             ref settings.DisplayTalkWhenDrafted,
             "RimTalk.Settings.DisplayTalkWhenDraftedTooltip".Translate().ToString());
-        leftListing.Gap();
+        leftListing.Gap(6f);
         leftListing.CheckboxLabeled("RimTalk.Settings.AllowCustomConversation".Translate().ToString(),
             ref settings.AllowCustomConversation,
             "RimTalk.Settings.AllowCustomConversationTooltip".Translate().ToString());
-        leftListing.Gap();
+        leftListing.Gap(6f);
         leftListing.CheckboxLabeled("RimTalk.Settings.ContinueDialogueWhileSleeping".Translate().ToString(),
             ref settings.ContinueDialogueWhileSleeping,
             "RimTalk.Settings.ContinueDialogueWhileSleepingTooltip".Translate().ToString());
-        leftListing.Gap();
+        leftListing.Gap(6f);
         leftListing.CheckboxLabeled("RimTalk.Settings.ApplyMoodAndSocialEffects".Translate().ToString(),
             ref settings.ApplyMoodAndSocialEffects,
             "RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip".Translate().ToString());
@@ -98,20 +98,20 @@ public partial class Settings
 
         rightListing.CheckboxLabeled("RimTalk.Settings.AllowSlavesToTalk".Translate().ToString(),
             ref settings.AllowSlavesToTalk, "RimTalk.Settings.AllowSlavesToTalkTooltip".Translate().ToString());
-        rightListing.Gap();
+        rightListing.Gap(6f);
         rightListing.CheckboxLabeled("RimTalk.Settings.AllowPrisonersToTalk".Translate().ToString(),
             ref settings.AllowPrisonersToTalk, "RimTalk.Settings.AllowPrisonersToTalkTooltip".Translate().ToString());
-        rightListing.Gap();
+        rightListing.Gap(6f);
         rightListing.CheckboxLabeled("RimTalk.Settings.AllowOtherFactionsToTalk".Translate().ToString(),
             ref settings.AllowOtherFactionsToTalk,
             "RimTalk.Settings.AllowOtherFactionsToTalkTooltip".Translate().ToString());
-        rightListing.Gap();
+        rightListing.Gap(6f);
         rightListing.CheckboxLabeled("RimTalk.Settings.AllowEnemiesToTalk".Translate().ToString(),
             ref settings.AllowEnemiesToTalk, "RimTalk.Settings.AllowEnemiesToTalkTooltip".Translate().ToString());
-        rightListing.Gap();
+        rightListing.Gap(6f);
         rightListing.CheckboxLabeled("RimTalk.Settings.AllowBabiesToTalk".Translate().ToString(),
             ref settings.AllowBabiesToTalk, "RimTalk.Settings.AllowBabiesToTalkTooltip".Translate().ToString());
-        rightListing.Gap();
+        rightListing.Gap(6f);
         rightListing.CheckboxLabeled("RimTalk.Settings.AllowNonHumanToTalk".Translate().ToString(),
             ref settings.AllowNonHumanToTalk, "RimTalk.Settings.AllowNonHumanToTalkTooltip".Translate().ToString());
 
@@ -192,15 +192,7 @@ public partial class Settings
         TooltipHandler.TipRegion(buttonDisplayRect, "RimTalk.Settings.ButtonDisplayTooltip".Translate().ToString());
 
         listingStandard.Gap(24f);
-
-        // --- Footer ---
-        GUI.color = Color.yellow;
-        var bubbleFadeTip = "RimTalk.Settings.BubbleFadeTip".Translate().ToString();
-        var bubbleFadeTipRect = listingStandard.GetRect(Text.CalcHeight(bubbleFadeTip, listingStandard.ColumnWidth));
-        Widgets.Label(bubbleFadeTipRect, bubbleFadeTip);
-        GUI.color = Color.white;
-        listingStandard.Gap();
-
+        
         if (listingStandard.ButtonText("RimTalk.Settings.ResetToDefault".Translate().ToString()))
         {
             settings.TalkInterval = 7;

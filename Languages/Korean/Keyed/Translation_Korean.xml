@@ -111,8 +111,7 @@
     <RimTalk.Settings.AIInstructionPrompt>AI 지침 프롬프트 (모델: {0})</RimTalk.Settings.AIInstructionPrompt>
     <RimTalk.Settings.ExternalEditorTip>팁: 외부 편집기를 사용해 여러 줄을 편집하거나 \+n 을 입력하여 새 줄을 추가하세요.</RimTalk.Settings.ExternalEditorTip>
     <RimTalk.Settings.AutoIncludedTip>팁: 정착민 세부 정보(특성, 관계, 종족, 나이 등)는 자동으로 포함됩니다. 모든 캐릭터와 정착지에 적용될 수 있는 일반적인 지침을 작성하세요.</RimTalk.Settings.AutoIncludedTip>
-    <RimTalk.Settings.RateLimitWarning>경고: 프롬프트가 길수록 더 많은 토큰을 소비하고 사용량 제한에 더 빨리 도달합니다. 프롬프트 캐싱은 사용되지 않습니다.</RimTalk.Settings.RateLimitWarning>
-    <RimTalk.Settings.BubbleFadeTip>팁: 빠른 진행 중에 대화가 더 오래 보이도록 하려면 Interaction Bubbles 모드 설정에서 말풍선 사라짐 시간을 조정하세요.</RimTalk.Settings.BubbleFadeTip>
+    <RimTalk.Settings.RateLimitWarning>경고: 프롬프트가 길수록 더 많은 토큰을 소비하고 사용량 제한에 더 빨리 도달합니다.</RimTalk.Settings.RateLimitWarning>
     <RimTalk.Settings.TokenInfo>현재: ~{0} 토큰 | 권장 한도: {1} 토큰</RimTalk.Settings.TokenInfo>
     <RimTalk.Settings.ResetToDefault>기본값으로 재설정</RimTalk.Settings.ResetToDefault>
     <RimTalk.Settings.EventFilterTip>팁: 선택된 이벤트 유형만 AI에 의해 처리됩니다. AI가 응답하지 않기를 원하는 유형은 선택 해제하세요.</RimTalk.Settings.EventFilterTip>
@@ -180,7 +179,7 @@
     <RimTalk.Settings.IncludeWeather>날씨</RimTalk.Settings.IncludeWeather>
     <RimTalk.Settings.IncludeLocationAndTemperature>위치 및 온도</RimTalk.Settings.IncludeLocationAndTemperature>
     <RimTalk.Settings.IncludeTerrain>지형</RimTalk.Settings.IncludeTerrain>
-    <RimTalk.Settings.IncludeBeauty>세포 아름다움</RimTalk.Settings.IncludeBeauty>
+    <RimTalk.Settings.IncludeBeauty>미관</RimTalk.Settings.IncludeBeauty>
     <RimTalk.Settings.IncludeCleanliness>청결도</RimTalk.Settings.IncludeCleanliness>
     <RimTalk.Settings.IncludeSurroundings>주변 아이템</RimTalk.Settings.IncludeSurroundings>
     <RimTalk.Settings.IncludeWealth>식민지 자산</RimTalk.Settings.IncludeWealth>
@@ -225,6 +224,7 @@
     <!-- Overlay.cs -->
     <RimTalk.Overlay.Debug>디버그</RimTalk.Overlay.Debug>
     <RimTalk.Overlay.Option>오버레이 옵션</RimTalk.Overlay.Option>
+    <RimTalk.Overlay.DrawAboveUI>UI 위에 표시</RimTalk.Overlay.DrawAboveUI>
     <RimTalk.Overlay.Opacity>투명도</RimTalk.Overlay.Opacity>
     <RimTalk.Overlay.FontSize>글꼴 크기</RimTalk.Overlay.FontSize>
 

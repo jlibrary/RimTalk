@@ -111,8 +111,7 @@
     <RimTalk.Settings.AIInstructionPrompt>AI 指令提示（模型：{0}）</RimTalk.Settings.AIInstructionPrompt>
     <RimTalk.Settings.ExternalEditorTip>提示：使用外部编辑器进行多行编辑，或输入 \+n 添加新行。</RimTalk.Settings.ExternalEditorTip>
     <RimTalk.Settings.AutoIncludedTip>提示：角色详情（特性、关系、种族、年龄等）会自动包含。请编写适用于所有角色和殖民地的通用指令。</RimTalk.Settings.AutoIncludedTip>
-    <RimTalk.Settings.RateLimitWarning>警告：较长的提示将消耗更多令牌并更快达到速率限制。不使用提示缓存。</RimTalk.Settings.RateLimitWarning>
-    <RimTalk.Settings.BubbleFadeTip>提示：在"互动气泡"模组设置中调整气泡淡出时间，以便在快进播放期间让对话显示更长时间。</RimTalk.Settings.BubbleFadeTip>
+    <RimTalk.Settings.RateLimitWarning>警告：较长的提示将消耗更多令牌并更快达到速率限制。</RimTalk.Settings.RateLimitWarning>
     <RimTalk.Settings.TokenInfo>目前：约 {0} 令牌 | 建议限制：{1} 令牌</RimTalk.Settings.TokenInfo>
     <RimTalk.Settings.ResetToDefault>重设为默认</RimTalk.Settings.ResetToDefault>
     <RimTalk.Settings.EventFilterTip>提示：只有勾选的事件类型才会由 AI 处理。取消勾选您不希望 AI 回应的类型。</RimTalk.Settings.EventFilterTip>
@@ -225,6 +224,7 @@
     <!-- Overlay.cs -->
     <RimTalk.Overlay.Debug>调试</RimTalk.Overlay.Debug>
     <RimTalk.Overlay.Option>悬浮窗选项</RimTalk.Overlay.Option>
+    <RimTalk.Overlay.DrawAboveUI>显示在界面之上</RimTalk.Overlay.DrawAboveUI>
     <RimTalk.Overlay.Opacity>不透明度</RimTalk.Overlay.Opacity>
     <RimTalk.Overlay.FontSize>字体大小</RimTalk.Overlay.FontSize>
 

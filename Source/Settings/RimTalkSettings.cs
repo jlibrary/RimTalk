@@ -7,6 +7,8 @@ namespace RimTalk;
 
 public class RimTalkSettings : ModSettings
 {
+    public static RimTalkSettings Instance;
+    
     public List<ApiConfig> CloudConfigs = [];
     public int CurrentCloudConfigIndex = 0;
     public ApiConfig LocalConfig = new() { Provider = AIProvider.Local };
@@ -46,8 +48,14 @@ public class RimTalkSettings : ModSettings
     public bool OverlayEnabled = false;
     public float OverlayOpacity = 0.5f;
     public float OverlayFontSize = 15f;
+    public bool OverlayDrawAboveUI = true;
     public Rect OverlayRectDebug = new(200f, 200f, 600f, 450f);
     public Rect OverlayRectNonDebug = new(200f, 200f, 400f, 250f);
+    
+    public RimTalkSettings()
+    {
+        Instance = this;
+    }
 
     /// <summary>
     /// Gets the first active and valid API configuration.
@@ -181,6 +189,7 @@ public class RimTalkSettings : ModSettings
         Scribe_Values.Look(ref OverlayEnabled, "overlayEnabled", false);
         Scribe_Values.Look(ref OverlayOpacity, "overlayOpacity", 0.5f);
         Scribe_Values.Look(ref OverlayFontSize, "overlayFontSize", 15f);
+        Scribe_Values.Look(ref OverlayDrawAboveUI, "overlayDrawAboveUI", true);
 
         // Scribe Debug Overlay Rect
         Rect defaultDebugRect = new Rect(200f, 200f, 600f, 450f);

@@ -111,8 +111,7 @@
     <RimTalk.Settings.AIInstructionPrompt>AIへの指示プロンプト（モデル：{0}）</RimTalk.Settings.AIInstructionPrompt>
     <RimTalk.Settings.ExternalEditorTip>ヒント：外部エディタでコピー／ペーストして複数行を編集するか、\+n を入力して改行してください。</RimTalk.Settings.ExternalEditorTip>
     <RimTalk.Settings.AutoIncludedTip>ヒント：ポーンの詳細（特性、関係、種族、年齢など）は自動的に含まれます。すべてのキャラクターやコロニーで機能する一般的な指示を作成してください。</RimTalk.Settings.AutoIncludedTip>
-    <RimTalk.Settings.RateLimitWarning>警告：プロンプトが長いほど、より多くのトークンを消費し、レート制限に早く達します。プロンプトのキャッシュは使用されません。</RimTalk.Settings.RateLimitWarning>
-    <RimTalk.Settings.BubbleFadeTip>ヒント：早送りプレイ中に対話を長く表示するには、Interaction Bubbles MODの設定で吹き出しのフェード時間を調整してください。</RimTalk.Settings.BubbleFadeTip>
+    <RimTalk.Settings.RateLimitWarning>警告：プロンプトが長いほど、より多くのトークンを消費し、レート制限に早く達します。</RimTalk.Settings.RateLimitWarning>
     <RimTalk.Settings.TokenInfo>現在：約{0}トークン | 推奨上限：{1}トークン</RimTalk.Settings.TokenInfo>
     <RimTalk.Settings.ResetToDefault>デフォルトにリセット</RimTalk.Settings.ResetToDefault>
     <RimTalk.Settings.EventFilterTip>ヒント：チェックされたイベントタイプのみがAIによって処理されます。AIに応答させたくないタイプはチェックを外してください。</RimTalk.Settings.EventFilterTip>
@@ -225,6 +224,7 @@
     <!-- Overlay.cs -->
     <RimTalk.Overlay.Debug>デバッグ</RimTalk.Overlay.Debug>
     <RimTalk.Overlay.Option>オーバーレイオプション</RimTalk.Overlay.Option>
+    <RimTalk.Overlay.DrawAboveUI>UI の上に表示</RimTalk.Overlay.DrawAboveUI>
     <RimTalk.Overlay.Opacity>不透明度</RimTalk.Overlay.Opacity>
     <RimTalk.Overlay.FontSize>フォントサイズ</RimTalk.Overlay.FontSize>
 

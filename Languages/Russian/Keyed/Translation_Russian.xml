@@ -111,8 +111,7 @@
     <RimTalk.Settings.AIInstructionPrompt>Инструкция для ИИ (модель: {0})</RimTalk.Settings.AIInstructionPrompt>
     <RimTalk.Settings.ExternalEditorTip>Совет: используйте копирование/вставку с внешним редактором для многострочного редактирования или введите \+n для новой строки.</RimTalk.Settings.ExternalEditorTip>
     <RimTalk.Settings.AutoIncludedTip>Совет: Детали пешки (черты, отношения, раса, возраст и т. д.) включаются автоматически. Пишите общие инструкции, которые работают для всех персонажей и колоний.</RimTalk.Settings.AutoIncludedTip>
-    <RimTalk.Settings.RateLimitWarning>Предупреждение: Более длинные запросы будут потреблять больше токенов и быстрее достигать лимитов. Кэширование запросов не используется.</RimTalk.Settings.RateLimitWarning>
-    <RimTalk.Settings.BubbleFadeTip>Совет: Отрегулируйте время затухания пузыря в настройках мода Interaction Bubbles, чтобы диалоги оставались видимыми дольше во время быстрой перемотки.</RimTalk.Settings.BubbleFadeTip>
+    <RimTalk.Settings.RateLimitWarning>Предупреждение: Более длинные запросы будут потреблять больше токенов и быстрее достигать лимитов.</RimTalk.Settings.RateLimitWarning>
     <RimTalk.Settings.TokenInfo>Текущее: ~{0} токенов | Рекомендуемый лимит: {1} токенов</RimTalk.Settings.TokenInfo>
     <RimTalk.Settings.ResetToDefault>Сбросить по умолчанию</RimTalk.Settings.ResetToDefault>
     <RimTalk.Settings.EventFilterTip>Совет: Только отмеченные типы событий будут обрабатываться ИИ. Снимите флажки с типов, на которые вы не хотите, чтобы ИИ реагировал.</RimTalk.Settings.EventFilterTip>
@@ -180,7 +179,7 @@
     <RimTalk.Settings.IncludeWeather>Погоду</RimTalk.Settings.IncludeWeather>
     <RimTalk.Settings.IncludeLocationAndTemperature>Местоположение и температуру</RimTalk.Settings.IncludeLocationAndTemperature>
     <RimTalk.Settings.IncludeTerrain>Местность</RimTalk.Settings.IncludeTerrain>
-    <RimTalk.Settings.IncludeBeauty>Красоту ячейки</RimTalk.Settings.IncludeBeauty>
+    <RimTalk.Settings.IncludeBeauty>Красота ячейки</RimTalk.Settings.IncludeBeauty>
     <RimTalk.Settings.IncludeCleanliness>Чистоту</RimTalk.Settings.IncludeCleanliness>
     <RimTalk.Settings.IncludeSurroundings>Близлежащие предметы</RimTalk.Settings.IncludeSurroundings>
     <RimTalk.Settings.IncludeWealth>Богатство колонии</RimTalk.Settings.IncludeWealth>
@@ -225,6 +224,7 @@
     <!-- Overlay.cs -->
     <RimTalk.Overlay.Debug>Отладка</RimTalk.Overlay.Debug>
     <RimTalk.Overlay.Option>Опция наложения</RimTalk.Overlay.Option>
+    <RimTalk.Overlay.DrawAboveUI>Отображать поверх UI</RimTalk.Overlay.DrawAboveUI>
     <RimTalk.Overlay.Opacity>Прозрачность</RimTalk.Overlay.Opacity>
     <RimTalk.Overlay.FontSize>Размер шрифта</RimTalk.Overlay.FontSize>
 

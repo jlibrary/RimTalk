@@ -15,7 +15,7 @@ public class OverlayTabLauncher : MainTabWindow
     {
         base.PostOpen();
 
-        var settings = LoadedModManager.GetMod<Settings>().GetSettings<RimTalkSettings>();
+        var settings = RimTalkSettings.Instance;
 
         settings.OverlayEnabled = !settings.OverlayEnabled;
 
