@@ -169,29 +169,37 @@ public class Overlay : MapComponent
 
         bool isMouseOver = Mouse.IsOver(currentOverlayRect);
 
-        GUI.depth = settings.OverlayDrawAboveUI ? 0 : 100; 
-        
-        GUI.BeginGroup(currentOverlayRect);
-        var inRect = new Rect(Vector2.zero, currentOverlayRect.size);
+        var origDepth = GUI.depth;
 
-        Widgets.DrawBoxSolid(inRect, new Color(0.1f, 0.1f, 0.1f, settings.OverlayOpacity));
-
-        var contentRect = new Rect(inRect.x, inRect.y, inRect.width, inRect.height);
-
-        DrawMessageLog(contentRect);
-
-        if (isMouseOver)
+        try
         {
-            var optionsRect = new Rect(inRect.x, inRect.y, inRect.width, OptionsBarHeight);
-            DrawOptionsBar(optionsRect);
+            GUI.depth = settings.OverlayDrawAboveUI ? 0 : 100;
 
-            _localResizeHandleRect.Set(inRect.width - ResizeHandleSize, inRect.height - ResizeHandleSize,
-                ResizeHandleSize, ResizeHandleSize);
-            GUI.DrawTexture(_localResizeHandleRect, TexUI.WinExpandWidget);
-            TooltipHandler.TipRegion(_localResizeHandleRect, "Drag to resize");
+            GUI.BeginGroup(currentOverlayRect);
+            var inRect = new Rect(Vector2.zero, currentOverlayRect.size);
+
+            Widgets.DrawBoxSolid(inRect, new Color(0.1f, 0.1f, 0.1f, settings.OverlayOpacity));
+
+            var contentRect = new Rect(inRect.x, inRect.y, inRect.width, inRect.height);
+
+            DrawMessageLog(contentRect);
+
+            if (isMouseOver)
+            {
+                var optionsRect = new Rect(inRect.x, inRect.y, inRect.width, OptionsBarHeight);
+                DrawOptionsBar(optionsRect);
+
+                _localResizeHandleRect.Set(inRect.width - ResizeHandleSize, inRect.height - ResizeHandleSize,
+                    ResizeHandleSize, ResizeHandleSize);
+                GUI.DrawTexture(_localResizeHandleRect, TexUI.WinExpandWidget);
+                TooltipHandler.TipRegion(_localResizeHandleRect, "Drag to resize");
+            }
+            GUI.EndGroup();
         }
-
-        GUI.EndGroup();
+        finally
+        {
+            GUI.depth = origDepth;
+        }
 
         if (_showSettingsDropdown)
         {
