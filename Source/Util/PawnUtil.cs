@@ -293,7 +293,7 @@ public static class PawnUtil
             Lord lord = threatPawn.GetLord();
 
             // === 1. EXCLUDE TACTICALLY RETREATING PAWNS ===
-            if (lord != null && lord.CurLordToil is LordToil_ExitMapFighting or LordToil_ExitMap)
+            if (lord is { CurLordToil: LordToil_ExitMapFighting or LordToil_ExitMap } || threatPawn.CurJob?.exitMapOnArrival == true)
                 continue;
 
             // === 2. EXCLUDE ROAMING MECH CLUSTER PAWNS ===

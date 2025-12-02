@@ -87,6 +87,7 @@ public class DebugWindow : Window
             _contextStyle = new GUIStyle(Text.fontStyles[(int)GameFont.Tiny])
             {
                 fontSize = 12,
+                alignment = TextAnchor.UpperLeft,
                 normal = { textColor = new Color(0.8f, 0.8f, 0.8f) }
             };
         }
