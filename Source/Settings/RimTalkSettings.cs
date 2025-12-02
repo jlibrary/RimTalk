@@ -34,6 +34,7 @@ public class RimTalkSettings : ModSettings
     public bool AllowNonHumanToTalk = true;
     public bool ApplyMoodAndSocialEffects = false;
     public int DisableAiAtSpeed = 0;
+    public string PlayerPrompt = "Voice from beyond";
     public Settings.ButtonDisplayMode ButtonDisplay = Settings.ButtonDisplayMode.Tab;
 
     public ContextSettings Context = new();
@@ -175,6 +176,7 @@ public class RimTalkSettings : ModSettings
         Scribe_Values.Look(ref AllowBabiesToTalk, "allowBabiesToTalk", true);
         Scribe_Values.Look(ref AllowNonHumanToTalk, "allowNonHumanToTalk", true);
         Scribe_Values.Look(ref ApplyMoodAndSocialEffects, "applyMoodAndSocialEffects", false);
+        Scribe_Values.Look(ref PlayerPrompt, "playerPrompt", "Voice from beyond");
 
         Scribe_Deep.Look(ref Context, "context");
 

@@ -101,6 +101,8 @@
     <RimTalk.Settings.AllowNonHumanToTalkTooltip>Позволяет животным, механоидом и пользовательским расам говорить после установки Катализатора голосовой связи, полученного у торговцев.</RimTalk.Settings.AllowNonHumanToTalkTooltip>
     <RimTalk.Settings.ApplyMoodAndSocialEffects>Влияние на настроение и социальные связи</RimTalk.Settings.ApplyMoodAndSocialEffects>
     <RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>Диалоги могут влиять на настроение и отношения колонистов в зависимости от тона разговора.</RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>
+    <RimTalk.Settings.PlayerPrompt>Обращение к игроку</RimTalk.Settings.PlayerPrompt>
+    <RimTalk.Settings.PlayerPromptTooltip>Имя, которое NPC используют для обращения к игроку в диалогах.</RimTalk.Settings.PlayerPromptTooltip>
 
     <RimTalk.Settings.PauseAtSpeed>Приостанавливать ИИ на высокой скорости</RimTalk.Settings.PauseAtSpeed>
     <RimTalk.Settings.DisableAiAtSpeedTooltip>Чтобы уменьшить количество вызовов API, ИИ будет приостановлен, когда скорость игры установлена на этот уровень или выше.</RimTalk.Settings.DisableAiAtSpeedTooltip>

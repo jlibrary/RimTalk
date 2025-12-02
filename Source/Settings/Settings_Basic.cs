@@ -191,6 +191,12 @@ public partial class Settings
 
         TooltipHandler.TipRegion(buttonDisplayRect, "RimTalk.Settings.ButtonDisplayTooltip".Translate().ToString());
 
+        // Player prompt label and input
+        string playerPrompt = settings.PlayerPrompt;
+        listingStandard.Label("RimTalk.Settings.PlayerPrompt".Translate().ToString());
+        listingStandard.TextEntry(playerPrompt);
+        settings.PlayerPrompt = playerPrompt;
+
         listingStandard.Gap(24f);
         
         if (listingStandard.ButtonText("RimTalk.Settings.ResetToDefault".Translate().ToString()))
@@ -211,6 +217,7 @@ public partial class Settings
             settings.UseSimpleConfig = true;
             settings.DisableAiAtSpeed = 0;
             settings.ButtonDisplay = ButtonDisplayMode.Tab;
+            settings.PlayerPrompt = "Voice from beyond";
         }
     }
 }
