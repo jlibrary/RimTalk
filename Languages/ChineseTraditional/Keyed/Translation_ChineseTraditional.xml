@@ -102,7 +102,7 @@
     <RimTalk.Settings.ApplyMoodAndSocialEffects>影響心情與社交</RimTalk.Settings.ApplyMoodAndSocialEffects>
     <RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>對話會根據內容影響殖民者的心情和關係。</RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>
     <RimTalk.Settings.PlayerPrompt>玩家説話提示词</RimTalk.Settings.PlayerPrompt>
-    <RimTalk.Settings.PlayerPromptTooltip>玩家以何身份同 NPC 交談</RimTalk.Settings.PlayerPromptTooltip>
+    <RimTalk.Settings.PlayerPromptTooltip>玩家以何身分同 NPC 交談</RimTalk.Settings.PlayerPromptTooltip>
 
     <RimTalk.Settings.PauseAtSpeed>高速時暫停 AI</RimTalk.Settings.PauseAtSpeed>
     <RimTalk.Settings.DisableAiAtSpeedTooltip>為減少 API 呼叫，當遊戲速度設定為此級別或更高級別時，AI 將暫停。</RimTalk.Settings.DisableAiAtSpeedTooltip>

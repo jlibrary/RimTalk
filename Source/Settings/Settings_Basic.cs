@@ -192,10 +192,8 @@ public partial class Settings
         TooltipHandler.TipRegion(buttonDisplayRect, "RimTalk.Settings.ButtonDisplayTooltip".Translate().ToString());
 
         // Player prompt label and input
-        string playerPrompt = settings.PlayerPrompt;
         listingStandard.Label("RimTalk.Settings.PlayerPrompt".Translate().ToString());
-        listingStandard.TextEntry(playerPrompt);
-        settings.PlayerPrompt = playerPrompt;
+        settings.PlayerPrompt = listingStandard.TextEntry(settings.PlayerPrompt);
 
         listingStandard.Gap(24f);
         
