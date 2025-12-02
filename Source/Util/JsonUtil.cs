@@ -3,6 +3,7 @@ using System.Collections;
 using System.IO;
 using System.Runtime.Serialization.Json;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace RimTalk.Util;
 
@@ -69,15 +70,21 @@ public static class JsonUtil
             return string.Empty;
         }
 
+        sanitized = Regex.Replace(
+            sanitized, 
+            @"""([^""]+)""\s*:\s*([,}])", 
+            @"""$1"":null$2"
+        );
+
         if (sanitized.Contains("]["))
         {
-             sanitized = sanitized.Replace("][", ",");
+            sanitized = sanitized.Replace("][", ",");
         }
         if (sanitized.Contains("}{"))
         {
             sanitized = sanitized.Replace("}{", "},{");
         }
-        
+    
         if (sanitized.StartsWith("{") && sanitized.EndsWith("}"))
         {
             string innerContent = sanitized.Substring(1, sanitized.Length - 2).Trim();

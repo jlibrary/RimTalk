@@ -230,7 +230,7 @@ public static class PromptService
         if (talkRequest.TalkType == TalkType.User)
         {
             sb.Append($"{pawns[1].LabelShort}({pawns[1].GetRole()}) said to '{shortName}: {talkRequest.Prompt}'.");
-            sb.Append($"Generate conversation starting after this (do not repeat initial dialogue), beginning with {mainPawn.LabelShort}");
+            sb.Append($"Generate multi turn dialogues starting after this (do not repeat initial dialogue), beginning with {mainPawn.LabelShort}");
         }
         else
         {

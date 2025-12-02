@@ -168,38 +168,27 @@ public class Overlay : MapComponent
         HandleInput(ref currentOverlayRect);
 
         bool isMouseOver = Mouse.IsOver(currentOverlayRect);
+        
+        GUI.BeginGroup(currentOverlayRect);
+        var inRect = new Rect(Vector2.zero, currentOverlayRect.size);
 
-        var origDepth = GUI.depth;
+        Widgets.DrawBoxSolid(inRect, new Color(0.1f, 0.1f, 0.1f, settings.OverlayOpacity));
 
-        try
+        var contentRect = new Rect(inRect.x, inRect.y, inRect.width, inRect.height);
+
+        DrawMessageLog(contentRect);
+
+        if (isMouseOver)
         {
-            GUI.depth = settings.OverlayDrawAboveUI ? 0 : 100;
+            var optionsRect = new Rect(inRect.x, inRect.y, inRect.width, OptionsBarHeight);
+            DrawOptionsBar(optionsRect);
 
-            GUI.BeginGroup(currentOverlayRect);
-            var inRect = new Rect(Vector2.zero, currentOverlayRect.size);
-
-            Widgets.DrawBoxSolid(inRect, new Color(0.1f, 0.1f, 0.1f, settings.OverlayOpacity));
-
-            var contentRect = new Rect(inRect.x, inRect.y, inRect.width, inRect.height);
-
-            DrawMessageLog(contentRect);
-
-            if (isMouseOver)
-            {
-                var optionsRect = new Rect(inRect.x, inRect.y, inRect.width, OptionsBarHeight);
-                DrawOptionsBar(optionsRect);
-
-                _localResizeHandleRect.Set(inRect.width - ResizeHandleSize, inRect.height - ResizeHandleSize,
-                    ResizeHandleSize, ResizeHandleSize);
-                GUI.DrawTexture(_localResizeHandleRect, TexUI.WinExpandWidget);
-                TooltipHandler.TipRegion(_localResizeHandleRect, "Drag to resize");
-            }
-            GUI.EndGroup();
+            _localResizeHandleRect.Set(inRect.width - ResizeHandleSize, inRect.height - ResizeHandleSize,
+                ResizeHandleSize, ResizeHandleSize);
+            GUI.DrawTexture(_localResizeHandleRect, TexUI.WinExpandWidget);
+            TooltipHandler.TipRegion(_localResizeHandleRect, "Drag to resize");
         }
-        finally
-        {
-            GUI.depth = origDepth;
-        }
+        GUI.EndGroup();
 
         if (_showSettingsDropdown)
         {
