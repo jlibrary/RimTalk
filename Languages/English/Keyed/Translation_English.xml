@@ -101,6 +101,8 @@
     <RimTalk.Settings.AllowNonHumanToTalkTooltip>Enable non-human creatures (animals, mechanoids, or custom races) to talk if they have been given a Vocal Link Catalyst, which can be acquired from merchants.</RimTalk.Settings.AllowNonHumanToTalkTooltip>
     <RimTalk.Settings.ApplyMoodAndSocialEffects>Apply Mood and Social Effects</RimTalk.Settings.ApplyMoodAndSocialEffects>
     <RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>Dialogue can affect pawns’ mood and relationships based on conversation sentiment.</RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>
+    <RimTalk.Settings.PlayerPrompt>Player prompt</RimTalk.Settings.PlayerPrompt>
+    <RimTalk.Settings.PlayerPromptTooltip>What NPCs call the player in conversations.</RimTalk.Settings.PlayerPromptTooltip>
 
     <RimTalk.Settings.PauseAtSpeed>Pause AI on High Speed</RimTalk.Settings.PauseAtSpeed>
     <RimTalk.Settings.DisableAiAtSpeedTooltip>To reduce API calls, the AI will be paused when game speed is set to this level or higher.</RimTalk.Settings.DisableAiAtSpeedTooltip>
