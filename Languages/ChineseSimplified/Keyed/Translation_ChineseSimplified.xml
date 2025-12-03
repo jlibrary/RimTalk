@@ -101,8 +101,14 @@
     <RimTalk.Settings.AllowNonHumanToTalkTooltip>启用非人类生物（动物、机械人或自定义种族）在获得商人提供的Vocal Link Catalyst后说话。</RimTalk.Settings.AllowNonHumanToTalkTooltip>
     <RimTalk.Settings.ApplyMoodAndSocialEffects>影响心情与社交</RimTalk.Settings.ApplyMoodAndSocialEffects>
     <RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>对话会根据内容影响殖民者的心情和关系。</RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>
-    <RimTalk.Settings.PlayerPrompt>玩家说话提示词</RimTalk.Settings.PlayerPrompt>
-    <RimTalk.Settings.PlayerPromptTooltip>玩家用何种身份与NPC说话</RimTalk.Settings.PlayerPromptTooltip>
+
+    <RimTalk.Settings.PlayerDialogueMode.Manual>手动回复</RimTalk.Settings.PlayerDialogueMode.Manual>
+    <RimTalk.Settings.PlayerDialogueMode.AIDriven>自动生成回复</RimTalk.Settings.PlayerDialogueMode.AIDriven>
+    <RimTalk.Settings.PlayerToNpc>玩家 与 NPC：</RimTalk.Settings.PlayerToNpc>
+    <RimTalk.Settings.PlayerName>玩家称呼</RimTalk.Settings.PlayerName>
+    <RimTalk.Settings.PlayerNameTooltip>NPC 在对话中称呼玩家的名字。</RimTalk.Settings.PlayerNameTooltip>
+    <RimTalk.Settings.PlayerDialogueModeTooltip>选择玩家在对话中的参与方式。\n\n禁用：玩家无法参与对话。\n手动回复：玩家需要手动输入所有回复；不会自动生成。\n自动生成回复：AI 会自动生成玩家在对话中的回复。</RimTalk.Settings.PlayerDialogueModeTooltip>
+    <RimTalk.Settings.PlayerNameTooltip>当你参与对话时所显示的名称，代表殖民者对你的认知。</RimTalk.Settings.PlayerNameTooltip>
 
     <RimTalk.Settings.PauseAtSpeed>高速时暂停 AI</RimTalk.Settings.PauseAtSpeed>
     <RimTalk.Settings.DisableAiAtSpeedTooltip>为减少 API 调用，当游戏速度设置为此级别或更高级别时，AI 将暂停。</RimTalk.Settings.DisableAiAtSpeedTooltip>
@@ -236,7 +242,4 @@
     <RimTalk.FloatMenu.WhatToSayToOther>你想让{0}对{1}说什么？</RimTalk.FloatMenu.WhatToSayToOther>
     <RimTalk.FloatMenu.Send>发送</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>取消</RimTalk.FloatMenu.Cancel>
-
-    <!-- CustomDialogueService.cs -->
-    <RimTalk.CustomDialogue.Player>玩家</RimTalk.CustomDialogue.Player>
 </LanguageData>

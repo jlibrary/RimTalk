@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using RimTalk;
 using RimTalk.Data;
 using RimWorld;
 using Verse;
@@ -79,7 +78,6 @@ public static class PawnUtil
     public static string GetRole(this Pawn pawn, bool includeFaction = false)
     {
         if (pawn == null) return null;
-        if (pawn.IsPlayer()) return Settings.Get().PlayerPrompt;
         if (pawn.IsPrisoner) return "Prisoner";
         if (pawn.IsSlave) return "Slave";
         if (pawn.IsEnemy())
@@ -116,7 +114,7 @@ public static class PawnUtil
 
         // special-case for "player pawn"
         if (pawn.IsPlayer())
-            return (Settings.Get().PlayerPrompt, false);
+            return (Settings.Get().PlayerName, false);
 
         bool isInDanger = false;
         var lines = new List<string>();

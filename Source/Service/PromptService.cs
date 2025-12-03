@@ -28,9 +28,8 @@ public static class PromptService
         for (int i = 0; i < pawns.Count; i++)
         {
             var pawn = pawns[i];
-            var pawnContext = pawn.IsPlayer() 
-                ? $"{pawn.LabelShort}\nRole: {pawn.GetRole()}"
-                : CreatePawnContext(pawn, i == 0 ? InfoLevel.Normal : InfoLevel.Short);
+            if (pawn.IsPlayer()) continue;
+            var pawnContext = CreatePawnContext(pawn, i == 0 ? InfoLevel.Normal : InfoLevel.Short);
 
             Cache.Get(pawn).Context = pawnContext;
             context.AppendLine()
@@ -230,7 +229,10 @@ public static class PromptService
         if (talkRequest.TalkType == TalkType.User)
         {
             sb.Append($"{pawns[1].LabelShort}({pawns[1].GetRole()}) said to '{shortName}: {talkRequest.Prompt}'.");
-            sb.Append($"Generate multi turn dialogues starting after this (do not repeat initial dialogue), beginning with {mainPawn.LabelShort}");
+            if (Settings.Get().PlayerDialogueMode == Settings.PlayerDialogueMode.Manual)
+                sb.Append($"Generate dialogue starting after this. Do not generate any further lines for {pawns[1].LabelShort}");
+            else if (Settings.Get().PlayerDialogueMode == Settings.PlayerDialogueMode.AIDriven)
+                sb.Append($"Generate multi turn dialogues starting after this (do not repeat initial dialogue), beginning with {mainPawn.LabelShort}");
         }
         else
         {

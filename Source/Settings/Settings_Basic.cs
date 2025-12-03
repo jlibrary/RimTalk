@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Verse;
 
@@ -21,6 +22,21 @@ public partial class Settings
                 return "4x";
             default:
                 return speed.ToString();
+        }
+    }
+    
+    private string GetPlayerDialogueModeLabel(PlayerDialogueMode mode)
+    {
+        switch (mode)
+        {
+            case PlayerDialogueMode.Disabled:
+                return "RimTalk.Settings.Disabled".Translate().ToString();
+            case PlayerDialogueMode.Manual:
+                return "RimTalk.Settings.PlayerDialogueMode.Manual".Translate().ToString();
+            case PlayerDialogueMode.AIDriven:
+                return "RimTalk.Settings.PlayerDialogueMode.AIDriven".Translate().ToString();
+            default:
+                return mode.ToString();
         }
     }
 
@@ -56,7 +72,8 @@ public partial class Settings
 
         // Get a rect for the entire checkbox section. We'll manually manage the layout within this.
         // The height is an estimate; we will adjust the main listing's Y position later.
-        Rect checkboxSectionRect = listingStandard.GetRect(240f);
+        float estimatedHeight = settings.AllowCustomConversation ? 340f : 240f;
+        Rect checkboxSectionRect = listingStandard.GetRect(estimatedHeight);
 
         // --- Left Column ---
         Rect leftColumnRect = new Rect(checkboxSectionRect.x, checkboxSectionRect.y, columnWidth,
@@ -76,10 +93,6 @@ public partial class Settings
             ref settings.DisplayTalkWhenDrafted,
             "RimTalk.Settings.DisplayTalkWhenDraftedTooltip".Translate().ToString());
         leftListing.Gap(6f);
-        leftListing.CheckboxLabeled("RimTalk.Settings.AllowCustomConversation".Translate().ToString(),
-            ref settings.AllowCustomConversation,
-            "RimTalk.Settings.AllowCustomConversationTooltip".Translate().ToString());
-        leftListing.Gap(6f);
         leftListing.CheckboxLabeled("RimTalk.Settings.ContinueDialogueWhileSleeping".Translate().ToString(),
             ref settings.ContinueDialogueWhileSleeping,
             "RimTalk.Settings.ContinueDialogueWhileSleepingTooltip".Translate().ToString());
@@ -87,6 +100,19 @@ public partial class Settings
         leftListing.CheckboxLabeled("RimTalk.Settings.ApplyMoodAndSocialEffects".Translate().ToString(),
             ref settings.ApplyMoodAndSocialEffects,
             "RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip".Translate().ToString());
+        leftListing.Gap(6f);
+        
+        // AllowCustomConversation
+        leftListing.CheckboxLabeled("RimTalk.Settings.AllowCustomConversation".Translate().ToString(),
+            ref settings.AllowCustomConversation,
+            "RimTalk.Settings.AllowCustomConversationTooltip".Translate().ToString());
+
+        // Draw custom conversation options if enabled
+        if (settings.AllowCustomConversation)
+        {
+            leftListing.Gap(6f);
+            DrawCustomConversationOptions(leftListing, settings);
+        }
 
         leftListing.End();
 
@@ -119,7 +145,7 @@ public partial class Settings
 
         // Advance the main listing standard's vertical position based on the taller of the two columns.
         float tallerColumnHeight = Mathf.Max(leftListing.CurHeight, rightListing.CurHeight);
-        listingStandard.Gap(tallerColumnHeight - 240f); // Adjust for the initial GetRect height
+        listingStandard.Gap(tallerColumnHeight - estimatedHeight); // Adjust for the initial GetRect height
 
         listingStandard.Gap();
 
@@ -143,9 +169,11 @@ public partial class Settings
 
         if (Widgets.ButtonText(dropdownRect, currentSpeedLabel))
         {
-            var options = new List<FloatMenuOption>();
-            options.Add(new FloatMenuOption("RimTalk.Settings.Disabled".Translate().ToString(),
-                () => settings.DisableAiAtSpeed = 0));
+            var options = new List<FloatMenuOption>
+            {
+                new("RimTalk.Settings.Disabled".Translate().ToString(),
+                    () => settings.DisableAiAtSpeed = 0)
+            };
 
             foreach (TimeSpeed speed in Enum.GetValues(typeof(TimeSpeed)))
             {
@@ -191,10 +219,6 @@ public partial class Settings
 
         TooltipHandler.TipRegion(buttonDisplayRect, "RimTalk.Settings.ButtonDisplayTooltip".Translate().ToString());
 
-        // Player prompt label and input
-        listingStandard.Label("RimTalk.Settings.PlayerPrompt".Translate().ToString());
-        settings.PlayerPrompt = listingStandard.TextEntry(settings.PlayerPrompt);
-
         listingStandard.Gap(24f);
         
         if (listingStandard.ButtonText("RimTalk.Settings.ResetToDefault".Translate().ToString()))
@@ -210,12 +234,82 @@ public partial class Settings
             settings.AllowBabiesToTalk = true;
             settings.AllowNonHumanToTalk = true;
             settings.AllowCustomConversation = true;
+            settings.PlayerDialogueMode = PlayerDialogueMode.Manual;
+            settings.PlayerName = "Player";
             settings.ContinueDialogueWhileSleeping = false;
             settings.ApplyMoodAndSocialEffects = false;
             settings.UseSimpleConfig = true;
             settings.DisableAiAtSpeed = 0;
             settings.ButtonDisplay = ButtonDisplayMode.Tab;
-            settings.PlayerPrompt = "Voice from beyond";
         }
+    }
+    
+    private void DrawCustomConversationOptions(Listing_Standard listingStandard, RimTalkSettings settings)
+    {
+        const float indent = 30f;
+        const float dropdownWidth = 120f;
+        const float textFieldWidth = 120f;
+        
+        // 1. Player Dialogue Dropdown
+        Rect playerDialogueRect = listingStandard.GetRect(24f);
+        playerDialogueRect.x += indent;
+        playerDialogueRect.width -= indent;
+        
+        float labelWidth = playerDialogueRect.width - dropdownWidth - 10f;
+        Rect playerToNpcRect = new Rect(playerDialogueRect.x, playerDialogueRect.y, labelWidth, playerDialogueRect.height);
+        Rect playerDialogueDropdownRect = new Rect(playerToNpcRect.xMax + 10f, playerDialogueRect.y, dropdownWidth, playerDialogueRect.height);
+        
+        TextAnchor savedAnchor = Text.Anchor;
+        Text.Anchor = TextAnchor.MiddleLeft;
+        Widgets.Label(playerToNpcRect, "RimTalk.Settings.PlayerToNpc".Translate().ToString());
+        Text.Anchor = savedAnchor;
+        
+        string currentModeLabel = GetPlayerDialogueModeLabel(settings.PlayerDialogueMode);
+        
+        if (Widgets.ButtonText(playerDialogueDropdownRect, currentModeLabel))
+        {
+            var options = (from PlayerDialogueMode currentMode in Enum.GetValues(typeof(PlayerDialogueMode)) 
+                select new FloatMenuOption(GetPlayerDialogueModeLabel(currentMode), () => settings.PlayerDialogueMode = currentMode)).ToList();
+            Find.WindowStack.Add(new FloatMenu(options));
+        }
+        
+        TooltipHandler.TipRegion(playerDialogueRect, "RimTalk.Settings.PlayerDialogueModeTooltip".Translate().ToString());
+        
+        // 2. Player Name TextField
+        bool isPlayerDialogueEnabled = settings.PlayerDialogueMode != PlayerDialogueMode.Disabled;
+        
+        Rect playerNameRect = listingStandard.GetRect(30f);
+        playerNameRect.x += indent;
+        playerNameRect.width -= indent;
+        
+        float nameFieldWidth = textFieldWidth;
+        float nameLabelWidth = playerNameRect.width - nameFieldWidth - 10f;
+        Rect playerNameLabelRect = new Rect(playerNameRect.x, playerNameRect.y, nameLabelWidth, playerNameRect.height);
+        Rect playerNameFieldRect = new Rect(playerNameLabelRect.xMax + 10f, playerNameRect.y + 3f, nameFieldWidth, 24f);
+        
+        Color savedColor = GUI.color;
+        if (!isPlayerDialogueEnabled)
+        {
+            GUI.color = new Color(1f, 1f, 1f, 0.5f);
+        }
+        
+        Text.Anchor = TextAnchor.MiddleLeft;
+        Widgets.Label(playerNameLabelRect, "RimTalk.Settings.PlayerName".Translate().ToString());
+        Text.Anchor = savedAnchor;
+        
+        if (isPlayerDialogueEnabled)
+        {
+            settings.PlayerName = Widgets.TextField(playerNameFieldRect, settings.PlayerName);
+        }
+        else
+        {
+            GUI.enabled = false;
+            Widgets.TextField(playerNameFieldRect, settings.PlayerName);
+            GUI.enabled = true;
+        }
+        
+        GUI.color = savedColor;
+        
+        TooltipHandler.TipRegion(playerNameRect, "RimTalk.Settings.PlayerNameTooltip".Translate().ToString());
     }
 }

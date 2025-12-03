@@ -33,6 +33,12 @@ public partial class Settings : Mod
         Toggle,
         None
     }
+    public enum PlayerDialogueMode
+    {
+        Disabled,
+        Manual,
+        AIDriven
+    }
 
     private SettingsTab _currentTab = SettingsTab.Basic;
 
@@ -40,16 +46,7 @@ public partial class Settings : Mod
 
     public static RimTalkSettings Get()
     {
-        if (_settings == null)
-        {
-            _settings = LoadedModManager.GetMod<Settings>().GetSettings<RimTalkSettings>();
-        }
-        return _settings;
-    }
-
-    public static void ClearCache()
-    {
-        _settings = null;
+        return _settings ??= LoadedModManager.GetMod<Settings>().GetSettings<RimTalkSettings>();
     }
 
     public Settings(ModContentPack content) : base(content)
@@ -166,6 +163,8 @@ public partial class Settings : Mod
         sb.AppendLine(settings.AllowBabiesToTalk.ToString());
         sb.AppendLine(settings.AllowNonHumanToTalk.ToString());
         sb.AppendLine(settings.ApplyMoodAndSocialEffects.ToString());
+        sb.AppendLine(settings.PlayerDialogueMode.ToString());
+        sb.AppendLine(settings.PlayerName);
         
         return sb.ToString().GetHashCode();
     }
@@ -274,5 +273,10 @@ public partial class Settings : Mod
 
         listing.End();
         GUI.EndScrollView();
+    }
+    
+    private static void ClearCache()
+    {
+        _settings = null;
     }
 }

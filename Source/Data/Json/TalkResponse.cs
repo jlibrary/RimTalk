@@ -19,10 +19,10 @@ public class TalkResponse(TalkType talkType, string name, string text) : IJsonDa
     [DataMember(Name = "text")] 
     public string Text { get; set; } = text;
 
-    [DataMember(Name = "act")]
+    [DataMember(Name = "act", EmitDefaultValue = false)]
     public string? InteractionRaw { get; set; }
 
-    [DataMember(Name = "target")]
+    [DataMember(Name = "target", EmitDefaultValue = false)]
     public string? TargetName { get; set; }
     
     public Guid ParentTalkId { get; set; }

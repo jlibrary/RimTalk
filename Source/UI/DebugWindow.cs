@@ -61,7 +61,7 @@ public class DebugWindow : Window
         closeOnClickedOutside = false;
         preventCameraMotion = false;
 
-        var settings = RimTalkSettings.Instance;
+        var settings = Settings.Get();
         _groupingEnabled = settings.DebugGroupingEnabled;
         _sortColumn = settings.DebugSortColumn;
         _sortAscending = settings.DebugSortAscending;
@@ -73,7 +73,7 @@ public class DebugWindow : Window
     public override void PreClose()
     {
         base.PreClose();
-        var settings = RimTalkSettings.Instance;
+        var settings = Settings.Get();
         settings.DebugGroupingEnabled = _groupingEnabled;
         settings.DebugSortColumn = _sortColumn;
         settings.DebugSortAscending = _sortAscending;
@@ -125,7 +125,7 @@ public class DebugWindow : Window
 
     private void UpdateData()
     {
-        var settings = RimTalkSettings.Instance;
+        var settings = Settings.Get();
         if (!settings.IsEnabled)
             _aiStatus = "RimTalk.DebugWindow.StatusDisabled".Translate();
         else
@@ -152,7 +152,7 @@ public class DebugWindow : Window
 
     private void DrawOptionsBar(Rect rect)
     {
-        var settings = RimTalkSettings.Instance;
+        var settings = Settings.Get();
 
         // --- Left-aligned controls (View Options) ---
         float currentX = rect.x;
@@ -644,7 +644,7 @@ public class DebugWindow : Window
                 _sortAscending = true;
             }
 
-            var settings = RimTalkSettings.Instance;
+            var settings = Settings.Get();
             settings.DebugSortColumn = _sortColumn;
             settings.DebugSortAscending = _sortAscending;
         }

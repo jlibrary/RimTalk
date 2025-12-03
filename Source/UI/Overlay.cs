@@ -65,7 +65,7 @@ public class Overlay : MapComponent
 
     private void UpdateAndRecalculateCache()
     {
-        var settings = RimTalkSettings.Instance;;
+        var settings = Settings.Get();
         var allRequests = ApiHistory.GetAll().ToList();
 
         var originalFont = Text.Font;
@@ -143,7 +143,7 @@ public class Overlay : MapComponent
     {
         if (Current.ProgramState != ProgramState.Playing) return;
 
-        var settings = RimTalkSettings.Instance;
+        var settings = Settings.Get();
         if (!settings.OverlayEnabled) return;
 
         ref Rect currentOverlayRect = ref settings.OverlayRectNonDebug;
@@ -234,7 +234,7 @@ public class Overlay : MapComponent
         {
             if (_isDragging || _isResizing)
             {
-                RimTalkSettings.Instance.Write();
+                Settings.Get().Write();
             }
 
             _isDragging = false;
@@ -278,7 +278,7 @@ public class Overlay : MapComponent
         float iconSize = rect.height - 4f;
         var localIconRect = new Rect(rect.width - iconSize - 2f, 2f, iconSize, iconSize);
 
-        var settings = RimTalkSettings.Instance;
+        var settings = Settings.Get();
 
         const float minIconOpacity = 0.3f;
         float effectiveOpacity = Mathf.Max(settings.OverlayOpacity, minIconOpacity);
@@ -311,7 +311,7 @@ public class Overlay : MapComponent
 
     private void DrawSettingsDropdown()
     {
-        var settings = RimTalkSettings.Instance;
+        var settings = Settings.Get();
 
         Widgets.DrawBoxSolid(_settingsDropdownRect, new Color(0.15f, 0.15f, 0.15f, 0.95f));
 
@@ -384,7 +384,7 @@ public class Overlay : MapComponent
         var contentRect = inRect.ContractedBy(5f);
         if (_cachedMessagesForLog == null || !_cachedMessagesForLog.Any()) return;
 
-        var settings = RimTalkSettings.Instance;
+        var settings = Settings.Get();
         var originalFont = Text.Font;
         var originalAnchor = Text.Anchor;
         var gameFont = GameFont.Small;
@@ -431,7 +431,7 @@ public static class OverlayPatch
         if (_skip) return;
         if (Current.ProgramState != ProgramState.Playing) return;
 
-        var settings = RimTalkSettings.Instance;
+        var settings = Settings.Get();
         if (settings.OverlayDrawAboveUI == isPrefixExecution) return;
         var mapComp = Find.CurrentMap?.GetComponent<Overlay>();
         mapComp?.MapComponentOnGUI();

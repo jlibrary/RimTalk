@@ -101,9 +101,14 @@
     <RimTalk.Settings.AllowNonHumanToTalkTooltip>動物、メカノイド、カスタム種族が、商人から聲音鏈接催化劑を入手した場合に話すことを許可します。</RimTalk.Settings.AllowNonHumanToTalkTooltip>
     <RimTalk.Settings.ApplyMoodAndSocialEffects>ムードと社会的影響を適用</RimTalk.Settings.ApplyMoodAndSocialEffects>
     <RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>会話に応じて入植者のムードや関係性に影響を与えることがあります。</RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>
-    <RimTalk.Settings.PlayerPrompt>プレイヤーの呼称</RimTalk.Settings.PlayerPrompt>
-    <RimTalk.Settings.PlayerPromptTooltip>会話の中でNPCがプレイヤーを呼ぶ際の名称です。</RimTalk.Settings.PlayerPromptTooltip>
 
+    <RimTalk.Settings.PlayerDialogueMode.Manual>手動返信</RimTalk.Settings.PlayerDialogueMode.Manual>
+    <RimTalk.Settings.PlayerDialogueMode.AIDriven>自動生成返信</RimTalk.Settings.PlayerDialogueMode.AIDriven>
+    <RimTalk.Settings.PlayerToNpc>プレイヤー 対 NPC：</RimTalk.Settings.PlayerToNpc>
+    <RimTalk.Settings.PlayerName>プレイヤー名</RimTalk.Settings.PlayerName>
+    <RimTalk.Settings.PlayerNameTooltip>NPC が会話でプレイヤーを呼ぶ際の名前です。</RimTalk.Settings.PlayerNameTooltip>
+    <RimTalk.Settings.PlayerDialogueModeTooltip>プレイヤーが会話に参加する方法を選択します。\n\n無効：プレイヤーは会話に参加しません。\n手動返信：すべての返信を自分で入力します。自動生成はありません。\n自動生成返信：会話中、AI がプレイヤーの返信を自動的に生成します。</RimTalk.Settings.PlayerDialogueModeTooltip>
+    <RimTalk.Settings.PlayerNameTooltip>会話に参加する際に表示される名前で、入植者があなたをどのように認識するかを表します。</RimTalk.Settings.PlayerNameTooltip>
 
     <RimTalk.Settings.PauseAtSpeed>高速時にAIを一時停止</RimTalk.Settings.PauseAtSpeed>
     <RimTalk.Settings.DisableAiAtSpeedTooltip>API呼び出しを減らすため、ゲーム速度がこのレベル以上に設定されるとAIは一時停止します。</RimTalk.Settings.DisableAiAtSpeedTooltip>
@@ -237,7 +242,4 @@
     <RimTalk.FloatMenu.WhatToSayToOther>{0}に{1}に何を言わせたいですか？</RimTalk.FloatMenu.WhatToSayToOther>
     <RimTalk.FloatMenu.Send>送信</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>キャンセル</RimTalk.FloatMenu.Cancel>
-
-    <!-- CustomDialogueService.cs -->
-    <RimTalk.CustomDialogue.Player>プレイヤー</RimTalk.CustomDialogue.Player>
 </LanguageData>

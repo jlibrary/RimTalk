@@ -184,10 +184,12 @@ public static class Cache
         return pawnList.LastOrDefault(p => (Get(p)?.TalkInitiationWeight ?? 0.0) > 0);
     }
 
-    private static void InitializePlayerPawn()
+    public static void InitializePlayerPawn()
     {
+        if (Current.Game == null || Settings.Get().PlayerName == _playerPawn?.Name.ToStringShort) return;
+        
         _playerPawn = PawnGenerator.GeneratePawn(PawnKindDefOf.Colonist);
-        _playerPawn.Name = new NameSingle("RimTalk.CustomDialogue.Player".Translate());
+        _playerPawn.Name = new NameSingle(Settings.Get().PlayerName);
         PawnCache[_playerPawn] = new PawnState(_playerPawn);
         NameCache[_playerPawn.LabelShort] = _playerPawn;
     }

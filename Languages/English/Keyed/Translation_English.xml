@@ -101,8 +101,14 @@
     <RimTalk.Settings.AllowNonHumanToTalkTooltip>Enable non-human creatures (animals, mechanoids, or custom races) to talk if they have been given a Vocal Link Catalyst, which can be acquired from merchants.</RimTalk.Settings.AllowNonHumanToTalkTooltip>
     <RimTalk.Settings.ApplyMoodAndSocialEffects>Apply Mood and Social Effects</RimTalk.Settings.ApplyMoodAndSocialEffects>
     <RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>Dialogue can affect pawns’ mood and relationships based on conversation sentiment.</RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>
-    <RimTalk.Settings.PlayerPrompt>Player prompt</RimTalk.Settings.PlayerPrompt>
-    <RimTalk.Settings.PlayerPromptTooltip>What NPCs call the player in conversations.</RimTalk.Settings.PlayerPromptTooltip>
+
+    <RimTalk.Settings.PlayerDialogueMode.Manual>Manual Replies</RimTalk.Settings.PlayerDialogueMode.Manual>
+    <RimTalk.Settings.PlayerDialogueMode.AIDriven>Auto-Gen Replies</RimTalk.Settings.PlayerDialogueMode.AIDriven>
+    <RimTalk.Settings.PlayerToNpc>Player-to-NPC:</RimTalk.Settings.PlayerToNpc>
+    <RimTalk.Settings.PlayerName>Player prompt</RimTalk.Settings.PlayerName>
+    <RimTalk.Settings.PlayerNameTooltip>What NPCs call the player in conversations.</RimTalk.Settings.PlayerNameTooltip>
+    <RimTalk.Settings.PlayerDialogueModeTooltip>Choose how the player can interact in conversations.\n\nDisabled: Player cannot participate in conversations.\nManual Replies: You type all player responses yourself; nothing is auto-generated.\nAuto-Gen Replies: The AI generates player responses automatically during conversations.</RimTalk.Settings.PlayerDialogueModeTooltip>
+    <RimTalk.Settings.PlayerNameTooltip>The name that will appear when you participate in conversations. This represents how pawns will perceive your presence.</RimTalk.Settings.PlayerNameTooltip>
 
     <RimTalk.Settings.PauseAtSpeed>Pause AI on High Speed</RimTalk.Settings.PauseAtSpeed>
     <RimTalk.Settings.DisableAiAtSpeedTooltip>To reduce API calls, the AI will be paused when game speed is set to this level or higher.</RimTalk.Settings.DisableAiAtSpeedTooltip>
@@ -236,7 +242,4 @@
     <RimTalk.FloatMenu.WhatToSayToOther>What do you want {0} to say to {1}?</RimTalk.FloatMenu.WhatToSayToOther>
     <RimTalk.FloatMenu.Send>Send</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>Cancel</RimTalk.FloatMenu.Cancel>
-
-    <!-- CustomDialogueService.cs -->
-    <RimTalk.CustomDialogue.Player>Player</RimTalk.CustomDialogue.Player>
 </LanguageData>

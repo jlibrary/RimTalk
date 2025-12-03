@@ -101,8 +101,14 @@
     <RimTalk.Settings.AllowNonHumanToTalkTooltip>Permet aux animaux, mécanoïdes et races personnalisées de parler lorsqu'ils sont implantés avec un Catalyseur de lien vocal provenant des marchands.</RimTalk.Settings.AllowNonHumanToTalkTooltip>
     <RimTalk.Settings.ApplyMoodAndSocialEffects>Modifier l'humeur et les relations sociales</RimTalk.Settings.ApplyMoodAndSocialEffects>
     <RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>Les dialogues peuvent affecter l'humeur et les relations des colons en fonction du ton de la conversation.</RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>
-    <RimTalk.Settings.PlayerPrompt>Invite du joueur</RimTalk.Settings.PlayerPrompt>
-    <RimTalk.Settings.PlayerPromptTooltip>Ce que les PNJ utilisent pour désigner le joueur dans les conversations.</RimTalk.Settings.PlayerPromptTooltip>
+
+    <RimTalk.Settings.PlayerDialogueMode.Manual>Réponses manuelles</RimTalk.Settings.PlayerDialogueMode.Manual>
+    <RimTalk.Settings.PlayerDialogueMode.AIDriven>Réponses auto-générées</RimTalk.Settings.PlayerDialogueMode.AIDriven>
+    <RimTalk.Settings.PlayerToNpc>Joueur à PNJ :</RimTalk.Settings.PlayerToNpc>
+    <RimTalk.Settings.PlayerName>Nom du joueur</RimTalk.Settings.PlayerName>
+    <RimTalk.Settings.PlayerNameTooltip>Le nom utilisé par les PNJ pour s’adresser au joueur.</RimTalk.Settings.PlayerNameTooltip>
+    <RimTalk.Settings.PlayerDialogueModeTooltip>Choisissez comment le joueur participe aux conversations.\n\nDésactivé : Le joueur ne participe pas.\nRéponses manuelles : Vous saisissez toutes les réponses du joueur ; aucune réponse n’est générée automatiquement.\nRéponses auto-générées : L’IA génère automatiquement les réponses du joueur lors des conversations.</RimTalk.Settings.PlayerDialogueModeTooltip>
+    <RimTalk.Settings.PlayerNameTooltip>Le nom affiché lorsque vous participez aux conversations, représentant la manière dont les colons vous perçoivent.</RimTalk.Settings.PlayerNameTooltip>
 
     <RimTalk.Settings.PauseAtSpeed>Mettre l'IA en pause à haute vitesse</RimTalk.Settings.PauseAtSpeed>
     <RimTalk.Settings.DisableAiAtSpeedTooltip>Pour réduire les appels à l'API, l'IA sera mise en pause lorsque la vitesse du jeu est réglée sur ce niveau ou plus.</RimTalk.Settings.DisableAiAtSpeedTooltip>
@@ -236,7 +242,4 @@
     <RimTalk.FloatMenu.WhatToSayToOther>Que voulez-vous que {0} dise à {1} ?</RimTalk.FloatMenu.WhatToSayToOther>
     <RimTalk.FloatMenu.Send>Envoyer</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>Annuler</RimTalk.FloatMenu.Cancel>
-
-    <!-- CustomDialogueService.cs -->
-    <RimTalk.CustomDialogue.Player>Joueur</RimTalk.CustomDialogue.Player>
 </LanguageData>

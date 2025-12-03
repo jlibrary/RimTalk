@@ -101,8 +101,14 @@
     <RimTalk.Settings.AllowNonHumanToTalkTooltip>Позволяет животным, механоидом и пользовательским расам говорить после установки Катализатора голосовой связи, полученного у торговцев.</RimTalk.Settings.AllowNonHumanToTalkTooltip>
     <RimTalk.Settings.ApplyMoodAndSocialEffects>Влияние на настроение и социальные связи</RimTalk.Settings.ApplyMoodAndSocialEffects>
     <RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>Диалоги могут влиять на настроение и отношения колонистов в зависимости от тона разговора.</RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>
-    <RimTalk.Settings.PlayerPrompt>Обращение к игроку</RimTalk.Settings.PlayerPrompt>
-    <RimTalk.Settings.PlayerPromptTooltip>Имя, которое NPC используют для обращения к игроку в диалогах.</RimTalk.Settings.PlayerPromptTooltip>
+
+    <RimTalk.Settings.PlayerDialogueMode.Manual>Ручные ответы</RimTalk.Settings.PlayerDialogueMode.Manual>
+    <RimTalk.Settings.PlayerDialogueMode.AIDriven>Автогенерируемые ответы</RimTalk.Settings.PlayerDialogueMode.AIDriven>
+    <RimTalk.Settings.PlayerToNpc>Игрок–НПС:</RimTalk.Settings.PlayerToNpc>
+    <RimTalk.Settings.PlayerName>Имя игрока</RimTalk.Settings.PlayerName>
+    <RimTalk.Settings.PlayerNameTooltip>Имя, которым НПС называют игрока в диалогах.</RimTalk.Settings.PlayerNameTooltip>
+    <RimTalk.Settings.PlayerDialogueModeTooltip>Выберите способ участия игрока в диалогах.\n\nОтключено: Игрок не участвует в разговорах.\nРучные ответы: Вы вводите все ответы вручную; авто-генерации нет.\nАвтогенерируемые ответы: ИИ автоматически создаёт ответы игрока во время диалогов.</RimTalk.Settings.PlayerDialogueModeTooltip>
+    <RimTalk.Settings.PlayerNameTooltip>Имя, отображаемое при участии игрока в диалогах, отражающее восприятие поселенцев.</RimTalk.Settings.PlayerNameTooltip>
 
     <RimTalk.Settings.PauseAtSpeed>Приостанавливать ИИ на высокой скорости</RimTalk.Settings.PauseAtSpeed>
     <RimTalk.Settings.DisableAiAtSpeedTooltip>Чтобы уменьшить количество вызовов API, ИИ будет приостановлен, когда скорость игры установлена на этот уровень или выше.</RimTalk.Settings.DisableAiAtSpeedTooltip>
@@ -236,7 +242,4 @@
     <RimTalk.FloatMenu.WhatToSayToOther>Что вы хотите, чтобы {0} сказал {1}?</RimTalk.FloatMenu.WhatToSayToOther>
     <RimTalk.FloatMenu.Send>Отправить</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>Отмена</RimTalk.FloatMenu.Cancel>
-
-    <!-- CustomDialogueService.cs -->
-    <RimTalk.CustomDialogue.Player>Игрок</RimTalk.CustomDialogue.Player>
 </LanguageData>

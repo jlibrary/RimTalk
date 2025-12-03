@@ -67,7 +67,7 @@ public static class CustomDialogueService
 
         if (initiator.IsPlayer())
         {
-            ApiLog apiLog = ApiHistory.AddUserHistory("RimTalk.CustomDialogue.Player".Translate(), message);
+            ApiLog apiLog = ApiHistory.AddUserHistory(Settings.Get().PlayerName, message);
             apiLog.SpokenTick = GenTicks.TicksGame;
             Overlay.NotifyLogUpdated();
         }

@@ -101,9 +101,14 @@
     <RimTalk.Settings.AllowNonHumanToTalkTooltip>동물, 메카노이드, 커스텀 종족이 상인에게서 음성 연결 촉매를 획득하면 말할 수 있도록 허용합니다.</RimTalk.Settings.AllowNonHumanToTalkTooltip>
     <RimTalk.Settings.ApplyMoodAndSocialEffects>기분 및 사회적 영향 적용</RimTalk.Settings.ApplyMoodAndSocialEffects>
     <RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>대화 내용에 따라 주민의 기분과 관계에 영향을 줍니다.</RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>
-    <RimTalk.Settings.PlayerPrompt>플레이어 호칭</RimTalk.Settings.PlayerPrompt>
-    <RimTalk.Settings.PlayerPromptTooltip>대화에서 NPC가 플레이어를 부를 때 사용하는 이름입니다.</RimTalk.Settings.PlayerPromptTooltip>
 
+    <RimTalk.Settings.PlayerDialogueMode.Manual>수동 답변</RimTalk.Settings.PlayerDialogueMode.Manual>
+    <RimTalk.Settings.PlayerDialogueMode.AIDriven>자동 생성 답변</RimTalk.Settings.PlayerDialogueMode.AIDriven>
+    <RimTalk.Settings.PlayerToNpc>플레이어 ↔ NPC:</RimTalk.Settings.PlayerToNpc>
+    <RimTalk.Settings.PlayerName>플레이어 이름</RimTalk.Settings.PlayerName>
+    <RimTalk.Settings.PlayerNameTooltip>NPC가 대화에서 플레이어를 부를 때 사용하는 이름입니다.</RimTalk.Settings.PlayerNameTooltip>
+    <RimTalk.Settings.PlayerDialogueModeTooltip>플레이어가 대화에 참여하는 방식을 선택하세요.\n\n비활성화: 플레이어는 대화에 참여하지 않습니다.\n수동 답변: 모든 플레이어 답변을 직접 입력합니다. 자동 생성 없음.\n자동 생성 답변: 대화 중 AI가 플레이어의 답변을 자동으로 생성합니다.</RimTalk.Settings.PlayerDialogueModeTooltip>
+    <RimTalk.Settings.PlayerNameTooltip>당신이 대화에 참여할 때 표시되는 이름으로, 식민자들이 당신을 어떻게 인식하는지를 나타냅니다.</RimTalk.Settings.PlayerNameTooltip>
 
     <RimTalk.Settings.PauseAtSpeed>고속에서 AI 일시정지</RimTalk.Settings.PauseAtSpeed>
     <RimTalk.Settings.DisableAiAtSpeedTooltip>API 호출을 줄이기 위해 게임 속도가 이 수준 이상으로 설정되면 AI가 일시정지됩니다.</RimTalk.Settings.DisableAiAtSpeedTooltip>
@@ -237,7 +242,4 @@
     <RimTalk.FloatMenu.WhatToSayToOther>{0}가 {1}에게 무엇을 말하기를 원하세요?</RimTalk.FloatMenu.WhatToSayToOther>
     <RimTalk.FloatMenu.Send>보내기</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>취소</RimTalk.FloatMenu.Cancel>
-
-    <!-- CustomDialogueService.cs -->
-    <RimTalk.CustomDialogue.Player>플레이어</RimTalk.CustomDialogue.Player>
 </LanguageData>

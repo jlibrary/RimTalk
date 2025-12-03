@@ -40,7 +40,9 @@ public static class FloatMenuPatch
         float distanceToSelf = pawn.Position.DistanceTo(cell);
         if (distanceToSelf <= ClickRadius)
         {
-            AddTalkOption(__result, Cache.GetPlayer(), pawn);
+            if (Settings.Get().PlayerDialogueMode != Settings.PlayerDialogueMode.Disabled)
+                AddTalkOption(__result, Cache.GetPlayer(), pawn);
+            
             return; // Don't check for other pawns if we're clicking on ourselves
         }
 
