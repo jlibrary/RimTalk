@@ -99,6 +99,8 @@
     <RimTalk.Settings.AllowBabiesToTalkTooltip>이 옵션을 활성화하면 영아와 유아가 AI 생성 대화를 할 수 있습니다.</RimTalk.Settings.AllowBabiesToTalkTooltip>
     <RimTalk.Settings.AllowNonHumanToTalk>비인간 말하도록 허용</RimTalk.Settings.AllowNonHumanToTalk>
     <RimTalk.Settings.AllowNonHumanToTalkTooltip>동물, 메카노이드, 커스텀 종족이 상인에게서 음성 연결 촉매를 획득하면 말할 수 있도록 허용합니다.</RimTalk.Settings.AllowNonHumanToTalkTooltip>
+    <RimTalk.Settings.OnlyTalkToOthers>다른 포온과의 대화만 허용</RimTalk.Settings.OnlyTalkToOthers>
+    <RimTalk.Settings.OnlyTalkToOthersTooltip>이 옵션을 활성화하면 포온은 혼잣말을 하지 않고, 주변에 다른 포온이 있을 때만 대화를 생성합니다.</RimTalk.Settings.OnlyTalkToOthersTooltip>
     <RimTalk.Settings.ApplyMoodAndSocialEffects>기분 및 사회적 영향 적용</RimTalk.Settings.ApplyMoodAndSocialEffects>
     <RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>대화 내용에 따라 주민의 기분과 관계에 영향을 줍니다.</RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>
 
