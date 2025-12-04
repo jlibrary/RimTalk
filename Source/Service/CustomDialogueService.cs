@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using RimTalk.Data;
 using RimTalk.Source.Data;
 using RimTalk.UI;
 using RimTalk.Util;
+using RimWorld;
 using Verse;
 using Cache = RimTalk.Data.Cache;
 
@@ -67,12 +69,20 @@ public static class CustomDialogueService
 
         if (initiator.IsPlayer())
         {
-            if (recipient.IsBaby())
+            bool isBaby = recipient.IsBaby();      
+            bool isToddler = IsToddler(recipient); 
+
+            if (isBaby || isToddler)
             {
                 var playNeed = recipient.needs?.play;
                 if (playNeed != null)
                 {
-                    playNeed.Play(0.05f);   
+                    float amount = isBaby ? 0.05f : ToddlerPlayGainOnTalk;
+                    playNeed.Play(amount);
+                }
+                if (isToddler)
+                {
+                    ReduceToddlerLoneliness(recipient);
                 }
             }
             ApiLog apiLog = ApiHistory.AddUserHistory(Settings.Get().PlayerName, message);
@@ -94,5 +104,29 @@ public static class CustomDialogueService
     {
         public readonly Pawn Recipient = recipient;
         public readonly string Message = message;
+    }
+
+    private static bool IsToddler(Pawn pawn)
+    {
+        if (pawn?.ageTracker?.CurLifeStage == null) return false;
+        LifeStageDef toddlerStage =
+            DefDatabase<LifeStageDef>.GetNamedSilentFail("HumanlikeToddler");
+        return toddlerStage != null && pawn.ageTracker.CurLifeStage == toddlerStage;
+    }
+
+    private const float ToddlerPlayGainOnTalk = 0.03f;   
+    private const float ToddlerLonelyReductionOnTalk = 0.01f; 
+
+    private static void ReduceToddlerLoneliness(Pawn pawn)
+    {
+        if (pawn?.health?.hediffSet == null) return;
+
+        HediffDef lonelyDef =
+            DefDatabase<HediffDef>.GetNamedSilentFail("ToddlerLonely");
+        if (lonelyDef == null) return; // without Toddlers 
+        Hediff lonely = pawn.health.hediffSet.GetFirstHediffOfDef(lonelyDef);
+        if (lonely == null) return;
+
+        lonely.Severity = Math.Max(0f, lonely.Severity - ToddlerLonelyReductionOnTalk);
     }
 }
