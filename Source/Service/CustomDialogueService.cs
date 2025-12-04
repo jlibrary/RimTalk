@@ -67,6 +67,14 @@ public static class CustomDialogueService
 
         if (initiator.IsPlayer())
         {
+            if (recipient.IsBaby())
+            {
+                var playNeed = recipient.needs?.play;
+                if (playNeed != null)
+                {
+                    playNeed.Play(0.05f);   
+                }
+            }
             ApiLog apiLog = ApiHistory.AddUserHistory(Settings.Get().PlayerName, message);
             apiLog.SpokenTick = GenTicks.TicksGame;
             Overlay.NotifyLogUpdated();
