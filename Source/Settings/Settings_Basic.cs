@@ -121,7 +121,10 @@ public partial class Settings
             checkboxSectionRect.height);
         Listing_Standard rightListing = new Listing_Standard();
         rightListing.Begin(rightColumnRect);
-
+        
+        rightListing.CheckboxLabeled("RimTalk.Settings.AllowMonologue".Translate().ToString(),
+            ref settings.AllowMonologue, "RimTalk.Settings.AllowMonologueTooltip".Translate().ToString());
+        rightListing.Gap(6f);
         rightListing.CheckboxLabeled("RimTalk.Settings.AllowSlavesToTalk".Translate().ToString(),
             ref settings.AllowSlavesToTalk, "RimTalk.Settings.AllowSlavesToTalkTooltip".Translate().ToString());
         rightListing.Gap(6f);
@@ -140,9 +143,6 @@ public partial class Settings
         rightListing.Gap(6f);
         rightListing.CheckboxLabeled("RimTalk.Settings.AllowNonHumanToTalk".Translate().ToString(),
             ref settings.AllowNonHumanToTalk, "RimTalk.Settings.AllowNonHumanToTalkTooltip".Translate().ToString());
-        rightListing.Gap(6f);
-        rightListing.CheckboxLabeled("RimTalk.Settings.OnlyTalkToOthers".Translate().ToString(),
-            ref settings.OnlyTalkToOthers, "RimTalk.Settings.OnlyTalkToOthersTooltip".Translate().ToString());
 
         rightListing.End();
 
@@ -230,6 +230,7 @@ public partial class Settings
             settings.ProcessNonRimTalkInteractions = true;
             settings.AllowSimultaneousConversations = true;
             settings.DisplayTalkWhenDrafted = true;
+            settings.AllowMonologue = true;
             settings.AllowSlavesToTalk = true;
             settings.AllowPrisonersToTalk = true;
             settings.AllowOtherFactionsToTalk = false;

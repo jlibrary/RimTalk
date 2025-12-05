@@ -87,6 +87,8 @@
     <RimTalk.Settings.ContinueDialogueWhileSleeping>Продолжать диалог во сне</RimTalk.Settings.ContinueDialogueWhileSleeping>
     <RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>Если включено, персонажи будут произносить все сгенерированные реплики, даже если они засыпают.</RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>
 
+    <RimTalk.Settings.AllowMonologue>Разрешить монологи</RimTalk.Settings.AllowMonologue>
+    <RimTalk.Settings.AllowMonologueTooltip>Если включено, персонажи могут генерировать монологи на основе ИИ, даже если рядом нет других персонажей.</RimTalk.Settings.AllowMonologueTooltip>
     <RimTalk.Settings.AllowSlavesToTalk>Разрешить рабам говорить</RimTalk.Settings.AllowSlavesToTalk>
     <RimTalk.Settings.AllowSlavesToTalkTooltip>Включите, чтобы разрешить рабам вести разговоры, сгенерированные ИИ.</RimTalk.Settings.AllowSlavesToTalkTooltip>
     <RimTalk.Settings.AllowPrisonersToTalk>Разрешить заключенным говорить</RimTalk.Settings.AllowPrisonersToTalk>
@@ -99,8 +101,6 @@
     <RimTalk.Settings.AllowBabiesToTalkTooltip>Включите, чтобы младенцы и маленькие дети могли участвовать в разговорах, сгенерированные ИИ.</RimTalk.Settings.AllowBabiesToTalkTooltip>
     <RimTalk.Settings.AllowNonHumanToTalk>Разрешить говорить не людям</RimTalk.Settings.AllowNonHumanToTalk>
     <RimTalk.Settings.AllowNonHumanToTalkTooltip>Позволяет животным, механоидом и пользовательским расам говорить после установки Катализатора голосовой связи, полученного у торговцев.</RimTalk.Settings.AllowNonHumanToTalkTooltip>
-    <RimTalk.Settings.OnlyTalkToOthers>Разрешать только разговоры с другими</RimTalk.Settings.OnlyTalkToOthers>
-    <RimTalk.Settings.OnlyTalkToOthersTooltip>Если включено, пешки не будут создавать внутренние монологи и будут говорить только при наличии других пешек поблизости.</RimTalk.Settings.OnlyTalkToOthersTooltip>
     <RimTalk.Settings.ApplyMoodAndSocialEffects>Влияние на настроение и социальные связи</RimTalk.Settings.ApplyMoodAndSocialEffects>
     <RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>Диалоги могут влиять на настроение и отношения колонистов в зависимости от тона разговора.</RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>
 

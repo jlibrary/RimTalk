@@ -87,6 +87,8 @@
     <RimTalk.Settings.ContinueDialogueWhileSleeping>Continuer le dialogue pendant le sommeil</RimTalk.Settings.ContinueDialogueWhileSleeping>
     <RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>Si activé, les pions continueront à prononcer toutes les répliques générées même s'ils s'endorment.</RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>
 
+    <RimTalk.Settings.AllowMonologue>Autoriser les monologues</RimTalk.Settings.AllowMonologue>
+    <RimTalk.Settings.AllowMonologueTooltip>Lorsque activé, les personnages peuvent générer des monologues pilotés par l’IA même si aucun autre personnage n’est à proximité.</RimTalk.Settings.AllowMonologueTooltip>
     <RimTalk.Settings.AllowSlavesToTalk>Autoriser les esclaves à parler</RimTalk.Settings.AllowSlavesToTalk>
     <RimTalk.Settings.AllowSlavesToTalkTooltip>Activez ceci pour permettre aux esclaves d'avoir des conversations générées par l'IA.</RimTalk.Settings.AllowSlavesToTalkTooltip>
     <RimTalk.Settings.AllowPrisonersToTalk>Autoriser les prisonniers à parler</RimTalk.Settings.AllowPrisonersToTalk>
@@ -99,8 +101,6 @@
     <RimTalk.Settings.AllowBabiesToTalkTooltip>Activez ceci pour permettre aux nourrissons et aux tout-petits des conversations générées par l'IA.</RimTalk.Settings.AllowBabiesToTalkTooltip>
     <RimTalk.Settings.AllowNonHumanToTalk>Permettre aux non-humains de parler</RimTalk.Settings.AllowNonHumanToTalk>
     <RimTalk.Settings.AllowNonHumanToTalkTooltip>Permet aux animaux, mécanoïdes et races personnalisées de parler lorsqu'ils sont implantés avec un Catalyseur de lien vocal provenant des marchands.</RimTalk.Settings.AllowNonHumanToTalkTooltip>
-    <RimTalk.Settings.OnlyTalkToOthers>Limiter les dialogues aux interactions avec autrui</RimTalk.Settings.OnlyTalkToOthers>
-    <RimTalk.Settings.OnlyTalkToOthersTooltip>Une fois activé, les colons ne produisent plus de monologues et ne parlent que lorsqu’un autre pion est présent.</RimTalk.Settings.OnlyTalkToOthersTooltip>
     <RimTalk.Settings.ApplyMoodAndSocialEffects>Modifier l'humeur et les relations sociales</RimTalk.Settings.ApplyMoodAndSocialEffects>
     <RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>Les dialogues peuvent affecter l'humeur et les relations des colons en fonction du ton de la conversation.</RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>
 

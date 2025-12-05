@@ -86,7 +86,9 @@
     <RimTalk.Settings.AllowCustomConversationTooltip>自分でセリフを入力してキャラクター同士の会話を始めたり、特定のキャラクターと直接話すことができます。対象のキャラクターを右クリックして会話を開始します。</RimTalk.Settings.AllowCustomConversationTooltip>
     <RimTalk.Settings.ContinueDialogueWhileSleeping>睡眠中も会話を続ける</RimTalk.Settings.ContinueDialogueWhileSleeping>
     <RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>有効にすると、ポーンが眠っていても生成されたすべての会話を続けます。</RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>
-    
+
+    <RimTalk.Settings.AllowMonologue>独り言を許可</RimTalk.Settings.AllowMonologue>
+    <RimTalk.Settings.AllowMonologueTooltip>有効にすると、他のキャラクターが近くにいなくても、キャラクターがAI生成の独り言をする場合があります。</RimTalk.Settings.AllowMonologueTooltip>
     <RimTalk.Settings.AllowSlavesToTalk>奴隷の会話を許可</RimTalk.Settings.AllowSlavesToTalk>
     <RimTalk.Settings.AllowSlavesToTalkTooltip>これを有効にすると、奴隷がAI生成の会話を行えるようになります。</RimTalk.Settings.AllowSlavesToTalkTooltip>
     <RimTalk.Settings.AllowPrisonersToTalk>囚人の会話を許可</RimTalk.Settings.AllowPrisonersToTalk>
@@ -99,8 +101,6 @@
     <RimTalk.Settings.AllowBabiesToTalkTooltip>これを有効にすると、乳児や幼児がAI生成の会話を行えるようになります。</RimTalk.Settings.AllowBabiesToTalkTooltip>
     <RimTalk.Settings.AllowNonHumanToTalk>非人間が話すことを許可</RimTalk.Settings.AllowNonHumanToTalk>
     <RimTalk.Settings.AllowNonHumanToTalkTooltip>動物、メカノイド、カスタム種族が、商人から聲音鏈接催化劑を入手した場合に話すことを許可します。</RimTalk.Settings.AllowNonHumanToTalkTooltip>
-    <RimTalk.Settings.OnlyTalkToOthers>他者との会話のみ許可</RimTalk.Settings.OnlyTalkToOthers>
-    <RimTalk.Settings.OnlyTalkToOthersTooltip>有効にすると、ポーンは独り言を生成せず、周囲に他のポーンがいる場合のみ会話します。</RimTalk.Settings.OnlyTalkToOthersTooltip>
     <RimTalk.Settings.ApplyMoodAndSocialEffects>ムードと社会的影響を適用</RimTalk.Settings.ApplyMoodAndSocialEffects>
     <RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>会話に応じて入植者のムードや関係性に影響を与えることがあります。</RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>
 

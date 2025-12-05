@@ -87,6 +87,8 @@
     <RimTalk.Settings.ContinueDialogueWhileSleeping>Continue Dialogue While Sleeping</RimTalk.Settings.ContinueDialogueWhileSleeping>
     <RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>If enabled, pawns will continue speaking all generated lines even if they fall asleep.</RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>
 
+    <RimTalk.Settings.AllowMonologue>Allow Monologues</RimTalk.Settings.AllowMonologue>
+    <RimTalk.Settings.AllowMonologueTooltip>When enabled, pawns may generate AI-driven monologues even when no other pawn is nearby.</RimTalk.Settings.AllowMonologueTooltip>
     <RimTalk.Settings.AllowSlavesToTalk>Allow Slaves to Talk</RimTalk.Settings.AllowSlavesToTalk>
     <RimTalk.Settings.AllowSlavesToTalkTooltip>Enable this to allow slaves to have AI-generated conversations.</RimTalk.Settings.AllowSlavesToTalkTooltip>
     <RimTalk.Settings.AllowPrisonersToTalk>Allow Prisoners to Talk</RimTalk.Settings.AllowPrisonersToTalk>
@@ -99,8 +101,6 @@
     <RimTalk.Settings.AllowBabiesToTalkTooltip>Enable this option to allow infants and toddlers to participate in AI-generated conversations.</RimTalk.Settings.AllowBabiesToTalkTooltip>
     <RimTalk.Settings.AllowNonHumanToTalk>Allow Non-Humans to Talk</RimTalk.Settings.AllowNonHumanToTalk>
     <RimTalk.Settings.AllowNonHumanToTalkTooltip>Enable non-human creatures (animals, mechanoids, or custom races) to talk if they have been given a Vocal Link Catalyst, which can be acquired from merchants.</RimTalk.Settings.AllowNonHumanToTalkTooltip>
-    <RimTalk.Settings.OnlyTalkToOthers>Only talk when others are nearby</RimTalk.Settings.OnlyTalkToOthers>
-    <RimTalk.Settings.OnlyTalkToOthersTooltip>When enabled, pawns will not generate AI-driven monologues and will only talk when at least one other pawn is in the conversation.</RimTalk.Settings.OnlyTalkToOthersTooltip>
     <RimTalk.Settings.ApplyMoodAndSocialEffects>Apply Mood and Social Effects</RimTalk.Settings.ApplyMoodAndSocialEffects>
     <RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>Dialogue can affect pawns’ mood and relationships based on conversation sentiment.</RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>
 

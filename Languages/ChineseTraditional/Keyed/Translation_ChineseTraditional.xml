@@ -87,6 +87,8 @@
     <RimTalk.Settings.ContinueDialogueWhileSleeping>睡覺時繼續對話</RimTalk.Settings.ContinueDialogueWhileSleeping>
     <RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>啟用後，即使角色入睡，也會繼續顯示所有生成的對話。</RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>
 
+    <RimTalk.Settings.AllowMonologue>允許獨白</RimTalk.Settings.AllowMonologue>
+    <RimTalk.Settings.AllowMonologueTooltip>啟用後，即使沒有其他角色在附近，角色也可能生成 AI 驅動的獨白。</RimTalk.Settings.AllowMonologueTooltip>
     <RimTalk.Settings.AllowSlavesToTalk>允許奴隸交談</RimTalk.Settings.AllowSlavesToTalk>
     <RimTalk.Settings.AllowSlavesToTalkTooltip>啟用此項以允許奴隸進行 AI 生成的對話。</RimTalk.Settings.AllowSlavesToTalkTooltip>
     <RimTalk.Settings.AllowPrisonersToTalk>允許囚犯交談</RimTalk.Settings.AllowPrisonersToTalk>
@@ -99,8 +101,6 @@
     <RimTalk.Settings.AllowBabiesToTalkTooltip>啟用此項以允許嬰兒進行 AI 生成的對話。</RimTalk.Settings.AllowBabiesToTalkTooltip>
     <RimTalk.Settings.AllowNonHumanToTalk>允許非人類說話</RimTalk.Settings.AllowNonHumanToTalk>
     <RimTalk.Settings.AllowNonHumanToTalkTooltip>啟用非人類生物（動物、機器人或自定義種族）在獲得商人提供的Vocal Link Catalyst後說話。</RimTalk.Settings.AllowNonHumanToTalkTooltip>
-    <RimTalk.Settings.OnlyTalkToOthers>禁止自言自語</RimTalk.Settings.OnlyTalkToOthers>
-    <RimTalk.Settings.OnlyTalkToOthersTooltip>啟用此項后，角色不會自言自語，祗會在有其他角色参與时進行對話。</RimTalk.Settings.OnlyTalkToOthersTooltip>
     <RimTalk.Settings.ApplyMoodAndSocialEffects>影響心情與社交</RimTalk.Settings.ApplyMoodAndSocialEffects>
     <RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>對話會根據內容影響殖民者的心情和關係。</RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>
 

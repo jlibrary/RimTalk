@@ -22,6 +22,7 @@ public class RimTalkSettings : ModSettings
     public string CustomInstruction = "";
     public Dictionary<string, bool> EnabledArchivableTypes = new();
     public bool DisplayTalkWhenDrafted = true;
+    public bool AllowMonologue = true;
     public bool AllowSlavesToTalk = true;
     public bool AllowPrisonersToTalk = true;
     public bool AllowOtherFactionsToTalk = false;
@@ -33,7 +34,6 @@ public class RimTalkSettings : ModSettings
     public bool AllowBabiesToTalk = true;
     public bool AllowNonHumanToTalk = true;
     public bool ApplyMoodAndSocialEffects = false;
-    public bool OnlyTalkToOthers = false;
     public int DisableAiAtSpeed = 0;
     public Settings.ButtonDisplayMode ButtonDisplay = Settings.ButtonDisplayMode.Tab;
 
@@ -160,6 +160,7 @@ public class RimTalkSettings : ModSettings
         Scribe_Values.Look(ref AllowSimultaneousConversations, "allowSimultaneousConversations", true);
         Scribe_Values.Look(ref CustomInstruction, "customInstruction", "");
         Scribe_Values.Look(ref DisplayTalkWhenDrafted, "displayTalkWhenDrafted", true);
+        Scribe_Values.Look(ref AllowMonologue, "allowMonologue", true);
         Scribe_Values.Look(ref AllowSlavesToTalk, "allowSlavesToTalk", true);
         Scribe_Values.Look(ref AllowPrisonersToTalk, "allowPrisonersToTalk", true);
         Scribe_Values.Look(ref AllowOtherFactionsToTalk, "allowOtherFactionsToTalk", false);
@@ -174,7 +175,6 @@ public class RimTalkSettings : ModSettings
         Scribe_Values.Look(ref AllowBabiesToTalk, "allowBabiesToTalk", true);
         Scribe_Values.Look(ref AllowNonHumanToTalk, "allowNonHumanToTalk", true);
         Scribe_Values.Look(ref ApplyMoodAndSocialEffects, "applyMoodAndSocialEffects", false);
-        Scribe_Values.Look(ref OnlyTalkToOthers, "onlyTalkToOthers", false);
         
         Scribe_Deep.Look(ref Context, "context");
 

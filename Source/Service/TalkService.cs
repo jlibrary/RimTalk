@@ -70,14 +70,10 @@ public static class TalkService
             .Take(3)
             .ToList();
         
-        // If user wants to forbid monologues, and this is NOT a player-initiated request, skip
-        if (settings.OnlyTalkToOthers &&
-            talkRequest.TalkType != TalkType.User &&
-            pawns.Count <= 1)
-        { return false; }
-
-        // Normal monologues
         if (pawns.Count == 1) talkRequest.IsMonologue = true;
+
+        if (!settings.AllowMonologue && talkRequest.IsMonologue && talkRequest.TalkType != TalkType.User)
+            return false;
 
         // Build the context and decorate the prompt with current status information.
         string context = PromptService.BuildContext(pawns);
