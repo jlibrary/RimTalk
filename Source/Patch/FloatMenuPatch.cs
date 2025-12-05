@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using HarmonyLib;
 using RimTalk.UI;
 using RimTalk.Util;
@@ -18,7 +17,7 @@ namespace RimTalk.Patch;
 #endif
 public static class FloatMenuPatch
 {
-    private const float ClickRadius = 1.2f; // Radius in cells to check around click position
+    private const int ClickRadiusCells = 1;
     
 #if V1_5
     public static void Postfix(Vector3 clickPos, Pawn pawn, ref List<FloatMenuOption> __result)
@@ -34,32 +33,38 @@ public static class FloatMenuPatch
         if (!Settings.Get().AllowCustomConversation) return;
         if (pawn == null || pawn.Drafted) return;
         
-        IntVec3 cell = IntVec3.FromVector3(clickPos);
+        IntVec3 clickCell = IntVec3.FromVector3(clickPos);
         
-        // Check if clicked on or near the selected pawn (player talking to pawn)
-        float distanceToSelf = pawn.Position.DistanceTo(cell);
-        if (distanceToSelf <= ClickRadius)
+        // Check for pawns in a square around click position
+        for (int x = clickCell.x - ClickRadiusCells; x <= clickCell.x + ClickRadiusCells; x++)
         {
-            if (Settings.Get().PlayerDialogueMode != Settings.PlayerDialogueMode.Disabled)
-                AddTalkOption(__result, Cache.GetPlayer(), pawn);
-            
-            return; // Don't check for other pawns if we're clicking on ourselves
-        }
-
-        // Check for other pawns in a radius around click position
-        List<Thing> thingsInRadius = GenRadial.RadialDistinctThingsAround(cell, pawn.Map, ClickRadius, true).ToList();
-        
-        foreach (Thing thing in thingsInRadius)
-        {
-            if (thing is Pawn targetPawn && 
-                targetPawn != pawn && 
-                (targetPawn.RaceProps.Humanlike || targetPawn.HasVocalLink()))
+            for (int z = clickCell.z - ClickRadiusCells; z <= clickCell.z + ClickRadiusCells; z++)
             {
-                if (pawn.IsTalkEligible() && pawn.CanReach(targetPawn, PathEndMode.Touch, Danger.None))
+                IntVec3 checkCell = new IntVec3(x, 0, z);
+                
+                if (!checkCell.InBounds(pawn.Map)) continue;
+                
+                Pawn targetPawn = checkCell.GetFirstPawn(pawn.Map);
+                
+                if (targetPawn == null) continue;
+                
+                // Check if clicked on the selected pawn (player talking to pawn)
+                if (targetPawn == pawn)
+                {
+                    if (Settings.Get().PlayerDialogueMode != Settings.PlayerDialogueMode.Disabled)
+                        AddTalkOption(__result, Cache.GetPlayer(), pawn);
+                    
+                    return; // Don't check for other pawns if we found ourselves
+                }
+                
+                // Check if target is eligible for conversation
+                if ((targetPawn.RaceProps.Humanlike || targetPawn.HasVocalLink()) &&
+                    pawn.IsTalkEligible() && 
+                    pawn.CanReach(targetPawn, PathEndMode.Touch, Danger.None))
                 {
                     AddTalkOption(__result, pawn, targetPawn);
+                    return;
                 }
-                break;
             }
         }
     }
