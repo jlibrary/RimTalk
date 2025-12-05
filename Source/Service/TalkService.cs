@@ -245,17 +245,17 @@ public static class TalkService
 
         Find.PlayLog.Add(playLogEntryInteraction);
 
-        InteractionDef vanillaDef = talk.GetInteractionType().ToInteractionDef();
-        if (Settings.Get().ApplyMoodAndSocialEffects && vanillaDef != null && pawn != recipient)
+        if (Settings.Get().ApplyMoodAndSocialEffects && pawn != recipient)
         {
-            if (vanillaDef.recipientThought != null)
+            var interactionType = talk.GetInteractionType();
+            var memory = interactionType.GetThoughtDef();
+            if (memory != null)
             {
-                recipient.needs?.mood?.thoughts?.memories?.TryGainMemory(vanillaDef.recipientThought, pawn);
-            }
-
-            if (vanillaDef.initiatorThought != null)
-            {
-                recipient.needs?.mood?.thoughts?.memories?.TryGainMemory(vanillaDef.initiatorThought, pawn);
+                recipient.needs?.mood?.thoughts?.memories?.TryGainMemory(memory, pawn);
+                if (interactionType is InteractionType.Chat)
+                {
+                    pawn.needs?.mood?.thoughts?.memories?.TryGainMemory(memory, recipient);
+                }
             }
         }
     }

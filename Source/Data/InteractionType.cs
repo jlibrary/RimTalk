@@ -11,14 +11,14 @@ public enum InteractionType
 
 public static class InteractionExtensions
 {
-    public static InteractionDef? ToInteractionDef(this InteractionType type)
+    public static ThoughtDef? GetThoughtDef(this InteractionType type)
     {
         return type switch
         {
-            InteractionType.Insult => InteractionDefOf.Insult,
-            InteractionType.Chat => InteractionDefOf.Chitchat,
-            InteractionType.Slight => DefDatabase<InteractionDef>.GetNamed("Slight", false),
-            InteractionType.Kind => DefDatabase<InteractionDef>.GetNamed("KindWords", false),
+            InteractionType.Insult => DefDatabase<ThoughtDef>.GetNamed("Slighted"),
+            InteractionType.Slight => DefDatabase<ThoughtDef>.GetNamed("Slighted"),
+            InteractionType.Chat => DefDatabase<ThoughtDef>.GetNamed("Chitchat"),
+            InteractionType.Kind => DefDatabase<ThoughtDef>.GetNamed("KindWords"),
             _ => null
         };
     }
