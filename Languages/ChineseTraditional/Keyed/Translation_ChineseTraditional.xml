@@ -99,6 +99,8 @@
     <RimTalk.Settings.AllowBabiesToTalkTooltip>啟用此項以允許嬰兒進行 AI 生成的對話。</RimTalk.Settings.AllowBabiesToTalkTooltip>
     <RimTalk.Settings.AllowNonHumanToTalk>允許非人類說話</RimTalk.Settings.AllowNonHumanToTalk>
     <RimTalk.Settings.AllowNonHumanToTalkTooltip>啟用非人類生物（動物、機器人或自定義種族）在獲得商人提供的Vocal Link Catalyst後說話。</RimTalk.Settings.AllowNonHumanToTalkTooltip>
+    <RimTalk.Settings.OnlyTalkToOthers>禁止自言自語</RimTalk.Settings.OnlyTalkToOthers>
+    <RimTalk.Settings.OnlyTalkToOthersTooltip>啟用此項后，角色不會自言自語，祗會在有其他角色参與时進行對話。</RimTalk.Settings.OnlyTalkToOthersTooltip>
     <RimTalk.Settings.ApplyMoodAndSocialEffects>影響心情與社交</RimTalk.Settings.ApplyMoodAndSocialEffects>
     <RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>對話會根據內容影響殖民者的心情和關係。</RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>
 

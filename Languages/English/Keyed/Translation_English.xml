@@ -99,6 +99,8 @@
     <RimTalk.Settings.AllowBabiesToTalkTooltip>Enable this option to allow infants and toddlers to participate in AI-generated conversations.</RimTalk.Settings.AllowBabiesToTalkTooltip>
     <RimTalk.Settings.AllowNonHumanToTalk>Allow Non-Humans to Talk</RimTalk.Settings.AllowNonHumanToTalk>
     <RimTalk.Settings.AllowNonHumanToTalkTooltip>Enable non-human creatures (animals, mechanoids, or custom races) to talk if they have been given a Vocal Link Catalyst, which can be acquired from merchants.</RimTalk.Settings.AllowNonHumanToTalkTooltip>
+    <RimTalk.Settings.OnlyTalkToOthers>Only talk when others are nearby</RimTalk.Settings.OnlyTalkToOthers>
+    <RimTalk.Settings.OnlyTalkToOthersTooltip>When enabled, pawns will not generate AI-driven monologues and will only talk when at least one other pawn is in the conversation.</RimTalk.Settings.OnlyTalkToOthersTooltip>
     <RimTalk.Settings.ApplyMoodAndSocialEffects>Apply Mood and Social Effects</RimTalk.Settings.ApplyMoodAndSocialEffects>
     <RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>Dialogue can affect pawns’ mood and relationships based on conversation sentiment.</RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>
 

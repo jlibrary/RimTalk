@@ -99,6 +99,8 @@
     <RimTalk.Settings.AllowBabiesToTalkTooltip>Включите, чтобы младенцы и маленькие дети могли участвовать в разговорах, сгенерированные ИИ.</RimTalk.Settings.AllowBabiesToTalkTooltip>
     <RimTalk.Settings.AllowNonHumanToTalk>Разрешить говорить не людям</RimTalk.Settings.AllowNonHumanToTalk>
     <RimTalk.Settings.AllowNonHumanToTalkTooltip>Позволяет животным, механоидом и пользовательским расам говорить после установки Катализатора голосовой связи, полученного у торговцев.</RimTalk.Settings.AllowNonHumanToTalkTooltip>
+    <RimTalk.Settings.OnlyTalkToOthers>Разрешать только разговоры с другими</RimTalk.Settings.OnlyTalkToOthers>
+    <RimTalk.Settings.OnlyTalkToOthersTooltip>Если включено, пешки не будут создавать внутренние монологи и будут говорить только при наличии других пешек поблизости.</RimTalk.Settings.OnlyTalkToOthersTooltip>
     <RimTalk.Settings.ApplyMoodAndSocialEffects>Влияние на настроение и социальные связи</RimTalk.Settings.ApplyMoodAndSocialEffects>
     <RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>Диалоги могут влиять на настроение и отношения колонистов в зависимости от тона разговора.</RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>
 

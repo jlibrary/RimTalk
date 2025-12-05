@@ -140,6 +140,9 @@ public partial class Settings
         rightListing.Gap(6f);
         rightListing.CheckboxLabeled("RimTalk.Settings.AllowNonHumanToTalk".Translate().ToString(),
             ref settings.AllowNonHumanToTalk, "RimTalk.Settings.AllowNonHumanToTalkTooltip".Translate().ToString());
+        rightListing.Gap(6f);
+        rightListing.CheckboxLabeled("RimTalk.Settings.OnlyTalkToOthers".Translate().ToString(),
+            ref settings.OnlyTalkToOthers, "RimTalk.Settings.OnlyTalkToOthersTooltip".Translate().ToString());
 
         rightListing.End();
 
