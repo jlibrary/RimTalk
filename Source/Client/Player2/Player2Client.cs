@@ -144,34 +144,25 @@ public class Player2Client : IAIClient
         try
         {
             Logger.Debug("Checking for local Player2 app...");
-            
+
             // First verify the app is running with a health check
             using (var healthRequest = UnityWebRequest.Get("http://localhost:4315/v1/health"))
             {
-                healthRequest.timeout = 2;
-                
-                var asyncOperation = healthRequest.SendWebRequest();
-                var startTime = DateTime.Now;
-                
-                while (!asyncOperation.isDone)
-                {
-                    if (DateTime.Now.Subtract(startTime).TotalSeconds > 2)
-                        break;
-                    await Task.Delay(50);
-                }
+                healthRequest.timeout = 2; // 2 second timeout
+                await SendWebRequestAsync(healthRequest);
 
-                if (healthRequest.responseCode != 200)
+                if (healthRequest.isNetworkError || healthRequest.isHttpError)
                 {
-                    Logger.Debug("Player2 local app health check failed");
+                    Logger.Debug($"Player2 local app health check failed: {healthRequest.error}");
                     return null;
                 }
-                
+
                 Logger.Debug("Player2 local app health check passed");
             }
 
             // If health check passed, get API key through local authentication
             string loginUrl = $"http://localhost:4315/v1/login/web/{GameClientId}";
-            byte[] bodyRaw = Encoding.UTF8.GetBytes("{}");
+            byte[] bodyRaw = "{}"u8.ToArray();
 
             using (var webRequest = new UnityWebRequest(loginUrl, "POST"))
             {
@@ -180,43 +171,42 @@ public class Player2Client : IAIClient
                 webRequest.SetRequestHeader("Content-Type", "application/json");
                 webRequest.timeout = 3;
 
-                var asyncOperation = webRequest.SendWebRequest();
-                var startTime = DateTime.Now;
-                
-                while (!asyncOperation.isDone)
+                await SendWebRequestAsync(webRequest);
+
+                if (webRequest.isNetworkError || webRequest.isHttpError)
                 {
-                    if (DateTime.Now.Subtract(startTime).TotalSeconds > 3)
-                        break;
-                    await Task.Delay(50);
+                    Logger.Debug($"Player2 local login failed: {webRequest.responseCode} - {webRequest.error}");
+                    return null;
                 }
 
-                if (webRequest.responseCode == 200)
+                string responseText = webRequest.downloadHandler.text;
+                var response = JsonUtil.DeserializeFromJson<LocalPlayer2Response>(responseText);
+
+                if (!string.IsNullOrEmpty(response?.p2Key))
                 {
-                    string responseText = webRequest.downloadHandler.text;
-                    var response = JsonUtil.DeserializeFromJson<LocalPlayer2Response>(responseText);
-                    
-                    if (!string.IsNullOrEmpty(response?.p2Key))
-                    {
-                        Logger.Message("[Player2] ✓ Local app authenticated successfully");
-                        return response.p2Key;
-                    }
-                    else
-                    {
-                        Logger.Warning("Player2 local app responded but no API key in response");
-                    }
+                    Logger.Message("[Player2] ✓ Local app authenticated successfully");
+                    return response.p2Key;
                 }
-                else
-                {
-                    Logger.Debug($"Player2 local login failed: {webRequest.responseCode}");
-                }
+
+                Logger.Warning("Player2 local app responded but no API key in response");
             }
         }
         catch (Exception ex)
         {
             Logger.Debug($"Local Player2 detection failed: {ex.Message}");
         }
-        
+
         return null;
+    }
+
+    /// <summary>
+    /// Helper to convert UnityWebRequestAsyncOperation to a Task for async/await
+    /// </summary>
+    private static Task SendWebRequestAsync(UnityWebRequest request)
+    {
+        var tcs = new TaskCompletionSource<bool>();
+        request.SendWebRequest().completed += _ => tcs.SetResult(true);
+        return tcs.Task;
     }
 
     /// <summary>

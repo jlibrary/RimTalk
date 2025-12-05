@@ -35,15 +35,6 @@ public static class AIClientFactory
     }
 
     /// <summary>
-    /// Synchronous method for backward compatibility with existing code
-    /// Note: For Player2, this will block on async local detection
-    /// </summary>
-    public static IAIClient GetAIClient()
-    {
-        return GetAIClientAsync().Result;
-    }
-
-    /// <summary>
     /// Creates appropriate AI client instance based on provider configuration
     /// Player2 uses async factory method for local app detection
     /// </summary>

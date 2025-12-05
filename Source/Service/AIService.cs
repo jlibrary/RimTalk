@@ -33,10 +33,11 @@ public static class AIService
         _busy = true;
         try
         {
-            var payload = await AIErrorHandler.HandleWithRetry(() =>
+            var payload = await AIErrorHandler.HandleWithRetry(async () =>
             {
-                var client = AIClientFactory.GetAIClient();
-                return client.GetStreamingChatCompletionAsync<TalkResponse>(_instruction, currentMessages,
+                var client = await AIClientFactory.GetAIClientAsync();
+                if (client == null) return null;
+                return await client.GetStreamingChatCompletionAsync<TalkResponse>(_instruction, currentMessages,
                     talkResponse =>
                     {
                         if (!players.TryGetValue(talkResponse.Name, out var player))
@@ -137,9 +138,12 @@ public static class AIService
         _busy = true;
         try
         {
-            var payload = await AIErrorHandler.HandleWithRetry(() =>
-                AIClientFactory.GetAIClient().GetChatCompletionAsync(instruction, messages)
-            );
+            var payload = await AIErrorHandler.HandleWithRetry(async () =>
+            {
+                var client = await AIClientFactory.GetAIClientAsync();
+                if (client == null) return null;
+                return await client.GetChatCompletionAsync(instruction, messages);
+            });
 
             if (payload == null)
                 return null;
