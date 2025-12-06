@@ -46,8 +46,7 @@ public static class FloatMenuPatch
     private static void TryAddTalkOption(List<FloatMenuOption> result, Pawn pawn, Vector3 clickPos)
     {
         if (!pawn.Spawned) return;
-        if (pawn.Dead || pawn.Downed || pawn.InMentalState) return;
-        if (!pawn.IsTalkEligible()) return;
+        if (pawn.Dead) return;
 
         Map map = pawn.Map;
         IntVec3 clickCell = IntVec3.FromVector3(clickPos);
