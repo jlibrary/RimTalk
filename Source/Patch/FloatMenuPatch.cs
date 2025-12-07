@@ -17,65 +17,176 @@ namespace RimTalk.Patch;
 #endif
 public static class FloatMenuPatch
 {
+    /// <summary>
+    /// fallback
+    /// </summary>
     private const int ClickRadiusCells = 1;
-    
+
 #if V1_5
+    [HarmonyPostfix]
     public static void Postfix(Vector3 clickPos, Pawn pawn, ref List<FloatMenuOption> __result)
     {
+        TryAddTalkOption(__result, pawn, clickPos);
+    }
 #else
-    public static void Postfix(List<Pawn> selectedPawns, Vector3 clickPos, FloatMenuContext context,
+    [HarmonyPostfix]
+    public static void Postfix(
+        List<Pawn> selectedPawns,
+        Vector3 clickPos,
+        FloatMenuContext context,
         ref List<FloatMenuOption> __result)
     {
-        if (selectedPawns is not { Count: 1 }) return;
-
-        Pawn pawn = selectedPawns[0];
+        Pawn pawn = (selectedPawns is { Count: 1 }) ? selectedPawns[0] : null;
+        TryAddTalkOption(__result, pawn, clickPos);
+    }
 #endif
+
+    /// <summary>
+    /// Decide whether add talk item to float menu.
+    /// </summary>
+    private static void TryAddTalkOption(List<FloatMenuOption> result, Pawn selectedPawn, Vector3 clickPos)
+    {
+        if (result == null) return;
         if (!Settings.Get().AllowCustomConversation) return;
-        if (pawn == null || pawn.Drafted) return;
-        
+
+        if (selectedPawn == null || selectedPawn.Drafted) return;
+        if (!selectedPawn.Spawned || selectedPawn.Dead) return;
+
+        Map map = selectedPawn.Map;
         IntVec3 clickCell = IntVec3.FromVector3(clickPos);
-        
-        // Check for pawns in a square around click position
-        for (int x = clickCell.x - ClickRadiusCells; x <= clickCell.x + ClickRadiusCells; x++)
+
+        if (!TryResolveConversationParticipants(selectedPawn, clickCell, map,
+                out var initiator, out var target))
         {
-            for (int z = clickCell.z - ClickRadiusCells; z <= clickCell.z + ClickRadiusCells; z++)
+            return;
+        }
+
+        AddTalkOption(result, initiator, target);
+    }
+
+    /// <summary>
+    /// Reverted Logic:
+    /// 1. Choose Pawn on clicked position
+    /// 2. Fallback to search in 3*3 area.
+    /// Retrun initiator / target if success.
+    /// </summary>
+    private static bool TryResolveConversationParticipants(
+        Pawn selectedPawn,
+        IntVec3 clickCell,
+        Map map,
+        out Pawn initiator,
+        out Pawn target)
+    {
+        initiator = null;
+        target = null;
+
+        if (clickCell.InBounds(map))
+        {
+            Pawn hit = clickCell.GetFirstPawn(map);
+            if (hit != null &&
+                TryResolveForHitPawn(selectedPawn, hit, out initiator, out target))
             {
-                IntVec3 checkCell = new IntVec3(x, 0, z);
-                
-                if (!checkCell.InBounds(pawn.Map)) continue;
-                
-                Pawn targetPawn = checkCell.GetFirstPawn(pawn.Map);
-                
-                if (targetPawn == null) continue;
-                
-                // Check if clicked on the selected pawn (player talking to pawn)
-                if (targetPawn == pawn)
+                return true;
+            }
+        }
+
+        for (int dx = -ClickRadiusCells; dx <= ClickRadiusCells; dx++)
+        {
+            for (int dz = -ClickRadiusCells; dz <= ClickRadiusCells; dz++)
+            {
+                if (dx == 0 && dz == 0) continue;
+
+                IntVec3 checkCell = new IntVec3(clickCell.x + dx, 0, clickCell.z + dz);
+                if (!checkCell.InBounds(map)) continue;
+
+                Pawn hit = checkCell.GetFirstPawn(map);
+                if (hit == null) continue;
+
+                if (TryResolveForHitPawn(selectedPawn, hit, out initiator, out target))
                 {
-                    if (Settings.Get().PlayerDialogueMode != Settings.PlayerDialogueMode.Disabled)
-                        AddTalkOption(__result, Cache.GetPlayer(), pawn);
-                    
-                    return; // Don't check for other pawns if we found ourselves
-                }
-                
-                // Check if target is eligible for conversation
-                if ((targetPawn.RaceProps.Humanlike || targetPawn.HasVocalLink()) &&
-                    pawn.IsTalkEligible() && 
-                    pawn.CanReach(targetPawn, PathEndMode.Touch, Danger.None))
-                {
-                    AddTalkOption(__result, pawn, targetPawn);
-                    return;
+                    return true;
                 }
             }
         }
+
+        return false;
     }
 
+    /// <summary>
+    /// Check User->Pawn talk or Pawn->Pawn talk 
+    /// </summary>
+    private static bool TryResolveForHitPawn(
+        Pawn selectedPawn,
+        Pawn hitPawn,
+        out Pawn initiator,
+        out Pawn target)
+    {
+        initiator = null;
+        target = null;
+
+        if (selectedPawn == null || hitPawn == null) return false;
+
+        // User->Pawn
+        if (hitPawn == selectedPawn)
+        {
+            if (Settings.Get().PlayerDialogueMode == Settings.PlayerDialogueMode.Disabled)
+                return false;
+
+            var playerPawn = Cache.GetPlayer();
+            if (playerPawn == null)
+                return false;
+
+            initiator = playerPawn;  
+            target = selectedPawn;    
+            return true;
+        }
+
+        // Pawn → Pawn
+        if (!IsValidPawnToPawnConversation(selectedPawn, hitPawn))
+            return false;
+
+        initiator = selectedPawn;
+        target = hitPawn;
+        return true;
+    }
+
+    /// <summary>
+    /// Check if Pawn->Pawn talk is legal.
+    /// </summary>
+    private static bool IsValidPawnToPawnConversation(Pawn initiator, Pawn target)
+    {
+        if (initiator == null || target == null) return false;
+
+        if (!initiator.Spawned || initiator.Dead) return false;
+        if (!target.Spawned || target.Dead) return false;
+
+        // Initiator
+        if (!initiator.IsTalkEligible())
+            return false;
+
+        // Target
+        if (!(target.RaceProps?.Humanlike ?? false) && !target.HasVocalLink())
+            return false;
+
+        // Could add path to reach
+        if (!initiator.CanReach(target, PathEndMode.Touch, Danger.None))
+            return false;
+
+        return true;
+    }
+
+    /// <summary>
+    /// Add item to float menu
+    /// </summary>
     private static void AddTalkOption(List<FloatMenuOption> result, Pawn initiator, Pawn target)
     {
+        if (initiator == null || target == null) return;
+
         result.Add(new FloatMenuOption(
             "RimTalk.FloatMenu.ChatWith".Translate(target.LabelShortCap),
-            delegate 
-            { 
-                Find.WindowStack.Add(new CustomDialogueWindow(initiator, target)); 
+            delegate
+            {
+                Find.WindowStack.Add(new CustomDialogueWindow(initiator, target));
             },
             MenuOptionPriority.Default,
             null,
