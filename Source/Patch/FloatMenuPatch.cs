@@ -17,66 +17,79 @@ namespace RimTalk.Patch;
 #endif
 public static class FloatMenuPatch
 {
+    /// <summary>
+    /// fallback
+    /// </summary>
     private const int ClickRadiusCells = 1;
 
 #if V1_5
     [HarmonyPostfix]
-    public static void Postfix(Vector3 clickPos, Pawn pawn, List<FloatMenuOption> __result)
+    public static void Postfix(Vector3 clickPos, Pawn pawn, ref List<FloatMenuOption> __result)
     {
-        if (pawn == null || __result == null) return;
         TryAddTalkOption(__result, pawn, clickPos);
     }
 #else
     [HarmonyPostfix]
     public static void Postfix(
-        List<FloatMenuOption> __result,
         List<Pawn> selectedPawns,
         Vector3 clickPos,
-        ref FloatMenuContext context)
+        FloatMenuContext context,
+        ref List<FloatMenuOption> __result)
     {
-        if (__result == null || selectedPawns == null || selectedPawns.Count != 1) return;
-
-        Pawn pawn = selectedPawns[0];
-        if (pawn == null) return;
-
+        Pawn pawn = (selectedPawns is { Count: 1 }) ? selectedPawns[0] : null;
         TryAddTalkOption(__result, pawn, clickPos);
     }
 #endif
 
-    private static void TryAddTalkOption(List<FloatMenuOption> result, Pawn pawn, Vector3 clickPos)
+    /// <summary>
+    /// Decide whether add talk item to float menu.
+    /// </summary>
+    private static void TryAddTalkOption(List<FloatMenuOption> result, Pawn selectedPawn, Vector3 clickPos)
     {
-        if (!pawn.Spawned) return;
-        if (pawn.Dead) return;
+        if (result == null) return;
+        if (!Settings.Get().AllowCustomConversation) return;
 
-        Map map = pawn.Map;
+        if (selectedPawn == null || selectedPawn.Drafted) return;
+        if (!selectedPawn.Spawned || selectedPawn.Dead) return;
+
+        Map map = selectedPawn.Map;
         IntVec3 clickCell = IntVec3.FromVector3(clickPos);
+
+        if (!TryResolveConversationParticipants(selectedPawn, clickCell, map,
+                out var initiator, out var target))
+        {
+            return;
+        }
+
+        AddTalkOption(result, initiator, target);
+    }
+
+    /// <summary>
+    /// Reverted Logic:
+    /// 1. Choose Pawn on clicked position
+    /// 2. Fallback to search in 3*3 area.
+    /// Retrun initiator / target if success.
+    /// </summary>
+    private static bool TryResolveConversationParticipants(
+        Pawn selectedPawn,
+        IntVec3 clickCell,
+        Map map,
+        out Pawn initiator,
+        out Pawn target)
+    {
+        initiator = null;
+        target = null;
 
         if (clickCell.InBounds(map))
         {
-            Pawn targetOnCell = clickCell.GetFirstPawn(map);
-            if (targetOnCell != null)
+            Pawn hit = clickCell.GetFirstPawn(map);
+            if (hit != null &&
+                TryResolveForHitPawn(selectedPawn, hit, out initiator, out target))
             {
-                // 1.1 Selected Pawn
-                if (targetOnCell == pawn)
-                {
-                    var playerPawn = Cache.GetPlayer();
-                    if (playerPawn != null && playerPawn.IsTalkEligible())
-                    {
-                        AddTalkOption(result, playerPawn, pawn);
-                    }
-                    return;
-                }
-
-                // 1.2 Nearby Pawn
-                if (IsValidConversationTarget(pawn, targetOnCell))
-                {
-                    AddTalkOption(result, pawn, targetOnCell);
-                    return;
-                }
+                return true;
             }
         }
 
-        // ===== 2. Search Nearby Pawn =====
         for (int dx = -ClickRadiusCells; dx <= ClickRadiusCells; dx++)
         {
             for (int dz = -ClickRadiusCells; dz <= ClickRadiusCells; dz++)
@@ -86,52 +99,89 @@ public static class FloatMenuPatch
                 IntVec3 checkCell = new IntVec3(clickCell.x + dx, 0, clickCell.z + dz);
                 if (!checkCell.InBounds(map)) continue;
 
-                Pawn target = checkCell.GetFirstPawn(map);
-                if (target == null) continue;
+                Pawn hit = checkCell.GetFirstPawn(map);
+                if (hit == null) continue;
 
-                // 2.1 fallback
-                if (target == pawn)
+                if (TryResolveForHitPawn(selectedPawn, hit, out initiator, out target))
                 {
-                    var playerPawn = Cache.GetPlayer();
-                    if (playerPawn != null && playerPawn.IsTalkEligible())
-                    {
-                        AddTalkOption(result, playerPawn, pawn);
-                    }
-                    return;
-                }
-
-                // 2.2 nearby pawn
-                if (IsValidConversationTarget(pawn, target))
-                {
-                    AddTalkOption(result, pawn, target);
-                    return;
+                    return true;
                 }
             }
         }
+
+        return false;
     }
 
     /// <summary>
-    /// Check if Pawn can talk 
+    /// Check User->Pawn talk or Pawn->Pawn talk 
     /// </summary>
-    private static bool IsValidConversationTarget(Pawn initiator, Pawn target)
+    private static bool TryResolveForHitPawn(
+        Pawn selectedPawn,
+        Pawn hitPawn,
+        out Pawn initiator,
+        out Pawn target)
+    {
+        initiator = null;
+        target = null;
+
+        if (selectedPawn == null || hitPawn == null) return false;
+
+        // User->Pawn
+        if (hitPawn == selectedPawn)
+        {
+            if (Settings.Get().PlayerDialogueMode == Settings.PlayerDialogueMode.Disabled)
+                return false;
+
+            var playerPawn = Cache.GetPlayer();
+            if (playerPawn == null)
+                return false;
+
+            initiator = playerPawn;  
+            target = selectedPawn;    
+            return true;
+        }
+
+        // Pawn → Pawn
+        if (!IsValidPawnToPawnConversation(selectedPawn, hitPawn))
+            return false;
+
+        initiator = selectedPawn;
+        target = hitPawn;
+        return true;
+    }
+
+    /// <summary>
+    /// Check if Pawn->Pawn talk is legal.
+    /// </summary>
+    private static bool IsValidPawnToPawnConversation(Pawn initiator, Pawn target)
     {
         if (initiator == null || target == null) return false;
+
+        if (!initiator.Spawned || initiator.Dead) return false;
         if (!target.Spawned || target.Dead) return false;
 
+        // Initiator
+        if (!initiator.IsTalkEligible())
+            return false;
+
+        // Target
         if (!(target.RaceProps?.Humanlike ?? false) && !target.HasVocalLink())
             return false;
 
+        // Could add path to reach
         if (!initiator.CanReach(target, PathEndMode.Touch, Danger.None))
-            return false;
-
-        if (!initiator.IsTalkEligible()) // Maybe user want to force pawns to talk? or we can use settings to control
             return false;
 
         return true;
     }
 
+    /// <summary>
+    /// Add item to float menu
+    /// </summary>
     private static void AddTalkOption(List<FloatMenuOption> result, Pawn initiator, Pawn target)
     {
+        if (initiator == null || target == null) return;
+
         result.Add(new FloatMenuOption(
             "RimTalk.FloatMenu.ChatWith".Translate(target.LabelShortCap),
             delegate
