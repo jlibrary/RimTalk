@@ -82,7 +82,7 @@ public static class CommonUtil
     }
 
     // No path for null to occur as it only receives values and calculates. Changed from int? to int
-    private static int GetInGameHour(long absTicks, Vector2 longLat)
+    public static int GetInGameHour(long absTicks, Vector2 longLat)
     {
         return GenDate.HourOfDay(absTicks, longLat.x);
     }
