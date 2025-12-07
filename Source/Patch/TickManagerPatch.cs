@@ -16,6 +16,7 @@ internal static class TickManagerPatch
     private static double TalkInterval => Settings.Get().TalkInterval;
     private static bool _noApiKeyMessageShown;
     private static bool _initialCacheRefresh;
+    private static bool _chatHistoryCleared;
 
     public static void Postfix()
     {
@@ -35,6 +36,21 @@ internal static class TickManagerPatch
         {
             Cache.Refresh();
             _initialCacheRefresh = true;
+        }
+        
+        if (IsNow(1))
+        {
+            // Clear LLM history daily to prevent repetitive/degraded dialogue
+            int currentHour = CommonUtil.GetInGameHour(Find.TickManager.TicksAbs, Find.WorldGrid.LongLatOf(Find.CurrentMap.Tile));
+            if (currentHour == 0 && !_chatHistoryCleared)
+            {
+                TalkHistory.Clear();
+                _chatHistoryCleared = true;
+            }
+            else if (currentHour != 0)
+            {
+                _chatHistoryCleared = false;
+            }
         }
 
         if (!_noApiKeyMessageShown && Settings.Get().GetActiveConfig() == null)
