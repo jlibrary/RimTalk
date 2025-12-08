@@ -4,6 +4,10 @@ namespace RimTalk.Data
 {
     public class ContextSettings : IExposable
     {
+        public bool EnableContextOptimization = false;
+        public int MaxPawnContextCount = 3;
+        public int ConversationHistoryCount = 1;
+        
         // Pawn Info
         public bool IncludeRace = true;
         public bool IncludeNotableGenes = true;
@@ -14,9 +18,9 @@ namespace RimTalk.Data
         public bool IncludeHealth = true;
         public bool IncludeMood = true;
         public bool IncludeThoughts = true;
-        public bool IncludePrisonerSlaveStatus = false;
         public bool IncludeRelations = true;
         public bool IncludeEquipment = true;
+        public bool IncludePrisonerSlaveStatus = false;
 
         // Environment
         public bool IncludeTimeAndDate = true;
@@ -31,6 +35,9 @@ namespace RimTalk.Data
 
         public void ExposeData()
         {
+            Scribe_Values.Look(ref EnableContextOptimization, "EnableContextOptimization", false);
+            Scribe_Values.Look(ref MaxPawnContextCount, "MaxPawnContextCount", 3);
+            Scribe_Values.Look(ref ConversationHistoryCount, "ConversationHistoryCount", 1);
             Scribe_Values.Look(ref IncludeRace, "IncludeRace", true);
             Scribe_Values.Look(ref IncludeNotableGenes, "IncludeNotableGenes", true);
             Scribe_Values.Look(ref IncludeIdeology, "IncludeIdeology", true);
@@ -40,9 +47,9 @@ namespace RimTalk.Data
             Scribe_Values.Look(ref IncludeHealth, "IncludeHealth", true);
             Scribe_Values.Look(ref IncludeMood, "IncludeMood", true);
             Scribe_Values.Look(ref IncludeThoughts, "IncludeThoughts", true);
-            Scribe_Values.Look(ref IncludePrisonerSlaveStatus, "IncludePrisonerSlaveStatus", false);
             Scribe_Values.Look(ref IncludeRelations, "IncludeRelations", true);
             Scribe_Values.Look(ref IncludeEquipment, "IncludeEquipment", true);
+            Scribe_Values.Look(ref IncludePrisonerSlaveStatus, "IncludePrisonerSlaveStatus", false);
 
             Scribe_Values.Look(ref IncludeTimeAndDate, "IncludeTimeAndDate", true);
             Scribe_Values.Look(ref IncludeSeason, "IncludeSeason", true);

@@ -167,9 +167,28 @@
     <RimTalk_Settings_Api_BaseUrlInfo>如果您只提供基础 URL（例如 http://localhost:1234），将自动添加 /v1/chat/completions。如果您输入完整路径，将完全按照输入使用。</RimTalk_Settings_Api_BaseUrlInfo>
 
     <!-- Settings_Context.cs -->
+    <RimTalk.Settings.ContextFilter>上下文过滤器</RimTalk.Settings.ContextFilter>
     <RimTalk.Settings.ContextFilterDescription>选择应发送哪些关于殖民者及其环境的详细信息作为对话生成的上下文。</RimTalk.Settings.ContextFilterDescription>
     <RimTalk.Settings.ContextFilterTip>提示：信息并非越多越好。过多的信息可能会让 AI 分心或纠结于不相关的细节。</RimTalk.Settings.ContextFilterTip>
-    <RimTalk.Settings.ContextFilter>上下文过滤器</RimTalk.Settings.ContextFilter>
+
+    <RimTalk.Settings.ContextPresets>上下文预设</RimTalk.Settings.ContextPresets>
+    <RimTalk.Settings.Preset.Essential>精简</RimTalk.Settings.Preset.Essential>
+    <RimTalk.Settings.Preset.Essential.Desc>为本地 LLM 优化 - 最少的 Token 使用</RimTalk.Settings.Preset.Essential.Desc>
+    <RimTalk.Settings.Preset.Standard>标准</RimTalk.Settings.Preset.Standard>
+    <RimTalk.Settings.Preset.Standard.Desc>适用于云端 LLM 的平衡模式 - 中等细节</RimTalk.Settings.Preset.Standard.Desc>
+    <RimTalk.Settings.Preset.Comprehensive>全面</RimTalk.Settings.Preset.Comprehensive>
+    <RimTalk.Settings.Preset.Comprehensive.Desc>为高性能 LLM 提供的最大细节 - 高 Token 使用</RimTalk.Settings.Preset.Comprehensive.Desc>
+    <RimTalk.Settings.Preset.Custom>自定义</RimTalk.Settings.Preset.Custom>
+    <RimTalk.Settings.Preset.Custom.Desc>用户自定义配置</RimTalk.Settings.Preset.Custom.Desc>
+
+    <RimTalk.Settings.ContextOptions>上下文选项</RimTalk.Settings.ContextOptions>
+    <RimTalk.Settings.EnableContextOptimization>启用上下文优化</RimTalk.Settings.EnableContextOptimization>
+    <RimTalk.Settings.EnableContextOptimization.Tooltip>优化上下文以减少 Token 使用，同时保留重要信息。\n注意：这可能会降低生成对话的质量。</RimTalk.Settings.EnableContextOptimization.Tooltip>
+    <RimTalk.Settings.ConversationHistoryCount>包含的历史对话会话数量</RimTalk.Settings.ConversationHistoryCount>
+    <RimTalk.Settings.ConversationHistoryCount.Tooltip>每个会话包含多轮对话，可能会显著增加 Token 数量</RimTalk.Settings.ConversationHistoryCount.Tooltip>
+    <RimTalk.Settings.MaxPawnContextCount>包含的最大殖民者数量</RimTalk.Settings.MaxPawnContextCount>
+    <RimTalk.Settings.MaxPawnContextCount.Tooltip>控制可参与对话的殖民者最大数量</RimTalk.Settings.MaxPawnContextCount.Tooltip>
+
     <RimTalk.Settings.PawnInfo>殖民者信息</RimTalk.Settings.PawnInfo>
     <RimTalk.Settings.IncludeRace>种族</RimTalk.Settings.IncludeRace>
     <RimTalk.Settings.IncludeNotableGenes>显性基因</RimTalk.Settings.IncludeNotableGenes>

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Text;
 using RimTalk.Util;
 using RimWorld;
@@ -17,7 +18,7 @@ public static class RelationsService
 
         StringBuilder relationsSb = new StringBuilder();
 
-        foreach (Pawn otherPawn in PawnSelector.GetAllNearByPawns(pawn))
+        foreach (Pawn otherPawn in PawnSelector.GetAllNearByPawns(pawn).Take(Settings.Get().Context.MaxPawnContextCount - 1))
         {
             if (otherPawn == pawn || (!otherPawn.RaceProps.Humanlike && !otherPawn.HasVocalLink()) || otherPawn.Dead ||
                 otherPawn.relations is { hidePawnRelations: true }) continue;

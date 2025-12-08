@@ -167,9 +167,28 @@
     <RimTalk_Settings_Api_BaseUrlInfo>If you provide only the base (e.g., http://localhost:1234), /v1/chat/completions will be added automatically. If you enter the full path, it will be used exactly as entered.</RimTalk_Settings_Api_BaseUrlInfo>
 
     <!-- Settings_Context.cs -->
-    <RimTalk.Settings.ContextFilterDescription>Select what details about pawns and their environment should be sent as context for dialogue generation.</RimTalk.Settings.ContextFilterDescription>
-    <RimTalk.Settings.ContextFilterTip>Tip: More isn't always better. Too much information can make the AI get distracted or stuck on irrelevant details.</RimTalk.Settings.ContextFilterTip>   
     <RimTalk.Settings.ContextFilter>Context Filter</RimTalk.Settings.ContextFilter>
+    <RimTalk.Settings.ContextFilterDescription>Select what details about pawns and their environment should be sent as context for dialogue generation.</RimTalk.Settings.ContextFilterDescription>
+    <RimTalk.Settings.ContextFilterTip>Tip: More isn't always better. Too much information can make the AI get distracted or stuck on irrelevant details.</RimTalk.Settings.ContextFilterTip>
+
+    <RimTalk.Settings.ContextPresets>Context Presets</RimTalk.Settings.ContextPresets>
+    <RimTalk.Settings.Preset.Essential>Essential</RimTalk.Settings.Preset.Essential>
+    <RimTalk.Settings.Preset.Essential.Desc>Optimized for local LLMs - minimal token usage</RimTalk.Settings.Preset.Essential.Desc>
+    <RimTalk.Settings.Preset.Standard>Standard</RimTalk.Settings.Preset.Standard>
+    <RimTalk.Settings.Preset.Standard.Desc>Balanced for cloud LLMs - moderate detail</RimTalk.Settings.Preset.Standard.Desc>
+    <RimTalk.Settings.Preset.Comprehensive>Comprehensive</RimTalk.Settings.Preset.Comprehensive>
+    <RimTalk.Settings.Preset.Comprehensive.Desc>Maximum detail for capable LLMs - high token usage</RimTalk.Settings.Preset.Comprehensive.Desc>
+    <RimTalk.Settings.Preset.Custom>Custom</RimTalk.Settings.Preset.Custom>
+    <RimTalk.Settings.Preset.Custom.Desc>User-defined configuration</RimTalk.Settings.Preset.Custom.Desc>
+    
+    <RimTalk.Settings.ContextOptions>Context Options</RimTalk.Settings.ContextOptions>
+    <RimTalk.Settings.EnableContextOptimization>Enable Context Optimization</RimTalk.Settings.EnableContextOptimization>
+    <RimTalk.Settings.EnableContextOptimization.Tooltip>Optimize context to minimize token usage while preserving essential information.\nNote: This may reduce the quality of generated dialogue.</RimTalk.Settings.EnableContextOptimization.Tooltip>
+    <RimTalk.Settings.ConversationHistoryCount>Historical Conversation Sessions to Include</RimTalk.Settings.ConversationHistoryCount>
+    <RimTalk.Settings.ConversationHistoryCount.Tooltip>Each session contains multiple dialogue turns, which can significantly increase token count</RimTalk.Settings.ConversationHistoryCount.Tooltip>
+    <RimTalk.Settings.MaxPawnContextCount>Maximum Number of Pawns to Include</RimTalk.Settings.MaxPawnContextCount>
+    <RimTalk.Settings.MaxPawnContextCount.Tooltip>Controls the maximum number of pawns that can participate in a conversation</RimTalk.Settings.MaxPawnContextCount.Tooltip>
+    
     <RimTalk.Settings.PawnInfo>Pawn Info</RimTalk.Settings.PawnInfo>
     <RimTalk.Settings.IncludeRace>Race</RimTalk.Settings.IncludeRace>
     <RimTalk.Settings.IncludeNotableGenes>Notable Genes</RimTalk.Settings.IncludeNotableGenes>

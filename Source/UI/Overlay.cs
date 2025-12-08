@@ -46,6 +46,7 @@ public class Overlay : MapComponent
     private const float DropdownWidth = 200f;
     private const float DropdownHeight = 220f;
     private const int MaxMessagesInLog = 10;
+    private const float TextPadding = 5f; 
 
     public Overlay(Map map) : base(map)
     {
@@ -94,7 +95,7 @@ public class Overlay : MapComponent
                 string formattedName = $"[{pawnName}]";
                 
                 float nameWidth = Text.CalcSize(formattedName).x;
-                float availableDialogueWidth = contentWidth - nameWidth;
+                float availableDialogueWidth = contentWidth - nameWidth - TextPadding;
                 
                 if (availableDialogueWidth < 0)
                 {
@@ -104,8 +105,7 @@ public class Overlay : MapComponent
                 const float safetyMargin = 3f;
                 float dialogueWidthForCalc = Mathf.Max(0f, availableDialogueWidth - safetyMargin);
                 
-                string dialogueForCalc = dialogue ?? string.Empty;
-                float dialogueHeight = Text.CalcHeight(dialogueForCalc, dialogueWidthForCalc);
+                float dialogueHeight = Text.CalcHeight(dialogue, dialogueWidthForCalc);
                 float nameHeight = Text.CalcHeight(formattedName, nameWidth);
                 float lineHeight = Mathf.Max(dialogueHeight, nameHeight);
                 
@@ -405,12 +405,11 @@ public class Overlay : MapComponent
 
                 var rowRect = new Rect(contentRect.x, currentY, contentRect.width, message.LineHeight);
                 var nameRect = new Rect(rowRect.x, rowRect.y, message.NameWidth, rowRect.height);
-                float dialogueWidth = Mathf.Max(0f, rowRect.width - message.NameWidth);
-                var dialogueRect = new Rect(nameRect.xMax, rowRect.y, dialogueWidth, rowRect.height);
+                float totalDialogueSpace = Mathf.Max(0f, rowRect.width - message.NameWidth);
+                var dialogueRect = new Rect(nameRect.xMax + TextPadding, rowRect.y, totalDialogueSpace - TextPadding, rowRect.height);
 
                 UIUtil.DrawClickablePawnName(nameRect, message.PawnName, message.PawnInstance);
-                string dialogueText = message.Dialogue ?? string.Empty;
-                Widgets.Label(dialogueRect, dialogueText);
+                Widgets.Label(dialogueRect, message.Dialogue);
             }
         }
         finally

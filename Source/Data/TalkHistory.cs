@@ -8,12 +8,10 @@ namespace RimTalk.Data;
 
 public static class TalkHistory
 {
-    private const int MaxMessages = 6;
     private static readonly ConcurrentDictionary<int, List<(Role role, string message)>> MessageHistory = new();
     private static readonly ConcurrentDictionary<Guid, int> SpokenTickCache = new() { [Guid.Empty] = 0 };
     private static readonly ConcurrentBag<Guid> IgnoredCache = [];
-
-        
+    
     // Add a new talk with the current game tick
     public static void AddSpoken(Guid id)
     {
@@ -71,7 +69,8 @@ public static class TalkHistory
         }
 
         // Then, enforce the maximum message limit by removing the oldest messages
-        while (messages.Count > MaxMessages)
+        int maxMessages = Settings.Get().Context.ConversationHistoryCount;
+        while (messages.Count > maxMessages * 2)
         {
             messages.RemoveAt(0);
         }

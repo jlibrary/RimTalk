@@ -26,14 +26,15 @@ public class ApiLog(string name, string prompt, string response, Payload payload
     {
         var blocks = new List<string>();
         if (string.IsNullOrEmpty(context)) return blocks;
-        
-        // Regex to match everything from [Person ... START] to [Person ... END], including newlines
-        string pattern = @"\[Person\s+\d+\s+START\](.*?)\[Person\s+\d+\s+END\]";
+    
+        string pattern = @"\[P\d+\]\s*(.*?)(?=\[P\d+\]|$)";
         var matches = Regex.Matches(context, pattern, RegexOptions.Singleline);
 
         foreach (Match match in matches)
         {
-            blocks.Add(match.Groups[1].Value.Trim());
+            var block = match.Groups[1].Value.Trim();
+            if (!string.IsNullOrEmpty(block))
+                blocks.Add(block);
         }
 
         return blocks;

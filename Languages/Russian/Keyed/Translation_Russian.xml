@@ -167,9 +167,28 @@
     <RimTalk_Settings_Api_BaseUrlInfo>Если вы укажете только базу (например, http://localhost:1234), /v1/chat/completions будет добавлено автоматически. Если вы введете полный путь, он будет использован в точности как введен.</RimTalk_Settings_Api_BaseUrlInfo>
 
     <!-- Settings_Context.cs -->
+    <RimTalk.Settings.ContextFilter>Фильтр контекста</RimTalk.Settings.ContextFilter>
     <RimTalk.Settings.ContextFilterDescription>Выберите, какие сведения о пешках и их окружении должны отправляться в качестве контекста для генерации диалогов.</RimTalk.Settings.ContextFilterDescription>
     <RimTalk.Settings.ContextFilterTip>Совет: больше не всегда лучше. Слишком много информации может отвлечь ИИ или зациклить его на несущественных деталях.</RimTalk.Settings.ContextFilterTip>
-    <RimTalk.Settings.ContextFilter>Фильтр контекста</RimTalk.Settings.ContextFilter>
+
+    <RimTalk.Settings.ContextPresets>Предустановки контекста</RimTalk.Settings.ContextPresets>
+    <RimTalk.Settings.Preset.Essential>Минимальный</RimTalk.Settings.Preset.Essential>
+    <RimTalk.Settings.Preset.Essential.Desc>Оптимизировано для локальных LLM - минимальное использование токенов</RimTalk.Settings.Preset.Essential.Desc>
+    <RimTalk.Settings.Preset.Standard>Стандартный</RimTalk.Settings.Preset.Standard>
+    <RimTalk.Settings.Preset.Standard.Desc>Сбалансировано для облачных LLM - средний уровень детализации</RimTalk.Settings.Preset.Standard.Desc>
+    <RimTalk.Settings.Preset.Comprehensive>Подробный</RimTalk.Settings.Preset.Comprehensive>
+    <RimTalk.Settings.Preset.Comprehensive.Desc>Максимальная детализация для мощных LLM - высокое потребление токенов</RimTalk.Settings.Preset.Comprehensive.Desc>
+    <RimTalk.Settings.Preset.Custom>Пользовательский</RimTalk.Settings.Preset.Custom>
+    <RimTalk.Settings.Preset.Custom.Desc>Настройки, определённые пользователем</RimTalk.Settings.Preset.Custom.Desc>
+
+    <RimTalk.Settings.ContextOptions>Параметры контекста</RimTalk.Settings.ContextOptions>
+    <RimTalk.Settings.EnableContextOptimization>Включить оптимизацию контекста</RimTalk.Settings.EnableContextOptimization>
+    <RimTalk.Settings.EnableContextOptimization.Tooltip>Оптимизирует контекст для уменьшения числа токенов, сохраняя при этом ключевую информацию.\nПримечание: это может снизить качество генерируемого диалога.</RimTalk.Settings.EnableContextOptimization.Tooltip>
+    <RimTalk.Settings.ConversationHistoryCount>Количество предыдущих сессий диалога для включения</RimTalk.Settings.ConversationHistoryCount>
+    <RimTalk.Settings.ConversationHistoryCount.Tooltip>Каждая сессия содержит несколько реплик, что может значительно увеличить число токенов</RimTalk.Settings.ConversationHistoryCount.Tooltip>
+    <RimTalk.Settings.MaxPawnContextCount>Максимальное количество пешек для включения</RimTalk.Settings.MaxPawnContextCount>
+    <RimTalk.Settings.MaxPawnContextCount.Tooltip>Определяет максимальное количество пешек, которые могут участвовать в разговоре</RimTalk.Settings.MaxPawnContextCount.Tooltip>
+
     <RimTalk.Settings.PawnInfo>Информация о пешке</RimTalk.Settings.PawnInfo>
     <RimTalk.Settings.IncludeRace>Расу</RimTalk.Settings.IncludeRace>
     <RimTalk.Settings.IncludeNotableGenes>Заметные гены</RimTalk.Settings.IncludeNotableGenes>
