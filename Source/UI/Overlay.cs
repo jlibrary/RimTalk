@@ -104,8 +104,8 @@ public class Overlay : MapComponent
                 const float safetyMargin = 3f;
                 float dialogueWidthForCalc = Mathf.Max(0f, availableDialogueWidth - safetyMargin);
                 
-                string dialogueWithSpaces = "  " + dialogue;
-                float dialogueHeight = Text.CalcHeight(dialogueWithSpaces, dialogueWidthForCalc);
+                string dialogueForCalc = dialogue ?? string.Empty;
+                float dialogueHeight = Text.CalcHeight(dialogueForCalc, dialogueWidthForCalc);
                 float nameHeight = Text.CalcHeight(formattedName, nameWidth);
                 float lineHeight = Mathf.Max(dialogueHeight, nameHeight);
                 
@@ -409,7 +409,8 @@ public class Overlay : MapComponent
                 var dialogueRect = new Rect(nameRect.xMax, rowRect.y, dialogueWidth, rowRect.height);
 
                 UIUtil.DrawClickablePawnName(nameRect, message.PawnName, message.PawnInstance);
-                Widgets.Label(dialogueRect, "  " + message.Dialogue);
+                string dialogueText = message.Dialogue ?? string.Empty;
+                Widgets.Label(dialogueRect, dialogueText);
             }
         }
         finally
