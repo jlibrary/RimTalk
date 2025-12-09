@@ -19,6 +19,7 @@ namespace RimTalk
     {
         private ContextPreset _currentPreset = ContextPreset.Custom;
         private readonly ContextSettings _changeBuffer = new();
+        private bool _presetInitialized; 
 
         private static readonly Dictionary<ContextPreset, ContextSettings> PresetDefinitions = new()
         {
@@ -112,6 +113,12 @@ namespace RimTalk
         {
             RimTalkSettings settings = Get();
             ContextSettings context = settings.Context;
+            
+            if (!_presetInitialized)
+            {
+                DetermineCurrentPreset(context);
+                _presetInitialized = true;
+            }
 
             var contextFilterDesc = "RimTalk.Settings.ContextFilterDescription".Translate();
             Widgets.Label(listing.GetRect(Text.CalcHeight(contextFilterDesc, listing.ColumnWidth)), contextFilterDesc);
@@ -325,6 +332,19 @@ namespace RimTalk
                     options.Add(new FloatMenuOption(count.ToString(), () => onSelect(count)));
                 }
                 Find.WindowStack.Add(new FloatMenu(options));
+            }
+        }
+        
+        private void DetermineCurrentPreset(ContextSettings current)
+        {
+            _currentPreset = ContextPreset.Custom;
+            foreach (var entry in PresetDefinitions)
+            {
+                if (AreSettingsEqual(current, entry.Value))
+                {
+                    _currentPreset = entry.Key;
+                    break;
+                }
             }
         }
     }
