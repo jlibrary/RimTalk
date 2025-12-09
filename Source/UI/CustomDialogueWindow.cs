@@ -31,9 +31,19 @@ public class CustomDialogueWindow : Window
     {
         Text.Font = GameFont.Small;
         
-        string labelText = _initiator.IsPlayer()
-            ? "RimTalk.FloatMenu.WhatToSayToSelf".Translate(_recipient.LabelShortCap)
-            : "RimTalk.FloatMenu.WhatToSayToOther".Translate(_initiator.LabelShortCap, _recipient.LabelShortCap);
+        string labelText;
+        if (_isBroadcast)
+        {
+            labelText = _initiator.IsPlayer()
+                ? "RimTalk.FloatMenu.BroadcastAsPlayerTooltip".Translate(_recipient.LabelShortCap)
+                : "RimTalk.FloatMenu.BroadcastAsPawnTooltip".Translate(_initiator.LabelShortCap, _recipient.LabelShortCap);
+        }
+        else
+        {
+            labelText = _initiator.IsPlayer()
+                ? "RimTalk.FloatMenu.WhatToSayToSelf".Translate(_recipient.LabelShortCap)
+                : "RimTalk.FloatMenu.WhatToSayToOther".Translate(_initiator.LabelShortCap, _recipient.LabelShortCap);
+        }
         
         Widgets.Label(new Rect(0f, 0f, inRect.width, 25f), labelText);
 
@@ -86,7 +96,7 @@ public class CustomDialogueWindow : Window
         {
             if (_initiator.IsPlayer() || CustomDialogueService.CanTalk(_initiator, _recipient))
             {
-                CustomDialogueService.ExecuteBroadcast(_initiator, dialogue);
+                CustomDialogueService.ExecuteBroadcast(_initiator, _recipient, dialogue);
             }
             else
             {

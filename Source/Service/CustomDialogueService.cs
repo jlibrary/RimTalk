@@ -11,7 +11,6 @@ namespace RimTalk.Service;
 public static class CustomDialogueService
 {
     private const float TalkDistance = 20f;
-    private const int MaxBroadcastTargets = 6;
     public static readonly Dictionary<Pawn, PendingDialogue> PendingDialogues = new();
 
     public static void Tick()
@@ -31,7 +30,7 @@ public static class CustomDialogueService
 
             if (dialogue.IsBroadcast)
             {
-                ExecuteBroadcast(initiator, dialogue.Message);
+                ExecuteBroadcast(initiator, dialogue.Recipient, dialogue.Message);
             }
             else
             {
@@ -77,7 +76,7 @@ public static class CustomDialogueService
         if (initiatorState == null || !initiatorState.CanDisplayTalk())
             return;
 
-        var validRecipients = new List<PawnState>();
+        var recipientStates = new List<PawnState>();
 
         foreach (var pawn in recipients)
         {
@@ -86,12 +85,14 @@ public static class CustomDialogueService
             PawnState recipientState = Cache.Get(pawn);
             if (recipientState != null && recipientState.CanDisplayTalk())
             {
-                validRecipients.Add(recipientState);
+                recipientStates.Add(recipientState);
             }
         }
 
-        if (validRecipients.Count == 0)
+        if (recipientStates.Count == 0)
             return;
+
+        bool isBroadcast = recipientStates.Count > 1;
 
         ApiLog apiLog;
         if (initiator.IsPlayer())
@@ -103,24 +104,27 @@ public static class CustomDialogueService
         else
         {
             apiLog = ApiHistory.AddUserHistory(initiator.LabelShort, message);
-            TalkResponse talkResponse = new(TalkType.User, initiator.LabelShort, message)
-            {
-                Id = apiLog.Id
-            };
-            initiatorState.TalkResponses.Insert(0, talkResponse);
         }
-
-        foreach (var recipientState in validRecipients)
+        foreach (var recipientState in recipientStates)
         {
             recipientState.AddTalkRequest(message, initiator, TalkType.User);
         }
+        if (!initiator.IsPlayer())
+        {
+            TalkResponse selfResponse = new(TalkType.User, initiator.LabelShort, message)
+            {
+                Id = apiLog.Id
+            };
+            initiatorState.TalkResponses.Insert(0, selfResponse);
+        }
     }
 
-    public static void ExecuteBroadcast(Pawn initiator, string message)
+    public static void ExecuteBroadcast(Pawn initiator, Pawn origin, string message)
     {
         if (initiator == null || initiator.Destroyed) return;
+        if (origin == null || origin.Destroyed) origin = initiator;
 
-        var audience = PawnSelector.GetBroadcastTargets(initiator, MaxBroadcastTargets);
+        var audience = PawnSelector.GetBroadcastTargets(origin,  Settings.Get().Context.MaxPawnContextCount);
         if (audience.NullOrEmpty())
             return;
 
