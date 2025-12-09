@@ -170,9 +170,28 @@
     <RimTalk_Settings_Api_BaseUrlInfo>ベースURLのみ（例：http://localhost:1234）を指定した場合、/v1/chat/completionsが自動的に追加されます。完全なパスを入力した場合は、入力された通りに使用されます。</RimTalk_Settings_Api_BaseUrlInfo>
 
     <!-- Settings_Context.cs -->
+    <RimTalk.Settings.ContextFilter>コンテキストフィルター</RimTalk.Settings.ContextFilter>
     <RimTalk.Settings.ContextFilterDescription>対話生成のコンテキストとして送信する、ポーンとその環境に関する詳細を選択します。</RimTalk.Settings.ContextFilterDescription>
     <RimTalk.Settings.ContextFilterTip>ヒント: 多いほど良いとは限りません。情報が多すぎると、AI が無関係な詳細に気を取られたり、行き詰まったりする可能性があります。</RimTalk.Settings.ContextFilterTip>
-    <RimTalk.Settings.ContextFilter>コンテキストフィルター</RimTalk.Settings.ContextFilter>
+
+    <RimTalk.Settings.ContextPresets>コンテキストプリセット</RimTalk.Settings.ContextPresets>
+    <RimTalk.Settings.Preset.Essential>エッセンシャル</RimTalk.Settings.Preset.Essential>
+    <RimTalk.Settings.Preset.Essential.Desc>ローカル LLM 向けに最適化 - トークン使用量を最小限に</RimTalk.Settings.Preset.Essential.Desc>
+    <RimTalk.Settings.Preset.Standard>スタンダード</RimTalk.Settings.Preset.Standard>
+    <RimTalk.Settings.Preset.Standard.Desc>クラウド LLM 向けのバランス型 - 中程度の詳細</RimTalk.Settings.Preset.Standard.Desc>
+    <RimTalk.Settings.Preset.Comprehensive>コンプリヘンシブ</RimTalk.Settings.Preset.Comprehensive>
+    <RimTalk.Settings.Preset.Comprehensive.Desc>高性能 LLM のための最大詳細 - トークン使用量が多い</RimTalk.Settings.Preset.Comprehensive.Desc>
+    <RimTalk.Settings.Preset.Custom>カスタム</RimTalk.Settings.Preset.Custom>
+    <RimTalk.Settings.Preset.Custom.Desc>ユーザー定義の設定</RimTalk.Settings.Preset.Custom.Desc>
+
+    <RimTalk.Settings.ContextOptions>コンテキスト設定</RimTalk.Settings.ContextOptions>
+    <RimTalk.Settings.EnableContextOptimization>コンテキスト最適化を有効化</RimTalk.Settings.EnableContextOptimization>
+    <RimTalk.Settings.EnableContextOptimization.Tooltip>重要な情報を保持しつつ、トークン使用量を減らすためにコンテキストを最適化します。\n注意：生成される会話の品質が低下する場合があります。</RimTalk.Settings.EnableContextOptimization.Tooltip>
+    <RimTalk.Settings.ConversationHistoryCount>含める会話履歴セッション数</RimTalk.Settings.ConversationHistoryCount>
+    <RimTalk.Settings.ConversationHistoryCount.Tooltip>各セッションには複数の対話ターンが含まれ、トークン数が大幅に増える可能性があります</RimTalk.Settings.ConversationHistoryCount.Tooltip>
+    <RimTalk.Settings.MaxPawnContextCount>含める最大ポーン数</RimTalk.Settings.MaxPawnContextCount>
+    <RimTalk.Settings.MaxPawnContextCount.Tooltip>会話に参加できるポーンの最大数を制御します</RimTalk.Settings.MaxPawnContextCount.Tooltip>
+
     <RimTalk.Settings.PawnInfo>ポーン情報</RimTalk.Settings.PawnInfo>
     <RimTalk.Settings.IncludeRace>種族</RimTalk.Settings.IncludeRace>
     <RimTalk.Settings.IncludeNotableGenes>注目すべき遺伝子</RimTalk.Settings.IncludeNotableGenes>

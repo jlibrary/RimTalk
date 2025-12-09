@@ -18,9 +18,6 @@ public static class Constant
          Rules:
          Preserve original names (no translation)
          Keep dialogue short ({Lang} only, 1-2 sentences)
-         Show concern for sick/mental issues
-         Never mention another character's personal name unless they share the same role
-         Do not talk to sleeping person
 
          Roles:
          Prisoner: wary, hesitant; mention confinement; plead or bargain

@@ -67,7 +67,7 @@ public static class TalkService
                 return pawnState.CanDisplayTalk() && pawnState.TalkResponses.Empty();
             }))
             .Distinct()
-            .Take(3)
+            .Take(settings.Context.MaxPawnContextCount)
             .ToList();
         
         if (pawns.Count == 1) talkRequest.IsMonologue = true;
@@ -146,13 +146,10 @@ public static class TalkService
     private static void AddResponsesToHistory(List<Pawn> pawns, List<TalkResponse> responses, string prompt)
     {
         if (!responses.Any()) return;
-
-        string cleanedPrompt = prompt.Replace(Constant.Prompt, "");
         string serializedResponses = JsonUtil.SerializeToJson(responses);
-
         foreach (var pawn in pawns)
         {
-            TalkHistory.AddMessageHistory(pawn, cleanedPrompt, serializedResponses);
+            TalkHistory.AddMessageHistory(pawn, prompt, serializedResponses);
         }
     }
 

@@ -1,41 +1,243 @@
+using System;
+using System.Collections.Generic;
+using System.Reflection;
 using RimTalk.Data;
 using UnityEngine;
 using Verse;
 
 namespace RimTalk
 {
+    public enum ContextPreset
+    {
+        Essential,
+        Standard,
+        Comprehensive,
+        Custom
+    }
+
     public partial class Settings
     {
-        private void DrawContextFilterSettings(Listing_Standard listingStandard)
+        private ContextPreset _currentPreset = ContextPreset.Custom;
+        private readonly ContextSettings _changeBuffer = new();
+        private bool _presetInitialized; 
+
+        private static readonly Dictionary<ContextPreset, ContextSettings> PresetDefinitions = new()
+        {
+            { ContextPreset.Essential, new ContextSettings {
+                EnableContextOptimization = true,
+                MaxPawnContextCount = 2,
+                ConversationHistoryCount = 1,
+                
+                IncludeRace = true,
+                IncludeNotableGenes = false,
+                IncludeIdeology = false,
+                IncludeBackstory = true,
+                IncludeTraits = true,
+                IncludeSkills = false,
+                IncludeHealth = true,
+                IncludeMood = true,
+                IncludeThoughts = true,
+                IncludeRelations = true,
+                IncludeEquipment = false,
+                IncludePrisonerSlaveStatus = false,
+                
+                IncludeTimeAndDate = false,
+                IncludeSeason = false,
+                IncludeWeather = true,
+                IncludeLocationAndTemperature = false,
+                IncludeTerrain = false,
+                IncludeBeauty = false,
+                IncludeCleanliness = false,
+                IncludeSurroundings = false,
+                IncludeWealth = false
+            }},
+            { ContextPreset.Standard, new ContextSettings {
+                EnableContextOptimization = false,
+                MaxPawnContextCount = 3,
+                ConversationHistoryCount = 1,
+                
+                IncludeRace = true,
+                IncludeNotableGenes = true,
+                IncludeIdeology = true,
+                IncludeBackstory = true,
+                IncludeTraits = true,
+                IncludeSkills = true,
+                IncludeHealth = true,
+                IncludeMood = true,
+                IncludeThoughts = true,
+                IncludeRelations = true,
+                IncludeEquipment = true,
+                IncludePrisonerSlaveStatus = false,
+                
+                IncludeTimeAndDate = true,
+                IncludeSeason = true,
+                IncludeWeather = true,
+                IncludeLocationAndTemperature = true,
+                IncludeTerrain = false,
+                IncludeBeauty = false,
+                IncludeCleanliness = false,
+                IncludeSurroundings = false,
+                IncludeWealth = false
+            }},
+            { ContextPreset.Comprehensive, new ContextSettings {
+                EnableContextOptimization = false,
+                MaxPawnContextCount = 3,
+                ConversationHistoryCount = 3,
+                
+                IncludeRace = true,
+                IncludeNotableGenes = true,
+                IncludeIdeology = true,
+                IncludeBackstory = true,
+                IncludeTraits = true,
+                IncludeSkills = true,
+                IncludeHealth = true,
+                IncludeMood = true,
+                IncludeThoughts = true,
+                IncludeRelations = true,
+                IncludeEquipment = true,
+                IncludePrisonerSlaveStatus = true,
+                
+                IncludeTimeAndDate = true,
+                IncludeSeason = true,
+                IncludeWeather = true,
+                IncludeLocationAndTemperature = true,
+                IncludeTerrain = true,
+                IncludeBeauty = true,
+                IncludeCleanliness = true,
+                IncludeSurroundings = true,
+                IncludeWealth = true
+            }}
+        };
+
+        private void DrawContextFilterSettings(Listing_Standard listing)
         {
             RimTalkSettings settings = Get();
-            var context = settings.Context;
+            ContextSettings context = settings.Context;
             
+            if (!_presetInitialized)
+            {
+                DetermineCurrentPreset(context);
+                _presetInitialized = true;
+            }
+
             var contextFilterDesc = "RimTalk.Settings.ContextFilterDescription".Translate();
-            var contextFilterDescRect = listingStandard.GetRect(Text.CalcHeight(contextFilterDesc, listingStandard.ColumnWidth));
-            Widgets.Label(contextFilterDescRect, contextFilterDesc);
-            listingStandard.Gap(6f);
+            Widgets.Label(listing.GetRect(Text.CalcHeight(contextFilterDesc, listing.ColumnWidth)), contextFilterDesc);
+            listing.Gap(6f);
 
             Text.Font = GameFont.Tiny;
             GUI.color = Color.cyan;
-            Rect contextFilterTipRect = listingStandard.GetRect(Text.LineHeight);
-            Widgets.Label(contextFilterTipRect, "RimTalk.Settings.ContextFilterTip".Translate());
+            Widgets.Label(listing.GetRect(Text.LineHeight), "RimTalk.Settings.ContextFilterTip".Translate());
             GUI.color = Color.white;
             Text.Font = GameFont.Small;
-            listingStandard.Gap(24f);
+            listing.Gap(12f);
 
-            // Define column layout
+            // Preset Selectors
+            DrawPresetSelector(listing, context);
+
+            CopyFields(context, _changeBuffer);
+
+            // General Options
+            Text.Font = GameFont.Small;
+            GUI.color = new Color(1f, 0.85f, 0.5f);
+            listing.Label("RimTalk.Settings.ContextOptions".Translate());
+            GUI.color = Color.white;
+            listing.Gap(6f);
+
+            listing.CheckboxLabeled("RimTalk.Settings.EnableContextOptimization".Translate(),
+                ref context.EnableContextOptimization,
+                "RimTalk.Settings.EnableContextOptimization.Tooltip".Translate());
+            listing.Gap(6f);
+
+            DrawDropdown(listing, "RimTalk.Settings.MaxPawnContextCount", context.MaxPawnContextCount, 
+                val => { context.MaxPawnContextCount = val; _currentPreset = ContextPreset.Custom; }, 2, 3);
+            listing.Gap(6f);
+
+            DrawDropdown(listing, "RimTalk.Settings.ConversationHistoryCount", context.ConversationHistoryCount, 
+                val => { context.ConversationHistoryCount = val; _currentPreset = ContextPreset.Custom; }, 0, 3);
+            listing.Gap();
+
+            DrawColumns(listing, context);
+
+            if (_currentPreset != ContextPreset.Custom && !AreSettingsEqual(_changeBuffer, context))
+                _currentPreset = ContextPreset.Custom;
+
+            listing.Gap(24f);
+
+            // Reset
+            if (listing.ButtonText("RimTalk.Settings.ResetToDefault".Translate()))
+            {
+                settings.Context = new ContextSettings();
+                ApplyPreset(settings.Context, ContextPreset.Standard);
+            }
+        }
+
+        private void DrawPresetSelector(Listing_Standard listing, ContextSettings context)
+        {
+            GUI.color = new Color(1f, 0.85f, 0.5f);
+            Widgets.Label(listing.GetRect(Text.LineHeight), "RimTalk.Settings.ContextPresets".Translate());
+            GUI.color = Color.white;
+            listing.Gap(8f);
+
+            const float boxGap = 12f;
+            const float boxHeight = 70f;
+            float totalWidth = listing.ColumnWidth;
+            float boxWidth = (totalWidth - boxGap * 3f) / 4f;
+            Rect rowRect = listing.GetRect(boxHeight);
+
+            int i = 0;
+            foreach (ContextPreset preset in Enum.GetValues(typeof(ContextPreset)))
+            {
+                Rect boxRect = new Rect(rowRect.x + (boxWidth + boxGap) * i, rowRect.y, boxWidth, boxHeight);
+                DrawSinglePresetBox(boxRect, preset, context);
+                i++;
+            }
+            listing.Gap();
+        }
+
+        private void DrawSinglePresetBox(Rect rect, ContextPreset preset, ContextSettings context)
+        {
+            bool isSelected = _currentPreset == preset;
+            
+            Widgets.DrawBoxSolid(rect, isSelected ? new Color(0.2f, 0.4f, 0.6f, 0.8f) : new Color(0.2f, 0.2f, 0.2f, 0.5f));
+            GUI.color = isSelected ? new Color(0.4f, 0.7f, 1f, 1f) : new Color(0.3f, 0.3f, 0.3f, 0.5f);
+            Widgets.DrawBox(rect, 2);
+            GUI.color = Color.white;
+
+            if (Mouse.IsOver(rect)) Widgets.DrawHighlight(rect);
+
+            if (Widgets.ButtonInvisible(rect))
+            {
+                _currentPreset = preset;
+                if (preset != ContextPreset.Custom) ApplyPreset(context, preset);
+            }
+
+            Rect content = rect.ContractedBy(8f);
+            Text.Font = GameFont.Small;
+            Text.Anchor = TextAnchor.UpperCenter;
+            
+            GUI.color = isSelected ? Color.white : new Color(0.8f, 0.8f, 0.8f);
+            Widgets.Label(new Rect(content.x, content.y, content.width, Text.LineHeight), $"RimTalk.Settings.Preset.{preset}".Translate());
+
+            Text.Font = GameFont.Tiny;
+            GUI.color = isSelected ? new Color(0.9f, 0.9f, 0.9f) : new Color(0.6f, 0.6f, 0.6f);
+            Widgets.Label(new Rect(content.x, content.y + Text.LineHeight + 4f, content.width, content.height - Text.LineHeight - 4f), $"RimTalk.Settings.Preset.{preset}.Desc".Translate());
+            
+            Text.Anchor = TextAnchor.UpperLeft;
+            GUI.color = Color.white;
+            Text.Font = GameFont.Small;
+        }
+
+        private void DrawColumns(Listing_Standard listing, ContextSettings context)
+        {
             const float columnGap = 200f;
-            float columnWidth = (listingStandard.ColumnWidth - columnGap) / 2;
+            float columnWidth = (listing.ColumnWidth - columnGap) / 2;
+            Rect positionRect = listing.GetRect(0f); 
 
-            // Get a very small rect just to get the current position
-            Rect positionRect = listingStandard.GetRect(0f);
-            
-            // --- Left Column ---
-            Rect leftColumnRect = new Rect(positionRect.x, positionRect.y, columnWidth, 9999f);
+            // Left Column
+            Rect leftRect = new Rect(positionRect.x, positionRect.y, columnWidth, 9999f);
             Listing_Standard leftListing = new Listing_Standard();
-            leftListing.Begin(leftColumnRect);
-            
+            leftListing.Begin(leftRect);
+
             Text.Font = GameFont.Small;
             GUI.color = Color.yellow;
             leftListing.Label($"━━ {"RimTalk.Settings.PawnInfo".Translate()} ━━");
@@ -51,16 +253,16 @@ namespace RimTalk
             leftListing.CheckboxLabeled("RimTalk.Settings.IncludeHealth".Translate(), ref context.IncludeHealth);
             leftListing.CheckboxLabeled("RimTalk.Settings.IncludeMood".Translate(), ref context.IncludeMood);
             leftListing.CheckboxLabeled("RimTalk.Settings.IncludeThoughts".Translate(), ref context.IncludeThoughts);
-            leftListing.CheckboxLabeled("RimTalk.Settings.IncludePrisonerSlaveStatus".Translate(), ref context.IncludePrisonerSlaveStatus);
             leftListing.CheckboxLabeled("RimTalk.Settings.IncludeRelations".Translate(), ref context.IncludeRelations);
             leftListing.CheckboxLabeled("RimTalk.Settings.IncludeEquipment".Translate(), ref context.IncludeEquipment);
+            leftListing.CheckboxLabeled("RimTalk.Settings.IncludePrisonerSlaveStatus".Translate(), ref context.IncludePrisonerSlaveStatus);
 
             leftListing.End();
 
-            // --- Right Column ---
-            Rect rightColumnRect = new Rect(leftColumnRect.xMax + columnGap, positionRect.y, columnWidth, 9999f);
+            // Right Column
+            Rect rightRect = new Rect(leftRect.xMax + columnGap, positionRect.y, columnWidth, 9999f);
             Listing_Standard rightListing = new Listing_Standard();
-            rightListing.Begin(rightColumnRect);
+            rightListing.Begin(rightRect);
 
             Text.Font = GameFont.Small;
             GUI.color = Color.yellow;
@@ -80,16 +282,69 @@ namespace RimTalk
 
             rightListing.End();
 
-            // Advance the main listing standard's vertical position based on the taller of the two columns
-            float tallerColumnHeight = Mathf.Max(leftListing.CurHeight, rightListing.CurHeight);
-            listingStandard.Gap(tallerColumnHeight);
+            listing.Gap(Mathf.Max(leftListing.CurHeight, rightListing.CurHeight));
+        }
 
-            listingStandard.Gap(24f);
-
-            // Reset to defaults button
-            if (listingStandard.ButtonText("RimTalk.Settings.ResetToDefault".Translate()))
+        private void ApplyPreset(ContextSettings context, ContextPreset preset)
+        {
+            if (PresetDefinitions.TryGetValue(preset, out var source))
             {
-                settings.Context = new ContextSettings();
+                CopyFields(source, context);
+                _currentPreset = preset;
+            }
+        }
+
+        private void CopyFields<T>(T source, T target)
+        {
+            foreach (var field in typeof(T).GetFields(BindingFlags.Public | BindingFlags.Instance))
+            {
+                field.SetValue(target, field.GetValue(source));
+            }
+        }
+
+        private bool AreSettingsEqual(ContextSettings a, ContextSettings b)
+        {
+            foreach (var field in typeof(ContextSettings).GetFields(BindingFlags.Public | BindingFlags.Instance))
+            {
+                var valA = field.GetValue(a);
+                var valB = field.GetValue(b);
+                if (!object.Equals(valA, valB)) return false;
+            }
+            return true;
+        }
+
+        private void DrawDropdown(Listing_Standard listing, string labelKey, int currentValue, Action<int> onSelect, int min, int max)
+        {
+            const float dropdownWidth = 120f;
+            Rect rowRect = listing.GetRect(24f);
+            Rect labelRect = new Rect(rowRect.x, rowRect.y, rowRect.width - dropdownWidth - 10f, rowRect.height);
+            Rect dropdownRect = new Rect(rowRect.xMax - dropdownWidth, rowRect.y, dropdownWidth, rowRect.height);
+
+            Widgets.Label(labelRect, labelKey.Translate());
+            TooltipHandler.TipRegion(rowRect, (labelKey + ".Tooltip").Translate());
+
+            if (Widgets.ButtonText(dropdownRect, currentValue.ToString()))
+            {
+                List<FloatMenuOption> options = [];
+                for (int i = min; i <= max; i++)
+                {
+                    int count = i;
+                    options.Add(new FloatMenuOption(count.ToString(), () => onSelect(count)));
+                }
+                Find.WindowStack.Add(new FloatMenu(options));
+            }
+        }
+        
+        private void DetermineCurrentPreset(ContextSettings current)
+        {
+            _currentPreset = ContextPreset.Custom;
+            foreach (var entry in PresetDefinitions)
+            {
+                if (AreSettingsEqual(current, entry.Value))
+                {
+                    _currentPreset = entry.Key;
+                    break;
+                }
             }
         }
     }

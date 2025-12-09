@@ -31,14 +31,21 @@ public static class ThoughtTracker
         if (thought == null) return null;
 
         float offset;
-        try { offset = thought.MoodOffset(); }
-        catch { return null; }
+        try
+        {
+            offset = thought.MoodOffset();
+        }
+        catch
+        {
+            return null; 
+        }
 
-        string desc = thought.Description;  // full thought
-        string sign = offset > 0 ? "+" : offset < 0 ? "-" : "±";
-        string feelingType = offset > 0 ? "good" : offset < 0 ? "bad" : "neutral";
 
-        return $"new {feelingType} feeling: {thought.LabelCap} ({desc}, mood {sign}{Math.Abs(offset):0})";
+        if (offset > 0)
+            return $"new good feeling: {thought.LabelCap}";
+        if (offset < 0)
+            return $"new bad feeling: {thought.LabelCap}";
+        return $"new feeling: {thought.LabelCap}";
     }
 
     public static bool IsThoughtStillActive(Pawn pawn, string thoughtLabel)
