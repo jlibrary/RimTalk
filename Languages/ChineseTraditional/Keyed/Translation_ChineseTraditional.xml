@@ -12,6 +12,9 @@
     <RimTalk.TalkService.TryingNextAPI>正在嘗試下一個 API ({0})</RimTalk.TalkService.TryingNextAPI>
     <RimTalk.TalkService.GenerationFailed>RimTalk 生成失敗</RimTalk.TalkService.GenerationFailed>
 
+    <!-- TalkService.cs Broadcast -->
+    <RimTalk.Broadcast.NoAudience>附近沒有人能聽到你的聲音</RimTalk.Broadcast.NoAudience>
+
     <!-- Persona -->
     <RimTalk.Persona.CheerfulHelper>開朗幫手 - 熱情、樂觀、鼓勵。總是試圖振奮人心。</RimTalk.Persona.CheerfulHelper>
     <RimTalk.Persona.CynicalRealist>憤世嫉俗的現實主義者 - 冷漠、諷刺、多疑。直言不諱地揭示殘酷的真相。</RimTalk.Persona.CynicalRealist>
@@ -242,6 +245,10 @@
     <RimTalk.FloatMenu.ChatWith>與{0}聊天</RimTalk.FloatMenu.ChatWith>
     <RimTalk.FloatMenu.WhatToSayToSelf>你想對{0}說什麼？</RimTalk.FloatMenu.WhatToSayToSelf>
     <RimTalk.FloatMenu.WhatToSayToOther>你想讓{0}對{1}說什麼？</RimTalk.FloatMenu.WhatToSayToOther>
+    <RimTalk.FloatMenu.BroadcastAsPlayer>向附近廣播</RimTalk.FloatMenu.BroadcastAsPlayer>
+    <RimTalk.FloatMenu.BroadcastAsPlayerTooltip>向附近所有能聽到的角色說話</RimTalk.FloatMenu.BroadcastAsPlayerTooltip>
+    <RimTalk.FloatMenu.BroadcastAsPawn>你想讓{0}對附近的人說什麼？</RimTalk.FloatMenu.BroadcastAsPawn>
+    <RimTalk.FloatMenu.BroadcastAsPawnTooltip>讓{0}對附近所有角色說話</RimTalk.FloatMenu.BroadcastAsPawnTooltip>
     <RimTalk.FloatMenu.Send>發送</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>取消</RimTalk.FloatMenu.Cancel>
 </LanguageData>

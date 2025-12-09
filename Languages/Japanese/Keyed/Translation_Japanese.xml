@@ -12,6 +12,9 @@
     <RimTalk.TalkService.TryingNextAPI>次のAPI ({0}) を試しています</RimTalk.TalkService.TryingNextAPI>
     <RimTalk.TalkService.GenerationFailed>RimTalkの生成に失敗しました</RimTalk.TalkService.GenerationFailed>
 
+    <!-- TalkService.cs Broadcast -->
+    <RimTalk.Broadcast.NoAudience>近くに聞いてくれる人はいません</RimTalk.Broadcast.NoAudience>
+
     <!-- Persona -->
     <RimTalk.Persona.CheerfulHelper>陽気な助手 - 暖かく、明るく、励ましてくれる。いつも元気を与えようとします。</RimTalk.Persona.CheerfulHelper>
     <RimTalk.Persona.CynicalRealist>冷笑的な現実主義者 - ドライで、皮肉屋で、懐疑的。厳しい真実を率直に指摘します。</RimTalk.Persona.CynicalRealist>
@@ -242,6 +245,10 @@
     <RimTalk.FloatMenu.ChatWith>{0}とチャット</RimTalk.FloatMenu.ChatWith>
     <RimTalk.FloatMenu.WhatToSayToSelf>{0}に何を言いたいですか？</RimTalk.FloatMenu.WhatToSayToSelf>
     <RimTalk.FloatMenu.WhatToSayToOther>{0}に{1}に何を言わせたいですか？</RimTalk.FloatMenu.WhatToSayToOther>
+    <RimTalk.FloatMenu.BroadcastAsPlayer>近くの全員に話す</RimTalk.FloatMenu.BroadcastAsPlayer>
+    <RimTalk.FloatMenu.BroadcastAsPlayerTooltip>聞こえる範囲の全員へメッセージを放送します。</RimTalk.FloatMenu.BroadcastAsPlayerTooltip>
+    <RimTalk.FloatMenu.BroadcastAsPawn>{0}に近くの全員へ話させる</RimTalk.FloatMenu.BroadcastAsPawn>
+    <RimTalk.FloatMenu.BroadcastAsPawnTooltip>{0}に命じて、聞こえる範囲の全員へメッセージを放送します。</RimTalk.FloatMenu.BroadcastAsPawnTooltip>
     <RimTalk.FloatMenu.Send>送信</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>キャンセル</RimTalk.FloatMenu.Cancel>
 </LanguageData>

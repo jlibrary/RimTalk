@@ -12,6 +12,9 @@
     <RimTalk.TalkService.TryingNextAPI>Пробуем следующий API ({0})</RimTalk.TalkService.TryingNextAPI>
     <RimTalk.TalkService.GenerationFailed>Генерация RimTalk не удалась</RimTalk.TalkService.GenerationFailed>
 
+    <!-- TalkService.cs Broadcast -->
+    <RimTalk.Broadcast.NoAudience>Рядом никого, кто бы вас услышал.</RimTalk.Broadcast.NoAudience>
+
     <!-- Persona -->
     <RimTalk.Persona.CheerfulHelper>Веселый помощник - Теплый, оптимистичный и ободряющий. Всегда старается поднять настроение.</RimTalk.Persona.CheerfulHelper>
     <RimTalk.Persona.CynicalRealist>Циничный реалист - Сухой, саркастичный и скептический. Говорит только суровую правду.</RimTalk.Persona.CynicalRealist>
@@ -242,6 +245,10 @@
     <RimTalk.FloatMenu.ChatWith>Общаться с {0}</RimTalk.FloatMenu.ChatWith>
     <RimTalk.FloatMenu.WhatToSayToSelf>Что вы хотите сказать {0}?</RimTalk.FloatMenu.WhatToSayToSelf>
     <RimTalk.FloatMenu.WhatToSayToOther>Что вы хотите, чтобы {0} сказал {1}?</RimTalk.FloatMenu.WhatToSayToOther>
+    <RimTalk.FloatMenu.BroadcastAsPlayer>Говорить со всеми поблизости</RimTalk.FloatMenu.BroadcastAsPlayer>
+    <RimTalk.FloatMenu.BroadcastAsPlayerTooltip>Передать сообщение всем персонажам в радиусе слышимости.</RimTalk.FloatMenu.BroadcastAsPlayerTooltip>
+    <RimTalk.FloatMenu.BroadcastAsPawn>Заставить {0} говорить со всеми поблизости</RimTalk.FloatMenu.BroadcastAsPawn>
+    <RimTalk.FloatMenu.BroadcastAsPawnTooltip>Прикажите {0} передать сообщение всем персонажам в радиусе слышимости.</RimTalk.FloatMenu.BroadcastAsPawnTooltip>
     <RimTalk.FloatMenu.Send>Отправить</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>Отмена</RimTalk.FloatMenu.Cancel>
 </LanguageData>

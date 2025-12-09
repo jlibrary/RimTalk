@@ -12,6 +12,9 @@
     <RimTalk.TalkService.TryingNextAPI>다음 API ({0}) 시도 중</RimTalk.TalkService.TryingNextAPI>
     <RimTalk.TalkService.GenerationFailed>RimTalk 생성 실패</RimTalk.TalkService.GenerationFailed>
 
+    <!-- TalkService.cs Broadcast -->
+    <RimTalk.Broadcast.NoAudience>주변에 당신 말을 들을 사람이 없습니다.</RimTalk.Broadcast.NoAudience>
+
     <!-- Persona -->
     <RimTalk.Persona.CheerfulHelper>쾌활한 도우미 - 따뜻하고, 낙천적이며, 격려가 넘칩니다. 항상 기운을 북돋아 주려고 노력합니다.</RimTalk.Persona.CheerfulHelper>
     <RimTalk.Persona.CynicalRealist>냉소적인 현실주의자 - 무미건조하고, 비꼬며, 회의적입니다. 혹독한 진실을 바로 지적합니다.</RimTalk.Persona.CynicalRealist>
@@ -242,6 +245,10 @@
     <RimTalk.FloatMenu.ChatWith>{0}와 대화하기</RimTalk.FloatMenu.ChatWith>
     <RimTalk.FloatMenu.WhatToSayToSelf>{0}에게 무엇을 말하고 싶으세요?</RimTalk.FloatMenu.WhatToSayToSelf>
     <RimTalk.FloatMenu.WhatToSayToOther>{0}가 {1}에게 무엇을 말하기를 원하세요?</RimTalk.FloatMenu.WhatToSayToOther>
+    <RimTalk.FloatMenu.BroadcastAsPlayer>주변 모두에게 말하기</RimTalk.FloatMenu.BroadcastAsPlayer>
+    <RimTalk.FloatMenu.BroadcastAsPlayerTooltip>주변에서 들을 수 있는 모든 이들에게 메시지를 방송합니다.</RimTalk.FloatMenu.BroadcastAsPlayerTooltip>
+    <RimTalk.FloatMenu.BroadcastAsPawn>{0}가 주변 모두에게 말하게 하기</RimTalk.FloatMenu.BroadcastAsPawn>
+    <RimTalk.FloatMenu.BroadcastAsPawnTooltip>{0}에게 명령해 주변에서 들을 수 있는 모든 이들에게 메시지를 방송합니다.</RimTalk.FloatMenu.BroadcastAsPawnTooltip>
     <RimTalk.FloatMenu.Send>보내기</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>취소</RimTalk.FloatMenu.Cancel>
 </LanguageData>
