@@ -192,5 +192,33 @@ public static class FloatMenuPatch
             null,
             target
         ));
+
+        if (initiator.IsPlayer())
+        {
+            result.Add(new FloatMenuOption(
+                "RimTalk.FloatMenu.BroadcastAsPlayer".Translate(),   
+                delegate
+                {
+                    Find.WindowStack.Add(new CustomDialogueWindow(initiator, target, isBroadcast: true));
+                },
+                MenuOptionPriority.Default,
+                null,
+                target
+            ));
+        }
+        else
+        {
+            result.Add(new FloatMenuOption(
+                "RimTalk.FloatMenu.BroadcastAsPawn".Translate(initiator.LabelShortCap),
+                delegate
+                {
+                    Find.WindowStack.Add(new CustomDialogueWindow(initiator, target, isBroadcast: true));
+                },
+                MenuOptionPriority.Default,
+                null,
+                target
+            ));
+        }
     }
+
 }

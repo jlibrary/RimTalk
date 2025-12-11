@@ -12,6 +12,8 @@ public class PawnSelector
 {
     private const float HearingRange = 10f;
     private const float ViewingRange = 20f;
+    private const int BroadcastMaxTargets = 6;       
+    private const int BroadcastMaxCandidates = 24;   
 
     public enum DetectionType
     {
@@ -64,6 +66,27 @@ public class PawnSelector
     public static List<Pawn> GetAllNearByPawns(Pawn pawn1, Pawn pawn2 = null)
     {
         return GetNearbyPawnsInternal(pawn1, pawn2, DetectionType.Hearing, onlyTalkable: false);
+    }
+
+    public static List<Pawn> GetBroadcastTargets(Pawn initiator, int? maxTargetsOverride = null)
+    {
+        int maxTargets = maxTargetsOverride ?? BroadcastMaxTargets;
+        var candidates = GetNearbyPawnsInternal(
+            initiator,
+            null,
+            DetectionType.Hearing,
+            onlyTalkable: false,
+            maxResults: BroadcastMaxCandidates);
+
+        return candidates
+            .Where(p =>
+            {
+                var state = Cache.Get(p);
+                return state != null && state.CanDisplayTalk();
+            })
+            .OrderBy(_ => Rand.Value)   
+            .Take(maxTargets)
+            .ToList();
     }
 
     public static Pawn SelectNextAvailablePawn()

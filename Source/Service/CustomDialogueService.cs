@@ -28,7 +28,15 @@ public static class CustomDialogueService
 
             if (!CanTalk(initiator, dialogue.Recipient)) continue;
 
-            ExecuteDialogue(initiator, dialogue.Recipient, dialogue.Message);
+            if (dialogue.IsBroadcast)
+            {
+                ExecuteBroadcast(initiator, dialogue.Recipient, dialogue.Message);
+            }
+            else
+            {
+                ExecuteDialogue(initiator, dialogue.Recipient, dialogue.Message);
+            }
+
             toRemove.Add(initiator);
         }
 
@@ -37,6 +45,7 @@ public static class CustomDialogueService
             PendingDialogues.Remove(pawn);
         }
     }
+
 
     private static bool InSameRoom(Pawn pawn1, Pawn pawn2)
     {
@@ -57,34 +66,75 @@ public static class CustomDialogueService
 
     public static void ExecuteDialogue(Pawn initiator, Pawn recipient, string message)
     {
+        if (recipient == null) return;
+        ExecuteDialogueInternal(initiator, new[] { recipient }, message);
+    }
+
+    private static void ExecuteDialogueInternal(Pawn initiator, IEnumerable<Pawn> recipients, string message)
+    {
         PawnState initiatorState = Cache.Get(initiator);
         if (initiatorState == null || !initiatorState.CanDisplayTalk())
             return;
 
-        PawnState recipientState = Cache.Get(recipient);
-        if (recipientState != null && recipientState.CanDisplayTalk())
-            recipientState.AddTalkRequest(message, initiator, TalkType.User);
+        var recipientStates = new List<PawnState>();
 
+        foreach (var pawn in recipients)
+        {
+            if (pawn == null || pawn.Destroyed) continue;
+
+            PawnState recipientState = Cache.Get(pawn);
+            if (recipientState != null && recipientState.CanDisplayTalk())
+            {
+                recipientStates.Add(recipientState);
+            }
+        }
+
+        if (recipientStates.Count == 0)
+            return;
+
+        bool isBroadcast = recipientStates.Count > 1;
+
+        ApiLog apiLog;
         if (initiator.IsPlayer())
         {
-            ApiLog apiLog = ApiHistory.AddUserHistory(Settings.Get().PlayerName, message);
+            apiLog = ApiHistory.AddUserHistory(Settings.Get().PlayerName, message);
             apiLog.SpokenTick = GenTicks.TicksGame;
             Overlay.NotifyLogUpdated();
         }
         else
         {
-            ApiLog apiLog = ApiHistory.AddUserHistory(initiator.LabelShort, message);
-            TalkResponse talkResponse = new(TalkType.User, initiator.LabelShort, message)
+            apiLog = ApiHistory.AddUserHistory(initiator.LabelShort, message);
+        }
+        foreach (var recipientState in recipientStates)
+        {
+            recipientState.AddTalkRequest(message, initiator, TalkType.User);
+        }
+        if (!initiator.IsPlayer())
+        {
+            TalkResponse selfResponse = new(TalkType.User, initiator.LabelShort, message)
             {
                 Id = apiLog.Id
             };
-            Cache.Get(initiator).TalkResponses.Insert(0, talkResponse);
+            initiatorState.TalkResponses.Insert(0, selfResponse);
         }
     }
 
-    public class PendingDialogue(Pawn recipient, string message)
+    public static void ExecuteBroadcast(Pawn initiator, Pawn origin, string message)
+    {
+        if (initiator == null || initiator.Destroyed) return;
+        if (origin == null || origin.Destroyed) origin = initiator;
+
+        var audience = PawnSelector.GetBroadcastTargets(origin,  Settings.Get().Context.MaxPawnContextCount);
+        if (audience.NullOrEmpty())
+            return;
+
+        ExecuteDialogueInternal(initiator, audience, message);
+    }
+
+    public class PendingDialogue(Pawn recipient, string message, bool isBroadcast = false)
     {
         public readonly Pawn Recipient = recipient;
         public readonly string Message = message;
+        public readonly bool IsBroadcast = isBroadcast;
     }
 }

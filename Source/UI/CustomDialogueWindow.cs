@@ -11,13 +11,15 @@ public class CustomDialogueWindow : Window
 {
     private readonly Pawn _initiator;
     private readonly Pawn _recipient;
+    private readonly bool _isBroadcast;
     private string _text = "";
     private const string TextFieldControlName = "CustomTalkTextField";
 
-    public CustomDialogueWindow(Pawn initiator, Pawn recipient)
+    public CustomDialogueWindow(Pawn initiator, Pawn recipient, bool isBroadcast = false)
     {
         _initiator = initiator;
         _recipient = recipient;
+        _isBroadcast = isBroadcast;
         doCloseX = true;
         draggable = true;
         absorbInputAroundWindow = false;
@@ -29,9 +31,19 @@ public class CustomDialogueWindow : Window
     {
         Text.Font = GameFont.Small;
         
-        string labelText = _initiator.IsPlayer()
-            ? "RimTalk.FloatMenu.WhatToSayToSelf".Translate(_recipient.LabelShortCap)
-            : "RimTalk.FloatMenu.WhatToSayToOther".Translate(_initiator.LabelShortCap, _recipient.LabelShortCap);
+        string labelText;
+        if (_isBroadcast)
+        {
+            labelText = _initiator.IsPlayer()
+                ? "RimTalk.FloatMenu.BroadcastAsPlayerTooltip".Translate(_recipient.LabelShortCap)
+                : "RimTalk.FloatMenu.BroadcastAsPawnTooltip".Translate(_initiator.LabelShortCap, _recipient.LabelShortCap);
+        }
+        else
+        {
+            labelText = _initiator.IsPlayer()
+                ? "RimTalk.FloatMenu.WhatToSayToSelf".Translate(_recipient.LabelShortCap)
+                : "RimTalk.FloatMenu.WhatToSayToOther".Translate(_initiator.LabelShortCap, _recipient.LabelShortCap);
+        }
         
         Widgets.Label(new Rect(0f, 0f, inRect.width, 25f), labelText);
 
@@ -80,23 +92,45 @@ public class CustomDialogueWindow : Window
 
     private void SendDialogue(string dialogue)
     {
-        if (CustomDialogueService.CanTalk(_initiator, _recipient))
+        if (_isBroadcast)
         {
-            // Already close and in same room (or talking to self) - execute immediately
-            CustomDialogueService.ExecuteDialogue(_initiator, _recipient, dialogue);
+            if (_initiator.IsPlayer() || CustomDialogueService.CanTalk(_initiator, _recipient))
+            {
+                CustomDialogueService.ExecuteBroadcast(_initiator, _recipient, dialogue);
+            }
+            else
+            {
+                CustomDialogueService.PendingDialogues[_initiator] =
+                    new CustomDialogueService.PendingDialogue(_recipient, dialogue, isBroadcast: true);
+
+                Job job = JobMaker.MakeJob(JobDefOf.Goto, _recipient);
+                job.playerForced = true;
+                job.collideWithPawns = false;
+                job.locomotionUrgency = LocomotionUrgency.Jog;
+
+                _initiator.jobs.TryTakeOrderedJob(job, JobTag.Misc);
+            }
         }
         else
         {
-            // Store pending dialogue and make pawn walk to target
-            CustomDialogueService.PendingDialogues[_initiator] = 
-                new CustomDialogueService.PendingDialogue(_recipient, dialogue);
+            if (CustomDialogueService.CanTalk(_initiator, _recipient))
+            {
+                // Already close and in same room (or talking to self) - execute immediately
+                CustomDialogueService.ExecuteDialogue(_initiator, _recipient, dialogue);
+            }
+            else
+            {
+                // Store pending dialogue and make pawn walk to target
+                CustomDialogueService.PendingDialogues[_initiator] =
+                    new CustomDialogueService.PendingDialogue(_recipient, dialogue);
 
-            Job job = JobMaker.MakeJob(JobDefOf.Goto, _recipient);
-            job.playerForced = true;
-            job.collideWithPawns = false;
-            job.locomotionUrgency = LocomotionUrgency.Jog;
+                Job job = JobMaker.MakeJob(JobDefOf.Goto, _recipient);
+                job.playerForced = true;
+                job.collideWithPawns = false;
+                job.locomotionUrgency = LocomotionUrgency.Jog;
 
-            _initiator.jobs.TryTakeOrderedJob(job, JobTag.Misc);
+                _initiator.jobs.TryTakeOrderedJob(job, JobTag.Misc);
+            }
         }
     }
 }
