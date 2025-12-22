@@ -28,7 +28,7 @@ namespace RimTalk.Patch
             var cmd = new Command_Action
             {
                 defaultLabel = "RimTalk.Gizmo.ChatWithTarget".Translate(__instance.LabelShort),
-                defaultDesc = "RimTalk.Gizmo.ChatWithTargetDesc".Translate(),
+                defaultDesc = "RimTalk.Gizmo.ChatWithTargetDesc".Translate(__instance.LabelShort),
                 icon = ContentFinder<UnityEngine.Texture2D>.Get("UI/ChatGizmo", true),
                 action = () =>
                 {
