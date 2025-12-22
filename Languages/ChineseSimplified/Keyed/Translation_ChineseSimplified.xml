@@ -259,6 +259,8 @@
 
     <!-- FloatMenuMakerMapGetOptionsPatch.cs -->
     <RimTalk.FloatMenu.ChatWith>与{0}聊天</RimTalk.FloatMenu.ChatWith>
+    <RimTalk.Gizmo.ChatWithTarget>与{0}交谈</RimTalk.Gizmo.ChatWithTarget>
+    <RimTalk.Gizmo.ChatWithTargetDesc>发起与{0}的对话。</RimTalk.Gizmo.ChatWithTargetDesc>
     <RimTalk.FloatMenu.WhatToSayToSelf>你想对{0}说什么？</RimTalk.FloatMenu.WhatToSayToSelf>
     <RimTalk.FloatMenu.WhatToSayToOther>你想让{0}对{1}说什么？</RimTalk.FloatMenu.WhatToSayToOther>
     <RimTalk.FloatMenu.Send>发送</RimTalk.FloatMenu.Send>
