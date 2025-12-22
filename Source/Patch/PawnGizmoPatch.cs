@@ -17,12 +17,11 @@ namespace RimTalk.Patch
         {
             if (__instance == null) return;
             if (!Settings.Get().AllowCustomConversation) return;
-
-            // Only add for pawns that are on-map and alive
             if (!__instance.Spawned || __instance.Dead) return;
-
-            // Target must be eligible to talk
             if (!PawnUtil.IsTalkEligible(__instance)) return;
+
+            var selector = Find.Selector;
+            if (selector.SelectedPawns.Count != 1) return;
 
             var list = (__result != null) ? __result.ToList() : new List<Gizmo>();
 
