@@ -99,7 +99,23 @@ public static class TalkService
             Cache.Get(initiator).IsGeneratingTalk = true;
 
             // Create a dictionary for quick pawn lookup by name during streaming.
-            var playerDict = allInvolvedPawns.ToDictionary(p => p.LabelShort, p => p);
+            // Note: LabelShort is not guaranteed to be unique (e.g. animals, duplicated names, some custom races).
+            // Use GroupBy to avoid ToDictionary throwing on duplicate keys; when duplicates exist, we keep the first pawn
+            // deterministically and log the collision for debugging.
+            var duplicateNameGroups = allInvolvedPawns
+                .GroupBy(p => p.LabelShort)
+                .Where(g => g.Count() > 1)
+                .ToList();
+            if (duplicateNameGroups.Any())
+            {
+                Logger.Error("Duplicate pawn LabelShort detected in talk context: " +
+                             string.Join("; ", duplicateNameGroups.Select(g =>
+                                 $"'{g.Key}' x{g.Count()} ids=[{string.Join(",", g.Select(p => p.thingIDNumber))}]")));
+            }
+
+            var playerDict = allInvolvedPawns
+                .GroupBy(p => p.LabelShort)
+                .ToDictionary(g => g.Key, g => g.First());
             var receivedResponses = new List<TalkResponse>();
 
             // Call the streaming chat service. The callback is executed as each piece of dialogue is parsed.
@@ -132,7 +148,7 @@ public static class TalkService
         }
         catch (Exception ex)
         {
-            Logger.Error(ex.StackTrace);
+            Logger.Error(ex.ToString());
         }
         finally
         {
