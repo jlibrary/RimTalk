@@ -54,62 +54,26 @@ public static class FloatMenuPatch
 
         Map map = selectedPawn.Map;
         IntVec3 clickCell = IntVec3.FromVector3(clickPos);
+        
+        IReadOnlyList<Pawn> pawns = map.mapPawns.AllPawnsSpawned;
 
-        if (!TryResolveConversationParticipants(selectedPawn, clickCell, map,
-                out var initiator, out var target))
+        foreach (var p in pawns)
         {
-            return;
-        }
+            IntVec3 pos = p.Position;
+            int x = clickCell.x;
+            int z = clickCell.z;
+            Pawn initiator;
+            Pawn target;
 
-        AddTalkOption(result, initiator, target);
-    }
 
-    /// <summary>
-    /// Reverted Logic:
-    /// 1. Choose Pawn on clicked position
-    /// 2. Fallback to search in 3*3 area.
-    /// Retrun initiator / target if success.
-    /// </summary>
-    private static bool TryResolveConversationParticipants(
-        Pawn selectedPawn,
-        IntVec3 clickCell,
-        Map map,
-        out Pawn initiator,
-        out Pawn target)
-    {
-        initiator = null;
-        target = null;
+            if (pos.x<x-ClickRadiusCells||pos.x>x+ClickRadiusCells||pos.z<z-ClickRadiusCells||pos.z>z+ClickRadiusCells)
+                continue;
 
-        if (clickCell.InBounds(map))
-        {
-            Pawn hit = clickCell.GetFirstPawn(map);
-            if (hit != null &&
-                TryResolveForHitPawn(selectedPawn, hit, out initiator, out target))
+            if (TryResolveForHitPawn(selectedPawn, p, out initiator, out target))
             {
-                return true;
+                AddTalkOption(result, initiator, target);
             }
         }
-
-        for (int dx = -ClickRadiusCells; dx <= ClickRadiusCells; dx++)
-        {
-            for (int dz = -ClickRadiusCells; dz <= ClickRadiusCells; dz++)
-            {
-                if (dx == 0 && dz == 0) continue;
-
-                IntVec3 checkCell = new IntVec3(clickCell.x + dx, 0, clickCell.z + dz);
-                if (!checkCell.InBounds(map)) continue;
-
-                Pawn hit = checkCell.GetFirstPawn(map);
-                if (hit == null) continue;
-
-                if (TryResolveForHitPawn(selectedPawn, hit, out initiator, out target))
-                {
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 
     /// <summary>
@@ -167,6 +131,9 @@ public static class FloatMenuPatch
         // Target
         if (!(target.RaceProps?.Humanlike ?? false) && !target.HasVocalLink())
             return false;
+
+        if (initiator == Cache.GetPlayer())
+            return true;
 
         // Could add path to reach
         if (!initiator.CanReach(target, PathEndMode.Touch, Danger.None))
