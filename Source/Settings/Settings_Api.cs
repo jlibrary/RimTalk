@@ -2,9 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using RimTalk.Client.Gemini;
 using RimTalk.Client.OpenAI;
+using RimTalk.Client.Player2;
 using RimTalk.Data;
-using RimTalk.Util;
 using RimWorld;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -15,53 +16,7 @@ namespace RimTalk;
 
 public partial class Settings
 {
-    private static readonly string[] ModelOptions =
-    {
-        "gemini-3-pro-preview",
-        "gemini-2.5-pro",
-        "gemini-2.5-flash", 
-        "gemini-2.5-flash-lite",
-        "gemini-2.0-flash",
-        "gemini-2.0-flash-lite",
-        "gemma-3-27b-it",
-        "gemma-3-12b-it",
-        "Custom"
-    };
     private static readonly Dictionary<string, List<string>> ModelCache = new();
-
-    private async Task<List<string>> FetchModels(string apiKey, string url)
-    {
-        if (ModelCache.ContainsKey(url))
-        {
-            return ModelCache[url];
-        }
-
-        var models = new List<string>();
-        using var webRequest = UnityWebRequest.Get(url);
-        webRequest.SetRequestHeader("Authorization", "Bearer " + apiKey);
-        var asyncOperation = webRequest.SendWebRequest();
-
-        while (!asyncOperation.isDone)
-        {
-            await Task.Delay(100);
-        }
-
-        if (webRequest.isNetworkError || webRequest.isHttpError)
-        {
-            Logger.Error($"Failed to fetch models: {webRequest.error}");
-        }
-        else
-        {
-            var response = JsonUtil.DeserializeFromJson<OpenAIModelsResponse>(webRequest.downloadHandler.text);
-            if (response != null)
-            {
-                models = response.Data.Select(m => m.Id).ToList();
-                ModelCache[url] = models;
-            }
-        }
-
-        return models;
-    }
 
     private void DrawSimpleApiSettings(Listing_Standard listingStandard)
     {
@@ -69,7 +24,7 @@ public partial class Settings
 
         // API Key section
         listingStandard.Label("RimTalk.Settings.GoogleApiKeyLabel".Translate());
-            
+
         const float buttonWidth = 150f;
         const float spacing = 5f;
 
@@ -83,13 +38,12 @@ public partial class Settings
         {
             Application.OpenURL("https://aistudio.google.com/app/apikey");
         }
-            
+
         // Add description for free Google providers
         Text.Font = GameFont.Tiny;
         GUI.color = Color.gray;
         Rect cloudDescRect = listingStandard.GetRect(Text.LineHeight);
-        Widgets.Label(cloudDescRect,
-            "RimTalk.Settings.GoogleApiKeyDesc".Translate());
+        Widgets.Label(cloudDescRect, "RimTalk.Settings.GoogleApiKeyDesc".Translate());
         GUI.color = Color.white;
         Text.Font = GameFont.Small;
 
@@ -135,8 +89,7 @@ public partial class Settings
         Text.Font = GameFont.Tiny;
         GUI.color = Color.gray;
         Rect cloudDescRect = listingStandard.GetRect(Text.LineHeight);
-        Widgets.Label(cloudDescRect,
-            "RimTalk.Settings.CloudProvidersDesc".Translate());
+        Widgets.Label(cloudDescRect, "RimTalk.Settings.CloudProvidersDesc".Translate());
         GUI.color = Color.white;
         Text.Font = GameFont.Small;
 
@@ -154,8 +107,7 @@ public partial class Settings
         Text.Font = GameFont.Tiny;
         GUI.color = Color.gray;
         Rect localDescRect = listingStandard.GetRect(Text.LineHeight);
-        Widgets.Label(localDescRect,
-            "RimTalk.Settings.LocalProviderDesc".Translate());
+        Widgets.Label(localDescRect, "RimTalk.Settings.LocalProviderDesc".Translate());
         GUI.color = Color.white;
         Text.Font = GameFont.Small;
 
@@ -187,11 +139,10 @@ public partial class Settings
         GUI.color = Color.gray;
         Rect cloudDescRect = listingStandard.GetRect(Text.LineHeight * 2);
         cloudDescRect.width -= 70f;
-        Widgets.Label(cloudDescRect,
-            "RimTalk.Settings.CloudApiConfigurationsDesc".Translate());
+        Widgets.Label(cloudDescRect, "RimTalk.Settings.CloudApiConfigurationsDesc".Translate());
         GUI.color = Color.white;
         Text.Font = GameFont.Small;
-            
+
         if (Widgets.ButtonText(addButtonRect, "+"))
         {
             settings.CloudConfigs.Add(new ApiConfig());
@@ -212,36 +163,30 @@ public partial class Settings
 
         listingStandard.Gap(6f);
 
-        // Draw table headers
         Rect tableHeaderRect = listingStandard.GetRect(24f);
         float x = tableHeaderRect.x;
         float y = tableHeaderRect.y;
         float height = tableHeaderRect.height;
 
-        x += 60f; // Adjust x to account for the add/remove buttons
+        x += 60f;
 
-        // Define column widths
         float providerWidth = 100f;
         float apiKeyWidth = 240f;
         float modelWidth = 200f;
         float baseUrlWidth = 355f;
 
-        // Provider Header
         Rect providerHeaderRect = new Rect(x, y, providerWidth, height);
         Widgets.Label(providerHeaderRect, "RimTalk.Settings.ProviderHeader".Translate());
         x += providerWidth + 5f;
 
-        // API Key Header
         Rect apiKeyHeaderRect = new Rect(x, y, apiKeyWidth, height);
         Widgets.Label(apiKeyHeaderRect, "RimTalk.Settings.ApiKeyHeader".Translate());
         x += apiKeyWidth + 5f;
 
-        // Model Header
         Rect modelHeaderRect = new Rect(x, y, modelWidth, height);
         Widgets.Label(modelHeaderRect, "RimTalk.Settings.ModelHeader".Translate());
         x += modelWidth + 5f;
 
-        // Base URL Header (for Custom provider)
         if (settings.CloudConfigs.Any(c => c.Provider == AIProvider.Custom))
         {
             Rect baseUrlHeaderRect = new Rect(x, y, baseUrlWidth, height);
@@ -251,13 +196,11 @@ public partial class Settings
             x += baseUrlWidth + 5f;
         }
 
-        // Enabled Header
         Rect enabledHeaderRect = new Rect(tableHeaderRect.xMax - 70f, y, 70f, height);
         Widgets.Label(enabledHeaderRect, "RimTalk.Settings.EnabledHeader".Translate());
-            
+
         listingStandard.Gap(6f);
 
-        // Draw each cloud config
         for (int i = 0; i < settings.CloudConfigs.Count; i++)
         {
             DrawCloudConfigRow(listingStandard, settings.CloudConfigs[i], i, settings.CloudConfigs);
@@ -335,8 +278,7 @@ public partial class Settings
                 new(nameof(AIProvider.Player2), () => {
                     config.Provider = AIProvider.Player2;
                     config.SelectedModel = "Default";
-                    // Immediately check Player2 status when selected
-                    CheckPlayer2StatusAndNotify();
+                    Player2Client.CheckPlayer2StatusAndNotify();
                 }),
                 new(nameof(AIProvider.Custom), () => {
                     config.Provider = AIProvider.Custom;
@@ -346,71 +288,6 @@ public partial class Settings
             Find.WindowStack.Add(new FloatMenu(providerOptions));
         }
         x += 105f;
-    }
-
-    /// <summary>
-    /// Checks Player2 desktop app status and shows immediate notification
-    /// </summary>
-    private void CheckPlayer2StatusAndNotify()
-    {
-        Task.Run(async () =>
-        {
-            try
-            {
-                bool isAvailable = await IsPlayer2LocalAppAvailableAsync();
-                
-                LongEventHandler.ExecuteWhenFinished(() =>
-                {
-                    if (isAvailable)
-                    {
-                        Messages.Message(
-                            "RimTalk: Player2 desktop app detected and ready for use!", 
-                            MessageTypeDefOf.PositiveEvent
-                        );
-                        Logger.Message("RimTalk: Player2 desktop app status check - Available");
-                    }
-                    else
-                    {
-                        Messages.Message(
-                            "RimTalk: Player2 desktop app not detected. Install and start Player2 app, or add API key manually.", 
-                            MessageTypeDefOf.CautionInput
-                        );
-                        Logger.Message("RimTalk: Player2 desktop app status check - Not available");
-                    }
-                });
-            }
-            catch (Exception ex)
-            {
-                Logger.Warning($"RimTalk: Error checking Player2 status: {ex.Message}");
-            }
-        });
-    }
-
-    /// <summary>
-    /// Async helper to check if Player2 local app is available
-    /// </summary>
-    private async Task<bool> IsPlayer2LocalAppAvailableAsync()
-    {
-        try
-        {
-            using var webRequest = UnityWebRequest.Get("http://localhost:4315/v1/health");
-            webRequest.timeout = 2;
-            var asyncOperation = webRequest.SendWebRequest();
-                
-            var startTime = DateTime.Now;
-            while (!asyncOperation.isDone)
-            {
-                if (DateTime.Now.Subtract(startTime).TotalSeconds > 2)
-                    break;
-                await Task.Delay(50);
-            }
-
-            return webRequest.responseCode == 200;
-        }
-        catch
-        {
-            return false;
-        }
     }
 
     private void DrawApiKeyInput(ref float x, float y, float height, ApiConfig config)
@@ -462,34 +339,50 @@ public partial class Settings
             return;
         }
 
-        if (config.Provider == AIProvider.Google)
-        {
-            List<FloatMenuOption> options = ModelOptions.Select(model => new FloatMenuOption(model, () => config.SelectedModel = model)).ToList();
-            Find.WindowStack.Add(new FloatMenu(options));
-        }
-        else if (config.Provider == AIProvider.Player2)
+        if (config.Provider == AIProvider.Player2)
         {
             config.SelectedModel = "Default";
+            return;
+        }
+
+        string url = GetModelApiUrl(config.Provider);
+        if (string.IsNullOrEmpty(url)) return;
+        
+        void OpenMenu(List<string> models)
+        {
+            var options = new List<FloatMenuOption>();
+
+            if (models != null && models.Any())
+            {
+                options.AddRange(models.Select(model => new FloatMenuOption(model, () => config.SelectedModel = model)));
+            }
+            else
+            {
+                options.Add(new FloatMenuOption("(no models found - check API Key)", null));
+            }
+
+            options.Add(new FloatMenuOption("Custom", () => config.SelectedModel = "Custom"));
+            Find.WindowStack.Add(new FloatMenu(options));
+        }
+
+        if (ModelCache.ContainsKey(url))
+        {
+            OpenMenu(ModelCache[url]);
         }
         else
         {
-            string url = GetModelApiUrl(config.Provider);
-            if (url == null) return;
+            Task<List<string>> fetchTask = config.Provider == AIProvider.Google
+                ? GeminiClient.FetchModelsAsync(config.ApiKey, url)
+                : OpenAIClient.FetchModelsAsync(config.ApiKey, url);
 
-            FetchModels(config.ApiKey, url).ContinueWith(task =>
+            fetchTask.ContinueWith(task =>
             {
                 var models = task.Result;
-                List<FloatMenuOption> options = new List<FloatMenuOption>();
                 if (models != null && models.Any())
                 {
-                    options.AddRange(models.Select(model => new FloatMenuOption(model, () => config.SelectedModel = model)));
+                    ModelCache[url] = models;
                 }
-                else
-                {
-                    options.Add(new FloatMenuOption("(no models found - check API Key)", null));
-                }
-                options.Add(new FloatMenuOption("Custom", () => config.SelectedModel = "Custom"));
-                Find.WindowStack.Add(new FloatMenu(options));
+                OpenMenu(models);
             }, TaskScheduler.FromCurrentSynchronizationContext());
         }
     }
@@ -498,6 +391,7 @@ public partial class Settings
     {
         switch (provider)
         {
+            case AIProvider.Google: return "https://generativelanguage.googleapis.com/v1beta/models";
             case AIProvider.OpenAI: return "https://api.openai.com/v1/models";
             case AIProvider.DeepSeek: return "https://api.deepseek.com/models";
             case AIProvider.Grok: return "https://api.x.ai/v1/models";
@@ -517,13 +411,11 @@ public partial class Settings
         }
     }
 
-
     private void DrawLocalProviderSection(Listing_Standard listingStandard, RimTalkSettings settings)
     {
         listingStandard.Label("RimTalk.Settings.LocalProviderConfiguration".Translate());
         listingStandard.Gap(6f);
 
-        // Ensure local config exists
         if (settings.LocalConfig == null)
         {
             settings.LocalConfig = new ApiConfig { Provider = AIProvider.Local };
@@ -539,24 +431,20 @@ public partial class Settings
         float y = rowRect.y;
         float height = rowRect.height;
 
-        // Label for Base Url
         Rect baseUrlLabelRect = new Rect(x, y, 80f, height);
         var labelText = "RimTalk.Settings.BaseUrlLabel".Translate() + " [?]";
         Widgets.Label(baseUrlLabelRect, labelText);
         TooltipHandler.TipRegion(baseUrlLabelRect, "RimTalk_Settings_Api_BaseUrlInfo".Translate());
-        x += 85f; // Adjust x to account for the label's width
+        x += 85f;
 
-        // Endpoint URL field
         Rect urlRect = new Rect(x, y, 250f, height);
         config.BaseUrl = Widgets.TextField(urlRect, config.BaseUrl);
         x += 285f;
 
-        // Label for Model
         Rect modelLabelRect = new Rect(x, y, 70f, height);
         Widgets.Label(modelLabelRect, "RimTalk.Settings.ModelLabel".Translate());
-        x += 75f; // Adjust x to account for the label's width
+        x += 75f;
 
-        // Model text field (200px)
         Rect modelRect = new Rect(x, y, 200f, height);
         config.CustomModelName = Widgets.TextField(modelRect, config.CustomModelName);
     }

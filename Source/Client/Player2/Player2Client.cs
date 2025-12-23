@@ -450,6 +450,65 @@ public class Player2Client : IAIClient
     {
         _healthCheckActive = false;
     }
+    
+    public static void CheckPlayer2StatusAndNotify()
+    {
+        Task.Run(async () =>
+        {
+            try
+            {
+                bool isAvailable = await IsPlayer2LocalAppAvailableAsync();
+
+                LongEventHandler.ExecuteWhenFinished(() =>
+                {
+                    if (isAvailable)
+                    {
+                        Messages.Message(
+                            "RimTalk: Player2 desktop app detected and ready for use!",
+                            MessageTypeDefOf.PositiveEvent
+                        );
+                        Logger.Message("RimTalk: Player2 desktop app status check - Available");
+                    }
+                    else
+                    {
+                        Messages.Message(
+                            "RimTalk: Player2 desktop app not detected. Install and start Player2 app, or add API key manually.",
+                            MessageTypeDefOf.CautionInput
+                        );
+                        Logger.Message("RimTalk: Player2 desktop app status check - Not available");
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                Logger.Warning($"RimTalk: Error checking Player2 status: {ex.Message}");
+            }
+        });
+    }
+
+    private static async Task<bool> IsPlayer2LocalAppAvailableAsync()
+    {
+        try
+        {
+            using var webRequest = UnityWebRequest.Get("http://localhost:4315/v1/health");
+            webRequest.timeout = 2;
+            var asyncOperation = webRequest.SendWebRequest();
+
+            var startTime = DateTime.Now;
+            while (!asyncOperation.isDone)
+            {
+                if (DateTime.Now.Subtract(startTime).TotalSeconds > 2)
+                    break;
+                await Task.Delay(50);
+            }
+
+            return webRequest.responseCode == 200;
+        }
+        catch
+        {
+            return false;
+        }
+    }
 }
 
 /// <summary>

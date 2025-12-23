@@ -241,4 +241,32 @@ public class OpenAIClient : IAIClient
                 throw new ArgumentException($"Unknown role: {role}");
         }
     }
+    
+    public static async Task<List<string>> FetchModelsAsync(string apiKey, string url)
+    {
+        var models = new List<string>();
+        using var webRequest = UnityWebRequest.Get(url);
+        webRequest.SetRequestHeader("Authorization", "Bearer " + apiKey);
+        var asyncOperation = webRequest.SendWebRequest();
+
+        while (!asyncOperation.isDone)
+        {
+            await Task.Delay(100);
+        }
+
+        if (webRequest.isNetworkError || webRequest.isHttpError)
+        {
+            Logger.Error($"Failed to fetch models: {webRequest.error}");
+        }
+        else
+        {
+            var response = JsonUtil.DeserializeFromJson<OpenAIModelsResponse>(webRequest.downloadHandler.text);
+            if (response != null && response.Data != null)
+            {
+                models = response.Data.Select(m => m.Id).ToList();
+            }
+        }
+
+        return models;
+    }
 }

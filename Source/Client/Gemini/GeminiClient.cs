@@ -184,4 +184,43 @@ public class GeminiClient : IAIClient
             _ => throw new ArgumentException($"Unknown role: {role}"),
         };
     }
+    public static async Task<List<string>> FetchModelsAsync(string apiKey, string url)
+    {
+        var models = new List<string>();
+
+        using var webRequest = UnityWebRequest.Get($"{url}?key={apiKey}");
+        var asyncOperation = webRequest.SendWebRequest();
+
+        while (!asyncOperation.isDone)
+        {
+            await Task.Delay(100);
+        }
+
+        if (webRequest.isNetworkError || webRequest.isHttpError)
+        {
+            Logger.Error($"Failed to fetch Google models: {webRequest.error}");
+        }
+        else
+        {
+            try
+            {
+                var response = JsonUtil.DeserializeFromJson<GoogleModelsResponse>(webRequest.downloadHandler.text);
+                if (response != null && response.Models != null)
+                {
+                    models = response.Models
+                        .Where(m => m.SupportedGenerationMethods != null &&
+                                    m.SupportedGenerationMethods.Contains("generateContent"))
+                        .Select(m => m.Name.StartsWith("models/") ? m.Name.Substring(7) : m.Name)
+                        .OrderBy(m => m)
+                        .ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Failed to parse Google models response: {ex.Message}");
+            }
+        }
+
+        return models;
+    }
 }
