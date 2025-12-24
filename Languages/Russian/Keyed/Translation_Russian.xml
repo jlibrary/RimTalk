@@ -279,6 +279,8 @@
 
     <!-- FloatMenuMakerMapGetOptionsPatch.cs -->
     <RimTalk.FloatMenu.ChatWith>Общаться с {0}</RimTalk.FloatMenu.ChatWith>
+    <RimTalk.Gizmo.ChatWithTarget>Поговорить с {0}</RimTalk.Gizmo.ChatWithTarget>
+    <RimTalk.Gizmo.ChatWithTargetDesc>Начать разговор с {0}.</RimTalk.Gizmo.ChatWithTargetDesc>
     <RimTalk.FloatMenu.WhatToSayToSelf>Что вы хотите сказать {0}?</RimTalk.FloatMenu.WhatToSayToSelf>
     <RimTalk.FloatMenu.WhatToSayToOther>Что вы хотите, чтобы {0} сказал {1}?</RimTalk.FloatMenu.WhatToSayToOther>
     <RimTalk.FloatMenu.Send>Отправить</RimTalk.FloatMenu.Send>

@@ -279,6 +279,8 @@
 
     <!-- FloatMenuMakerMapGetOptionsPatch.cs -->
     <RimTalk.FloatMenu.ChatWith>{0}와 대화하기</RimTalk.FloatMenu.ChatWith>
+    <RimTalk.Gizmo.ChatWithTarget>{0}와(과) 대화하기</RimTalk.Gizmo.ChatWithTarget>
+    <RimTalk.Gizmo.ChatWithTargetDesc>{0}와(과) 대화를 시작합니다.</RimTalk.Gizmo.ChatWithTargetDesc>
     <RimTalk.FloatMenu.WhatToSayToSelf>{0}에게 무엇을 말하고 싶으세요?</RimTalk.FloatMenu.WhatToSayToSelf>
     <RimTalk.FloatMenu.WhatToSayToOther>{0}가 {1}에게 무엇을 말하기를 원하세요?</RimTalk.FloatMenu.WhatToSayToOther>
     <RimTalk.FloatMenu.Send>보내기</RimTalk.FloatMenu.Send>
