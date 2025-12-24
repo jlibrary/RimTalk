@@ -60,7 +60,6 @@ public static class Cache
             if (PawnCache.TryRemove(pawn, out var removedState))
             {
                 NameCache.TryRemove(removedState.Pawn.LabelShort, out _);
-                RemoveFromIndex(pawn);
             }
         }
 
@@ -69,19 +68,17 @@ public static class Cache
         var currentMap = Find.CurrentMap;
         if (currentMap != null)
         {
-            // clear existing index for this map
-            MapChunkIndex.TryRemove(currentMap, out _);
+            ClearMapChunkIndex();
 
             foreach (Pawn pawn in currentMap.mapPawns.AllPawnsSpawned)
             {
-                if (pawn.IsTalkEligible() && !PawnCache.ContainsKey(pawn))
-                {
-                    PawnCache[pawn] = new PawnState(pawn);
-                    NameCache[pawn.LabelShort] = pawn;
-                }
-
                 if (pawn.IsTalkEligible())
                 {
+                    if (!PawnCache.ContainsKey(pawn))
+                    {
+                        PawnCache[pawn] = new PawnState(pawn);
+                        NameCache[pawn.LabelShort] = pawn;
+                    }
                     TryIndexPawn(pawn);
                 }
             }
@@ -120,7 +117,6 @@ public static class Cache
                     {
                         if (pawn != null && pawn.Spawned)
                         {
-                            // final filter by exact cell distance
                             var pos = pawn.Position;
                             if (pos.x >= cell.x - radiusCells && pos.x <= cell.x + radiusCells && pos.z >= cell.z - radiusCells && pos.z <= cell.z + radiusCells)
                                 collected.Add(pawn);
@@ -128,11 +124,10 @@ public static class Cache
                     }
                 }
             }
-
             return collected;
         }
 
-        // fallback: scan all cached pawns on same map
+        // fallback
         return PawnCache.Keys.Where(p => p.Position.x >= cell.x - radiusCells && p.Position.x <= cell.x + radiusCells && p.Position.z >= cell.z - radiusCells && p.Position.z <= cell.z + radiusCells);
     }
 
@@ -141,7 +136,7 @@ public static class Cache
         PawnCache.Clear();
         NameCache.Clear();
         _playerPawn = null;
-        MapChunkIndex.Clear();
+        ClearMapChunkIndex();
     }
 
     private static (int x, int z) CellToChunk(IntVec3 cell) => (cell.x / ChunkSize, cell.z / ChunkSize);
@@ -156,13 +151,24 @@ public static class Cache
         set[pawn] = 0;
     }
 
-    private static void RemoveFromIndex(Pawn pawn)
+    // Clear inner chunk dictionaries and pawn sets to release strong references.
+    private static void ClearMapChunkIndex()
     {
-        if (pawn == null || pawn.Map == null) return;
-        if (!MapChunkIndex.TryGetValue(pawn.Map, out var dict)) return;
-        var key = CellToChunk(pawn.Position);
-        if (!dict.TryGetValue(key, out var set)) return;
-        set.TryRemove(pawn, out _);
+        foreach (var mapEntry in MapChunkIndex.ToArray())
+        {
+            var chunkDict = mapEntry.Value;
+            if (chunkDict == null) continue;
+
+            foreach (var chunkEntry in chunkDict.ToArray())
+            {
+                var pawnSet = chunkEntry.Value;
+                pawnSet?.Clear();
+            }
+
+            chunkDict.Clear();
+        }
+
+        MapChunkIndex.Clear();
     }
 
     private static double GetScaleFactor(double groupWeight, double baselineWeight)
