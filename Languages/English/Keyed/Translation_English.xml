@@ -214,6 +214,26 @@
     <RimTalk.Settings.IncludeWealth>Colony Wealth</RimTalk.Settings.IncludeWealth>
     
     <!-- DebugWindow.cs -->
+    <RimTalk.DebugWindow.FilterPawn>Pawn(Selected)</RimTalk.DebugWindow.FilterPawn>
+    <RimTalk.DebugWindow.Search>Search</RimTalk.DebugWindow.Search>
+    <RimTalk.DebugWindow.State>State</RimTalk.DebugWindow.State>
+    <RimTalk.DebugWindow.Limit>Limit</RimTalk.DebugWindow.Limit>
+    <RimTalk.DebugWindow.StateAll>All</RimTalk.DebugWindow.StateAll>
+    <RimTalk.DebugWindow.StatePending>Pending</RimTalk.DebugWindow.StatePending>
+    <RimTalk.DebugWindow.StateIgnored>Ignored</RimTalk.DebugWindow.StateIgnored>
+    <RimTalk.DebugWindow.StateSpoken>Spoken</RimTalk.DebugWindow.StateSpoken>
+    <RimTalk.DebugWindow.Pause>Pause</RimTalk.DebugWindow.Pause>
+    <RimTalk.DebugWindow.TooltipSelectForDetails>Select a row to view details</RimTalk.DebugWindow.TooltipSelectForDetails>
+    <RimTalk.DebugWindow.Details>Details</RimTalk.DebugWindow.Details>
+    <RimTalk.DebugWindow.SelectRowHint>Select a request on the left to inspect Prompt/Response/Contexts.</RimTalk.DebugWindow.SelectRowHint>
+    <RimTalk.DebugWindow.CopyAll>Copy All</RimTalk.DebugWindow.CopyAll>
+    <RimTalk.DebugWindow.CopyPrompt>Copy Prompt</RimTalk.DebugWindow.CopyPrompt>
+    <RimTalk.DebugWindow.CopyResponse>Copy Response</RimTalk.DebugWindow.CopyResponse>
+    <RimTalk.DebugWindow.CopyContexts>Copy Contexts</RimTalk.DebugWindow.CopyContexts>
+    <RimTalk.DebugWindow.Copied>Copied</RimTalk.DebugWindow.Copied>
+    <RimTalk.DebugWindow.Prompt>Prompt</RimTalk.DebugWindow.Prompt>
+    <RimTalk.DebugWindow.Response>Response</RimTalk.DebugWindow.Response>
+    <RimTalk.DebugWindow.Contexts>Contexts</RimTalk.DebugWindow.Contexts>
     <RimTalk.DebugWindow.Generating>[Generating...]</RimTalk.DebugWindow.Generating>
     <RimTalk.DebugWindow.StatusDisabled>Disabled</RimTalk.DebugWindow.StatusDisabled>
     <RimTalk.DebugWindow.StatusProcessing>Processing</RimTalk.DebugWindow.StatusProcessing>

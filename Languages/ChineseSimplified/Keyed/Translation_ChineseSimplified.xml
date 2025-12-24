@@ -214,6 +214,26 @@
     <RimTalk.Settings.IncludeWealth>殖民地财富</RimTalk.Settings.IncludeWealth>
 
     <!-- DebugWindow.cs -->
+    <RimTalk.DebugWindow.FilterPawn>角色</RimTalk.DebugWindow.FilterPawn>
+    <RimTalk.DebugWindow.Search>搜索</RimTalk.DebugWindow.Search>
+    <RimTalk.DebugWindow.State>状态</RimTalk.DebugWindow.State>
+    <RimTalk.DebugWindow.Limit>限制</RimTalk.DebugWindow.Limit>
+    <RimTalk.DebugWindow.StateAll>全部</RimTalk.DebugWindow.StateAll>
+    <RimTalk.DebugWindow.StatePending>等待</RimTalk.DebugWindow.StatePending>
+    <RimTalk.DebugWindow.StateIgnored>忽略</RimTalk.DebugWindow.StateIgnored>
+    <RimTalk.DebugWindow.StateSpoken>已说出</RimTalk.DebugWindow.StateSpoken>
+    <RimTalk.DebugWindow.Pause>暂停</RimTalk.DebugWindow.Pause>
+    <RimTalk.DebugWindow.TooltipSelectForDetails>选择一列展示细节</RimTalk.DebugWindow.TooltipSelectForDetails>
+    <RimTalk.DebugWindow.Details>细节</RimTalk.DebugWindow.Details>
+    <RimTalk.DebugWindow.SelectRowHint>点击请求获取上下文和提示词</RimTalk.DebugWindow.SelectRowHint>
+    <RimTalk.DebugWindow.CopyAll>复制</RimTalk.DebugWindow.CopyAll>
+    <RimTalk.DebugWindow.CopyPrompt>复制提示词</RimTalk.DebugWindow.CopyPrompt>
+    <RimTalk.DebugWindow.CopyResponse>复制回应</RimTalk.DebugWindow.CopyResponse>
+    <RimTalk.DebugWindow.CopyContexts>复制上下文</RimTalk.DebugWindow.CopyContexts>
+    <RimTalk.DebugWindow.Copied>已复制</RimTalk.DebugWindow.Copied>
+    <RimTalk.DebugWindow.Prompt>提示词</RimTalk.DebugWindow.Prompt>
+    <RimTalk.DebugWindow.Response>回应</RimTalk.DebugWindow.Response>
+    <RimTalk.DebugWindow.Contexts>上下文</RimTalk.DebugWindow.Contexts>
     <RimTalk.DebugWindow.Generating>[正在生成...]</RimTalk.DebugWindow.Generating>
     <RimTalk.DebugWindow.StatusDisabled>已禁用</RimTalk.DebugWindow.StatusDisabled>
     <RimTalk.DebugWindow.StatusProcessing>处理中</RimTalk.DebugWindow.StatusProcessing>
@@ -232,8 +252,8 @@
     <RimTalk.DebugWindow.TokensPerSecond>令牌数/秒</RimTalk.DebugWindow.TokensPerSecond>
     <RimTalk.DebugWindow.SixtySecondsAgo>60 秒前</RimTalk.DebugWindow.SixtySecondsAgo>
     <RimTalk.DebugWindow.Now>现在</RimTalk.DebugWindow.Now>
-    <RimTalk.DebugWindow.StatusReady>Ready</RimTalk.DebugWindow.StatusReady>
-    <RimTalk.DebugWindow.StatusBusy>Busy</RimTalk.DebugWindow.StatusBusy>
+    <RimTalk.DebugWindow.StatusReady>就绪</RimTalk.DebugWindow.StatusReady>
+    <RimTalk.DebugWindow.StatusBusy>忙碌</RimTalk.DebugWindow.StatusBusy>
     <RimTalk.DebugWindow.HeaderPawn>角色</RimTalk.DebugWindow.HeaderPawn>
     <RimTalk.DebugWindow.HeaderResponse>回应</RimTalk.DebugWindow.HeaderResponse>
     <RimTalk.DebugWindow.HeaderInteractionType>类型</RimTalk.DebugWindow.HeaderInteractionType>

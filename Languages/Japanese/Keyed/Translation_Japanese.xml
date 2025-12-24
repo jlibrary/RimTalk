@@ -214,6 +214,27 @@
     <RimTalk.Settings.IncludeWealth>コロニーの富</RimTalk.Settings.IncludeWealth>
 
     <!-- DebugWindow.cs -->
+        <!-- DebugWindow.cs (new keys) -->
+    <RimTalk.DebugWindow.FilterPawn>ポーン（選択中）</RimTalk.DebugWindow.FilterPawn>
+    <RimTalk.DebugWindow.Search>検索</RimTalk.DebugWindow.Search>
+    <RimTalk.DebugWindow.State>状態</RimTalk.DebugWindow.State>
+    <RimTalk.DebugWindow.Limit>上限</RimTalk.DebugWindow.Limit>
+    <RimTalk.DebugWindow.StateAll>すべて</RimTalk.DebugWindow.StateAll>
+    <RimTalk.DebugWindow.StatePending>保留中</RimTalk.DebugWindow.StatePending>
+    <RimTalk.DebugWindow.StateIgnored>無視</RimTalk.DebugWindow.StateIgnored>
+    <RimTalk.DebugWindow.StateSpoken>発話済み</RimTalk.DebugWindow.StateSpoken>
+    <RimTalk.DebugWindow.Pause>一時停止</RimTalk.DebugWindow.Pause>
+    <RimTalk.DebugWindow.TooltipSelectForDetails>行を選択すると詳細が表示されます</RimTalk.DebugWindow.TooltipSelectForDetails>
+    <RimTalk.DebugWindow.Details>詳細</RimTalk.DebugWindow.Details>
+    <RimTalk.DebugWindow.SelectRowHint>左側のリストからリクエストを選択して、プロンプト／レスポンス／コンテキストを確認します。</RimTalk.DebugWindow.SelectRowHint>
+    <RimTalk.DebugWindow.CopyAll>すべてコピー</RimTalk.DebugWindow.CopyAll>
+    <RimTalk.DebugWindow.CopyPrompt>プロンプトをコピー</RimTalk.DebugWindow.CopyPrompt>
+    <RimTalk.DebugWindow.CopyResponse>レスポンスをコピー</RimTalk.DebugWindow.CopyResponse>
+    <RimTalk.DebugWindow.CopyContexts>コンテキストをコピー</RimTalk.DebugWindow.CopyContexts>
+    <RimTalk.DebugWindow.Copied>コピーしました</RimTalk.DebugWindow.Copied>
+    <RimTalk.DebugWindow.Prompt>プロンプト</RimTalk.DebugWindow.Prompt>
+    <RimTalk.DebugWindow.Response>レスポンス</RimTalk.DebugWindow.Response>
+    <RimTalk.DebugWindow.Contexts>コンテキスト</RimTalk.DebugWindow.Contexts>
     <RimTalk.DebugWindow.Generating>[生成中...]</RimTalk.DebugWindow.Generating>
     <RimTalk.DebugWindow.StatusDisabled>無効</RimTalk.DebugWindow.StatusDisabled>
     <RimTalk.DebugWindow.StatusProcessing>処理中</RimTalk.DebugWindow.StatusProcessing>

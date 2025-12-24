@@ -214,6 +214,26 @@
     <RimTalk.Settings.IncludeWealth>Богатство колонии</RimTalk.Settings.IncludeWealth>
 
     <!-- DebugWindow.cs -->
+    <RimTalk.DebugWindow.FilterPawn>Пешка (выбрано)</RimTalk.DebugWindow.FilterPawn>
+    <RimTalk.DebugWindow.Search>Поиск</RimTalk.DebugWindow.Search>
+    <RimTalk.DebugWindow.State>Состояние</RimTalk.DebugWindow.State>
+    <RimTalk.DebugWindow.Limit>Лимит</RimTalk.DebugWindow.Limit>
+    <RimTalk.DebugWindow.StateAll>Все</RimTalk.DebugWindow.StateAll>
+    <RimTalk.DebugWindow.StatePending>В ожидании</RimTalk.DebugWindow.StatePending>
+    <RimTalk.DebugWindow.StateIgnored>Игнорируется</RimTalk.DebugWindow.StateIgnored>
+    <RimTalk.DebugWindow.StateSpoken>Произнесено</RimTalk.DebugWindow.StateSpoken>
+    <RimTalk.DebugWindow.Pause>Пауза</RimTalk.DebugWindow.Pause>
+    <RimTalk.DebugWindow.TooltipSelectForDetails>Выберите строку, чтобы просмотреть подробности</RimTalk.DebugWindow.TooltipSelectForDetails>
+    <RimTalk.DebugWindow.Details>Подробности</RimTalk.DebugWindow.Details>
+    <RimTalk.DebugWindow.SelectRowHint>Выберите запрос слева, чтобы просмотреть промпт, ответ и контексты.</RimTalk.DebugWindow.SelectRowHint>
+    <RimTalk.DebugWindow.CopyAll>Копировать всё</RimTalk.DebugWindow.CopyAll>
+    <RimTalk.DebugWindow.CopyPrompt>Копировать промпт</RimTalk.DebugWindow.CopyPrompt>
+    <RimTalk.DebugWindow.CopyResponse>Копировать ответ</RimTalk.DebugWindow.CopyResponse>
+    <RimTalk.DebugWindow.CopyContexts>Копировать контексты</RimTalk.DebugWindow.CopyContexts>
+    <RimTalk.DebugWindow.Copied>Скопировано</RimTalk.DebugWindow.Copied>
+    <RimTalk.DebugWindow.Prompt>Промпт</RimTalk.DebugWindow.Prompt>
+    <RimTalk.DebugWindow.Response>Ответ</RimTalk.DebugWindow.Response>
+    <RimTalk.DebugWindow.Contexts>Контексты</RimTalk.DebugWindow.Contexts>
     <RimTalk.DebugWindow.Generating>[Генерация...]</RimTalk.DebugWindow.Generating>
     <RimTalk.DebugWindow.StatusDisabled>Отключено</RimTalk.DebugWindow.StatusDisabled>
     <RimTalk.DebugWindow.StatusProcessing>Обработка</RimTalk.DebugWindow.StatusProcessing>

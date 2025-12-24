@@ -214,6 +214,26 @@
     <RimTalk.Settings.IncludeWealth>식민지 자산</RimTalk.Settings.IncludeWealth>
 
     <!-- DebugWindow.cs -->
+    <RimTalk.DebugWindow.FilterPawn>폰(선택됨)</RimTalk.DebugWindow.FilterPawn>
+    <RimTalk.DebugWindow.Search>검색</RimTalk.DebugWindow.Search>
+    <RimTalk.DebugWindow.State>상태</RimTalk.DebugWindow.State>
+    <RimTalk.DebugWindow.Limit>제한</RimTalk.DebugWindow.Limit>
+    <RimTalk.DebugWindow.StateAll>전체</RimTalk.DebugWindow.StateAll>
+    <RimTalk.DebugWindow.StatePending>대기 중</RimTalk.DebugWindow.StatePending>
+    <RimTalk.DebugWindow.StateIgnored>무시됨</RimTalk.DebugWindow.StateIgnored>
+    <RimTalk.DebugWindow.StateSpoken>발화됨</RimTalk.DebugWindow.StateSpoken>
+    <RimTalk.DebugWindow.Pause>일시 중지</RimTalk.DebugWindow.Pause>
+    <RimTalk.DebugWindow.TooltipSelectForDetails>행을 선택하면 자세한 정보가 표시됩니다</RimTalk.DebugWindow.TooltipSelectForDetails>
+    <RimTalk.DebugWindow.Details>세부 정보</RimTalk.DebugWindow.Details>
+    <RimTalk.DebugWindow.SelectRowHint>왼쪽에서 요청을 선택하여 프롬프트/응답/컨텍스트를 확인하세요.</RimTalk.DebugWindow.SelectRowHint>
+    <RimTalk.DebugWindow.CopyAll>모두 복사</RimTalk.DebugWindow.CopyAll>
+    <RimTalk.DebugWindow.CopyPrompt>프롬프트 복사</RimTalk.DebugWindow.CopyPrompt>
+    <RimTalk.DebugWindow.CopyResponse>응답 복사</RimTalk.DebugWindow.CopyResponse>
+    <RimTalk.DebugWindow.CopyContexts>컨텍스트 복사</RimTalk.DebugWindow.CopyContexts>
+    <RimTalk.DebugWindow.Copied>복사 완료</RimTalk.DebugWindow.Copied>
+    <RimTalk.DebugWindow.Prompt>프롬프트</RimTalk.DebugWindow.Prompt>
+    <RimTalk.DebugWindow.Response>응답</RimTalk.DebugWindow.Response>
+    <RimTalk.DebugWindow.Contexts>컨텍스트</RimTalk.DebugWindow.Contexts>
     <RimTalk.DebugWindow.Generating>[생성 중...]</RimTalk.DebugWindow.Generating>
     <RimTalk.DebugWindow.StatusDisabled>비활성화됨</RimTalk.DebugWindow.StatusDisabled>
     <RimTalk.DebugWindow.StatusProcessing>처리 중</RimTalk.DebugWindow.StatusProcessing>
