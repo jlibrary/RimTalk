@@ -214,6 +214,26 @@
     <RimTalk.Settings.IncludeWealth>La richesse de la colonie</RimTalk.Settings.IncludeWealth>
 
     <!-- DebugWindow.cs -->
+    <RimTalk.DebugWindow.FilterPawn>Pion (sélectionné)</RimTalk.DebugWindow.FilterPawn>
+    <RimTalk.DebugWindow.Search>Recherche</RimTalk.DebugWindow.Search>
+    <RimTalk.DebugWindow.State>État</RimTalk.DebugWindow.State>
+    <RimTalk.DebugWindow.Limit>Limite</RimTalk.DebugWindow.Limit>
+    <RimTalk.DebugWindow.StateAll>Tous</RimTalk.DebugWindow.StateAll>
+    <RimTalk.DebugWindow.StatePending>En attente</RimTalk.DebugWindow.StatePending>
+    <RimTalk.DebugWindow.StateIgnored>Ignorés</RimTalk.DebugWindow.StateIgnored>
+    <RimTalk.DebugWindow.StateSpoken>Parlés</RimTalk.DebugWindow.StateSpoken>
+    <RimTalk.DebugWindow.Pause>Pause</RimTalk.DebugWindow.Pause>
+    <RimTalk.DebugWindow.TooltipSelectForDetails>Sélectionnez une ligne pour afficher les détails</RimTalk.DebugWindow.TooltipSelectForDetails>
+    <RimTalk.DebugWindow.Details>Détails</RimTalk.DebugWindow.Details>
+    <RimTalk.DebugWindow.SelectRowHint>Sélectionnez une requête à gauche pour afficher le prompt, la réponse et les contextes.</RimTalk.DebugWindow.SelectRowHint>
+    <RimTalk.DebugWindow.CopyAll>Tout copier</RimTalk.DebugWindow.CopyAll>
+    <RimTalk.DebugWindow.CopyPrompt>Copier le prompt</RimTalk.DebugWindow.CopyPrompt>
+    <RimTalk.DebugWindow.CopyResponse>Copier la réponse</RimTalk.DebugWindow.CopyResponse>
+    <RimTalk.DebugWindow.CopyContexts>Copier les contextes</RimTalk.DebugWindow.CopyContexts>
+    <RimTalk.DebugWindow.Copied>Copié</RimTalk.DebugWindow.Copied>
+    <RimTalk.DebugWindow.Prompt>Prompt</RimTalk.DebugWindow.Prompt>
+    <RimTalk.DebugWindow.Response>Réponse</RimTalk.DebugWindow.Response>
+    <RimTalk.DebugWindow.Contexts>Contextes</RimTalk.DebugWindow.Contexts>
     <RimTalk.DebugWindow.Generating>[Génération...]</RimTalk.DebugWindow.Generating>
     <RimTalk.DebugWindow.StatusDisabled>Désactivé</RimTalk.DebugWindow.StatusDisabled>
     <RimTalk.DebugWindow.StatusProcessing>En traitement</RimTalk.DebugWindow.StatusProcessing>
