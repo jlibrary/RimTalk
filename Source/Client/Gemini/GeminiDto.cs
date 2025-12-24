@@ -115,3 +115,23 @@ public class UsageMetadata
     [DataMember(Name = "totalTokenCount")]
     public int TotalTokenCount { get; set; }
 }
+
+[DataContract]
+public class GoogleModelsResponse
+{
+    [DataMember(Name = "models")]
+    public List<GoogleModelData> Models;
+}
+
+[DataContract]
+public class GoogleModelData
+{
+    [DataMember(Name = "name")]
+    public string Name;
+    [DataMember(Name = "displayName")]
+    public string DisplayName;
+    [DataMember(Name = "description")]
+    public string Description;
+    [DataMember(Name = "supportedGenerationMethods")]
+    public List<string> SupportedGenerationMethods;
+}

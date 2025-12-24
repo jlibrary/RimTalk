@@ -99,7 +99,10 @@ public static class TalkService
             Cache.Get(initiator).IsGeneratingTalk = true;
 
             // Create a dictionary for quick pawn lookup by name during streaming.
-            var playerDict = allInvolvedPawns.ToDictionary(p => p.LabelShort, p => p);
+            // Note: LabelShort is not guaranteed to be unique (e.g. animals, duplicated names, some custom races).
+            var playerDict = allInvolvedPawns
+                .GroupBy(p => p.LabelShort)
+                .ToDictionary(g => g.Key, g => g.First());
             var receivedResponses = new List<TalkResponse>();
 
             // Call the streaming chat service. The callback is executed as each piece of dialogue is parsed.
