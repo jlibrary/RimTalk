@@ -214,15 +214,16 @@
     <RimTalk.Settings.IncludeWealth>Colony Wealth</RimTalk.Settings.IncludeWealth>
     
     <!-- DebugWindow.cs -->
-    <RimTalk.DebugWindow.FilterPawn>Pawn(Selected)</RimTalk.DebugWindow.FilterPawn>
+    <RimTalk.DebugWindow.FilterPawn>Name</RimTalk.DebugWindow.FilterPawn>
     <RimTalk.DebugWindow.Search>Search</RimTalk.DebugWindow.Search>
     <RimTalk.DebugWindow.State>State</RimTalk.DebugWindow.State>
     <RimTalk.DebugWindow.Limit>Limit</RimTalk.DebugWindow.Limit>
-    <RimTalk.DebugWindow.StateAll>All</RimTalk.DebugWindow.StateAll>
+    <RimTalk.DebugWindow.StateAll>All States</RimTalk.DebugWindow.StateAll>
     <RimTalk.DebugWindow.StatePending>Pending</RimTalk.DebugWindow.StatePending>
     <RimTalk.DebugWindow.StateIgnored>Ignored</RimTalk.DebugWindow.StateIgnored>
     <RimTalk.DebugWindow.StateSpoken>Spoken</RimTalk.DebugWindow.StateSpoken>
-    <RimTalk.DebugWindow.Pause>Pause</RimTalk.DebugWindow.Pause>
+    <RimTalk.DebugWindow.Last>Last</RimTalk.DebugWindow.Last>
+    <RimTalk.DebugWindow.AutoScroll>Auto Scroll</RimTalk.DebugWindow.AutoScroll>
     <RimTalk.DebugWindow.TooltipSelectForDetails>Select a row to view details</RimTalk.DebugWindow.TooltipSelectForDetails>
     <RimTalk.DebugWindow.Details>Details</RimTalk.DebugWindow.Details>
     <RimTalk.DebugWindow.SelectRowHint>Select a request on the left to inspect Prompt/Response/Contexts.</RimTalk.DebugWindow.SelectRowHint>
@@ -265,9 +266,6 @@
     <RimTalk.DebugWindow.HeaderTimeMs>Time(ms)</RimTalk.DebugWindow.HeaderTimeMs>
     <RimTalk.DebugWindow.HeaderTokens>Tokens</RimTalk.DebugWindow.HeaderTokens>
     <RimTalk.DebugWindow.HeaderState>State</RimTalk.DebugWindow.HeaderState>
-    <RimTalk.DebugWindow.Pending>Pending</RimTalk.DebugWindow.Pending>
-    <RimTalk.DebugWindow.Ignored>Ignored</RimTalk.DebugWindow.Ignored>
-    <RimTalk.DebugWindow.Spoken>Spoken</RimTalk.DebugWindow.Spoken>
     <RimTalk.DebugWindow.TooltipPromptResponse>Prompt:\n{0}\n\nResponse:\n{1}</RimTalk.DebugWindow.TooltipPromptResponse>
     
     <!-- Overlay.cs -->

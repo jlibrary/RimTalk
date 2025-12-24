@@ -214,16 +214,16 @@
     <RimTalk.Settings.IncludeWealth>コロニーの富</RimTalk.Settings.IncludeWealth>
 
     <!-- DebugWindow.cs -->
-        <!-- DebugWindow.cs (new keys) -->
-    <RimTalk.DebugWindow.FilterPawn>ポーン（選択中）</RimTalk.DebugWindow.FilterPawn>
+    <RimTalk.DebugWindow.FilterPawn>名前</RimTalk.DebugWindow.FilterPawn>
     <RimTalk.DebugWindow.Search>検索</RimTalk.DebugWindow.Search>
     <RimTalk.DebugWindow.State>状態</RimTalk.DebugWindow.State>
     <RimTalk.DebugWindow.Limit>上限</RimTalk.DebugWindow.Limit>
-    <RimTalk.DebugWindow.StateAll>すべて</RimTalk.DebugWindow.StateAll>
+    <RimTalk.DebugWindow.StateAll>すべての状態</RimTalk.DebugWindow.StateAll>
     <RimTalk.DebugWindow.StatePending>保留中</RimTalk.DebugWindow.StatePending>
     <RimTalk.DebugWindow.StateIgnored>無視</RimTalk.DebugWindow.StateIgnored>
     <RimTalk.DebugWindow.StateSpoken>発話済み</RimTalk.DebugWindow.StateSpoken>
-    <RimTalk.DebugWindow.Pause>一時停止</RimTalk.DebugWindow.Pause>
+    <RimTalk.DebugWindow.Last>最新</RimTalk.DebugWindow.Last>
+    <RimTalk.DebugWindow.AutoScroll>自動スクロール</RimTalk.DebugWindow.AutoScroll>
     <RimTalk.DebugWindow.TooltipSelectForDetails>行を選択すると詳細が表示されます</RimTalk.DebugWindow.TooltipSelectForDetails>
     <RimTalk.DebugWindow.Details>詳細</RimTalk.DebugWindow.Details>
     <RimTalk.DebugWindow.SelectRowHint>左側のリストからリクエストを選択して、プロンプト／レスポンス／コンテキストを確認します。</RimTalk.DebugWindow.SelectRowHint>
@@ -266,9 +266,6 @@
     <RimTalk.DebugWindow.HeaderTimeMs>時間(ms)</RimTalk.DebugWindow.HeaderTimeMs>
     <RimTalk.DebugWindow.HeaderTokens>トークン</RimTalk.DebugWindow.HeaderTokens>
     <RimTalk.DebugWindow.HeaderState>状態</RimTalk.DebugWindow.HeaderState>
-    <RimTalk.DebugWindow.Pending>保留</RimTalk.DebugWindow.Pending>
-    <RimTalk.DebugWindow.Ignored>無視</RimTalk.DebugWindow.Ignored>
-    <RimTalk.DebugWindow.Spoken>発言済み</RimTalk.DebugWindow.Spoken>
     <RimTalk.DebugWindow.TooltipPromptResponse>プロンプト：\n{0}\n\n応答：\n{1}</RimTalk.DebugWindow.TooltipPromptResponse>
     
     <!-- Overlay.cs -->

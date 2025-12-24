@@ -214,15 +214,16 @@
     <RimTalk.Settings.IncludeWealth>殖民地财富</RimTalk.Settings.IncludeWealth>
 
     <!-- DebugWindow.cs -->
-    <RimTalk.DebugWindow.FilterPawn>角色</RimTalk.DebugWindow.FilterPawn>
+    <RimTalk.DebugWindow.FilterPawn>名称</RimTalk.DebugWindow.FilterPawn>
     <RimTalk.DebugWindow.Search>搜索</RimTalk.DebugWindow.Search>
     <RimTalk.DebugWindow.State>状态</RimTalk.DebugWindow.State>
     <RimTalk.DebugWindow.Limit>限制</RimTalk.DebugWindow.Limit>
-    <RimTalk.DebugWindow.StateAll>全部</RimTalk.DebugWindow.StateAll>
+    <RimTalk.DebugWindow.StateAll>所有状态</RimTalk.DebugWindow.StateAll>
     <RimTalk.DebugWindow.StatePending>等待</RimTalk.DebugWindow.StatePending>
     <RimTalk.DebugWindow.StateIgnored>忽略</RimTalk.DebugWindow.StateIgnored>
     <RimTalk.DebugWindow.StateSpoken>已说出</RimTalk.DebugWindow.StateSpoken>
-    <RimTalk.DebugWindow.Pause>暂停</RimTalk.DebugWindow.Pause>
+    <RimTalk.DebugWindow.Last>最近</RimTalk.DebugWindow.Last>
+    <RimTalk.DebugWindow.AutoScroll>自动滚动</RimTalk.DebugWindow.AutoScroll>
     <RimTalk.DebugWindow.TooltipSelectForDetails>选择一列展示细节</RimTalk.DebugWindow.TooltipSelectForDetails>
     <RimTalk.DebugWindow.Details>细节</RimTalk.DebugWindow.Details>
     <RimTalk.DebugWindow.SelectRowHint>点击请求获取上下文和提示词</RimTalk.DebugWindow.SelectRowHint>
@@ -265,9 +266,6 @@
     <RimTalk.DebugWindow.HeaderTimeMs>时间（毫秒）</RimTalk.DebugWindow.HeaderTimeMs>
     <RimTalk.DebugWindow.HeaderTokens>令牌</RimTalk.DebugWindow.HeaderTokens>
     <RimTalk.DebugWindow.HeaderState>状态</RimTalk.DebugWindow.HeaderState>
-    <RimTalk.DebugWindow.Pending>等待</RimTalk.DebugWindow.Pending>
-    <RimTalk.DebugWindow.Ignored>已忽略</RimTalk.DebugWindow.Ignored>
-    <RimTalk.DebugWindow.Spoken>已说出</RimTalk.DebugWindow.Spoken>
     <RimTalk.DebugWindow.TooltipPromptResponse>提示：\n{0}\n\n回应：\n{1}</RimTalk.DebugWindow.TooltipPromptResponse>
     
     <!-- Overlay.cs -->

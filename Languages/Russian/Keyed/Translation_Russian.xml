@@ -214,15 +214,16 @@
     <RimTalk.Settings.IncludeWealth>Богатство колонии</RimTalk.Settings.IncludeWealth>
 
     <!-- DebugWindow.cs -->
-    <RimTalk.DebugWindow.FilterPawn>Пешка (выбрано)</RimTalk.DebugWindow.FilterPawn>
+    <RimTalk.DebugWindow.FilterPawn>Имя</RimTalk.DebugWindow.FilterPawn>
     <RimTalk.DebugWindow.Search>Поиск</RimTalk.DebugWindow.Search>
     <RimTalk.DebugWindow.State>Состояние</RimTalk.DebugWindow.State>
     <RimTalk.DebugWindow.Limit>Лимит</RimTalk.DebugWindow.Limit>
-    <RimTalk.DebugWindow.StateAll>Все</RimTalk.DebugWindow.StateAll>
+    <RimTalk.DebugWindow.StateAll>Все состояния</RimTalk.DebugWindow.StateAll>
     <RimTalk.DebugWindow.StatePending>В ожидании</RimTalk.DebugWindow.StatePending>
     <RimTalk.DebugWindow.StateIgnored>Игнорируется</RimTalk.DebugWindow.StateIgnored>
     <RimTalk.DebugWindow.StateSpoken>Произнесено</RimTalk.DebugWindow.StateSpoken>
-    <RimTalk.DebugWindow.Pause>Пауза</RimTalk.DebugWindow.Pause>
+    <RimTalk.DebugWindow.Last>Последние</RimTalk.DebugWindow.Last>
+    <RimTalk.DebugWindow.AutoScroll>Автопрокрутка</RimTalk.DebugWindow.AutoScroll>
     <RimTalk.DebugWindow.TooltipSelectForDetails>Выберите строку, чтобы просмотреть подробности</RimTalk.DebugWindow.TooltipSelectForDetails>
     <RimTalk.DebugWindow.Details>Подробности</RimTalk.DebugWindow.Details>
     <RimTalk.DebugWindow.SelectRowHint>Выберите запрос слева, чтобы просмотреть промпт, ответ и контексты.</RimTalk.DebugWindow.SelectRowHint>
@@ -265,9 +266,6 @@
     <RimTalk.DebugWindow.HeaderTimeMs>Время (мс)</RimTalk.DebugWindow.HeaderTimeMs>
     <RimTalk.DebugWindow.HeaderTokens>Токены</RimTalk.DebugWindow.HeaderTokens>
     <RimTalk.DebugWindow.HeaderState>Состояние</RimTalk.DebugWindow.HeaderState>
-    <RimTalk.DebugWindow.Pending>Ожидание</RimTalk.DebugWindow.Pending>
-    <RimTalk.DebugWindow.Ignored>Игнорировано</RimTalk.DebugWindow.Ignored>
-    <RimTalk.DebugWindow.Spoken>Произнесено</RimTalk.DebugWindow.Spoken>
     <RimTalk.DebugWindow.TooltipPromptResponse>Запрос:\n{0}\n\nОтвет:\n{1}</RimTalk.DebugWindow.TooltipPromptResponse>
     
     <!-- Overlay.cs -->

@@ -214,15 +214,16 @@
     <RimTalk.Settings.IncludeWealth>식민지 자산</RimTalk.Settings.IncludeWealth>
 
     <!-- DebugWindow.cs -->
-    <RimTalk.DebugWindow.FilterPawn>폰(선택됨)</RimTalk.DebugWindow.FilterPawn>
+    <RimTalk.DebugWindow.FilterPawn>이름</RimTalk.DebugWindow.FilterPawn>
     <RimTalk.DebugWindow.Search>검색</RimTalk.DebugWindow.Search>
     <RimTalk.DebugWindow.State>상태</RimTalk.DebugWindow.State>
     <RimTalk.DebugWindow.Limit>제한</RimTalk.DebugWindow.Limit>
-    <RimTalk.DebugWindow.StateAll>전체</RimTalk.DebugWindow.StateAll>
+    <RimTalk.DebugWindow.StateAll>모든 상태</RimTalk.DebugWindow.StateAll>
     <RimTalk.DebugWindow.StatePending>대기 중</RimTalk.DebugWindow.StatePending>
     <RimTalk.DebugWindow.StateIgnored>무시됨</RimTalk.DebugWindow.StateIgnored>
     <RimTalk.DebugWindow.StateSpoken>발화됨</RimTalk.DebugWindow.StateSpoken>
-    <RimTalk.DebugWindow.Pause>일시 중지</RimTalk.DebugWindow.Pause>
+    <RimTalk.DebugWindow.Last>최근</RimTalk.DebugWindow.Last>
+    <RimTalk.DebugWindow.AutoScroll>자동 스크롤</RimTalk.DebugWindow.AutoScroll>
     <RimTalk.DebugWindow.TooltipSelectForDetails>행을 선택하면 자세한 정보가 표시됩니다</RimTalk.DebugWindow.TooltipSelectForDetails>
     <RimTalk.DebugWindow.Details>세부 정보</RimTalk.DebugWindow.Details>
     <RimTalk.DebugWindow.SelectRowHint>왼쪽에서 요청을 선택하여 프롬프트/응답/컨텍스트를 확인하세요.</RimTalk.DebugWindow.SelectRowHint>
@@ -265,9 +266,6 @@
     <RimTalk.DebugWindow.HeaderTimeMs>시간(ms)</RimTalk.DebugWindow.HeaderTimeMs>
     <RimTalk.DebugWindow.HeaderTokens>토큰</RimTalk.DebugWindow.HeaderTokens>
     <RimTalk.DebugWindow.HeaderState>상태</RimTalk.DebugWindow.HeaderState>
-    <RimTalk.DebugWindow.Pending>대기</RimTalk.DebugWindow.Pending>
-    <RimTalk.DebugWindow.Ignored>무시됨</RimTalk.DebugWindow.Ignored>
-    <RimTalk.DebugWindow.Spoken>말함</RimTalk.DebugWindow.Spoken>
     <RimTalk.DebugWindow.TooltipPromptResponse>프롬프트:\n{0}\n\n응답:\n{1}</RimTalk.DebugWindow.TooltipPromptResponse>
     
     <!-- Overlay.cs -->
