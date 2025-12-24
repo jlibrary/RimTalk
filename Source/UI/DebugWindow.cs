@@ -216,13 +216,13 @@ public class DebugWindow : Window
         switch (_stateFilter)
         {
             case 1:
-                q = q.Where(r => r.SpokenTick == 0);
+                q = q.Where(r => r.Response == null);
                 break;
             case 2:
                 q = q.Where(r => r.SpokenTick == -1);
                 break;
             case 3:
-                q = q.Where(r => r.SpokenTick > 0);
+                q = q.Where(r => r.Response != null && r.SpokenTick > 0);
                 break;
         }
 
@@ -624,9 +624,17 @@ public class DebugWindow : Window
             Widgets.DrawBoxSolid(rowRect, new Color(0.2f, 0.25f, 0.35f, 0.45f));
         }
 
-        string resp = request.Response ?? _generating;
-        int maxChars = (int)(responseColumnWidth / 7);
-        if (resp.Length > maxChars) resp = resp.Substring(0, Math.Max(10, maxChars - 3)) + "...";
+        string resp = request.Response == null ? _generating : "-";
+
+        int maxChars = Mathf.FloorToInt(responseColumnWidth / 7f);
+        if (maxChars < 1)
+            maxChars = 1;
+        if (resp.Length > maxChars)
+        {
+            int targetLen = maxChars - 3;
+            targetLen = Mathf.Clamp(targetLen, 1, resp.Length);
+            resp = resp.Substring(0, targetLen) + "...";
+        }
 
         float currentX = xOffset + 5f;
         Widgets.Label(new Rect(currentX, rowRect.y, TimestampColumnWidth, RowHeight),
@@ -668,23 +676,23 @@ public class DebugWindow : Window
 
         string statusText;
         Color statusColor;
-        switch (request.SpokenTick)
+        if (request.Response == null)
         {
-            case 0:
-                statusText = "RimTalk.DebugWindow.Pending".Translate();
-                statusColor = Color.yellow;
-                break;
-            case -1:
-                statusText = "RimTalk.DebugWindow.Ignored".Translate();
-                statusColor = Color.red;
-                break;
-            default:
-                statusText = "RimTalk.DebugWindow.Spoken".Translate();
-                statusColor = Color.green;
-                break;
+            statusText = "RimTalk.DebugWindow.Pending".Translate();
+            statusColor = Color.yellow;
+        }
+        else if (request.SpokenTick == -1)
+        {
+            statusText = "RimTalk.DebugWindow.Ignored".Translate();
+            statusColor = Color.red;
+        }
+        else
+        {
+            statusText = "RimTalk.DebugWindow.Spoken".Translate();
+            statusColor = Color.green;
         }
 
-        statusText = request.Response == null ? null : statusText;
+        // statusText = request.Response == null ? null : statusText;
         GUI.color = statusColor;
         Widgets.Label(new Rect(currentX, rowRect.y, StateColumnWidth, RowHeight), statusText);
         GUI.color = Color.white;
