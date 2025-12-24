@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using HarmonyLib;
 using RimTalk.UI;
 using RimTalk.Util;
@@ -55,7 +56,7 @@ public static class FloatMenuPatch
         Map map = selectedPawn.Map;
         IntVec3 clickCell = IntVec3.FromVector3(clickPos);
         
-        IReadOnlyList<Pawn> pawns = map.mapPawns.AllPawnsSpawned;
+        List<Pawn> pawns = Cache.GetPawnsNear(map, clickCell, ClickRadiusCells).ToList();
 
         foreach (var p in pawns)
         {
