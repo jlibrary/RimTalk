@@ -17,9 +17,6 @@ namespace RimTalk.Patch;
 #endif
 public static class FloatMenuPatch
 {
-    /// <summary>
-    /// fallback
-    /// </summary>
     private const int ClickRadiusCells = 1;
 
 #if V1_5
@@ -54,24 +51,31 @@ public static class FloatMenuPatch
 
         Map map = selectedPawn.Map;
         IntVec3 clickCell = IntVec3.FromVector3(clickPos);
-        
-        IReadOnlyList<Pawn> pawns = map.mapPawns.AllPawnsSpawned;
 
-        foreach (var p in pawns)
+        HashSet<Pawn> processedPawns = [];
+
+        for (int dx = -ClickRadiusCells; dx <= ClickRadiusCells; dx++)
         {
-            IntVec3 pos = p.Position;
-            int x = clickCell.x;
-            int z = clickCell.z;
-            Pawn initiator;
-            Pawn target;
-
-
-            if (pos.x<x-ClickRadiusCells||pos.x>x+ClickRadiusCells||pos.z<z-ClickRadiusCells||pos.z>z+ClickRadiusCells)
-                continue;
-
-            if (TryResolveForHitPawn(selectedPawn, p, out initiator, out target))
+            for (int dz = -ClickRadiusCells; dz <= ClickRadiusCells; dz++)
             {
-                AddTalkOption(result, initiator, target);
+                IntVec3 curCell = clickCell + new IntVec3(dx, 0, dz);
+
+                if (!curCell.InBounds(map)) continue;
+
+                List<Thing> thingList = map.thingGrid.ThingsListAt(curCell);
+
+                for (int i = 0; i < thingList.Count; i++)
+                {
+                    if (thingList[i] is Pawn hitPawn)
+                    {
+                        if (!processedPawns.Add(hitPawn)) continue;
+
+                        if (TryResolveForHitPawn(selectedPawn, hitPawn, out var initiator, out var target))
+                        {
+                            AddTalkOption(result, initiator, target);
+                        }
+                    }
+                }
             }
         }
     }
@@ -105,7 +109,7 @@ public static class FloatMenuPatch
             return true;
         }
 
-        // Pawn → Pawn
+        // Pawn -> Pawn
         if (!IsValidPawnToPawnConversation(selectedPawn, hitPawn))
             return false;
 
