@@ -624,7 +624,7 @@ public class DebugWindow : Window
             Widgets.DrawBoxSolid(rowRect, new Color(0.2f, 0.25f, 0.35f, 0.45f));
         }
 
-        string resp = request.Response == null ? _generating : "-";
+        string resp = request.Response ?? _generating;
 
         int maxChars = Mathf.FloorToInt(responseColumnWidth / 7f);
         if (maxChars < 1)
@@ -789,9 +789,9 @@ public class DebugWindow : Window
         Widgets.BeginScrollView(scrollOuter, ref _detailsScrollPosition, view);
         float yy = 0f;
 
-        DrawSelectableBlock(ref yy, view.width, "RimTalk.DebugWindow.Prompt".Translate(), prompt, promptH);
-        yy += blockSpacing;
         DrawSelectableBlock(ref yy, view.width, "RimTalk.DebugWindow.Response".Translate(), response, respH);
+        yy += blockSpacing;
+        DrawSelectableBlock(ref yy, view.width, "RimTalk.DebugWindow.Prompt".Translate(), prompt, promptH);
         yy += blockSpacing;
         DrawSelectableBlock(ref yy, view.width, "RimTalk.DebugWindow.Contexts".Translate(), contexts, ctxH);
 
