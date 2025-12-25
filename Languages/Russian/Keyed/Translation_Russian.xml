@@ -218,11 +218,11 @@
     <RimTalk.DebugWindow.Search>Поиск</RimTalk.DebugWindow.Search>
     <RimTalk.DebugWindow.State>Состояние</RimTalk.DebugWindow.State>
     <RimTalk.DebugWindow.Limit>Лимит</RimTalk.DebugWindow.Limit>
-    <RimTalk.DebugWindow.StateAll>Все состояния</RimTalk.DebugWindow.StateAll>
-    <RimTalk.DebugWindow.StatePending>В ожидании</RimTalk.DebugWindow.StatePending>
-    <RimTalk.DebugWindow.StateIgnored>Игнорируется</RimTalk.DebugWindow.StateIgnored>
-    <RimTalk.DebugWindow.StateSpoken>Произнесено</RimTalk.DebugWindow.StateSpoken>
-    <RimTalk.DebugWindow.Last>Последние</RimTalk.DebugWindow.Last>
+    <RimTalk.DebugWindow.StateAll>Все</RimTalk.DebugWindow.StateAll>
+    <RimTalk.DebugWindow.StatePending>Ожид.</RimTalk.DebugWindow.StatePending>
+    <RimTalk.DebugWindow.StateIgnored>Игн.</RimTalk.DebugWindow.StateIgnored>
+    <RimTalk.DebugWindow.StateSpoken>Сказ.</RimTalk.DebugWindow.StateSpoken>
+    <RimTalk.DebugWindow.Last>посл.</RimTalk.DebugWindow.Last>
     <RimTalk.DebugWindow.AutoScroll>Автопрокрутка</RimTalk.DebugWindow.AutoScroll>
     <RimTalk.DebugWindow.TooltipSelectForDetails>Выберите строку, чтобы просмотреть подробности</RimTalk.DebugWindow.TooltipSelectForDetails>
     <RimTalk.DebugWindow.Details>Подробности</RimTalk.DebugWindow.Details>
@@ -263,7 +263,7 @@
     <RimTalk.DebugWindow.HeaderRequests>Запросы</RimTalk.DebugWindow.HeaderRequests>
     <RimTalk.DebugWindow.HeaderChattiness>Част. Диалог</RimTalk.DebugWindow.HeaderChattiness>
     <RimTalk.DebugWindow.HeaderTimestamp>Временная метка</RimTalk.DebugWindow.HeaderTimestamp>
-    <RimTalk.DebugWindow.HeaderTimeMs>Время (мс)</RimTalk.DebugWindow.HeaderTimeMs>
+    <RimTalk.DebugWindow.HeaderTimeMs>Время(мс)</RimTalk.DebugWindow.HeaderTimeMs>
     <RimTalk.DebugWindow.HeaderTokens>Токены</RimTalk.DebugWindow.HeaderTokens>
     <RimTalk.DebugWindow.HeaderState>Состояние</RimTalk.DebugWindow.HeaderState>
     <RimTalk.DebugWindow.TooltipPromptResponse>Запрос:\n{0}\n\nОтвет:\n{1}</RimTalk.DebugWindow.TooltipPromptResponse>

@@ -263,7 +263,7 @@
     <RimTalk.DebugWindow.HeaderRequests>請求</RimTalk.DebugWindow.HeaderRequests>
     <RimTalk.DebugWindow.HeaderChattiness>對話頻率</RimTalk.DebugWindow.HeaderChattiness>
     <RimTalk.DebugWindow.HeaderTimestamp>時間戳</RimTalk.DebugWindow.HeaderTimestamp>
-    <RimTalk.DebugWindow.HeaderTimeMs>時間（毫秒）</RimTalk.DebugWindow.HeaderTimeMs>
+    <RimTalk.DebugWindow.HeaderTimeMs>時間(ms)</RimTalk.DebugWindow.HeaderTimeMs>
     <RimTalk.DebugWindow.HeaderTokens>權杖</RimTalk.DebugWindow.HeaderTokens>
     <RimTalk.DebugWindow.HeaderState>狀態</RimTalk.DebugWindow.HeaderState>
     <RimTalk.DebugWindow.TooltipPromptResponse>提示：\n{0}\n\n回應：\n{1}</RimTalk.DebugWindow.TooltipPromptResponse>

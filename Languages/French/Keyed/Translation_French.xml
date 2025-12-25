@@ -222,7 +222,7 @@
     <RimTalk.DebugWindow.StatePending>En attente</RimTalk.DebugWindow.StatePending>
     <RimTalk.DebugWindow.StateIgnored>Ignorés</RimTalk.DebugWindow.StateIgnored>
     <RimTalk.DebugWindow.StateSpoken>Parlés</RimTalk.DebugWindow.StateSpoken>
-    <RimTalk.DebugWindow.Last>Derniers</RimTalk.DebugWindow.Last>
+    <RimTalk.DebugWindow.Last>Dern.</RimTalk.DebugWindow.Last>
     <RimTalk.DebugWindow.AutoScroll>Défilement automatique</RimTalk.DebugWindow.AutoScroll>
     <RimTalk.DebugWindow.TooltipSelectForDetails>Sélectionnez une ligne pour afficher les détails</RimTalk.DebugWindow.TooltipSelectForDetails>
     <RimTalk.DebugWindow.Details>Détails</RimTalk.DebugWindow.Details>

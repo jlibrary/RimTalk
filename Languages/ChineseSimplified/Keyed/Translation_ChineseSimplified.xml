@@ -263,7 +263,7 @@
     <RimTalk.DebugWindow.HeaderRequests>请求</RimTalk.DebugWindow.HeaderRequests>
     <RimTalk.DebugWindow.HeaderChattiness>对话频率</RimTalk.DebugWindow.HeaderChattiness>
     <RimTalk.DebugWindow.HeaderTimestamp>时间戳</RimTalk.DebugWindow.HeaderTimestamp>
-    <RimTalk.DebugWindow.HeaderTimeMs>时间（毫秒）</RimTalk.DebugWindow.HeaderTimeMs>
+    <RimTalk.DebugWindow.HeaderTimeMs>时间(ms)</RimTalk.DebugWindow.HeaderTimeMs>
     <RimTalk.DebugWindow.HeaderTokens>令牌</RimTalk.DebugWindow.HeaderTokens>
     <RimTalk.DebugWindow.HeaderState>状态</RimTalk.DebugWindow.HeaderState>
     <RimTalk.DebugWindow.TooltipPromptResponse>提示：\n{0}\n\n回应：\n{1}</RimTalk.DebugWindow.TooltipPromptResponse>

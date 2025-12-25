@@ -21,20 +21,20 @@ public class DebugWindow : Window
     private const float ColumnPadding = 10f;
 
     // Column Widths
-    private const float TimestampColumnWidth = 80f;
+    private const float TimestampColumnWidth = 65f;
     private const float PawnColumnWidth = 80f;
-    private const float TimeColumnWidth = 60f;
-    private const float TokensColumnWidth = 60f;
-    private const float StateColumnWidth = 80f;
-    private const float InteractionTypeColumnWidth = 80f;
+    private const float TimeColumnWidth = 55f;
+    private const float TokensColumnWidth = 50f;
+    private const float StateColumnWidth = 65f;
+    private const float InteractionTypeColumnWidth = 50f;
 
     // Grouping Column Widths
     private const float GroupedPawnNameWidth = 80f;
-    private const float GroupedRequestsWidth = 70f;
-    private const float GroupedLastTalkWidth = 70f;
-    private const float GroupedChattinessWidth = 70f;
+    private const float GroupedRequestsWidth = 60f;
+    private const float GroupedLastTalkWidth = 60f;
+    private const float GroupedChattinessWidth = 65f;
     private const float GroupedExpandIconWidth = 25f;
-    private const float GroupedStatusWidth = 70f;
+    private const float GroupedStatusWidth = 60f;
 
     private readonly string _generating = "RimTalk.DebugWindow.Generating".Translate();
 
@@ -97,7 +97,7 @@ public class DebugWindow : Window
         _stateFilter = 0;
     }
 
-    public override Vector2 InitialSize => new(1000f, 600f);
+    public override Vector2 InitialSize => new(1100f, 600f);
 
     public override void PreClose()
     {
@@ -289,10 +289,10 @@ public class DebugWindow : Window
         {
             var options = new List<FloatMenuOption>
             {
-                new($"{lastPrefix}: 200", () => _maxRows = 200),
-                new($"{lastPrefix}: 500", () => _maxRows = 500),
-                new($"{lastPrefix}: 1000", () => _maxRows = 1000),
-                new($"{lastPrefix}: 2000", () => _maxRows = 2000)
+                new($"{lastPrefix} 200", () => _maxRows = 200),
+                new($"{lastPrefix} 500", () => _maxRows = 500),
+                new($"{lastPrefix} 1000", () => _maxRows = 1000),
+                new($"{lastPrefix} 2000", () => _maxRows = 2000)
             };
             Find.WindowStack.Add(new FloatMenu(options));
         }
@@ -442,7 +442,7 @@ public class DebugWindow : Window
 
         string statusText;
         Color statusColor;
-        if (request.Response == null)
+        if (request.Response == null || request.SpokenTick == 0)
         {
             statusText = "RimTalk.DebugWindow.StatePending".Translate();
             statusColor = Color.yellow;
@@ -919,7 +919,7 @@ public class DebugWindow : Window
 
         switch (_stateFilter)
         {
-            case 1: q = q.Where(r => r.Response == null); break;
+            case 1: q = q.Where(r => r.Response == null || r.SpokenTick == 0); break; 
             case 2: q = q.Where(r => r.SpokenTick == -1); break;
             case 3: q = q.Where(r => r.Response != null && r.SpokenTick > 0); break;
         }
