@@ -5,7 +5,7 @@
      If you have better data or balance suggestions, please share feedback! -->
 <Defs>
     <ThoughtDef>
-        <defName>Chitchat</defName>
+        <defName>RimTalk_Chitchat</defName>
         <thoughtClass>Thought_MemorySocial</thoughtClass>
         <showBubble>true</showBubble>
         <durationDays>1</durationDays>
@@ -20,7 +20,7 @@
         </nullifyingHediffs>
         <stages>
             <li>
-                <label>chitchat</label>
+                <label>chitchat+</label>
                 <baseMoodEffect>0</baseMoodEffect>
                 <baseOpinionOffset>0.1</baseOpinionOffset>
             </li>
@@ -28,7 +28,7 @@
     </ThoughtDef>
 
     <ThoughtDef>
-        <defName>KindWords</defName>
+        <defName>RimTalk_KindWords</defName>
         <thoughtClass>Thought_MemorySocial</thoughtClass>
         <showBubble>true</showBubble>
         <durationDays>1</durationDays>
@@ -39,8 +39,8 @@
         </nullifyingHediffs>
         <stages>
             <li>
-                <label>kind words</label>
-                <description>I've been bestowed with kind words! What a nice person!</description>
+                <label>kind words+</label>
+                <description>I've been bestowed with kind words! What a nice person!(RimTalk)</description>
                 <baseMoodEffect>3</baseMoodEffect>
                 <baseOpinionOffset>3</baseOpinionOffset>
             </li>
@@ -48,7 +48,7 @@
     </ThoughtDef>
 
     <ThoughtDef>
-        <defName>Slighted</defName>
+        <defName>RimTalk_Slighted</defName>
         <thoughtClass>Thought_MemorySocial</thoughtClass>
         <showBubble>true</showBubble>
         <durationDays>1</durationDays>
@@ -57,8 +57,8 @@
         <socialTargetDevelopmentalStageFilter>Baby, Child, Adult</socialTargetDevelopmentalStageFilter>
         <stages>
             <li>
-                <label>slighted</label>
-                <description>I've been directly insulted! What an awful person!</description>
+                <label>slighted+</label>
+                <description>I've been ignored! That hurt my feelings. (RimTalk)</description>
                 <baseMoodEffect>-3</baseMoodEffect>
                 <baseOpinionOffset>-3</baseOpinionOffset>
             </li>

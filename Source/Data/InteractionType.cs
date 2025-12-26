@@ -15,10 +15,10 @@ public static class InteractionExtensions
     {
         return type switch
         {
-            InteractionType.Insult => DefDatabase<ThoughtDef>.GetNamed("Slighted"),
-            InteractionType.Slight => DefDatabase<ThoughtDef>.GetNamed("Slighted"),
-            InteractionType.Chat => DefDatabase<ThoughtDef>.GetNamed("Chitchat"),
-            InteractionType.Kind => DefDatabase<ThoughtDef>.GetNamed("KindWords"),
+            InteractionType.Insult => DefDatabase<ThoughtDef>.GetNamed("RimTalk_Slighted"),
+            InteractionType.Slight => DefDatabase<ThoughtDef>.GetNamed("RimTalk_Slighted"),
+            InteractionType.Chat => DefDatabase<ThoughtDef>.GetNamed("RimTalk_Chitchat"),
+            InteractionType.Kind => DefDatabase<ThoughtDef>.GetNamed("RimTalk_KindWords"),
             _ => null
         };
     }

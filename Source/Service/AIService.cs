@@ -13,21 +13,18 @@ namespace RimTalk.Service;
 // In most cases, you should NOT modify this file.
 public static class AIService
 {
-    private static string _instruction = "";
     private static bool _busy;
-    private static bool _contextUpdating;
     private static bool _firstInstruction = true;
 
     /// <summary>
     /// Streaming chat that invokes callback as each player's dialogue is parsed
     /// </summary>
-    public static async Task ChatStreaming<T>(TalkRequest request,
+    public static async Task ChatStreaming(TalkRequest request,
         List<(Role role, string message)> messages,
-        Dictionary<string, T> players,
-        Action<T, TalkResponse> onPlayerResponseReceived)
+        Action<TalkResponse> onPlayerResponseReceived)
     {
         var currentMessages = new List<(Role role, string message)>(messages) { (Role.User, request.Prompt) };
-        var initApiLog = ApiHistory.AddRequest(request, _instruction);
+        var initApiLog = ApiHistory.AddRequest(request);
         var lastApiLog = initApiLog;
 
         _busy = true;
@@ -37,12 +34,12 @@ public static class AIService
             {
                 var client = await AIClientFactory.GetAIClientAsync();
                 if (client == null) return null;
-                return await client.GetStreamingChatCompletionAsync<TalkResponse>(_instruction, currentMessages,
+                var instruction = Constant.Instruction + "\n" + request.Context;
+                return await client.GetStreamingChatCompletionAsync<TalkResponse>(instruction, currentMessages,
                     talkResponse =>
                     {
-                        if (!players.TryGetValue(talkResponse.Name, out var player))
-                            return;
-
+                        if (Cache.GetByName(talkResponse.Name) == null) return;
+                        
                         talkResponse.TalkType = request.TalkType;
 
                         // Add logs
@@ -55,7 +52,7 @@ public static class AIService
                         
                         lastApiLog = newApiLog;
 
-                        onPlayerResponseReceived?.Invoke(player, talkResponse);
+                        onPlayerResponseReceived?.Invoke(talkResponse);
                     });
             });
 
@@ -82,10 +79,9 @@ public static class AIService
         List<(Role role, string message)> messages)
     {
         var currentMessages = new List<(Role role, string message)>(messages) { (Role.User, request.Prompt) };
-
-        var apiLog = ApiHistory.AddRequest(request, _instruction);
-
-        var payload = await ExecuteAIRequest(_instruction, currentMessages);
+        var apiLog = ApiHistory.AddRequest(request);
+        var instruction = Constant.Instruction + "\n" + request.Context;
+        var payload = await ExecuteAIRequest(instruction, currentMessages);
 
         if (payload == null)
         {
@@ -115,9 +111,8 @@ public static class AIService
     {
         List<(Role role, string message)> message = [(Role.User, request.Prompt)];
 
-        var apiLog = ApiHistory.AddRequest(request, _instruction);
-
-        var payload = await ExecuteAIRequest(_instruction, message);
+        var apiLog = ApiHistory.AddRequest(request);
+        var payload = await ExecuteAIRequest(request.Context, message);
 
         if (payload == null)
         {
@@ -159,17 +154,6 @@ public static class AIService
         }
     }
 
-    public static void UpdateContext(string context)
-    {
-        Logger.Debug($"UpdateContext:\n{context}");
-        _instruction = context;
-    }
-
-    public static string GetContext()
-    {
-        return _instruction;
-    }
-
     public static bool IsFirstInstruction()
     {
         return _firstInstruction;
@@ -177,19 +161,12 @@ public static class AIService
 
     public static bool IsBusy()
     {
-        return _busy || _contextUpdating;
-    }
-
-    public static bool IsContextUpdating()
-    {
-        return _contextUpdating;
+        return _busy;
     }
 
     public static void Clear()
     {
         _busy = false;
-        _contextUpdating = false;
         _firstInstruction = true;
-        _instruction = "";
     }
 }

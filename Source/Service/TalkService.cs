@@ -76,14 +76,11 @@ public static class TalkService
             return false;
 
         // Build the context and decorate the prompt with current status information.
-        string context = PromptService.BuildContext(pawns);
-        AIService.UpdateContext(context);
+        talkRequest.Context = PromptService.BuildContext(pawns);
         PromptService.DecoratePrompt(talkRequest, pawns, status);
-
-        var allInvolvedPawns = pawns.Union(nearbyPawns).Distinct().ToList();
-
+        
         // Offload the AI request and processing to a background thread to avoid blocking the game's main thread.
-        Task.Run(() => GenerateAndProcessTalkAsync(talkRequest, allInvolvedPawns));
+        Task.Run(() => GenerateAndProcessTalkAsync(talkRequest));
 
         return true;
     }
@@ -91,30 +88,24 @@ public static class TalkService
     /// <summary>
     /// Handles the asynchronous AI streaming and processes the responses.
     /// </summary>
-    private static async Task GenerateAndProcessTalkAsync(TalkRequest talkRequest, List<Pawn> allInvolvedPawns)
+    private static async Task GenerateAndProcessTalkAsync(TalkRequest talkRequest)
     {
         var initiator = talkRequest.Initiator;
         try
         {
             Cache.Get(initiator).IsGeneratingTalk = true;
-
-            // Create a dictionary for quick pawn lookup by name during streaming.
-            // Note: LabelShort is not guaranteed to be unique (e.g. animals, duplicated names, some custom races).
-            var playerDict = allInvolvedPawns
-                .GroupBy(p => p.LabelShort)
-                .ToDictionary(g => g.Key, g => g.First());
+            
             var receivedResponses = new List<TalkResponse>();
 
             // Call the streaming chat service. The callback is executed as each piece of dialogue is parsed.
             await AIService.ChatStreaming(
                 talkRequest,
                 TalkHistory.GetMessageHistory(initiator),
-                playerDict,
-                (pawn, talkResponse) =>
+                talkResponse =>
                 {
                     Logger.Debug($"Streamed: {talkResponse}");
 
-                    PawnState pawnState = Cache.Get(pawn);
+                    PawnState pawnState = Cache.GetByName(talkResponse.Name);
                     talkResponse.Name = pawnState.Pawn.LabelShort;
 
                     // Link replies to the previous message in the conversation.
@@ -131,7 +122,7 @@ public static class TalkService
             );
 
             // Once the stream is complete, save the full conversation to history.
-            AddResponsesToHistory(allInvolvedPawns, receivedResponses, talkRequest.Prompt);
+            AddResponsesToHistory(receivedResponses, talkRequest.Prompt);
         }
         catch (Exception ex)
         {
@@ -146,12 +137,13 @@ public static class TalkService
     /// <summary>
     /// Serializes the generated responses and adds them to the message history for all involved pawns.
     /// </summary>
-    private static void AddResponsesToHistory(List<Pawn> pawns, List<TalkResponse> responses, string prompt)
+    private static void AddResponsesToHistory(List<TalkResponse> responses, string prompt)
     {
         if (!responses.Any()) return;
         string serializedResponses = JsonUtil.SerializeToJson(responses);
-        foreach (var pawn in pawns)
+        foreach (var talkResponse in responses)
         {
+            Pawn pawn = Cache.GetByName(talkResponse.Name)?.Pawn;
             TalkHistory.AddMessageHistory(pawn, prompt, serializedResponses);
         }
     }
@@ -214,6 +206,14 @@ public static class TalkService
         pawnState.LastTalkTick = GenTicks.TicksGame;
 
         return talkResponse.Text;
+    }
+    
+    /// <summary>
+    /// Calls AI service directly for debug purpose.
+    /// </summary>
+    public static void GenerateTalkDebug(TalkRequest talkRequest)
+    {
+        Task.Run(() => GenerateAndProcessTalkAsync(talkRequest));
     }
 
     /// <summary>

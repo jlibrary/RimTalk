@@ -119,7 +119,6 @@
     <RimTalk.Settings.ButtonDisplayTooltip>控制除錯介面的存取方式。「標籤頁」會新增一個主標籤頁，「切換」會在底部欄顯示一個圖示，「無」則會隱藏它。</RimTalk.Settings.ButtonDisplayTooltip>
 
     <RimTalk.Settings.AIInstructionPrompt>AI 指令提示（模型：{0}）</RimTalk.Settings.AIInstructionPrompt>
-    <RimTalk.Settings.ExternalEditorTip>提示：使用外部編輯器進行多行編輯，或輸入 \+n 添加新行。</RimTalk.Settings.ExternalEditorTip>
     <RimTalk.Settings.AutoIncludedTip>提示：角色詳情（特性、關係、種族、年齡等）會自動包含。請編寫適用於所有角色和殖民地的通用指令。</RimTalk.Settings.AutoIncludedTip>
     <RimTalk.Settings.RateLimitWarning>警告：較長的提示將消耗更多權杖並更快達到速率限制。</RimTalk.Settings.RateLimitWarning>
     <RimTalk.Settings.TokenInfo>目前：約 {0} 權杖 | 建議限制：{1} 權杖</RimTalk.Settings.TokenInfo>
@@ -227,11 +226,14 @@
     <RimTalk.DebugWindow.TooltipSelectForDetails>選擇一列展示細節</RimTalk.DebugWindow.TooltipSelectForDetails>
     <RimTalk.DebugWindow.Details>細節</RimTalk.DebugWindow.Details>
     <RimTalk.DebugWindow.SelectRowHint>點擊請求獲取上下文和提示詞</RimTalk.DebugWindow.SelectRowHint>
+    <RimTalk.DebugWindow.Resend>重新傳送</RimTalk.DebugWindow.Resend>
+    <RimTalk.DebugWindow.ResendTooltip>編輯上下文與提示詞，然後重新傳送以測試對話。</RimTalk.DebugWindow.ResendTooltip>
+    <RimTalk.DebugWindow.ResendSuccess>請求已成功重新傳送。</RimTalk.DebugWindow.ResendSuccess>
+    <RimTalk.DebugWindow.ResendError>AI 目前正忙。請在狀態為 Idle 時重試。</RimTalk.DebugWindow.ResendError>
     <RimTalk.DebugWindow.CopyAll>複製</RimTalk.DebugWindow.CopyAll>
-    <RimTalk.DebugWindow.CopyPrompt>複製提示詞</RimTalk.DebugWindow.CopyPrompt>
-    <RimTalk.DebugWindow.CopyResponse>複製回應</RimTalk.DebugWindow.CopyResponse>
-    <RimTalk.DebugWindow.CopyContexts>複製上下文</RimTalk.DebugWindow.CopyContexts>
+    <RimTalk.DebugWindow.Copy>複製</RimTalk.DebugWindow.Copy>
     <RimTalk.DebugWindow.Copied>已複製</RimTalk.DebugWindow.Copied>
+    <RimTalk.DebugWindow.Undo>撤銷</RimTalk.DebugWindow.Undo>
     <RimTalk.DebugWindow.Prompt>提示詞</RimTalk.DebugWindow.Prompt>
     <RimTalk.DebugWindow.Response>回應</RimTalk.DebugWindow.Response>
     <RimTalk.DebugWindow.Contexts>上下文</RimTalk.DebugWindow.Contexts>
@@ -242,7 +244,7 @@
     <RimTalk.DebugWindow.GroupByPawn>按角色分組</RimTalk.DebugWindow.GroupByPawn>
     <RimTalk.DebugWindow.ModSettings>模組設定</RimTalk.DebugWindow.ModSettings>
     <RimTalk.DebugWindow.Export>匯出</RimTalk.DebugWindow.Export>
-    <RimTalk.DebugWindow.Reset>重置日誌</RimTalk.DebugWindow.Reset>
+    <RimTalk.DebugWindow.ResetLogs>重置日誌</RimTalk.DebugWindow.ResetLogs>
     <RimTalk.DebugWindow.EnableRimTalk>啟用 RimTalk</RimTalk.DebugWindow.EnableRimTalk>
     <RimTalk.DebugWindow.AIStatus>AI 狀態：</RimTalk.DebugWindow.AIStatus>
     <RimTalk.DebugWindow.TotalCalls>總呼叫次數：</RimTalk.DebugWindow.TotalCalls>

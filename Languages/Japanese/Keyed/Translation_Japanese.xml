@@ -119,7 +119,6 @@
     <RimTalk.Settings.ButtonDisplayTooltip>デバッグインターフェースへのアクセス方法を制御します。「タブ」はメインタブを追加し、「トグル」は下部バーにアイコンを表示し、「なし」は非表示にします。</RimTalk.Settings.ButtonDisplayTooltip>
 
     <RimTalk.Settings.AIInstructionPrompt>AIへの指示プロンプト（モデル：{0}）</RimTalk.Settings.AIInstructionPrompt>
-    <RimTalk.Settings.ExternalEditorTip>ヒント：外部エディタでコピー／ペーストして複数行を編集するか、\+n を入力して改行してください。</RimTalk.Settings.ExternalEditorTip>
     <RimTalk.Settings.AutoIncludedTip>ヒント：ポーンの詳細（特性、関係、種族、年齢など）は自動的に含まれます。すべてのキャラクターやコロニーで機能する一般的な指示を作成してください。</RimTalk.Settings.AutoIncludedTip>
     <RimTalk.Settings.RateLimitWarning>警告：プロンプトが長いほど、より多くのトークンを消費し、レート制限に早く達します。</RimTalk.Settings.RateLimitWarning>
     <RimTalk.Settings.TokenInfo>現在：約{0}トークン | 推奨上限：{1}トークン</RimTalk.Settings.TokenInfo>
@@ -227,11 +226,14 @@
     <RimTalk.DebugWindow.TooltipSelectForDetails>行を選択すると詳細が表示されます</RimTalk.DebugWindow.TooltipSelectForDetails>
     <RimTalk.DebugWindow.Details>詳細</RimTalk.DebugWindow.Details>
     <RimTalk.DebugWindow.SelectRowHint>左側のリストからリクエストを選択して、プロンプト／レスポンス／コンテキストを確認します。</RimTalk.DebugWindow.SelectRowHint>
+    <RimTalk.DebugWindow.Resend>再送信</RimTalk.DebugWindow.Resend>
+    <RimTalk.DebugWindow.ResendTooltip>コンテキストとプロンプトを編集し、再送信して会話をテストします。</RimTalk.DebugWindow.ResendTooltip>
+    <RimTalk.DebugWindow.ResendSuccess>リクエストが正常に再送信されました。</RimTalk.DebugWindow.ResendSuccess>
+    <RimTalk.DebugWindow.ResendError>AIは現在処理中です。ステータスがIdleになったら再試行してください。</RimTalk.DebugWindow.ResendError>
     <RimTalk.DebugWindow.CopyAll>すべてコピー</RimTalk.DebugWindow.CopyAll>
-    <RimTalk.DebugWindow.CopyPrompt>プロンプトをコピー</RimTalk.DebugWindow.CopyPrompt>
-    <RimTalk.DebugWindow.CopyResponse>レスポンスをコピー</RimTalk.DebugWindow.CopyResponse>
-    <RimTalk.DebugWindow.CopyContexts>コンテキストをコピー</RimTalk.DebugWindow.CopyContexts>
+    <RimTalk.DebugWindow.Copy>コピー</RimTalk.DebugWindow.Copy>
     <RimTalk.DebugWindow.Copied>コピーしました</RimTalk.DebugWindow.Copied>
+    <RimTalk.DebugWindow.Undo>元に戻す</RimTalk.DebugWindow.Undo>
     <RimTalk.DebugWindow.Prompt>プロンプト</RimTalk.DebugWindow.Prompt>
     <RimTalk.DebugWindow.Response>レスポンス</RimTalk.DebugWindow.Response>
     <RimTalk.DebugWindow.Contexts>コンテキスト</RimTalk.DebugWindow.Contexts>
@@ -242,7 +244,7 @@
     <RimTalk.DebugWindow.GroupByPawn>ポーンごとにグループ化</RimTalk.DebugWindow.GroupByPawn>
     <RimTalk.DebugWindow.ModSettings>MOD設定</RimTalk.DebugWindow.ModSettings>
     <RimTalk.DebugWindow.Export>エクスポート</RimTalk.DebugWindow.Export>
-    <RimTalk.DebugWindow.Reset>ログ初期化</RimTalk.DebugWindow.Reset>
+    <RimTalk.DebugWindow.ResetLogs>ログ初期化</RimTalk.DebugWindow.ResetLogs>
     <RimTalk.DebugWindow.EnableRimTalk>RimTalkを有効にする</RimTalk.DebugWindow.EnableRimTalk>
     <RimTalk.DebugWindow.AIStatus>AIステータス：</RimTalk.DebugWindow.AIStatus>
     <RimTalk.DebugWindow.TotalCalls>総呼び出し回数：</RimTalk.DebugWindow.TotalCalls>

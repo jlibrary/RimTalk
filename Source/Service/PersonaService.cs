@@ -34,8 +34,10 @@ public static class PersonaService
 
         try
         {
-            AIService.UpdateContext($"[Character]\n{pawnBackstory}");
-            var request = new TalkRequest(Constant.PersonaGenInstruction, pawn);
+            var request = new TalkRequest(Constant.PersonaGenInstruction, pawn)
+            {
+                Context = $"[Character]\n{pawnBackstory}"
+            };
             PersonalityData personalityData = await AIService.Query<PersonalityData>(request);
 
             if (personalityData?.Persona != null)

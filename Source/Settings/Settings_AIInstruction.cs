@@ -28,15 +28,6 @@ public partial class Settings
         Widgets.Label(aiInstructionPromptRect, aiInstructionPrompt);
         listingStandard.Gap(6f);
 
-        // Instructions for external editor
-        Text.Font = GameFont.Tiny;
-        GUI.color = Color.cyan;
-        Rect externalEditorRect = listingStandard.GetRect(Text.LineHeight);
-        Widgets.Label(externalEditorRect, "RimTalk.Settings.ExternalEditorTip".Translate());
-        GUI.color = Color.white;
-        Text.Font = GameFont.Small;
-        listingStandard.Gap(6f);
-
         // Context information tip
         Text.Font = GameFont.Tiny;
         GUI.color = Color.green;
@@ -87,17 +78,8 @@ public partial class Settings
         // Update buffer and settings logic
         if (newInstruction != _textAreaBuffer)
         {
-            string processedInstruction = newInstruction.Replace("\\n", "\n");
-
-            _textAreaBuffer = processedInstruction;
-            if (processedInstruction == Constant.DefaultInstruction)
-            {
-                settings.CustomInstruction = "";
-            }
-            else
-            {
-                settings.CustomInstruction = processedInstruction;
-            }
+            _textAreaBuffer = newInstruction;
+            settings.CustomInstruction = newInstruction == Constant.DefaultInstruction ? "" : newInstruction;
         }
 
         listingStandard.Gap(6f);

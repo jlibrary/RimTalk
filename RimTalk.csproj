@@ -30,10 +30,29 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Lib.Harmony.Ref" Version="2.*" PrivateAssets="All"/>
+    </ItemGroup>
+
+    <!-- Use reference assemblies by default (for other users and CI) -->
+    <ItemGroup Condition=" '$(UseLocalDlls)' != 'true' ">
         <!-- Core RimWorld & UnityEngine libraries -->
         <PackageReference Include="Krafs.Rimworld.Ref" Version="$(GameVersion).*-*" PrivateAssets="All" />
-        <!-- Harmony API -->
-        <PackageReference Include="Lib.Harmony.Ref" Version="2.*" PrivateAssets="All"/>
+    </ItemGroup>
+
+    <!-- Reference actual game assemblies when UseLocalDlls is enabled -->
+    <ItemGroup Condition=" '$(UseLocalDlls)' == 'true' AND '$(RimWorldDir)' != '' ">
+        <Reference Include="Assembly-CSharp">
+            <HintPath Condition=" '$(OS)' == 'Windows_NT' ">$(RimWorldDir)\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
+            <HintPath Condition=" '$(OS)' != 'Windows_NT' ">$(RimWorldDir)/RimWorldMac.app/Contents/Resources/Data/Managed/Assembly-CSharp.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+
+        <_UnityAssemblies Include="$(RimWorldDir)\RimWorldWin64_Data\Managed\UnityEngine*.dll" Condition=" '$(OS)' == 'Windows_NT' " />
+        <_UnityAssemblies Include="$(RimWorldDir)/RimWorldMac.app/Contents/Resources/Data/Managed/UnityEngine*.dll" Condition=" '$(OS)' != 'Windows_NT' " />
+
+        <Reference Include="@(_UnityAssemblies)">
+            <Private>false</Private>
+        </Reference>
     </ItemGroup>
 
     <!-- Remove BubblePatch.cs when bubble is disabled -->

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimTalk_Chitchat.stages.0.label>Болтовня+</RimTalk_Chitchat.stages.0.label>
+  <RimTalk_KindWords.stages.0.label>Добрые слова+</RimTalk_KindWords.stages.0.label>
+  <RimTalk_KindWords.stages.0.description>Мне сказали добрые слова! Какой замечательный человек! (RimTalk)</RimTalk_KindWords.stages.0.description>
+  <RimTalk_Slighted.stages.0.label>Проигнорирован+</RimTalk_Slighted.stages.0.label>
+  <RimTalk_Slighted.stages.0.description>Меня проигнорировали! Мне это задело. (RimTalk)</RimTalk_Slighted.stages.0.description>
+</LanguageData>

@@ -119,7 +119,6 @@
     <RimTalk.Settings.ButtonDisplayTooltip>Управляет доступом к интерфейсу отладки. 'Вкладка' добавляет основную вкладку, 'Переключатель' показывает значок на нижней панели, а 'Нет' скрывает его.</RimTalk.Settings.ButtonDisplayTooltip>
 
     <RimTalk.Settings.AIInstructionPrompt>Инструкция для ИИ (модель: {0})</RimTalk.Settings.AIInstructionPrompt>
-    <RimTalk.Settings.ExternalEditorTip>Совет: используйте копирование/вставку с внешним редактором для многострочного редактирования или введите \+n для новой строки.</RimTalk.Settings.ExternalEditorTip>
     <RimTalk.Settings.AutoIncludedTip>Совет: Детали пешки (черты, отношения, раса, возраст и т. д.) включаются автоматически. Пишите общие инструкции, которые работают для всех персонажей и колоний.</RimTalk.Settings.AutoIncludedTip>
     <RimTalk.Settings.RateLimitWarning>Предупреждение: Более длинные запросы будут потреблять больше токенов и быстрее достигать лимитов.</RimTalk.Settings.RateLimitWarning>
     <RimTalk.Settings.TokenInfo>Текущее: ~{0} токенов | Рекомендуемый лимит: {1} токенов</RimTalk.Settings.TokenInfo>
@@ -227,11 +226,14 @@
     <RimTalk.DebugWindow.TooltipSelectForDetails>Выберите строку, чтобы просмотреть подробности</RimTalk.DebugWindow.TooltipSelectForDetails>
     <RimTalk.DebugWindow.Details>Подробности</RimTalk.DebugWindow.Details>
     <RimTalk.DebugWindow.SelectRowHint>Выберите запрос слева, чтобы просмотреть промпт, ответ и контексты.</RimTalk.DebugWindow.SelectRowHint>
+    <RimTalk.DebugWindow.Resend>Отправить снова</RimTalk.DebugWindow.Resend>
+    <RimTalk.DebugWindow.ResendTooltip>Измените контекст и запрос, затем отправьте снова для тестирования диалога.</RimTalk.DebugWindow.ResendTooltip>
+    <RimTalk.DebugWindow.ResendSuccess>Запрос успешно отправлен повторно.</RimTalk.DebugWindow.ResendSuccess>
+    <RimTalk.DebugWindow.ResendError>ИИ в данный момент занят. Повторите попытку, когда статус будет Idle.</RimTalk.DebugWindow.ResendError>
     <RimTalk.DebugWindow.CopyAll>Копировать всё</RimTalk.DebugWindow.CopyAll>
-    <RimTalk.DebugWindow.CopyPrompt>Копировать промпт</RimTalk.DebugWindow.CopyPrompt>
-    <RimTalk.DebugWindow.CopyResponse>Копировать ответ</RimTalk.DebugWindow.CopyResponse>
-    <RimTalk.DebugWindow.CopyContexts>Копировать контексты</RimTalk.DebugWindow.CopyContexts>
+    <RimTalk.DebugWindow.Copy>Копировать</RimTalk.DebugWindow.Copy>
     <RimTalk.DebugWindow.Copied>Скопировано</RimTalk.DebugWindow.Copied>
+    <RimTalk.DebugWindow.Undo>Отменить</RimTalk.DebugWindow.Undo>
     <RimTalk.DebugWindow.Prompt>Промпт</RimTalk.DebugWindow.Prompt>
     <RimTalk.DebugWindow.Response>Ответ</RimTalk.DebugWindow.Response>
     <RimTalk.DebugWindow.Contexts>Контексты</RimTalk.DebugWindow.Contexts>
@@ -242,7 +244,7 @@
     <RimTalk.DebugWindow.GroupByPawn>Группировать по пешке</RimTalk.DebugWindow.GroupByPawn>
     <RimTalk.DebugWindow.ModSettings>Настройки мода</RimTalk.DebugWindow.ModSettings>
     <RimTalk.DebugWindow.Export>Экспорт</RimTalk.DebugWindow.Export>
-    <RimTalk.DebugWindow.Reset>Сброс лога</RimTalk.DebugWindow.Reset>
+    <RimTalk.DebugWindow.ResetLogs>Сброс лога</RimTalk.DebugWindow.ResetLogs>
     <RimTalk.DebugWindow.EnableRimTalk>Включить RimTalk</RimTalk.DebugWindow.EnableRimTalk>
     <RimTalk.DebugWindow.AIStatus>Статус ИИ:</RimTalk.DebugWindow.AIStatus>
     <RimTalk.DebugWindow.TotalCalls>Всего вызовов:</RimTalk.DebugWindow.TotalCalls>

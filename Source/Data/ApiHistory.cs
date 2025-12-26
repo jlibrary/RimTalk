@@ -1,17 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using RimTalk.Client;
 
 namespace RimTalk.Data;
 
-public class ApiLog(string name, string prompt, string response, Payload payload, DateTime timestamp, List<string> contexts = null)
+public class ApiLog(string name, TalkRequest talkRequest, string response, Payload payload, DateTime timestamp)
 {
     public Guid Id { get; } = Guid.NewGuid();
     public int ConversationId { get; set; }
+    public TalkRequest TalkRequest { get; set; } = talkRequest;
     public string Name { get; set; } = name;
-    public List<string> Contexts { get; set; } = contexts ?? [];
-    public string Prompt { get; set; } = prompt;
     public string Response { get; set; } = response;
     public string InteractionType;
     public bool IsFirstDialogue;
@@ -21,24 +19,6 @@ public class ApiLog(string name, string prompt, string response, Payload payload
     public DateTime Timestamp { get; } = timestamp;
     public int ElapsedMs;
     public int SpokenTick { get; set; } = 0;
-    
-    public static List<string> ExtractContextBlocks(string context)
-    {
-        var blocks = new List<string>();
-        if (string.IsNullOrEmpty(context)) return blocks;
-    
-        string pattern = @"\[P\d+\]\s*(.*?)(?=\[P\d+\]|$)";
-        var matches = Regex.Matches(context, pattern, RegexOptions.Singleline);
-
-        foreach (Match match in matches)
-        {
-            var block = match.Groups[1].Value.Trim();
-            if (!string.IsNullOrEmpty(block))
-                blocks.Add(block);
-        }
-
-        return blocks;
-    }
 }
 
 public static class ApiHistory
@@ -48,9 +28,9 @@ public static class ApiHistory
     
     public static ApiLog GetApiLog(Guid id) => History.TryGetValue(id, out var apiLog) ? apiLog : null;
 
-    public static ApiLog AddRequest(TalkRequest request, string context)
+    public static ApiLog AddRequest(TalkRequest request)
     {
-        var log = new ApiLog(request.Initiator.LabelShort, request.Prompt, null, null, DateTime.Now, ApiLog.ExtractContextBlocks(context))
+        var log = new ApiLog(request.Initiator.LabelShort, request, null, null, DateTime.Now)
             {
                 IsFirstDialogue = true,
                 ConversationId = request.IsMonologue ? -1 : _conversationIdIndex++
@@ -87,7 +67,7 @@ public static class ApiHistory
         }
         
         // multi-turn messages
-        var newLog = new ApiLog(name, originalLog.Prompt, response, payload, DateTime.Now, originalLog.Contexts);
+        var newLog = new ApiLog(name, originalLog.TalkRequest, response, payload, DateTime.Now);
         History[newLog.Id] = newLog;
         newLog.InteractionType = interactionType;
         newLog.ElapsedMs = elapsedMs;

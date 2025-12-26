@@ -215,6 +215,13 @@ public partial class Settings : Mod
         
     public override void DoSettingsWindowContents(Rect inRect)
     {
+        // Support enter key on AI instruction edit
+        var settingsWindow = Find.WindowStack.WindowOfType<Dialog_ModSettings>();
+        if (settingsWindow != null)
+        {
+            settingsWindow.closeOnAccept = false;
+        }
+        
         // Draw tab buttons at the top
         Rect tabRect = new Rect(inRect.x, inRect.y, inRect.width, 35f);
         DrawTabButtons(tabRect);

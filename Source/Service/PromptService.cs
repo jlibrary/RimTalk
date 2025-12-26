@@ -20,8 +20,7 @@ public static class PromptService
     public static string BuildContext(List<Pawn> pawns)
     {
         var context = new StringBuilder();
-        context.AppendLine(Constant.Instruction).AppendLine();
-
+        
         for (int i = 0; i < pawns.Count; i++)
         {
             var pawn = pawns[i];
@@ -34,7 +33,7 @@ public static class PromptService
             context.AppendLine($"[P{i + 1}]").AppendLine(pawnContext);
         }
 
-        return context.ToString();
+        return context.ToString().TrimEnd();
     }
 
     /// <summary>Creates the basic pawn backstory section.</summary>

@@ -53,9 +53,6 @@ public static class Constant
         }
     }
 
-    public const string Prompt =
-        "Act based on role and context";
-
     public static readonly string PersonaGenInstruction =
         $"""
          Create a funny persona (to be used as conversation style) in {Lang}. Must be short in 1 sentence.

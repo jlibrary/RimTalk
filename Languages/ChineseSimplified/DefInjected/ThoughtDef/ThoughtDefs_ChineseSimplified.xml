@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimTalk_Chitchat.stages.0.label>闲聊+</RimTalk_Chitchat.stages.0.label>
+  <RimTalk_KindWords.stages.0.label>友善的话+</RimTalk_KindWords.stages.0.label>
+  <RimTalk_KindWords.stages.0.description>有人对我说了友善的话！真是好人啊！ (RimTalk)</RimTalk_KindWords.stages.0.description>
+  <RimTalk_Slighted.stages.0.label>被忽视+</RimTalk_Slighted.stages.0.label>
+  <RimTalk_Slighted.stages.0.description>我被忽视了！这让我很难过。 (RimTalk)</RimTalk_Slighted.stages.0.description>
+</LanguageData>

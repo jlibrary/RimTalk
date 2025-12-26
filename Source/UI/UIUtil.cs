@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using RimTalk.Data;
 using RimTalk.Util;
@@ -73,15 +72,8 @@ public static class UIUtil
 
             foreach (var log in apiLogs)
             {
-                string combinedContexts = "";
-                if (log.Contexts != null && log.Contexts.Any())
-                {
-                    var escapedContexts = log.Contexts.Select(c => c.Replace("\"", "\"\""));
-                    combinedContexts = string.Join(" | ", escapedContexts);
-                }
-
                 sb.AppendLine(
-                    $"\"{log.Timestamp}\",\"{log.Name}\",\"{log.Response}\",\"{log.InteractionType}\",{log.TokenCount},{log.ElapsedMs},\"{log.Prompt}\",\"{combinedContexts}\"");
+                    $"\"{log.Timestamp}\",\"{log.Name}\",\"{log.Response}\",\"{log.InteractionType}\",{log.TokenCount},{log.ElapsedMs},\"{log.TalkRequest.Prompt}\",\"{log.TalkRequest.Context}\"");
             }
 
             string fileName = $"RimTalk_Export_{DateTime.Now:yyyyMMdd_HHmmss}.csv";

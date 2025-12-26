@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimTalk_Chitchat.stages.0.label>雑談+</RimTalk_Chitchat.stages.0.label>
+  <RimTalk_KindWords.stages.0.label>優しい言葉+</RimTalk_KindWords.stages.0.label>
+  <RimTalk_KindWords.stages.0.description>優しい言葉をかけてもらった！なんて素敵な人だろう！ (RimTalk)</RimTalk_KindWords.stages.0.description>
+  <RimTalk_Slighted.stages.0.label>無視された+</RimTalk_Slighted.stages.0.label>
+  <RimTalk_Slighted.stages.0.description>無視された！気分が傷ついた。 (RimTalk)</RimTalk_Slighted.stages.0.description>
+</LanguageData>

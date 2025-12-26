@@ -35,7 +35,7 @@ public class RimTalkSettings : ModSettings
     public bool AllowNonHumanToTalk = true;
     public bool ApplyMoodAndSocialEffects = false;
     public int DisableAiAtSpeed = 0;
-    public Settings.ButtonDisplayMode ButtonDisplay = Settings.ButtonDisplayMode.Tab;
+    public Settings.ButtonDisplayMode ButtonDisplay = Settings.ButtonDisplayMode.Toggle;
 
     public ContextSettings Context = new();
 
@@ -179,7 +179,7 @@ public class RimTalkSettings : ModSettings
         Scribe_Deep.Look(ref Context, "context");
 
         // Debug window settings
-        Scribe_Values.Look(ref ButtonDisplay, "buttonDisplay", Settings.ButtonDisplayMode.Tab, true);
+        Scribe_Values.Look(ref ButtonDisplay, "buttonDisplay", Settings.ButtonDisplayMode.Toggle, true);
         Scribe_Values.Look(ref DebugModeEnabled, "debugModeEnabled", false);
         Scribe_Values.Look(ref DebugGroupingEnabled, "debugGroupingEnabled", false);
         Scribe_Values.Look(ref DebugSortColumn, "debugSortColumn", null);

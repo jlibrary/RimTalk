@@ -50,6 +50,8 @@ public static class AIClientFactory
                 return new OpenAIClient("https://api.deepseek.com" + OpenAIClient.OpenAIPath, config.SelectedModel, config.ApiKey);
             case AIProvider.Grok:
                 return new OpenAIClient("https://api.x.ai" + OpenAIClient.OpenAIPath, config.SelectedModel, config.ApiKey);
+            case AIProvider.GLM:
+                return new OpenAIClient("https://api.z.ai/api/paas/v4/chat/completions", config.SelectedModel, config.ApiKey);
             case AIProvider.OpenRouter:
                 return new OpenAIClient("https://openrouter.ai/api" + OpenAIClient.OpenAIPath, config.SelectedModel, config.ApiKey);
             case AIProvider.Player2:

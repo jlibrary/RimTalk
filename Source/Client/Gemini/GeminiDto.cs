@@ -56,7 +56,7 @@ public class GenerationConfig
     public float TopP { get; set; } = 0.95f;
 
     [DataMember(Name = "maxOutputTokens")]
-    public int MaxOutputTokens { get; set; } = 2048;
+    public int MaxOutputTokens { get; set; } = 8192;
 
     [DataMember(Name = "thinkingConfig")]
     public ThinkingConfig ThinkingConfig { get; set; }

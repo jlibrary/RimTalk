@@ -1,29 +1,20 @@
 using RimTalk.Patch;
-using RimTalk.Service;
 using RimTalk.Source.Data;
 using RimTalk.Util;
 using Verse;
 
 namespace RimTalk.Data;
 
-public class TalkRequest
+public class TalkRequest(string prompt, Pawn initiator, Pawn recipient = null, TalkType talkType = TalkType.Other)
 {
-    public TalkType TalkType { get; set; }
-    public string Prompt { get; set; }
-    public Pawn Initiator { get; set; }
-    public Pawn Recipient { get; set; }
+    public TalkType TalkType { get; set; } = talkType;
+    public string Context { get; set; }
+    public string Prompt { get; set; } = prompt;
+    public Pawn Initiator { get; set; } = initiator;
+    public Pawn Recipient { get; set; } = recipient;
     public int MapId { get; set; }
-    public int CreatedTick { get; set; }
+    public int CreatedTick { get; set; } = GenTicks.TicksGame;
     public bool IsMonologue;
-
-    public TalkRequest(string prompt, Pawn initiator, Pawn recipient = null, TalkType talkType = TalkType.Other)
-    {
-        TalkType = talkType;
-        Prompt = prompt;
-        Initiator = initiator;
-        Recipient = recipient;
-        CreatedTick = GenTicks.TicksGame;
-    }
 
     public bool IsExpired()
     {
@@ -41,5 +32,10 @@ public class TalkRequest
             return !ThoughtTracker.IsThoughtStillActive(Initiator, Prompt);
         }
         return GenTicks.TicksGame - CreatedTick > CommonUtil.GetTicksForDuration(duration);
+    }
+    
+    public TalkRequest Clone()
+    {
+        return (TalkRequest) MemberwiseClone();
     }
 }

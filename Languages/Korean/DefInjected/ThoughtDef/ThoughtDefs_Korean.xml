@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimTalk_Chitchat.stages.0.label>잡담+</RimTalk_Chitchat.stages.0.label>
+  <RimTalk_KindWords.stages.0.label>다정한 말+</RimTalk_KindWords.stages.0.label>
+  <RimTalk_KindWords.stages.0.description>정말 다정한 말이에요! 정말 좋은 사람이에요! (RimTalk)</RimTalk_KindWords.stages.0.description>
+  <RimTalk_Slighted.stages.0.label>무시당함+</RimTalk_Slighted.stages.0.label>
+  <RimTalk_Slighted.stages.0.description>무시당했어요! 기분이 상했어요. (RimTalk)</RimTalk_Slighted.stages.0.description>
+</LanguageData>

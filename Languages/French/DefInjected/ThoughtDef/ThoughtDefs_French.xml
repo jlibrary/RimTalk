@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimTalk_Chitchat.stages.0.label>Bavardage+</RimTalk_Chitchat.stages.0.label>
+  <RimTalk_KindWords.stages.0.label>Mots Gentils+</RimTalk_KindWords.stages.0.label>
+  <RimTalk_KindWords.stages.0.description>On m'a dit des mots gentils ! Quelle personne adorable ! (RimTalk)</RimTalk_KindWords.stages.0.description>
+  <RimTalk_Slighted.stages.0.label>Ignoré+</RimTalk_Slighted.stages.0.label>
+  <RimTalk_Slighted.stages.0.description>On m'a ignoré ! Cela a blessé mes sentiments. (RimTalk)</RimTalk_Slighted.stages.0.description>
+</LanguageData>

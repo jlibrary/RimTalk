@@ -6,6 +6,7 @@ public enum AIProvider
     OpenAI,
     DeepSeek,
     Grok,
+    GLM,
     OpenRouter,
     Player2,
     Local,

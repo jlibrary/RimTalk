@@ -244,7 +244,7 @@ public partial class Settings
             settings.ApplyMoodAndSocialEffects = false;
             settings.UseSimpleConfig = true;
             settings.DisableAiAtSpeed = 0;
-            settings.ButtonDisplay = ButtonDisplayMode.Tab;
+            settings.ButtonDisplay = ButtonDisplayMode.Toggle;
         }
     }
     
