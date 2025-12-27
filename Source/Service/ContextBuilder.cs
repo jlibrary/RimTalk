@@ -344,11 +344,13 @@ public static class ContextBuilder
 
         if (contextSettings.IncludeSurroundings)
         {
-            var items = ContextHelper.CollectNearbyItems(mainPawn, 3);
-            if (items.Any())
             {
-                var grouped = items.GroupBy(i => i).Select(g => g.Count() > 1 ? $"{g.Key} x {g.Count()}" : g.Key);
-                sb.Append($"\nSurroundings: {string.Join(", ", grouped)}");
+                var surroundingsText = ContextHelper.CollectNearbyContextText(mainPawn, 3);
+                if (!string.IsNullOrEmpty(surroundingsText))
+                {
+                    sb.Append("\nSurroundings:\n");
+                    sb.Append(surroundingsText);
+                }
             }
         }
     }
