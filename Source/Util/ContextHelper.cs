@@ -54,8 +54,8 @@ public static class ContextHelper
             return $"{pawn.LabelShort}(Age:{pawn.ageTracker.AgeBiologicalYears};Race:{pawn.def.LabelCap})";
 
         var race = ModsConfig.BiotechActive && pawn.genes?.Xenotype != null
-            ? pawn.genes.Xenotype.LabelCap
-            : pawn.def.LabelCap;
+            ? pawn.genes.XenotypeLabel
+            : pawn.def.LabelCap.RawText;
 
         return $"{pawn.LabelShort}(Age:{pawn.ageTracker.AgeBiologicalYears};{pawn.gender.GetLabel()};ID:{pawn.GetRole(true)};{race})";
     }

@@ -221,6 +221,7 @@
     <RimTalk.DebugWindow.StatePending>Pending</RimTalk.DebugWindow.StatePending>
     <RimTalk.DebugWindow.StateIgnored>Ignored</RimTalk.DebugWindow.StateIgnored>
     <RimTalk.DebugWindow.StateSpoken>Spoken</RimTalk.DebugWindow.StateSpoken>
+    <RimTalk.DebugWindow.StateFailed>Failed</RimTalk.DebugWindow.StateFailed>
     <RimTalk.DebugWindow.Last>Last</RimTalk.DebugWindow.Last>
     <RimTalk.DebugWindow.AutoScroll>Auto Scroll</RimTalk.DebugWindow.AutoScroll>
     <RimTalk.DebugWindow.TooltipSelectForDetails>Select a row to view details</RimTalk.DebugWindow.TooltipSelectForDetails>

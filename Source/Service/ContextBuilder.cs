@@ -21,7 +21,7 @@ public static class ContextBuilder
         var contextSettings = Settings.Get().Context;
         if (!contextSettings.IncludeRace || !ModsConfig.BiotechActive || pawn.genes?.Xenotype == null)
             return null;
-        return $"Race: {pawn.genes.Xenotype.LabelCap}";
+        return $"Race: {pawn.genes.XenotypeLabel}";
     }
 
     public static string GetNotableGenesContext(Pawn pawn, PromptService.InfoLevel infoLevel)

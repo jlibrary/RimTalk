@@ -221,6 +221,7 @@
     <RimTalk.DebugWindow.StatePending>대기중</RimTalk.DebugWindow.StatePending>
     <RimTalk.DebugWindow.StateIgnored>무시됨</RimTalk.DebugWindow.StateIgnored>
     <RimTalk.DebugWindow.StateSpoken>발화됨</RimTalk.DebugWindow.StateSpoken>
+    <RimTalk.DebugWindow.StateFailed>실패</RimTalk.DebugWindow.StateFailed>
     <RimTalk.DebugWindow.Last>최근</RimTalk.DebugWindow.Last>
     <RimTalk.DebugWindow.AutoScroll>자동 스크롤</RimTalk.DebugWindow.AutoScroll>
     <RimTalk.DebugWindow.TooltipSelectForDetails>행을 선택하면 자세한 정보가 표시됩니다</RimTalk.DebugWindow.TooltipSelectForDetails>

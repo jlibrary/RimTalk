@@ -42,7 +42,7 @@ public static class PromptService
         var sb = new StringBuilder();
         var name = pawn.LabelShort;
         var title = pawn.story?.title == null ? "" : $"({pawn.story.title})";
-        var genderAndAge = Regex.Replace(pawn.MainDesc(false), @"\(\d+\)", "");
+        var genderAndAge = Regex.Replace(pawn.MainDesc(false), @"\(\d+\)", "").Trim();
         sb.AppendLine($"{name} {title} ({genderAndAge})");
 
         var role = pawn.GetRole(true);

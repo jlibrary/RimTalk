@@ -2,13 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using RimTalk.Data;
 using RimTalk.Service;
+using RimTalk.Source.Data;
 using RimWorld;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
 using Cache = RimTalk.Data.Cache;
+using State = RimTalk.Data.ApiLog.State;
 
 namespace RimTalk.UI;
 
@@ -60,7 +63,7 @@ public class DebugWindow : Window
     private int _maxRows;
     private string _pawnFilter;
     private string _textSearch;
-    private int _stateFilter; // 0=All, 1=Pending, 2=Ignored, 3=Spoken
+    private State _stateFilter;
     private ApiLog _selectedLog;
 
     // Temporary Editable State
@@ -105,7 +108,7 @@ public class DebugWindow : Window
         _maxRows = 500;
         _pawnFilter = string.Empty;
         _textSearch = string.Empty;
-        _stateFilter = 0;
+        _stateFilter = State.None;
     }
 
     public override Vector2 InitialSize => new(1100f, 600f);
@@ -281,15 +284,12 @@ public class DebugWindow : Window
 
         // 4. Status Dropdown
         var stateBtnRect = new Rect(currentX, y, statusWidth, height);
-        if (Widgets.ButtonText(stateBtnRect, GetStateLabel(_stateFilter)))
+        if (Widgets.ButtonText(stateBtnRect, _stateFilter.GetLabel()))
         {
-            var options = new List<FloatMenuOption>
-            {
-                new(GetStateLabel(0), () => _stateFilter = 0),
-                new(GetStateLabel(1), () => _stateFilter = 1),
-                new(GetStateLabel(2), () => _stateFilter = 2),
-                new(GetStateLabel(3), () => _stateFilter = 3)
-            };
+            var options = Enum.GetValues(typeof(State))
+                .Cast<State>()
+                .Select(filter => new FloatMenuOption(filter.GetLabel(), () => _stateFilter = filter))
+                .ToList();
             Find.WindowStack.Add(new FloatMenu(options));
         }
 
@@ -449,27 +449,10 @@ public class DebugWindow : Window
             : (request.TokenCount == 0 ? (request.IsFirstDialogue ? "?" : "-") : request.TokenCount.ToString());
         Widgets.Label(new Rect(currentX, rowRect.y, TokensColumnWidth, RowHeight), tokenCountText);
         currentX += TokensColumnWidth + ColumnPadding;
-
-        string statusText;
-        Color statusColor;
-        if (request.Response == null || request.SpokenTick == 0)
-        {
-            statusText = "RimTalk.DebugWindow.StatePending".Translate();
-            statusColor = Color.yellow;
-        }
-        else if (request.SpokenTick == -1)
-        {
-            statusText = "RimTalk.DebugWindow.StateIgnored".Translate();
-            statusColor = Color.red;
-        }
-        else
-        {
-            statusText = "RimTalk.DebugWindow.StateSpoken".Translate();
-            statusColor = Color.green;
-        }
-
-        GUI.color = statusColor;
-        Widgets.Label(new Rect(currentX, rowRect.y, StateColumnWidth, RowHeight), statusText);
+        
+        State stateFilter = request.GetState();
+        GUI.color = stateFilter.GetColor();
+        Widgets.Label(new Rect(currentX, rowRect.y, StateColumnWidth, RowHeight), stateFilter.GetLabel());
         GUI.color = Color.white;
 
         if (!inputBlocked)
@@ -516,6 +499,10 @@ public class DebugWindow : Window
             _tempResponse = _selectedLog.Response ?? string.Empty;
             _tempContexts = _selectedLog.TalkRequest.Context;
         }
+        else if (string.IsNullOrEmpty(_tempResponse) && !string.IsNullOrEmpty(_selectedLog.Response))
+        {
+            _tempResponse = _selectedLog.Response;
+        }
 
         var header = new StringBuilder();
         header.Append(_selectedLog.Timestamp.ToString("yyyy-MM-dd HH:mm:ss"));
@@ -540,7 +527,7 @@ public class DebugWindow : Window
         // Copy All Button
         if (Widgets.ButtonText(new Rect(btnX, y, btnW, buttonsRowH), "RimTalk.DebugWindow.CopyAll".Translate()))
         {
-            GUIUtility.systemCopyBuffer = BuildCopyAll(_selectedLog);
+            GUIUtility.systemCopyBuffer = _selectedLog.ToString();
             Messages.Message("RimTalk.DebugWindow.Copied".Translate(), MessageTypeDefOf.TaskCompletion, false);
         }
 
@@ -614,7 +601,8 @@ public class DebugWindow : Window
                 GUIUtility.systemCopyBuffer = _tempContexts;
                 Messages.Message("RimTalk.DebugWindow.Copied".Translate(), MessageTypeDefOf.TaskCompletion, false);
             },
-            onReset: () => _tempContexts = _selectedLog.TalkRequest.Context);;
+            onReset: () => _tempContexts = _selectedLog.TalkRequest.Context);
+        ;
 
         Widgets.EndScrollView();
 
@@ -652,6 +640,7 @@ public class DebugWindow : Window
                 onReset.Invoke();
                 SoundDefOf.Click.PlayOneShotOnCamera();
             }
+
             TooltipHandler.TipRegion(resetRect, "RimTalk.DebugWindow.Undo".Translate());
         }
 
@@ -820,7 +809,7 @@ public class DebugWindow : Window
     private void DrawSortableHeader(Rect rect, string column)
     {
         string translatedColumn = column.Translate();
-        string arrow = (_sortColumn == column) ? (_sortAscending ? " ▲" : " ▼") : "";
+        string arrow = _sortColumn == column ? (_sortAscending ? " ▲" : " ▼") : "";
         if (Widgets.ButtonInvisible(rect))
         {
             if (_sortColumn == column) _sortAscending = !_sortAscending;
@@ -853,7 +842,7 @@ public class DebugWindow : Window
         long maxVal = Math.Max(1, series.Where(s => s.data != null && s.data.Any()).SelectMany(s => s.data).Max());
 
         Text.Font = GameFont.Tiny;
-        GUI.color = Color.grey;
+        GUI.color = Color.gray;
         Widgets.Label(new Rect(rect.x + 5, rect.y, 40, 20), maxVal.ToString());
         Widgets.Label(new Rect(rect.x + 5, rect.y + rect.height - 15, 60, 20),
             "RimTalk.DebugWindow.SixtySecondsAgo".Translate());
@@ -917,7 +906,7 @@ public class DebugWindow : Window
         var aiStatus = _aiStatus.Translate();
         if (aiStatus == "RimTalk.DebugWindow.StatusProcessing".Translate()) statusColor = Color.yellow;
         else if (aiStatus == "RimTalk.DebugWindow.StatusIdle".Translate()) statusColor = Color.green;
-        else statusColor = Color.grey;
+        else statusColor = Color.gray;
 
         GUI.color = Color.gray;
         Widgets.Label(new Rect(contentRect.x, currentY, labelWidth, rowHeight),
@@ -975,8 +964,6 @@ public class DebugWindow : Window
         listing.End();
     }
 
-    // Helpers
-
     private IEnumerable<ApiLog> ApplyFilters(IEnumerable<ApiLog> source)
     {
         IEnumerable<ApiLog> q = source;
@@ -993,16 +980,12 @@ public class DebugWindow : Window
             q = q.Where(r =>
                 (r.TalkRequest.Prompt ?? string.Empty).IndexOf(needle, StringComparison.OrdinalIgnoreCase) >= 0 ||
                 (r.Response ?? string.Empty).IndexOf(needle, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                ((r.InteractionType ?? string.Empty).IndexOf(needle, StringComparison.OrdinalIgnoreCase) >= 0));
+                (r.InteractionType ?? string.Empty).IndexOf(needle, StringComparison.OrdinalIgnoreCase) >= 0);
         }
 
-        switch (_stateFilter)
-        {
-            case 1: q = q.Where(r => r.Response == null || r.SpokenTick == 0); break;
-            case 2: q = q.Where(r => r.SpokenTick == -1); break;
-            case 3: q = q.Where(r => r.Response != null && r.SpokenTick > 0); break;
-        }
-
+        if (_stateFilter != State.None)
+            q = q.Where(r => r.GetState() == _stateFilter);
+        
         return q;
     }
 
@@ -1040,18 +1023,7 @@ public class DebugWindow : Window
 
         return result;
     }
-
-    private string GetStateLabel(int state)
-    {
-        return state switch
-        {
-            1 => "RimTalk.DebugWindow.StatePending".Translate(),
-            2 => "RimTalk.DebugWindow.StateIgnored".Translate(),
-            3 => "RimTalk.DebugWindow.StateSpoken".Translate(),
-            _ => "RimTalk.DebugWindow.StateAll".Translate()
-        };
-    }
-
+    
     private IEnumerable<PawnState> GetSortedPawnStates()
     {
         switch (_sortColumn)
@@ -1063,9 +1035,9 @@ public class DebugWindow : Window
             case "Requests":
                 return _sortAscending
                     ? _pawnStates.OrderBy(p =>
-                        _talkLogsByPawn.ContainsKey(p.Pawn.LabelShort) ? _talkLogsByPawn[p.Pawn.LabelShort].Count : 0)
+                        _talkLogsByPawn.TryGetValue(p.Pawn.LabelShort, out var value) ? value.Count : 0)
                     : _pawnStates.OrderByDescending(p =>
-                        _talkLogsByPawn.ContainsKey(p.Pawn.LabelShort) ? _talkLogsByPawn[p.Pawn.LabelShort].Count : 0);
+                        _talkLogsByPawn.TryGetValue(p.Pawn.LabelShort, out var value1) ? value1.Count : 0);
             case "Response":
                 return _sortAscending
                     ? _pawnStates.OrderBy(p => GetLastResponseForPawn(p.Pawn.LabelShort))
@@ -1136,29 +1108,7 @@ public class DebugWindow : Window
 
         return "";
     }
-
-    private string BuildCopyAll(ApiLog r)
-    {
-        var sb = new StringBuilder();
-        sb.AppendLine($"Timestamp: {r.Timestamp:yyyy-MM-dd HH:mm:ss}");
-        sb.AppendLine($"Pawn: {r.Name ?? "-"}");
-        sb.AppendLine($"InteractionType: {r.InteractionType ?? "-"}");
-        sb.AppendLine($"ElapsedMs: {r.ElapsedMs}");
-        sb.AppendLine($"TokenCount: {r.TokenCount}");
-        sb.AppendLine($"SpokenTick: {r.SpokenTick}");
-        sb.AppendLine();
-        sb.AppendLine("=== Prompt ===");
-        sb.AppendLine(r.TalkRequest.Prompt ?? string.Empty);
-        sb.AppendLine();
-        sb.AppendLine("=== Response ===");
-        sb.AppendLine(r.Response ?? string.Empty);
-        sb.AppendLine();
-        sb.AppendLine("=== Contexts ===");
-        sb.AppendLine(r.TalkRequest.Context);
-
-        return sb.ToString().TrimEnd();
-    }
-
+    
     private void Resend()
     {
         if (AIService.IsBusy())
@@ -1170,7 +1120,11 @@ public class DebugWindow : Window
         TalkRequest debugRequest = _selectedLog.TalkRequest.Clone();
         debugRequest.Prompt = _tempPrompt;
         debugRequest.Context = _tempContexts;
-        TalkService.GenerateTalkDebug(debugRequest);
+        if (_selectedLog.Channel == Channel.Stream)
+            TalkService.GenerateTalkDebug(debugRequest);
+        else if (_selectedLog.Channel == Channel.Query)
+            Task.Run(() => AIService.Query<PersonalityData>(debugRequest));
+            
         Messages.Message("RimTalk.DebugWindow.ResendSuccess".Translate(), MessageTypeDefOf.TaskCompletion);
     }
 

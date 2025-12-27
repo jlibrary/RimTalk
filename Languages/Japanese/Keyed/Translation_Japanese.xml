@@ -221,6 +221,7 @@
     <RimTalk.DebugWindow.StatePending>保留中</RimTalk.DebugWindow.StatePending>
     <RimTalk.DebugWindow.StateIgnored>無視</RimTalk.DebugWindow.StateIgnored>
     <RimTalk.DebugWindow.StateSpoken>発話済み</RimTalk.DebugWindow.StateSpoken>
+    <RimTalk.DebugWindow.StateFailed>失敗</RimTalk.DebugWindow.StateFailed>
     <RimTalk.DebugWindow.Last>最新</RimTalk.DebugWindow.Last>
     <RimTalk.DebugWindow.AutoScroll>自動スクロール</RimTalk.DebugWindow.AutoScroll>
     <RimTalk.DebugWindow.TooltipSelectForDetails>行を選択すると詳細が表示されます</RimTalk.DebugWindow.TooltipSelectForDetails>

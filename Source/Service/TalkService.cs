@@ -100,6 +100,7 @@ public static class TalkService
             // Call the streaming chat service. The callback is executed as each piece of dialogue is parsed.
             await AIService.ChatStreaming(
                 talkRequest,
+                Constant.Instruction, 
                 TalkHistory.GetMessageHistory(initiator),
                 talkResponse =>
                 {

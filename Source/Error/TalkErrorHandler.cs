@@ -10,7 +10,7 @@ public static class AIErrorHandler
 {
     private static bool _quotaWarningShown;
 
-    public static async Task<T> HandleWithRetry<T>(Func<Task<T>> operation)
+    public static async Task<T> HandleWithRetry<T>(Func<Task<T>> operation, Action<Exception> onFailure = null)
     {
         try
         {
@@ -37,11 +37,13 @@ public static class AIErrorHandler
                 {
                     Logger.Warning($"Retry failed: {retryEx.Message}");
                     HandleFinalFailure(ex);
+                    onFailure?.Invoke(retryEx);
                     return default;
                 }
             }
 
             HandleFinalFailure(ex);
+            onFailure?.Invoke(ex);
             return default;
         }
     }

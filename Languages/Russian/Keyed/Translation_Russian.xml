@@ -221,6 +221,7 @@
     <RimTalk.DebugWindow.StatePending>Ожид.</RimTalk.DebugWindow.StatePending>
     <RimTalk.DebugWindow.StateIgnored>Игн.</RimTalk.DebugWindow.StateIgnored>
     <RimTalk.DebugWindow.StateSpoken>Сказ.</RimTalk.DebugWindow.StateSpoken>
+    <RimTalk.DebugWindow.StateFailed>Сбой</RimTalk.DebugWindow.StateFailed>
     <RimTalk.DebugWindow.Last>посл.</RimTalk.DebugWindow.Last>
     <RimTalk.DebugWindow.AutoScroll>Автопрокрутка</RimTalk.DebugWindow.AutoScroll>
     <RimTalk.DebugWindow.TooltipSelectForDetails>Выберите строку, чтобы просмотреть подробности</RimTalk.DebugWindow.TooltipSelectForDetails>
