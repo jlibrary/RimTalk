@@ -6,7 +6,7 @@
 <Defs>
     <ThoughtDef>
         <defName>RimTalk_Chitchat</defName>
-        <thoughtClass>Thought_MemorySocial</thoughtClass>
+        <thoughtClass>Thought_MemorySocialCumulative</thoughtClass>
         <showBubble>true</showBubble>
         <durationDays>1</durationDays>
         <stackLimit>50</stackLimit>
