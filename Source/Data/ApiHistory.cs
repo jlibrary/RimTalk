@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using RimTalk.Client;
 using RimTalk.Source.Data;
+using Verse;
 
 namespace RimTalk.Data;
 
@@ -59,9 +60,11 @@ public static class ApiHistory
         return newLog;
     }
     
-    public static ApiLog AddUserHistory(string name, string text)
+    public static ApiLog AddUserHistory(Pawn initiator, Pawn recipient, string text)
     {
-        var log = new ApiLog(name, null, text, null, DateTime.Now, Channel.Stream);
+        var prompt = $"{initiator.LabelShort} talked to {recipient.LabelShort}"; 
+        TalkRequest talkRequest = new(prompt, initiator, recipient, TalkType.User);
+        var log = new ApiLog(initiator.LabelShort, talkRequest, text, null, DateTime.Now, Channel.User);
         History[log.Id] = log;
         return log;
     }

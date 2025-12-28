@@ -2,5 +2,5 @@ namespace RimTalk.Source.Data;
 
 public enum Channel
 {
-    Stream, Query
+    Stream, Query, User
 }

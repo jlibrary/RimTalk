@@ -532,6 +532,7 @@ public class DebugWindow : Window
         }
 
         // Resend Button
+        GUI.enabled = _selectedLog.Channel != Channel.User;
         btnX += btnW + 6f;
         var prevColor = GUI.color;
         GUI.color = new Color(0.6f, 0.9f, 0.6f);
@@ -544,6 +545,7 @@ public class DebugWindow : Window
 
         TooltipHandler.TipRegion(resendRect, "RimTalk.DebugWindow.ResendTooltip".Translate());
         GUI.color = prevColor;
+        GUI.enabled = true;
 
         y += buttonsRowH + 8f;
 

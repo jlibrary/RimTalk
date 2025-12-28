@@ -16,7 +16,7 @@ public class ApiLog(string name, TalkRequest talkRequest, string response, Paylo
     }
     public Guid Id { get; } = Guid.NewGuid();
     public int ConversationId { get; set; }
-    public TalkRequest TalkRequest { get; set; } = talkRequest;
+    public TalkRequest TalkRequest { get; set; } = talkRequest ?? new TalkRequest(null, null);
     public string Name { get; set; } = name;
     public string Response { get; set; } = response;
     public string InteractionType;
@@ -35,7 +35,7 @@ public class ApiLog(string name, TalkRequest talkRequest, string response, Paylo
         if (IsError)
             return State.Failed;
         
-        if (SpokenTick == -1 || Channel != Channel.Stream)
+        if (SpokenTick == -1 || Channel == Channel.Query)
             return State.Ignored;
         
         if (Response == null || SpokenTick == 0)
