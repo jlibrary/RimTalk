@@ -202,7 +202,8 @@
     <RimTalk.Settings.IncludeRelations>関係</RimTalk.Settings.IncludeRelations>
     <RimTalk.Settings.IncludeEquipment>装備</RimTalk.Settings.IncludeEquipment>
     <RimTalk.Settings.Environment>環境</RimTalk.Settings.Environment>
-    <RimTalk.Settings.IncludeTimeAndDate>日時</RimTalk.Settings.IncludeTimeAndDate>
+    <RimTalk.Settings.IncludeTime>時間</RimTalk.Settings.IncludeTime>
+    <RimTalk.Settings.IncludeDate>日付</RimTalk.Settings.IncludeDate>
     <RimTalk.Settings.IncludeSeason>季節</RimTalk.Settings.IncludeSeason>
     <RimTalk.Settings.IncludeWeather>天気</RimTalk.Settings.IncludeWeather>
     <RimTalk.Settings.IncludeLocationAndTemperature>場所と温度</RimTalk.Settings.IncludeLocationAndTemperature>

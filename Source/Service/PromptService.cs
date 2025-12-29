@@ -124,11 +124,10 @@ public static class PromptService
 
         // Time and weather
         sb.Append($"\n{status}");
-        if (contextSettings.IncludeTimeAndDate)
-        {
+        if (contextSettings.IncludeTime)
             sb.Append($"\nTime: {gameData.Hour12HString}");
+        if (contextSettings.IncludeDate)
             sb.Append($"\nToday: {gameData.DateString}");
-        }
         if (contextSettings.IncludeSeason)
             sb.Append($"\nSeason: {gameData.SeasonString}");
         if (contextSettings.IncludeWeather)

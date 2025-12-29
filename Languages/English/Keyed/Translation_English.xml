@@ -202,7 +202,8 @@
     <RimTalk.Settings.IncludeRelations>Relations</RimTalk.Settings.IncludeRelations>
     <RimTalk.Settings.IncludeEquipment>Equipment</RimTalk.Settings.IncludeEquipment>
     <RimTalk.Settings.Environment>Environment</RimTalk.Settings.Environment>
-    <RimTalk.Settings.IncludeTimeAndDate>Time &amp; Date</RimTalk.Settings.IncludeTimeAndDate>
+    <RimTalk.Settings.IncludeTime>Time</RimTalk.Settings.IncludeTime>
+    <RimTalk.Settings.IncludeDate>Date</RimTalk.Settings.IncludeDate>
     <RimTalk.Settings.IncludeSeason>Season</RimTalk.Settings.IncludeSeason>
     <RimTalk.Settings.IncludeWeather>Weather</RimTalk.Settings.IncludeWeather>
     <RimTalk.Settings.IncludeLocationAndTemperature>Location &amp; Temperature</RimTalk.Settings.IncludeLocationAndTemperature>

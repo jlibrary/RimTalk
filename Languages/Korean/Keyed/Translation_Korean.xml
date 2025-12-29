@@ -202,7 +202,8 @@
     <RimTalk.Settings.IncludeRelations>관계</RimTalk.Settings.IncludeRelations>
     <RimTalk.Settings.IncludeEquipment>장비</RimTalk.Settings.IncludeEquipment>
     <RimTalk.Settings.Environment>환경</RimTalk.Settings.Environment>
-    <RimTalk.Settings.IncludeTimeAndDate>시간 및 날짜</RimTalk.Settings.IncludeTimeAndDate>
+    <RimTalk.Settings.IncludeTime>시간</RimTalk.Settings.IncludeTime>
+    <RimTalk.Settings.IncludeDate>날짜</RimTalk.Settings.IncludeDate>
     <RimTalk.Settings.IncludeSeason>계절</RimTalk.Settings.IncludeSeason>
     <RimTalk.Settings.IncludeWeather>날씨</RimTalk.Settings.IncludeWeather>
     <RimTalk.Settings.IncludeLocationAndTemperature>위치 및 온도</RimTalk.Settings.IncludeLocationAndTemperature>

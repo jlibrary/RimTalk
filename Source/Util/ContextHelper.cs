@@ -51,13 +51,13 @@ public static class ContextHelper
     public static string GetDecoratedName(Pawn pawn)
     {
         if (!pawn.RaceProps.Humanlike)
-            return $"{pawn.LabelShort}(Age:{pawn.ageTracker.AgeBiologicalYears};Race:{pawn.def.LabelCap})";
+            return $"{pawn.LabelShort}({pawn.ageTracker.AgeBiologicalYears}/{pawn.def.LabelCap})";
 
         var race = ModsConfig.BiotechActive && pawn.genes?.Xenotype != null
             ? pawn.genes.XenotypeLabel
             : pawn.def.LabelCap.RawText;
 
-        return $"{pawn.LabelShort}(Age:{pawn.ageTracker.AgeBiologicalYears};{pawn.gender.GetLabel()};ID:{pawn.GetRole(true)};{race})";
+        return $"{pawn.LabelShort}({pawn.ageTracker.AgeBiologicalYears}{pawn.gender.GetLabelShort()}/{pawn.GetRole(true)}/{race})";
     }
 
     public static bool IsWall(Thing thing)

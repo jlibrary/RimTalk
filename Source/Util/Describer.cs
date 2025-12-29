@@ -1,3 +1,6 @@
+using System;
+using Verse;
+
 namespace RimTalk.Util;
 
 public static class Describer
@@ -72,5 +75,15 @@ public static class Describer
         if (value < 50f) return "Unstable, may push boundaries";
         if (value < 80f) return "Generally obedient, but watchful";
         return "Completely cowed, unlikely to resist";
+    }
+    
+    public static string GetLabelShort(this Gender gender)
+    {
+        return gender switch
+        {
+            Gender.Male => "M",
+            Gender.Female => "F",
+            _ => ""
+        };
     }
 }

@@ -202,7 +202,8 @@
     <RimTalk.Settings.IncludeRelations>Отношения</RimTalk.Settings.IncludeRelations>
     <RimTalk.Settings.IncludeEquipment>Снаряжение</RimTalk.Settings.IncludeEquipment>
     <RimTalk.Settings.Environment>Окружающая среда</RimTalk.Settings.Environment>
-    <RimTalk.Settings.IncludeTimeAndDate>Время и дату</RimTalk.Settings.IncludeTimeAndDate>
+    <RimTalk.Settings.IncludeTime>Время</RimTalk.Settings.IncludeTime>
+    <RimTalk.Settings.IncludeDate>Дату</RimTalk.Settings.IncludeDate>
     <RimTalk.Settings.IncludeSeason>Время года</RimTalk.Settings.IncludeSeason>
     <RimTalk.Settings.IncludeWeather>Погоду</RimTalk.Settings.IncludeWeather>
     <RimTalk.Settings.IncludeLocationAndTemperature>Местоположение и температуру</RimTalk.Settings.IncludeLocationAndTemperature>
