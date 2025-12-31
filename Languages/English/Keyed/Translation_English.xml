@@ -244,7 +244,7 @@
     <RimTalk.DebugWindow.StatusProcessing>Processing</RimTalk.DebugWindow.StatusProcessing>
     <RimTalk.DebugWindow.StatusIdle>Idle</RimTalk.DebugWindow.StatusIdle>
     <RimTalk.DebugWindow.GroupByPawn>Group by Pawn</RimTalk.DebugWindow.GroupByPawn>
-    <RimTalk.DebugWindow.ModSettings>Mod Settings</RimTalk.DebugWindow.ModSettings>
+    <RimTalk.DebugWindow.ModSettings>Settings</RimTalk.DebugWindow.ModSettings>
     <RimTalk.DebugWindow.Export>Export</RimTalk.DebugWindow.Export>
     <RimTalk.DebugWindow.ResetLogs>Reset Logs</RimTalk.DebugWindow.ResetLogs>
     <RimTalk.DebugWindow.EnableRimTalk>Enable RimTalk</RimTalk.DebugWindow.EnableRimTalk>
@@ -287,4 +287,10 @@
     <RimTalk.FloatMenu.WhatToSayToOther>What do you want {0} to say to {1}?</RimTalk.FloatMenu.WhatToSayToOther>
     <RimTalk.FloatMenu.Send>Send</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>Cancel</RimTalk.FloatMenu.Cancel>
+
+    <!-- Player2 Deprecation -->
+    <RimTalk.Player2Deprecation.Title>Player2 Provider Deprecation</RimTalk.Player2Deprecation.Title>
+    <RimTalk.Player2Deprecation.Message>The "Player2" AI provider will no longer be supported and will be removed from RimTalk on January 31, 2026.\n\nPlease switch to another provider before that date to keep your AI dialogues running smoothly.\n\nYou’re seeing this message because Player2 is listed as a provider in your mod settings.</RimTalk.Player2Deprecation.Message>
+    <RimTalk.Player2Deprecation.DontShowAgain>Don't show this again</RimTalk.Player2Deprecation.DontShowAgain>
+    <RimTalk.Player2Deprecation.WarningShort>Deprecated: Jan 31 2026</RimTalk.Player2Deprecation.WarningShort>
 </LanguageData>

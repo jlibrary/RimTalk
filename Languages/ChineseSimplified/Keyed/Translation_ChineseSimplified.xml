@@ -287,4 +287,10 @@
     <RimTalk.FloatMenu.WhatToSayToOther>你想让{0}对{1}说什么？</RimTalk.FloatMenu.WhatToSayToOther>
     <RimTalk.FloatMenu.Send>发送</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>取消</RimTalk.FloatMenu.Cancel>
+
+    <!-- Player2 Deprecation -->
+    <RimTalk.Player2Deprecation.Title>Player2 提供商弃用通知</RimTalk.Player2Deprecation.Title>
+    <RimTalk.Player2Deprecation.Message>"Player2" AI 提供商将于 2026 年 1 月 31 日停止支持并从 RimTalk 中移除。\n\n请在此日期前切换到其他提供商，以确保 AI 对话功能正常运行。\n\n您看到此消息是因为 Player2 当前列在您的模组设置中。</RimTalk.Player2Deprecation.Message>
+    <RimTalk.Player2Deprecation.DontShowAgain>不再显示</RimTalk.Player2Deprecation.DontShowAgain>
+    <RimTalk.Player2Deprecation.WarningShort>已弃用：2026年1月31日</RimTalk.Player2Deprecation.WarningShort>
 </LanguageData>

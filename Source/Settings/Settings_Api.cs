@@ -286,7 +286,7 @@ public partial class Settings
                 }),
                 new(nameof(AIProvider.Custom), () => {
                     config.Provider = AIProvider.Custom;
-                    config.SelectedModel = "Custom";
+                    config.SelectedModel = Constant.ChooseModel;
                 })
             ];
             Find.WindowStack.Add(new FloatMenu(providerOptions));

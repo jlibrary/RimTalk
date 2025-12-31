@@ -77,12 +77,11 @@ public static class UIUtil
             }
 
             string fileName = $"RimTalk_Export_{DateTime.Now:yyyyMMdd_HHmmss}.csv";
-            string path = Path.Combine(GenFilePaths.ConfigFolderPath, fileName);
+            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fileName);
 
             File.WriteAllText(path, sb.ToString());
 
             Messages.Message($"Exported to: {path}", MessageTypeDefOf.TaskCompletion, false);
-            Application.OpenURL(GenFilePaths.ConfigFolderPath);
         }
         catch (Exception ex)
         {

@@ -285,6 +285,12 @@
     <RimTalk.Gizmo.ChatWithTargetDesc>{0}와(과) 대화를 시작합니다.</RimTalk.Gizmo.ChatWithTargetDesc>
     <RimTalk.FloatMenu.WhatToSayToSelf>{0}에게 무엇을 말하고 싶으세요?</RimTalk.FloatMenu.WhatToSayToSelf>
     <RimTalk.FloatMenu.WhatToSayToOther>{0}가 {1}에게 무엇을 말하기를 원하세요?</RimTalk.FloatMenu.WhatToSayToOther>
-    <RimTalk.FloatMenu.Send>보내기</RimTalk.FloatMenu.Send>
+    <RimTalk.FloatMenu.Send>전송</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>취소</RimTalk.FloatMenu.Cancel>
+
+    <!-- Player2 Deprecation -->
+    <RimTalk.Player2Deprecation.Title>Player2 제공자 지원 종료</RimTalk.Player2Deprecation.Title>
+    <RimTalk.Player2Deprecation.Message>"Player2" AI 제공자는 더 이상 지원되지 않으며 2026년 1월 31일에 RimTalk에서 제거될 예정입니다.\n\nAI 대화 기능을 원활하게 유지하려면 해당 날짜 이전에 다른 제공자로 전환해 주세요.\n\n현재 모드 설정에 Player2가 제공자로 등록되어 있어 이 메시지가 표시됩니다.</RimTalk.Player2Deprecation.Message>
+    <RimTalk.Player2Deprecation.DontShowAgain>다시 보지 않기</RimTalk.Player2Deprecation.DontShowAgain>
+    <RimTalk.Player2Deprecation.WarningShort>지원 종료: 2026년 1월 31일</RimTalk.Player2Deprecation.WarningShort>
 </LanguageData>

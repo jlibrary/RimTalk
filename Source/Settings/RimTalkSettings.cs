@@ -17,8 +17,8 @@ public class RimTalkSettings : ModSettings
     public bool IsEnabled = true;
     public int TalkInterval = 7;
     public const int ReplyInterval = 4;
-    public bool ProcessNonRimTalkInteractions;
-    public bool AllowSimultaneousConversations;
+    public bool ProcessNonRimTalkInteractions = true;
+    public bool AllowSimultaneousConversations = false;
     public string CustomInstruction = "";
     public Dictionary<string, bool> EnabledArchivableTypes = new();
     public bool DisplayTalkWhenDrafted = true;
@@ -35,6 +35,7 @@ public class RimTalkSettings : ModSettings
     public bool AllowNonHumanToTalk = true;
     public bool ApplyMoodAndSocialEffects = false;
     public int DisableAiAtSpeed = 0;
+    public bool Player2DeprecationAck = false;
     public Settings.ButtonDisplayMode ButtonDisplay = Settings.ButtonDisplayMode.Toggle;
 
     public ContextSettings Context = new();
@@ -157,7 +158,7 @@ public class RimTalkSettings : ModSettings
         Scribe_Values.Look(ref IsEnabled, "isEnabled", true);
         Scribe_Values.Look(ref TalkInterval, "talkInterval", 7);
         Scribe_Values.Look(ref ProcessNonRimTalkInteractions, "processNonRimTalkInteractions", true);
-        Scribe_Values.Look(ref AllowSimultaneousConversations, "allowSimultaneousConversations", true);
+        Scribe_Values.Look(ref AllowSimultaneousConversations, "allowSimultaneousConversations", false);
         Scribe_Values.Look(ref CustomInstruction, "customInstruction", "");
         Scribe_Values.Look(ref DisplayTalkWhenDrafted, "displayTalkWhenDrafted", true);
         Scribe_Values.Look(ref AllowMonologue, "allowMonologue", true);
@@ -175,6 +176,7 @@ public class RimTalkSettings : ModSettings
         Scribe_Values.Look(ref AllowBabiesToTalk, "allowBabiesToTalk", true);
         Scribe_Values.Look(ref AllowNonHumanToTalk, "allowNonHumanToTalk", true);
         Scribe_Values.Look(ref ApplyMoodAndSocialEffects, "applyMoodAndSocialEffects", false);
+        Scribe_Values.Look(ref Player2DeprecationAck, "player2DeprecationAck", false);
         
         Scribe_Deep.Look(ref Context, "context");
 

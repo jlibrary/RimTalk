@@ -244,7 +244,7 @@
     <RimTalk.DebugWindow.StatusProcessing>Обработка</RimTalk.DebugWindow.StatusProcessing>
     <RimTalk.DebugWindow.StatusIdle>Ожидание</RimTalk.DebugWindow.StatusIdle>
     <RimTalk.DebugWindow.GroupByPawn>Группировать по пешке</RimTalk.DebugWindow.GroupByPawn>
-    <RimTalk.DebugWindow.ModSettings>Настройки мода</RimTalk.DebugWindow.ModSettings>
+    <RimTalk.DebugWindow.ModSettings>Настройки</RimTalk.DebugWindow.ModSettings>
     <RimTalk.DebugWindow.Export>Экспорт</RimTalk.DebugWindow.Export>
     <RimTalk.DebugWindow.ResetLogs>Сброс лога</RimTalk.DebugWindow.ResetLogs>
     <RimTalk.DebugWindow.EnableRimTalk>Включить RimTalk</RimTalk.DebugWindow.EnableRimTalk>
@@ -287,4 +287,10 @@
     <RimTalk.FloatMenu.WhatToSayToOther>Что вы хотите, чтобы {0} сказал {1}?</RimTalk.FloatMenu.WhatToSayToOther>
     <RimTalk.FloatMenu.Send>Отправить</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>Отмена</RimTalk.FloatMenu.Cancel>
+
+    <!-- Player2 Deprecation -->
+    <RimTalk.Player2Deprecation.Title>Прекращение поддержки провайдера Player2</RimTalk.Player2Deprecation.Title>
+    <RimTalk.Player2Deprecation.Message>Поддержка ИИ-провайдера "Player2" будет прекращена, и он будет удален из RimTalk 31 января 2026 года.\n\nПожалуйста, переключитесь на другого провайдера до этой даты, чтобы ваши диалоги с ИИ продолжали работать корректно.\n\nВы видите это сообщение, так как Player2 указан в качестве провайдера в настройках вашего мода.</RimTalk.Player2Deprecation.Message>
+    <RimTalk.Player2Deprecation.DontShowAgain>Больше не показывать</RimTalk.Player2Deprecation.DontShowAgain>
+    <RimTalk.Player2Deprecation.WarningShort>Устарело: 31 янв. 2026</RimTalk.Player2Deprecation.WarningShort>
 </LanguageData>

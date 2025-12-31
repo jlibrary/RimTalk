@@ -287,4 +287,10 @@
     <RimTalk.FloatMenu.WhatToSayToOther>{0}に{1}に何を言わせたいですか？</RimTalk.FloatMenu.WhatToSayToOther>
     <RimTalk.FloatMenu.Send>送信</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>キャンセル</RimTalk.FloatMenu.Cancel>
+
+    <!-- Player2 Deprecation -->
+    <RimTalk.Player2Deprecation.Title>Player2 プロバイダー廃止のお知らせ</RimTalk.Player2Deprecation.Title>
+    <RimTalk.Player2Deprecation.Message>"Player2" AI プロバイダーはサポートを終了し、2026年1月31日に RimTalk から削除されます。\n\nAI会話機能を継続して利用するために、期日までに他のプロバイダーへの切り替えをお願いします。\n\nこのメッセージは、Mod設定で Player2 がプロバイダーとしてリストされているために表示されています。</RimTalk.Player2Deprecation.Message>
+    <RimTalk.Player2Deprecation.DontShowAgain>今後表示しない</RimTalk.Player2Deprecation.DontShowAgain>
+    <RimTalk.Player2Deprecation.WarningShort>廃止予定: 2026/1/31</RimTalk.Player2Deprecation.WarningShort>
 </LanguageData>
