@@ -67,8 +67,28 @@ public static class Cache
             }
         }
 
-        if (_playerPawn == null)
-            InitializePlayerPawn();
+        // Ensure the player pawn exists and reflects any recent name changes.
+        InitializePlayerPawn();
+
+        // Sync name cache to reflect pawn renames and remove stale entries.
+        foreach (var pawn in PawnCache.Keys)
+        {
+            if (pawn == null) continue;
+            var label = pawn.LabelShort;
+            if (!string.IsNullOrEmpty(label))
+            {
+                NameCache[label] = pawn;
+            }
+        }
+
+        foreach (var entry in NameCache.ToArray())
+        {
+            var pawn = entry.Value;
+            if (pawn == null || !PawnCache.ContainsKey(pawn) || pawn.LabelShort != entry.Key)
+            {
+                NameCache.TryRemove(entry.Key, out _);
+            }
+        }
     }
 
     public static IEnumerable<PawnState> GetAll()
