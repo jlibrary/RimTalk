@@ -301,6 +301,9 @@ public partial class Settings
     {
         Rect customModelRect = new Rect(x, y, 200f, height);
         config.CustomModelName = Widgets.TextField(customModelRect, config.CustomModelName);
+        config.SelectedModel = string.IsNullOrWhiteSpace(config.CustomModelName)
+            ? Constant.ChooseModel
+            : config.CustomModelName;
         x += 205f;
 
         Rect baseUrlRect = new Rect(x, y, 150f, height);
