@@ -4,7 +4,6 @@ using RimTalk.Data;
 using RimTalk.Error;
 using RimTalk.Patch;
 using RimTalk.Service;
-using RimTalk.UI;
 using Verse;
 
 namespace RimTalk;
@@ -33,7 +32,6 @@ public class RimTalk : GameComponent
         if (settings != null)
         {
             settings.CurrentCloudConfigIndex = 0;
-            CheckPlayer2Deprecation(settings);
         }
 
         AIErrorHandler.ResetQuotaWarning();
@@ -52,24 +50,5 @@ public class RimTalk : GameComponent
         Stats.Reset();
         TalkRequestPool.Clear();
         ApiHistory.Clear();
-    }
-
-    private static void CheckPlayer2Deprecation(RimTalkSettings settings)
-    {
-        if (settings.Player2DeprecationAck) return;
-        
-        // Show warning if Player2 is present in the config list at all
-        bool hasPlayer2Config = settings.CloudConfigs != null && settings.CloudConfigs.Any(c => c.Provider == AIProvider.Player2);
-        
-        if (hasPlayer2Config)
-        {
-            LongEventHandler.ExecuteWhenFinished(() =>
-            {
-                if (Find.WindowStack != null && !Find.WindowStack.IsOpen(typeof(Player2DeprecationWindow)))
-                {
-                    Find.WindowStack.Add(new Player2DeprecationWindow());
-                }
-            });
-        }
     }
 }

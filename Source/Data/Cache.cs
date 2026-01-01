@@ -49,11 +49,35 @@ public static class Cache
     public static void Refresh()
     {
         // Identify and remove ineligible pawns from all caches.
-        foreach (var pawn in PawnCache.Keys.ToList().Where(pawn => !pawn.IsTalkEligible()))
+        foreach (var pawn in PawnCache.Keys.ToList())
         {
-            if (PawnCache.TryRemove(pawn, out var removedState))
+            if (!pawn.IsTalkEligible())
             {
-                NameCache.TryRemove(removedState.Pawn.LabelShort, out _);
+                if (PawnCache.TryRemove(pawn, out var removedState))
+                {
+                    NameCache.TryRemove(removedState.Pawn.LabelShort, out _); 
+                }
+                continue;
+            }
+
+            // If eligible, ensure the NameCache points to the CURRENT name.
+            var label = pawn.LabelShort;
+            if (!string.IsNullOrEmpty(label))
+            {
+                NameCache[label] = pawn;
+            }
+        }
+
+        // Ensure player state/name is valid.
+        InitializePlayerPawn();
+
+        // Remove "Ghost Keys" (old names).
+        foreach (var entry in NameCache.ToArray())
+        {
+            var pawn = entry.Value;
+            if (pawn == null || !PawnCache.ContainsKey(pawn) || pawn.LabelShort != entry.Key)
+            {
+                NameCache.TryRemove(entry.Key, out _);
             }
         }
 
@@ -64,29 +88,6 @@ public static class Cache
             {
                 PawnCache[pawn] = new PawnState(pawn);
                 NameCache[pawn.LabelShort] = pawn;
-            }
-        }
-
-        // Ensure the player pawn exists and reflects any recent name changes.
-        InitializePlayerPawn();
-
-        // Sync name cache to reflect pawn renames and remove stale entries.
-        foreach (var pawn in PawnCache.Keys)
-        {
-            if (pawn == null) continue;
-            var label = pawn.LabelShort;
-            if (!string.IsNullOrEmpty(label))
-            {
-                NameCache[label] = pawn;
-            }
-        }
-
-        foreach (var entry in NameCache.ToArray())
-        {
-            var pawn = entry.Value;
-            if (pawn == null || !PawnCache.ContainsKey(pawn) || pawn.LabelShort != entry.Key)
-            {
-                NameCache.TryRemove(entry.Key, out _);
             }
         }
     }

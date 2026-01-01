@@ -35,7 +35,6 @@ public class RimTalkSettings : ModSettings
     public bool AllowNonHumanToTalk = true;
     public bool ApplyMoodAndSocialEffects = false;
     public int DisableAiAtSpeed = 0;
-    public bool Player2DeprecationAck = false;
     public Settings.ButtonDisplayMode ButtonDisplay = Settings.ButtonDisplayMode.Toggle;
 
     public ContextSettings Context = new();
@@ -176,7 +175,6 @@ public class RimTalkSettings : ModSettings
         Scribe_Values.Look(ref AllowBabiesToTalk, "allowBabiesToTalk", true);
         Scribe_Values.Look(ref AllowNonHumanToTalk, "allowNonHumanToTalk", true);
         Scribe_Values.Look(ref ApplyMoodAndSocialEffects, "applyMoodAndSocialEffects", false);
-        Scribe_Values.Look(ref Player2DeprecationAck, "player2DeprecationAck", false);
         
         Scribe_Deep.Look(ref Context, "context");
 

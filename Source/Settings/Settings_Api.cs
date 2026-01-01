@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,11 +5,8 @@ using RimTalk.Client.Gemini;
 using RimTalk.Client.OpenAI;
 using RimTalk.Client.Player2;
 using RimTalk.Data;
-using RimWorld;
 using UnityEngine;
-using UnityEngine.Networking;
 using Verse;
-using Logger = RimTalk.Util.Logger;
 
 namespace RimTalk;
 
@@ -286,7 +282,7 @@ public partial class Settings
                 }),
                 new(nameof(AIProvider.Custom), () => {
                     config.Provider = AIProvider.Custom;
-                    config.SelectedModel = Constant.ChooseModel;
+                    config.SelectedModel = "Custom";
                 })
             ];
             Find.WindowStack.Add(new FloatMenu(providerOptions));

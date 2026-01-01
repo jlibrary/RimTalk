@@ -287,10 +287,4 @@
     <RimTalk.FloatMenu.WhatToSayToOther>Que voulez-vous que {0} dise à {1} ?</RimTalk.FloatMenu.WhatToSayToOther>
     <RimTalk.FloatMenu.Send>Envoyer</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>Annuler</RimTalk.FloatMenu.Cancel>
-
-    <!-- Player2 Deprecation -->
-    <RimTalk.Player2Deprecation.Title>Fin de support du fournisseur Player2</RimTalk.Player2Deprecation.Title>
-    <RimTalk.Player2Deprecation.Message>Le fournisseur d'IA "Player2" ne sera plus supporté et sera retiré de RimTalk le 31 janvier 2026.\n\nVeuillez passer à un autre fournisseur avant cette date pour assurer le bon fonctionnement de vos dialogues IA.\n\nVous voyez ce message car Player2 est listé comme fournisseur dans vos paramètres de mod.</RimTalk.Player2Deprecation.Message>
-    <RimTalk.Player2Deprecation.DontShowAgain>Ne plus afficher</RimTalk.Player2Deprecation.DontShowAgain>
-    <RimTalk.Player2Deprecation.WarningShort>Obsolète : 31 janv. 2026</RimTalk.Player2Deprecation.WarningShort>
 </LanguageData>
