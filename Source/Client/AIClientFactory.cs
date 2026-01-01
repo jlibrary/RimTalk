@@ -40,20 +40,22 @@ public static class AIClientFactory
     /// </summary>
     private static async Task<IAIClient> CreateServiceInstanceAsync(ApiConfig config)
     {
+        var modelName = config.SelectedModel == "Custom" ? config.CustomModelName : config.SelectedModel;
+
         switch (config.Provider)
         {
             case AIProvider.Google:
                 return new GeminiClient();
             case AIProvider.OpenAI:
-                return new OpenAIClient("https://api.openai.com" + OpenAIClient.OpenAIPath, config.SelectedModel, config.ApiKey);
+                return new OpenAIClient("https://api.openai.com" + OpenAIClient.OpenAIPath, modelName, config.ApiKey);
             case AIProvider.DeepSeek:
-                return new OpenAIClient("https://api.deepseek.com" + OpenAIClient.OpenAIPath, config.SelectedModel, config.ApiKey);
+                return new OpenAIClient("https://api.deepseek.com" + OpenAIClient.OpenAIPath, modelName, config.ApiKey);
             case AIProvider.Grok:
-                return new OpenAIClient("https://api.x.ai" + OpenAIClient.OpenAIPath, config.SelectedModel, config.ApiKey);
+                return new OpenAIClient("https://api.x.ai" + OpenAIClient.OpenAIPath, modelName, config.ApiKey);
             case AIProvider.GLM:
-                return new OpenAIClient("https://api.z.ai/api/paas/v4/chat/completions", config.SelectedModel, config.ApiKey);
+                return new OpenAIClient("https://api.z.ai/api/paas/v4/chat/completions", modelName, config.ApiKey);
             case AIProvider.OpenRouter:
-                return new OpenAIClient("https://openrouter.ai/api" + OpenAIClient.OpenAIPath, config.SelectedModel, config.ApiKey);
+                return new OpenAIClient("https://openrouter.ai/api" + OpenAIClient.OpenAIPath, modelName, config.ApiKey);
             case AIProvider.Player2:
                 // Use async factory method that attempts local app detection before fallback to manual API key
                 return await Player2Client.CreateAsync(config.ApiKey);
