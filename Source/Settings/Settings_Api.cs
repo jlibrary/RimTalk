@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -247,44 +248,35 @@ public partial class Settings
     private void DrawProviderDropdown(ref float x, float y, float height, ApiConfig config)
     {
         Rect providerRect = new Rect(x, y, 100f, height);
-        if (Widgets.ButtonText(providerRect, config.Provider.ToString()))
+        
+        if (Widgets.ButtonText(providerRect, config.Provider.GetLabel()))
         {
-            List<FloatMenuOption> providerOptions =
-            [
-                new(nameof(AIProvider.Google), () => {
-                    config.Provider = AIProvider.Google;
-                    config.SelectedModel = Constant.ChooseModel;
-                }),
-                new(nameof(AIProvider.OpenAI), () => {
-                    config.Provider = AIProvider.OpenAI;
-                    config.SelectedModel = Constant.ChooseModel;
-                }),
-                new(nameof(AIProvider.DeepSeek), () => {
-                    config.Provider = AIProvider.DeepSeek;
-                    config.SelectedModel = Constant.ChooseModel;
-                }),
-                new(nameof(AIProvider.Grok), () => {
-                    config.Provider = AIProvider.Grok;
-                    config.SelectedModel = Constant.ChooseModel;
-                }),
-                new(nameof(AIProvider.GLM), () => {
-                    config.Provider = AIProvider.GLM;
-                    config.SelectedModel = Constant.ChooseModel;
-                }),
-                new(nameof(AIProvider.OpenRouter), () => {
-                    config.Provider = AIProvider.OpenRouter;
-                    config.SelectedModel = Constant.ChooseModel;
-                }),
-                new(nameof(AIProvider.Player2), () => {
-                    config.Provider = AIProvider.Player2;
-                    config.SelectedModel = "Default";
-                    Player2Client.CheckPlayer2StatusAndNotify();
-                }),
-                new(nameof(AIProvider.Custom), () => {
-                    config.Provider = AIProvider.Custom;
-                    config.SelectedModel = "Custom";
-                })
-            ];
+            List<FloatMenuOption> providerOptions = [];
+
+            foreach (AIProvider provider in Enum.GetValues(typeof(AIProvider)))
+            {
+                if (provider is AIProvider.None or AIProvider.Local) continue;
+                
+                providerOptions.Add(new FloatMenuOption(provider.GetLabel(), () =>
+                {
+                    config.Provider = provider;
+
+                    switch (provider)
+                    {
+                        case AIProvider.Player2:
+                            config.SelectedModel = "Default";
+                            Player2Client.CheckPlayer2StatusAndNotify();
+                            break;
+                        case AIProvider.Custom:
+                            config.SelectedModel = "Custom";
+                            break;
+                        default:
+                            config.SelectedModel = Constant.ChooseModel;
+                            break;
+                    }
+                }));
+            }
+
             Find.WindowStack.Add(new FloatMenu(providerOptions));
         }
         x += 105f;
@@ -348,7 +340,7 @@ public partial class Settings
             return;
         }
 
-        string url = GetModelApiUrl(config.Provider);
+        string url = config.Provider.GetListModelsUrl();
         if (string.IsNullOrEmpty(url)) return;
         
         void OpenMenu(List<string> models)
@@ -387,21 +379,6 @@ public partial class Settings
                 }
                 OpenMenu(models);
             }, TaskScheduler.FromCurrentSynchronizationContext());
-        }
-    }
-
-    private string GetModelApiUrl(AIProvider provider)
-    {
-        switch (provider)
-        {
-            case AIProvider.Google: return "https://generativelanguage.googleapis.com/v1beta/models";
-            case AIProvider.OpenAI: return "https://api.openai.com/v1/models";
-            case AIProvider.DeepSeek: return "https://api.deepseek.com/models";
-            case AIProvider.Grok: return "https://api.x.ai/v1/models";
-            case AIProvider.GLM: return "https://api.z.ai/api/paas/v4/models";
-            case AIProvider.OpenRouter: return "https://openrouter.ai/api/v1/models";
-            case AIProvider.Player2:
-            default: return null;
         }
     }
 

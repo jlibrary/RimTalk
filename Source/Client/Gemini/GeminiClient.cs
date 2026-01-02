@@ -13,7 +13,7 @@ namespace RimTalk.Client.Gemini;
 
 public class GeminiClient : IAIClient
 {
-    private const string BaseUrl = "https://generativelanguage.googleapis.com/v1beta";
+    private static string BaseUrl => AIProvider.Google.GetEndpointUrl();
     private static string CurrentApiKey => Settings.Get().GetActiveConfig()?.ApiKey;
     private static string CurrentModel => Settings.Get().GetCurrentModel();
     private static string EndpointUrl => $"{BaseUrl}/models/{CurrentModel}:generateContent?key={CurrentApiKey}";

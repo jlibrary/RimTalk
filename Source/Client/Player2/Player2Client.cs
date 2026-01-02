@@ -17,7 +17,7 @@ public class Player2Client : IAIClient
     private readonly string _apiKey;
     private readonly bool _isLocalConnection;
     private const string GameClientId = "019a8368-b00b-72bc-b367-2825079dc6fb";
-    private const string BaseUrl = "https://api.player2.game/v1";
+    private static string BaseUrl => AIProvider.Player2.GetEndpointUrl();
     private const string LocalUrl = "http://localhost:4315/v1";
     private static DateTime _lastHealthCheck = DateTime.MinValue;
     private static bool _healthCheckActive = false;
