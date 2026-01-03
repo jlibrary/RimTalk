@@ -16,11 +16,13 @@ public class OpenAIClient : IAIClient
     public const string OpenAIPath = "/v1/chat/completions";
     private readonly string _apiKey;
     private readonly string _model;
+    private readonly Dictionary<string, string> _extraHeaders;
 
-    public OpenAIClient(string baseUrl, string model, string apiKey = null)
+    public OpenAIClient(string baseUrl, string model, string apiKey = null, Dictionary<string, string> extraHeaders = null)
     {
         _model = model;
         _apiKey = apiKey;
+        _extraHeaders = extraHeaders;
         if (!string.IsNullOrEmpty(baseUrl))
         {
             var trimmedUrl = baseUrl.Trim().TrimEnd('/');
@@ -101,6 +103,14 @@ public class OpenAIClient : IAIClient
             webRequest.uploadHandler = new UploadHandlerRaw(bodyRaw);
             webRequest.downloadHandler = streamingHandler;
             webRequest.SetRequestHeader("Content-Type", "application/json");
+
+            if (_extraHeaders != null)
+            {
+                foreach (var header in _extraHeaders)
+                {
+                    webRequest.SetRequestHeader(header.Key, header.Value);
+                }
+            }
 
             if (!string.IsNullOrEmpty(_apiKey))
             {
@@ -191,6 +201,14 @@ public class OpenAIClient : IAIClient
             webRequest.uploadHandler = new UploadHandlerRaw(bodyRaw);
             webRequest.downloadHandler = new DownloadHandlerBuffer();
             webRequest.SetRequestHeader("Content-Type", "application/json");
+
+            if (_extraHeaders != null)
+            {
+                foreach (var header in _extraHeaders)
+                {
+                    webRequest.SetRequestHeader(header.Key, header.Value);
+                }
+            }
 
             if (!string.IsNullOrEmpty(_apiKey))
             {

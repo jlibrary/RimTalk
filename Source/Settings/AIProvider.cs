@@ -23,6 +23,7 @@ public struct ProviderDef
     public string Label;
     public string EndpointUrl;
     public string ListModelsUrl;
+    public Dictionary<string, string> ExtraHeaders;
 }
 
 public static class AIProviderRegistry
@@ -68,7 +69,12 @@ public static class AIProviderRegistry
             AIProvider.OpenRouter, new ProviderDef
             {
                 EndpointUrl = "https://openrouter.ai/api/v1/chat/completions",
-                ListModelsUrl = "https://openrouter.ai/api/v1/models"
+                ListModelsUrl = "https://openrouter.ai/api/v1/models",
+                ExtraHeaders = new Dictionary<string, string>
+                {
+                    { "HTTP-Referer", "https://github.com/jlibrary/RimTalk" },
+                    { "X-Title", "RimTalk" }
+                }
             }
         },
         {

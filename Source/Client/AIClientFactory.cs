@@ -1,7 +1,7 @@
+using System.Threading.Tasks;
 using RimTalk.Client.Gemini;
 using RimTalk.Client.OpenAI;
 using RimTalk.Client.Player2;
-using System.Threading.Tasks;
 
 namespace RimTalk.Client;
 
@@ -54,7 +54,7 @@ public static class AIClientFactory
         // 2. Handle Standard Clients via Registry
         if (AIProviderRegistry.Defs.TryGetValue(config.Provider, out var def))
         {
-            return new OpenAIClient(def.EndpointUrl, model, config.ApiKey);
+            return new OpenAIClient(def.EndpointUrl, model, config.ApiKey, def.ExtraHeaders);
         }
 
         return null;
