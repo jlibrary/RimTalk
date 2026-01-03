@@ -228,7 +228,7 @@ public partial class Settings
         {
             settings.TalkInterval = 7;
             settings.ProcessNonRimTalkInteractions = true;
-            settings.AllowSimultaneousConversations = true;
+            settings.AllowSimultaneousConversations = false;
             settings.DisplayTalkWhenDrafted = true;
             settings.AllowMonologue = true;
             settings.AllowSlavesToTalk = true;
