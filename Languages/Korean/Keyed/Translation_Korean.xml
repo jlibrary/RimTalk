@@ -232,6 +232,8 @@
     <RimTalk.DebugWindow.ResendTooltip>컨텍스트와 프롬프트를 수정한 뒤 재전송하여 대화를 테스트합니다.</RimTalk.DebugWindow.ResendTooltip>
     <RimTalk.DebugWindow.ResendSuccess>요청이 성공적으로 재전송되었습니다.</RimTalk.DebugWindow.ResendSuccess>
     <RimTalk.DebugWindow.ResendError>AI가 현재 사용 중입니다. 상태가 Idle일 때 다시 시도하세요.</RimTalk.DebugWindow.ResendError>
+    <RimTalk.DebugWindow.ApiLog>API 로그</RimTalk.DebugWindow.ApiLog>
+    <RimTalk.DebugWindow.FailMsg>요청에 실패했습니다. 지원을 위해 "API 로그"를 클릭하여 로그를 생성하세요.</RimTalk.DebugWindow.FailMsg>
     <RimTalk.DebugWindow.CopyAll>모두 복사</RimTalk.DebugWindow.CopyAll>
     <RimTalk.DebugWindow.Copy>복사</RimTalk.DebugWindow.Copy>
     <RimTalk.DebugWindow.Copied>복사 완료</RimTalk.DebugWindow.Copied>

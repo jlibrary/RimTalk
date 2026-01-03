@@ -446,10 +446,12 @@ public class DebugWindow : Window
 
         string tokenCountText = request.Response == null
             ? ""
-            : (request.TokenCount == 0 ? (request.IsFirstDialogue ? "?" : "-") : request.TokenCount.ToString());
+            : request.Payload?.TokenCount == 0
+                ? (request.IsFirstDialogue ? "?" : "-")
+                : request.Payload?.TokenCount.ToString();
         Widgets.Label(new Rect(currentX, rowRect.y, TokensColumnWidth, RowHeight), tokenCountText);
         currentX += TokensColumnWidth + ColumnPadding;
-        
+
         State stateFilter = request.GetState();
         GUI.color = stateFilter.GetColor();
         Widgets.Label(new Rect(currentX, rowRect.y, StateColumnWidth, RowHeight), stateFilter.GetLabel());
@@ -531,10 +533,22 @@ public class DebugWindow : Window
             Messages.Message("RimTalk.DebugWindow.Copied".Translate(), MessageTypeDefOf.TaskCompletion, false);
         }
 
+        // API Log Button
+        if (_selectedLog.GetState() != State.None)
+        {
+            btnX += btnW + 6f;
+            Rect reportRect = new Rect(btnX, y, btnW, buttonsRowH);
+            if (Widgets.ButtonText(reportRect, "RimTalk.DebugWindow.ApiLog".Translate()))
+            {
+                GUIUtility.systemCopyBuffer = _selectedLog.Payload?.ToString();
+                Messages.Message("RimTalk.DebugWindow.Copied".Translate(), MessageTypeDefOf.TaskCompletion, false);
+            }
+        }
+
         // Resend Button
         GUI.enabled = _selectedLog.Channel != Channel.User;
         btnX += btnW + 6f;
-        var prevColor = GUI.color;
+        var prevResendColor = GUI.color;
         GUI.color = new Color(0.6f, 0.9f, 0.6f);
         Rect resendRect = new Rect(btnX, y, btnW, buttonsRowH);
         if (Widgets.ButtonText(resendRect, "RimTalk.DebugWindow.Resend".Translate()))
@@ -544,10 +558,20 @@ public class DebugWindow : Window
         }
 
         TooltipHandler.TipRegion(resendRect, "RimTalk.DebugWindow.ResendTooltip".Translate());
-        GUI.color = prevColor;
+        GUI.color = prevResendColor;
         GUI.enabled = true;
 
         y += buttonsRowH + 8f;
+        
+        if (_selectedLog.GetState() == State.Failed)
+        {
+            var prevColor = GUI.color;
+            GUI.color = new Color(1f, 0.5f, 0.5f); 
+            string failedMsg = "RimTalk.DebugWindow.FailMsg".Translate();
+            Widgets.Label(new Rect(0f, y, inner.width, 20f), failedMsg);
+            GUI.color = prevColor;
+            y += 30f;
+        }
 
         // Scrollable selectable areas
         var scrollOuter = new Rect(0f, y, inner.width, inner.height - y);
@@ -604,7 +628,6 @@ public class DebugWindow : Window
                 Messages.Message("RimTalk.DebugWindow.Copied".Translate(), MessageTypeDefOf.TaskCompletion, false);
             },
             onReset: () => _tempContexts = _selectedLog.TalkRequest.Context);
-        ;
 
         Widgets.EndScrollView();
 
@@ -720,7 +743,7 @@ public class DebugWindow : Window
             currentX += GroupedLastTalkWidth + ColumnPadding;
 
             _talkLogsByPawn.TryGetValue(pawnKey, out var pawnRequests);
-            var requestsWithTokens = pawnRequests?.Where(r => r.TokenCount != 0).ToList();
+            var requestsWithTokens = pawnRequests?.Where(r => r.Payload?.TokenCount != 0).ToList();
             Widgets.Label(new Rect(currentX, rowRect.y, GroupedRequestsWidth, RowHeight),
                 (requestsWithTokens?.Count ?? 0).ToString());
             currentX += GroupedRequestsWidth + ColumnPadding;
@@ -987,7 +1010,7 @@ public class DebugWindow : Window
 
         if (_stateFilter != State.None)
             q = q.Where(r => r.GetState() == _stateFilter);
-        
+
         return q;
     }
 
@@ -1025,7 +1048,7 @@ public class DebugWindow : Window
 
         return result;
     }
-    
+
     private IEnumerable<PawnState> GetSortedPawnStates()
     {
         switch (_sortColumn)
@@ -1110,7 +1133,7 @@ public class DebugWindow : Window
 
         return "";
     }
-    
+
     private void Resend()
     {
         if (AIService.IsBusy())
@@ -1126,7 +1149,7 @@ public class DebugWindow : Window
             TalkService.GenerateTalkDebug(debugRequest);
         else if (_selectedLog.Channel == Channel.Query)
             Task.Run(() => AIService.Query<PersonalityData>(debugRequest));
-            
+
         Messages.Message("RimTalk.DebugWindow.ResendSuccess".Translate(), MessageTypeDefOf.TaskCompletion);
     }
 

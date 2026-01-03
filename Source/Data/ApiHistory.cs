@@ -28,9 +28,7 @@ public static class ApiHistory
     {
         if (History.TryGetValue(id, out var log))
         {
-            log.RequestPayload = payload?.Request;
-            log.ResponsePayload = payload?.Response;
-            log.TokenCount = payload?.TokenCount ?? 0;
+            log.Payload = payload;
         }
     }
 
@@ -44,9 +42,7 @@ public static class ApiHistory
             originalLog.Name = name ?? originalLog.Name;
             originalLog.Response = response;
             originalLog.InteractionType = interactionType;
-            originalLog.RequestPayload = payload?.Request;
-            originalLog.ResponsePayload = payload?.Response;
-            originalLog.TokenCount = payload?.TokenCount ?? 0;
+            originalLog.Payload = payload;
             originalLog.ElapsedMs = (int)(DateTime.Now - originalLog.Timestamp).TotalMilliseconds;
             return originalLog;
         }

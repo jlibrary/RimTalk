@@ -73,7 +73,7 @@ public static class UIUtil
             foreach (var log in apiLogs)
             {
                 sb.AppendLine(
-                    $"\"{log.Timestamp}\",\"{log.Name}\",\"{log.Response}\",\"{log.InteractionType}\",{log.TokenCount},{log.ElapsedMs},\"{log.TalkRequest.Prompt}\",\"{log.TalkRequest.Context}\"");
+                    $"\"{log.Timestamp}\",\"{log.Name}\",\"{log.Response}\",\"{log.InteractionType}\",{log.Payload?.TokenCount},{log.ElapsedMs},\"{log.TalkRequest.Prompt}\",\"{log.TalkRequest.Context}\"");
             }
 
             string fileName = $"RimTalk_Export_{DateTime.Now:yyyyMMdd_HHmmss}.csv";

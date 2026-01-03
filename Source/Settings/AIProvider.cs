@@ -96,7 +96,7 @@ public static class AIProviderRegistry
         {
             AIProvider.Player2, new ProviderDef
             {
-                EndpointUrl = "https://api.player2.game/v1"
+                EndpointUrl = "https://api.player2.game/v1/chat/completions"
             }
         }
     };

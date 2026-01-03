@@ -232,6 +232,8 @@
     <RimTalk.DebugWindow.ResendTooltip>Edit context and prompt, then resend to test dialogue.</RimTalk.DebugWindow.ResendTooltip>
     <RimTalk.DebugWindow.ResendSuccess>Request resent successfully.</RimTalk.DebugWindow.ResendSuccess>
     <RimTalk.DebugWindow.ResendError>AI is currently busy. Retry when status is Idle.</RimTalk.DebugWindow.ResendError>
+    <RimTalk.DebugWindow.ApiLog>API Log</RimTalk.DebugWindow.ApiLog>
+    <RimTalk.DebugWindow.FailMsg>Request failed. Click "API Log" to generate a log for support.</RimTalk.DebugWindow.FailMsg>
     <RimTalk.DebugWindow.CopyAll>Copy All</RimTalk.DebugWindow.CopyAll>
     <RimTalk.DebugWindow.Copy>Copy</RimTalk.DebugWindow.Copy>
     <RimTalk.DebugWindow.Copied>Copied</RimTalk.DebugWindow.Copied>

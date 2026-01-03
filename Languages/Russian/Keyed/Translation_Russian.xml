@@ -232,6 +232,8 @@
     <RimTalk.DebugWindow.ResendTooltip>Измените контекст и запрос, затем отправьте снова для тестирования диалога.</RimTalk.DebugWindow.ResendTooltip>
     <RimTalk.DebugWindow.ResendSuccess>Запрос успешно отправлен повторно.</RimTalk.DebugWindow.ResendSuccess>
     <RimTalk.DebugWindow.ResendError>ИИ в данный момент занят. Повторите попытку, когда статус будет Idle.</RimTalk.DebugWindow.ResendError>
+    <RimTalk.DebugWindow.ApiLog>Журнал API</RimTalk.DebugWindow.ApiLog>
+    <RimTalk.DebugWindow.FailMsg>Запрос не выполнен. Нажмите «Журнал API», чтобы создать журнал для поддержки.</RimTalk.DebugWindow.FailMsg>
     <RimTalk.DebugWindow.CopyAll>Копировать всё</RimTalk.DebugWindow.CopyAll>
     <RimTalk.DebugWindow.Copy>Копировать</RimTalk.DebugWindow.Copy>
     <RimTalk.DebugWindow.Copied>Скопировано</RimTalk.DebugWindow.Copied>

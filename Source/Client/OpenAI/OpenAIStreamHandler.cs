@@ -12,6 +12,7 @@ public class OpenAIStreamHandler(Action<string> onContentReceived) : DownloadHan
 {
     private readonly StringBuilder _buffer = new();
     private readonly StringBuilder _fullText = new();
+    private readonly StringBuilder _allReceivedData = new();
     private string _id;
     private string _object;
     private long _created;
@@ -24,7 +25,10 @@ public class OpenAIStreamHandler(Action<string> onContentReceived) : DownloadHan
     {
         if (data == null || dataLength == 0) return false;
 
-        _buffer.Append(Encoding.UTF8.GetString(data, 0, dataLength));
+        string chunk = Encoding.UTF8.GetString(data, 0, dataLength);
+        _buffer.Append(chunk);
+        _allReceivedData.Append(chunk);
+        
         string bufferContent = _buffer.ToString();
         string[] lines = bufferContent.Split(['\n'], StringSplitOptions.RemoveEmptyEntries);
 
@@ -88,6 +92,7 @@ public class OpenAIStreamHandler(Action<string> onContentReceived) : DownloadHan
     public string GetFullText() => _fullText.ToString();
     
     public int GetTotalTokens() => _usage?.TotalTokens ?? 0;
+    public string GetAllReceivedText() => _allReceivedData.ToString();
 
     public string GetRawJson()
     {

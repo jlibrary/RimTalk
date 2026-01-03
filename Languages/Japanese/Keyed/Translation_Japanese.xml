@@ -232,6 +232,8 @@
     <RimTalk.DebugWindow.ResendTooltip>コンテキストとプロンプトを編集し、再送信して会話をテストします。</RimTalk.DebugWindow.ResendTooltip>
     <RimTalk.DebugWindow.ResendSuccess>リクエストが正常に再送信されました。</RimTalk.DebugWindow.ResendSuccess>
     <RimTalk.DebugWindow.ResendError>AIは現在処理中です。ステータスがIdleになったら再試行してください。</RimTalk.DebugWindow.ResendError>
+    <RimTalk.DebugWindow.ApiLog>API ログ</RimTalk.DebugWindow.ApiLog>
+    <RimTalk.DebugWindow.FailMsg>リクエストに失敗しました。「API ログ」をクリックしてサポート用ログを生成してください。</RimTalk.DebugWindow.FailMsg>
     <RimTalk.DebugWindow.CopyAll>すべてコピー</RimTalk.DebugWindow.CopyAll>
     <RimTalk.DebugWindow.Copy>コピー</RimTalk.DebugWindow.Copy>
     <RimTalk.DebugWindow.Copied>コピーしました</RimTalk.DebugWindow.Copied>

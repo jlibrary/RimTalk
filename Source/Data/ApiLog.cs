@@ -21,9 +21,7 @@ public class ApiLog(string name, TalkRequest talkRequest, string response, Paylo
     public string Response { get; set; } = response;
     public string InteractionType;
     public bool IsFirstDialogue;
-    public string RequestPayload { get; set; } = payload?.Request;
-    public string ResponsePayload { get; set; } = payload?.Response;
-    public int TokenCount { get; set; } = payload?.TokenCount ?? 0;
+    public Payload Payload { get; set; } = payload;
     public DateTime Timestamp { get; } = timestamp;
     public int ElapsedMs;
     public int SpokenTick { get; set; } = 0;
@@ -54,7 +52,7 @@ public class ApiLog(string name, TalkRequest talkRequest, string response, Paylo
         sb.AppendLine($"Pawn: {Name ?? "-"}");
         sb.AppendLine($"InteractionType: {InteractionType ?? "-"}");
         sb.AppendLine($"ElapsedMs: {ElapsedMs}");
-        sb.AppendLine($"TokenCount: {TokenCount}");
+        sb.AppendLine($"TokenCount: {Payload.TokenCount}");
         sb.AppendLine($"SpokenTick: {SpokenTick}");
         sb.AppendLine();
         sb.AppendLine("=== Prompt ===");
@@ -89,7 +87,7 @@ public static class StateFilterExtensions
     {
         return state switch
         {
-            ApiLog.State.Failed => ColorLibrary.RedReadable,
+            ApiLog.State.Failed => new Color(1f, 0.5f, 0.5f),
             ApiLog.State.Pending => Color.yellow,
             ApiLog.State.Ignored => Color.gray,
             ApiLog.State.Spoken => Color.green,

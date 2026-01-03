@@ -53,14 +53,14 @@ public static class AIService
                 });
         });
 
-        if (payload == null || string.IsNullOrEmpty(initApiLog.Response))
+        if (string.IsNullOrEmpty(initApiLog.Response))
         {
-            if (!initApiLog.IsError)
+            if (!initApiLog.IsError && string.IsNullOrEmpty(payload.ErrorMessage))
             {
-                initApiLog.Response = payload != null
-                    ? $"Json Deserialization Failed\n\nRaw Response:\n{payload.Response}"
-                    : "Unknown Error (No payload received)";
+                var errorMsg = "Json Deserialization Failed";
+                initApiLog.Response = $"{errorMsg}\n\nRaw Response:\n{payload.Response}";
                 initApiLog.IsError = true;
+                payload.ErrorMessage = errorMsg;
             }
         }
             
@@ -76,16 +76,24 @@ public static class AIService
         var apiLog = ApiHistory.AddRequest(request, Channel.Query);
         var payload = await ExecuteAIAction(apiLog, async client => 
             await client.GetChatCompletionAsync(request.Context, message));
+
+        if (!string.IsNullOrEmpty(payload.ErrorMessage) || string.IsNullOrEmpty(payload.Response))
+        {
+            ApiHistory.UpdatePayload(apiLog.Id, payload);
+            return null;
+        }
         
         T jsonData;
         try
         {
             jsonData = JsonUtil.DeserializeFromJson<T>(payload.Response);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            apiLog.Response = $"Json Deserialization Failed\n\nRaw Response:\n{payload.Response}";
+            var errorMsg = "Json Deserialization Failed";
+            apiLog.Response = $"{errorMsg}\n\nRaw Response:\n{payload.Response}";
             apiLog.IsError = true;
+            payload.ErrorMessage = errorMsg;
             ApiHistory.UpdatePayload(apiLog.Id, payload);
             return null;
         }
@@ -100,12 +108,20 @@ public static class AIService
         _busy = true;
         try
         {
+            Exception capturedException = null;
             var payload = await AIErrorHandler.HandleWithRetry(async () => 
                 await action(await AIClientFactory.GetAIClientAsync()), ex =>
             {
-                apiLog.Response = $"API Error: {ex.Message}";
+                capturedException = ex;
+                apiLog.Response = ex.Message;
                 apiLog.IsError = true;
             });
+
+            if (payload == null && capturedException != null)
+                if (capturedException is AIRequestException requestEx && requestEx.Payload != null)
+                    payload = requestEx.Payload;
+                else
+                    payload = new Payload("Unknown", "Unknown", "", null, 0, capturedException.Message);
 
             Stats.IncrementCalls();
             Stats.IncrementTokens(payload!.TokenCount);

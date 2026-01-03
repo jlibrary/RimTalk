@@ -1,10 +1,10 @@
-using System;
+using RimTalk.Client;
 
 namespace RimTalk.Error;
 
-public class QuotaExceededException : Exception
+public class QuotaExceededException : AIRequestException
 {
-    public QuotaExceededException(string message) : base(message)
+    public QuotaExceededException(string message, Payload payload = null) : base(message, payload)
     {
     }
 }

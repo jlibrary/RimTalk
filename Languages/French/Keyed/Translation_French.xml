@@ -232,6 +232,8 @@
     <RimTalk.DebugWindow.ResendTooltip>Modifiez le contexte et le prompt, puis renvoyez pour tester le dialogue.</RimTalk.DebugWindow.ResendTooltip>
     <RimTalk.DebugWindow.ResendSuccess>La requête a été renvoyée avec succès.</RimTalk.DebugWindow.ResendSuccess>
     <RimTalk.DebugWindow.ResendError>L’IA est actuellement occupée. Réessayez lorsque le statut est Idle.</RimTalk.DebugWindow.ResendError>
+    <RimTalk.DebugWindow.ApiLog>Journal API</RimTalk.DebugWindow.ApiLog>
+    <RimTalk.DebugWindow.FailMsg>La requête a échoué. Cliquez sur « Journal API » pour générer un journal pour le support.</RimTalk.DebugWindow.FailMsg>
     <RimTalk.DebugWindow.CopyAll>Tout copier</RimTalk.DebugWindow.CopyAll>
     <RimTalk.DebugWindow.Copy>Copier</RimTalk.DebugWindow.Copy>
     <RimTalk.DebugWindow.Copied>Copié</RimTalk.DebugWindow.Copied>

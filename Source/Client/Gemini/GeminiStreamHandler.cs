@@ -12,6 +12,7 @@ public class GeminiStreamHandler(Action<string> onJsonReceived) : DownloadHandle
 {
     private readonly StringBuilder _buffer = new();
     private readonly StringBuilder _fullText = new();
+    private readonly StringBuilder _allReceivedData = new();
     private string _finishReason;
     private UsageMetadata _usageMetadata;
 
@@ -21,6 +22,7 @@ public class GeminiStreamHandler(Action<string> onJsonReceived) : DownloadHandle
 
         string chunk = Encoding.UTF8.GetString(data, 0, dataLength);
         _buffer.Append(chunk);
+        _allReceivedData.Append(chunk);
 
         ProcessBuffer();
         return true;
@@ -80,6 +82,7 @@ public class GeminiStreamHandler(Action<string> onJsonReceived) : DownloadHandle
 
     public string GetFullText() => _fullText.ToString();
     public int GetTotalTokens() => _usageMetadata?.TotalTokenCount ?? 0;
+    public string GetAllReceivedText() => _allReceivedData.ToString();
 
     public string GetRawJson()
     {

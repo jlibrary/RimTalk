@@ -9,6 +9,7 @@ public class Player2StreamHandler(Action<string> onContentReceived) : DownloadHa
 {
     private readonly StringBuilder _buffer = new();
     private readonly StringBuilder _fullText = new();
+    private readonly StringBuilder _allReceivedData = new();
     private int _totalTokens;
     private string _id;
     private string _finishReason;
@@ -17,7 +18,10 @@ public class Player2StreamHandler(Action<string> onContentReceived) : DownloadHa
     {
         if (data == null || dataLength == 0) return false;
 
-        _buffer.Append(Encoding.UTF8.GetString(data, 0, dataLength));
+        string chunk = Encoding.UTF8.GetString(data, 0, dataLength);
+        _buffer.Append(chunk);
+        _allReceivedData.Append(chunk);
+
         string bufferContent = _buffer.ToString();
         string[] lines = bufferContent.Split(['\n'], StringSplitOptions.RemoveEmptyEntries);
 
@@ -38,16 +42,16 @@ public class Player2StreamHandler(Action<string> onContentReceived) : DownloadHa
 
             try
             {
-                var chunk = JsonUtil.DeserializeFromJson<Player2StreamChunk>(jsonData);
+                var streamChunk = JsonUtil.DeserializeFromJson<Player2StreamChunk>(jsonData);
                 
-                if (!string.IsNullOrEmpty(chunk?.Id))
+                if (!string.IsNullOrEmpty(streamChunk?.Id))
                 {
-                    _id = chunk.Id;
+                    _id = streamChunk.Id;
                 }
                 
-                if (chunk?.Choices != null && chunk.Choices.Count > 0)
+                if (streamChunk?.Choices != null && streamChunk.Choices.Count > 0)
                 {
-                    var choice = chunk.Choices[0];
+                    var choice = streamChunk.Choices[0];
                     var content = choice?.Delta?.Content;
                     if (!string.IsNullOrEmpty(content))
                     {
@@ -61,9 +65,9 @@ public class Player2StreamHandler(Action<string> onContentReceived) : DownloadHa
                     }
                 }
 
-                if (chunk?.Usage != null)
+                if (streamChunk?.Usage != null)
                 {
-                    _totalTokens = chunk.Usage.TotalTokens;
+                    _totalTokens = streamChunk.Usage.TotalTokens;
                 }
             }
             catch (Exception ex)
@@ -76,4 +80,31 @@ public class Player2StreamHandler(Action<string> onContentReceived) : DownloadHa
 
     public string GetFullText() => _fullText.ToString();
     public int GetTotalTokens() => _totalTokens;
+    public string GetAllReceivedText() => _allReceivedData.ToString();
+
+    public string GetRawJson()
+    {
+        var response = new Player2Response
+        {
+            Id = _id,
+            Choices =
+            [
+                new Choice
+                {
+                    Message = new Message
+                    {
+                        Role = "assistant",
+                        Content = GetFullText()
+                    },
+                    FinishReason = _finishReason
+                }
+            ],
+            Usage = new Usage
+            {
+                TotalTokens = _totalTokens
+            }
+        };
+
+        return JsonUtil.SerializeToJson(response);
+    }
 }

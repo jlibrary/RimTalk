@@ -232,6 +232,8 @@
     <RimTalk.DebugWindow.ResendTooltip>编辑上下文和提示词，然后重新发送以测试对话。</RimTalk.DebugWindow.ResendTooltip>
     <RimTalk.DebugWindow.ResendSuccess>请求已成功重新发送。</RimTalk.DebugWindow.ResendSuccess>
     <RimTalk.DebugWindow.ResendError>AI 当前正忙。请在状态为 Idle 时重试。</RimTalk.DebugWindow.ResendError>
+    <RimTalk.DebugWindow.ApiLog>API 日志</RimTalk.DebugWindow.ApiLog>
+    <RimTalk.DebugWindow.FailMsg>请求失败。点击“API 日志”以生成支持用日志。</RimTalk.DebugWindow.FailMsg>
     <RimTalk.DebugWindow.CopyAll>复制</RimTalk.DebugWindow.CopyAll>
     <RimTalk.DebugWindow.Copy>复制</RimTalk.DebugWindow.Copy>
     <RimTalk.DebugWindow.Copied>已复制</RimTalk.DebugWindow.Copied>
