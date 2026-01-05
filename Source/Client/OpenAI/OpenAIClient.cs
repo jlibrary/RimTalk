@@ -11,308 +11,158 @@ using Verse;
 
 namespace RimTalk.Client.OpenAI;
 
-public class OpenAIClient : IAIClient
+public class OpenAIClient(
+    string baseUrl,
+    string model,
+    string apiKey = null,
+    Dictionary<string, string> extraHeaders = null)
+    : IAIClient
 {
-    private const string OpenAIPath = "/v1/chat/completions";
-    private readonly string _apiKey;
-    private readonly string _model;
-    private readonly Dictionary<string, string> _extraHeaders;
+    private const string DefaultPath = "/v1/chat/completions";
+    private readonly string _endpointUrl = FormatEndpointUrl(baseUrl);
 
-    public OpenAIClient(string baseUrl, string model, string apiKey = null, Dictionary<string, string> extraHeaders = null)
+    private static string FormatEndpointUrl(string baseUrl)
     {
-        _model = model;
-        _apiKey = apiKey;
-        _extraHeaders = extraHeaders;
-        if (!string.IsNullOrEmpty(baseUrl))
-        {
-            var trimmedUrl = baseUrl.Trim().TrimEnd('/');
-
-            var uri = new Uri(trimmedUrl);
-            // Check if they provided just a base URL without a specific API path
-            if (uri.AbsolutePath == "/" || string.IsNullOrEmpty(uri.AbsolutePath.Trim('/')))
-            {
-                EndpointUrl = trimmedUrl + OpenAIPath;
-            }
-            else
-            {
-                // They provided a full path, use as-is
-                EndpointUrl = trimmedUrl;
-            }
-        }
-        else
-        {
-            EndpointUrl = string.Empty;
-        }
+        if (string.IsNullOrEmpty(baseUrl)) return string.Empty;
+        var trimmed = baseUrl.Trim().TrimEnd('/');
+        var uri = new Uri(trimmed);
+        // Append default path if only base domain is provided
+        return (uri.AbsolutePath == "/" || string.IsNullOrEmpty(uri.AbsolutePath.Trim('/')))
+            ? trimmed + DefaultPath
+            : trimmed;
     }
 
-    private string EndpointUrl { get; }
+    public async Task<Payload> GetChatCompletionAsync(string instruction, List<(Role role, string message)> messages)
+    {
+        string jsonContent = BuildRequestJson(instruction, messages, stream: false);
+        string responseText = await SendRequestAsync(jsonContent, new DownloadHandlerBuffer());
+
+        var response = JsonUtil.DeserializeFromJson<OpenAIResponse>(responseText);
+        var content = response?.Choices?[0]?.Message?.Content;
+        var tokens = response?.Usage?.TotalTokens ?? 0;
+
+        return new Payload(_endpointUrl, model, jsonContent, content, tokens);
+    }
 
     public async Task<Payload> GetStreamingChatCompletionAsync<T>(string instruction,
         List<(Role role, string message)> messages, Action<T> onResponseParsed) where T : class
     {
-        var allMessages = new List<Message>();
-
-        if (!string.IsNullOrEmpty(instruction))
-        {
-            allMessages.Add(new Message
-            {
-                Role = "system",
-                Content = instruction
-            });
-        }
-
-        allMessages.AddRange(messages.Select(m => new Message
-        {
-            Role = ConvertRole(m.role),
-            Content = m.message
-        }));
-
-        var request = new OpenAIRequest
-        {
-            Model = _model,
-            Messages = allMessages,
-            Stream = true,
-            StreamOptions = new StreamOptions { IncludeUsage = true }
-        };
-
-        string jsonContent = JsonUtil.SerializeToJson(request);
-        
+        string jsonContent = BuildRequestJson(instruction, messages, stream: true);
         var jsonParser = new JsonStreamParser<T>();
-        var streamingHandler = new OpenAIStreamHandler(contentChunk =>
+        
+        var streamHandler = new OpenAIStreamHandler(chunk =>
         {
-            var responses = jsonParser.Parse(contentChunk);
-            foreach (var response in responses)
-            {
+            foreach (var response in jsonParser.Parse(chunk))
                 onResponseParsed?.Invoke(response);
-            }
         });
 
-        if (string.IsNullOrEmpty(EndpointUrl))
-        {
-            Logger.Error("Endpoint URL is missing.");
-            return null;
-        }
-
-        try
-        {
-            Logger.Debug($"API request: {EndpointUrl}\n{jsonContent}");
-
-            byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonContent);
-
-            using var webRequest = new UnityWebRequest(EndpointUrl, "POST");
-            webRequest.uploadHandler = new UploadHandlerRaw(bodyRaw);
-            webRequest.downloadHandler = streamingHandler;
-            webRequest.SetRequestHeader("Content-Type", "application/json");
-
-            if (_extraHeaders != null)
-            {
-                foreach (var header in _extraHeaders)
-                {
-                    webRequest.SetRequestHeader(header.Key, header.Value);
-                }
-            }
-
-            if (!string.IsNullOrEmpty(_apiKey))
-            {
-                webRequest.SetRequestHeader("Authorization", $"Bearer {_apiKey}");
-            }
-
-            var asyncOperation = webRequest.SendWebRequest();
-
-            while (!asyncOperation.isDone)
-            {
-                if (Current.Game == null) return null;
-                await Task.Delay(100);
-            }
-            
-            string responseText = webRequest.downloadHandler?.text;
-
-            if (webRequest.responseCode >= 400 || webRequest.isNetworkError || webRequest.isHttpError)
-            {
-                 responseText = streamingHandler.GetAllReceivedText();
-            }
-
-            if (string.IsNullOrEmpty(responseText) && streamingHandler != null)
-            {
-                 responseText = streamingHandler.GetRawJson();
-            }
-
-            if (webRequest.responseCode == 429)
-            {
-                string errorMsg = ErrorUtil.ExtractErrorMessage(responseText) ?? "Quota exceeded";
-                var payload = new Payload(EndpointUrl, _model, jsonContent, responseText, 0, errorMsg);
-                throw new QuotaExceededException(errorMsg, payload);
-            }
-
-            if (webRequest.isNetworkError || webRequest.isHttpError)
-            {
-                string errorMsg = ErrorUtil.ExtractErrorMessage(responseText) ?? webRequest.error;
-                Logger.Error($"Request failed: {webRequest.responseCode} - {errorMsg}");
-                var payload = new Payload(EndpointUrl, _model, jsonContent, responseText, 0, errorMsg);
-                throw new AIRequestException(errorMsg, payload);
-            }
-            
-            var fullResponse = streamingHandler.GetFullText();
-            var tokens = streamingHandler.GetTotalTokens();
-            Logger.Debug($"API response: \n{streamingHandler.GetRawJson()}");
-            return new Payload(EndpointUrl, _model, jsonContent, fullResponse, tokens);
-        }
-        catch (AIRequestException)
-        {
-            throw;
-        }
-        catch (Exception ex)
-        {
-            Logger.Error($"Exception in API request: {ex.Message}");
-            var payload = new Payload(EndpointUrl, _model, jsonContent, null, 0, ex.Message);
-            throw new AIRequestException(ex.Message, payload);
-        }
+        await SendRequestAsync(jsonContent, streamHandler);
+        
+        return new Payload(_endpointUrl, model, jsonContent, streamHandler.GetFullText(), streamHandler.GetTotalTokens());
     }
 
-    public async Task<Payload> GetChatCompletionAsync(string instruction,
-        List<(Role role, string message)> messages)
+    private string BuildRequestJson(string instruction, List<(Role role, string message)> messages, bool stream)
     {
         var allMessages = new List<Message>();
-
         if (!string.IsNullOrEmpty(instruction))
         {
-            allMessages.Add(new Message
-            {
-                Role = "system",
-                Content = instruction
-            });
+            allMessages.Add(new Message { Role = "system", Content = instruction });
         }
 
         allMessages.AddRange(messages.Select(m => new Message
         {
-            Role = ConvertRole(m.role),
+            Role = m.role == Role.User ? "user" : "assistant",
             Content = m.message
         }));
 
         var request = new OpenAIRequest
         {
-            Model = _model,
-            Messages = allMessages
+            Model = model,
+            Messages = allMessages,
+            Stream = stream,
+            StreamOptions = stream ? new StreamOptions { IncludeUsage = true } : null
         };
 
-        string jsonContent = JsonUtil.SerializeToJson(request);
-        var response = await GetCompletionAsync(jsonContent);
-        var content = response?.Choices?[0]?.Message?.Content;
-        var tokens = response?.Usage?.TotalTokens ?? 0;
-        return new Payload(EndpointUrl, _model, jsonContent, content, tokens);
+        return JsonUtil.SerializeToJson(request);
     }
 
-    private async Task<OpenAIResponse> GetCompletionAsync(string jsonContent)
+    private async Task<string> SendRequestAsync(string jsonContent, DownloadHandler downloadHandler)
     {
-        if (string.IsNullOrEmpty(EndpointUrl))
+        if (string.IsNullOrEmpty(_endpointUrl))
         {
             Logger.Error("Endpoint URL is missing.");
             return null;
         }
 
-        try
+        Logger.Debug($"API request: {_endpointUrl}\n{jsonContent}");
+
+        using var webRequest = new UnityWebRequest(_endpointUrl, "POST");
+        webRequest.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(jsonContent));
+        webRequest.downloadHandler = downloadHandler;
+        webRequest.SetRequestHeader("Content-Type", "application/json");
+
+        if (!string.IsNullOrEmpty(apiKey))
+            webRequest.SetRequestHeader("Authorization", $"Bearer {apiKey}");
+
+        if (extraHeaders != null)
         {
-            Logger.Debug($"API request: {EndpointUrl}\n{jsonContent}");
-
-            byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonContent);
-
-            using var webRequest = new UnityWebRequest(EndpointUrl, "POST");
-            webRequest.uploadHandler = new UploadHandlerRaw(bodyRaw);
-            webRequest.downloadHandler = new DownloadHandlerBuffer();
-            webRequest.SetRequestHeader("Content-Type", "application/json");
-
-            if (_extraHeaders != null)
-            {
-                foreach (var header in _extraHeaders)
-                {
-                    webRequest.SetRequestHeader(header.Key, header.Value);
-                }
-            }
-
-            if (!string.IsNullOrEmpty(_apiKey))
-            {
-                webRequest.SetRequestHeader("Authorization", $"Bearer {_apiKey}");
-            }
-
-            var asyncOperation = webRequest.SendWebRequest();
-
-            while (!asyncOperation.isDone)
-            {
-                if (Current.Game == null) return null;
-                await Task.Delay(100);
-            }
-
-            Logger.Debug($"API response: \n{webRequest.downloadHandler.text}");
-
-            string responseText = webRequest.downloadHandler.text;
-
-            if (webRequest.responseCode == 429)
-            {
-                string errorMsg = ErrorUtil.ExtractErrorMessage(responseText) ?? "Quota exceeded";
-                var payload = new Payload(EndpointUrl, _model, jsonContent, responseText, 0, errorMsg);
-                throw new QuotaExceededException(errorMsg, payload);
-            }
-
-            if (webRequest.isNetworkError || webRequest.isHttpError)
-            {
-                string errorMsg = ErrorUtil.ExtractErrorMessage(responseText) ?? webRequest.error;
-                Logger.Error($"Request failed: {webRequest.responseCode} - {errorMsg}");
-                var payload = new Payload(EndpointUrl, _model, jsonContent, responseText, 0, errorMsg);
-                throw new AIRequestException(errorMsg, payload);
-            }
-
-            return JsonUtil.DeserializeFromJson<OpenAIResponse>(responseText);
+            foreach (var header in extraHeaders)
+                webRequest.SetRequestHeader(header.Key, header.Value);
         }
-        catch (AIRequestException)
-        {
-            throw;
-        }
-        catch (Exception ex)
-        {
-            Logger.Error($"Exception in API request: {ex.Message}");
-            var payload = new Payload(EndpointUrl, _model, jsonContent, null, 0, ex.Message);
-            throw new AIRequestException(ex.Message, payload);
-        }
-    }
 
-    private string ConvertRole(Role role)
-    {
-        switch (role)
+        var asyncOp = webRequest.SendWebRequest();
+        while (!asyncOp.isDone)
         {
-            case Role.User:
-                return "user";
-            case Role.AI:
-                return "assistant";
-            default:
-                throw new ArgumentException($"Unknown role: {role}");
-        }
-    }
-    
-    public static async Task<List<string>> FetchModelsAsync(string apiKey, string url)
-    {
-        var models = new List<string>();
-        using var webRequest = UnityWebRequest.Get(url);
-        webRequest.SetRequestHeader("Authorization", "Bearer " + apiKey);
-        var asyncOperation = webRequest.SendWebRequest();
-
-        while (!asyncOperation.isDone)
-        {
+            if (Current.Game == null) return null;
             await Task.Delay(100);
+        }
+
+        string responseText = downloadHandler.text;
+        
+        // Recover text for streaming errors
+        if ((webRequest.responseCode >= 400 || webRequest.isNetworkError || webRequest.isHttpError) && 
+            downloadHandler is OpenAIStreamHandler sHandler)
+        {
+            responseText = sHandler.GetAllReceivedText();
+            if (string.IsNullOrEmpty(responseText)) responseText = sHandler.GetRawJson();
+        }
+
+        if (webRequest.responseCode == 429)
+        {
+            string errorMsg = ErrorUtil.ExtractErrorMessage(responseText) ?? "Quota exceeded";
+            throw new QuotaExceededException(errorMsg, new Payload(_endpointUrl, model, jsonContent, responseText, 0, errorMsg));
         }
 
         if (webRequest.isNetworkError || webRequest.isHttpError)
         {
-            Logger.Error($"Failed to fetch models: {webRequest.error}");
+            string errorMsg = ErrorUtil.ExtractErrorMessage(responseText) ?? webRequest.error;
+            Logger.Error($"Request failed: {webRequest.responseCode} - {errorMsg}");
+            throw new AIRequestException(errorMsg, new Payload(_endpointUrl, model, jsonContent, responseText, 0, errorMsg));
         }
-        else
+        
+        if (downloadHandler is DownloadHandlerBuffer)
+            Logger.Debug($"API response: \n{responseText}");
+        else if (downloadHandler is OpenAIStreamHandler sh)
+            Logger.Debug($"API response: \n{sh.GetRawJson()}");
+
+        return responseText;
+    }
+
+    public static async Task<List<string>> FetchModelsAsync(string apiKey, string url)
+    {
+        using var webRequest = UnityWebRequest.Get(url);
+        webRequest.SetRequestHeader("Authorization", "Bearer " + apiKey);
+        
+        var asyncOp = webRequest.SendWebRequest();
+        while (!asyncOp.isDone) await Task.Delay(100);
+
+        if (webRequest.isNetworkError || webRequest.isHttpError)
         {
-            var response = JsonUtil.DeserializeFromJson<OpenAIModelsResponse>(webRequest.downloadHandler.text);
-            if (response != null && response.Data != null)
-            {
-                models = response.Data.Select(m => m.Id).ToList();
-            }
+            Logger.Error($"Failed to fetch models: {webRequest.error}");
+            return new List<string>();
         }
 
-        return models;
+        var response = JsonUtil.DeserializeFromJson<OpenAIModelsResponse>(webRequest.downloadHandler.text);
+        return response?.Data?.Select(m => m.Id).ToList() ?? new List<string>();
     }
 }

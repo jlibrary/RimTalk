@@ -14,37 +14,36 @@ public static class AIErrorHandler
     {
         try
         {
-            T result = await operation();
-            return result;
+            return await operation();
         }
         catch (Exception ex)
         {
             var settings = Settings.Get();
-            if (CanRetryGeneration(settings))
+            if (!CanRetryGeneration(settings))
             {
-                string nextModel = Settings.Get().GetCurrentModel();
-                if (!settings.UseSimpleConfig)
-                {
-                    ShowRetryMessage(ex, nextModel);
-                }
-
-                try
-                {
-                    T result = await operation();
-                    return result;
-                }
-                catch (Exception retryEx)
-                {
-                    Logger.Warning($"Retry failed: {retryEx.Message}");
-                    HandleFinalFailure(ex);
-                    onFailure?.Invoke(retryEx);
-                    return default;
-                }
+                HandleFinalFailure(ex);
+                onFailure?.Invoke(ex);
+                return default;
             }
 
-            HandleFinalFailure(ex);
-            onFailure?.Invoke(ex);
-            return default;
+            // Prepare for retry
+            var nextModel = settings.GetCurrentModel();
+            if (!settings.UseSimpleConfig)
+            {
+                ShowRetryMessage(ex, nextModel);
+            }
+
+            try
+            {
+                return await operation();
+            }
+            catch (Exception retryEx)
+            {
+                Logger.Warning($"Retry failed: {retryEx.Message}");
+                HandleFinalFailure(ex); // Show the original error logic
+                onFailure?.Invoke(retryEx);
+                return default;
+            }
         }
     }
 
