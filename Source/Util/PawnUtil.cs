@@ -405,6 +405,8 @@ public static class PawnUtil
         "RR_LearnRemotely"
     };
 
+    private static readonly string[] MovementJobPatterns = { "Goto", "Flee", "Wait", "Wander" };
+
     private static string GetActivity(this Pawn pawn)
     {
         if (pawn == null) return null;
@@ -429,6 +431,17 @@ public static class PawnUtil
         if (ResearchJobDefNames.Contains(pawn.CurJob?.def.defName))
         {
             activity = AppendResearchProgress(activity);
+        }
+
+        bool Near(LocalTargetInfo t) => t.IsValid && pawn.Position.InHorDistOf(t.Cell, 5f);
+
+        if (pawn.pather?.Moving == true
+            && !Near(pawn.CurJob.targetA)
+            && !Near(pawn.CurJob.targetB)
+            && !Near(pawn.CurJob.targetC)
+            && !MovementJobPatterns.Any(p => pawn.CurJobDef.defName.Contains(p, StringComparison.OrdinalIgnoreCase)))
+        {
+            activity = $"(traveling to) {activity}";
         }
 
         return activity;
