@@ -436,10 +436,11 @@ public static class PawnUtil
         bool Near(LocalTargetInfo t) => t.IsValid && pawn.Position.InHorDistOf(t.Cell, 5f);
 
         if (pawn.pather?.Moving == true
+            && pawn.CurJob != null
             && !Near(pawn.CurJob.targetA)
             && !Near(pawn.CurJob.targetB)
             && !Near(pawn.CurJob.targetC)
-            && !MovementJobPatterns.Any(p => pawn.CurJobDef.defName.Contains(p, StringComparison.OrdinalIgnoreCase)))
+            && !MovementJobPatterns.Any(p => pawn.CurJob.def.defName.IndexOf(p, StringComparison.OrdinalIgnoreCase) >= 0)) 
         {
             activity = $"(traveling to) {activity}";
         }
