@@ -164,6 +164,7 @@ public static class ContextHelper
             cells = cells.Take(maxCellsToScan).ToList();
 
         var aggs = new Dictionary<string, NearbyAgg>();
+        var seenBuildingIds = new HashSet<int>();
 
         int processedTotal = 0;
         int processedItems = 0;
@@ -221,6 +222,7 @@ public static class ContextHelper
 
                 if (cat == ThingCategory.Building)
                 {
+                    if (!seenBuildingIds.Add(thing.thingIDNumber)) continue;
                     if (IsWall(thing)) continue;
                     AddAgg(aggs, thing, NearbyKind.Building);
                 }
