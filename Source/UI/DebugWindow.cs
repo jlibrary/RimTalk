@@ -607,16 +607,13 @@ public class DebugWindow : Window
         currentX += InteractionTypeColumnWidth + ColumnPadding;
 
         string elapsedMsText = request.Response == null
-            ? ""
-            : (request.ElapsedMs == 0 ? "-" : request.ElapsedMs.ToString());
+            ? "" : request.ElapsedMs == 0 ? "-" : request.ElapsedMs.ToString();
         Widgets.Label(new Rect(currentX, rowRect.y, TimeColumnWidth, RowHeight), elapsedMsText);
         currentX += TimeColumnWidth + ColumnPadding;
 
         string tokenCountText = request.Response == null
-            ? ""
-            : request.Payload?.TokenCount == 0
-                ? (request.IsFirstDialogue ? "?" : "-")
-                : request.Payload?.TokenCount.ToString();
+            ? "" : request.Payload?.TokenCount == 0
+                ? "-" : request.Payload?.TokenCount.ToString();
         Widgets.Label(new Rect(currentX, rowRect.y, TokensColumnWidth, RowHeight), tokenCountText);
         currentX += TokensColumnWidth + ColumnPadding;
 

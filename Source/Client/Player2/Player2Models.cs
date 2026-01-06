@@ -74,4 +74,7 @@ public class Player2StreamChunk
 
     [DataMember(Name = "usage")]
     public Usage Usage { get; set; }
+    
+    [DataMember(Name = "error")]
+    public string Error { get; set; }
 }
