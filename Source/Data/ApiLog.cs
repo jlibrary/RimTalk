@@ -52,7 +52,7 @@ public class ApiLog(string name, TalkRequest talkRequest, string response, Paylo
         sb.AppendLine($"Pawn: {Name ?? "-"}");
         sb.AppendLine($"InteractionType: {InteractionType ?? "-"}");
         sb.AppendLine($"ElapsedMs: {ElapsedMs}");
-        sb.AppendLine($"TokenCount: {Payload.TokenCount}");
+        sb.AppendLine($"TokenCount: {Payload?.TokenCount}");
         sb.AppendLine($"SpokenTick: {SpokenTick}");
         sb.AppendLine();
         sb.AppendLine("=== Prompt ===");

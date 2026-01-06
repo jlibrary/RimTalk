@@ -185,10 +185,18 @@ public static class PawnUtil
             }
 
             string entry;
-            if (Cache.Get(p) != null)
+            var pawnState = Cache.Get(p);
+            if (pawnState != null)
             {
                 string activity = GetPawnActivity(p, relevantPawns, useOptimization);
-                entry = $"{label} {activity.StripTags()}{extraStatus}";
+                string talkRequestStr = "";
+                var talkRequest = pawnState.GetNextTalkRequest();
+                if (talkRequest != null)
+                {
+                    pawnState.MarkRequestSpoken(talkRequest);
+                    talkRequestStr = $" - {talkRequest.Prompt}";
+                }
+                entry = $"{label} {activity.StripTags()}{extraStatus}{talkRequestStr}";
             }
             else
             {

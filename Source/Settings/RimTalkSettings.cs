@@ -41,7 +41,6 @@ public class RimTalkSettings : ModSettings
 
     // Debug mode settings
     public bool DebugModeEnabled = false;
-    public bool DebugGroupingEnabled = false;
     public string DebugSortColumn;
     public bool DebugSortAscending = true;
 
@@ -181,7 +180,6 @@ public class RimTalkSettings : ModSettings
         // Debug window settings
         Scribe_Values.Look(ref ButtonDisplay, "buttonDisplay", Settings.ButtonDisplayMode.Toggle, true);
         Scribe_Values.Look(ref DebugModeEnabled, "debugModeEnabled", false);
-        Scribe_Values.Look(ref DebugGroupingEnabled, "debugGroupingEnabled", false);
         Scribe_Values.Look(ref DebugSortColumn, "debugSortColumn", null);
         Scribe_Values.Look(ref DebugSortAscending, "debugSortAscending", true);
         

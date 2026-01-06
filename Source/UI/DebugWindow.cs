@@ -17,6 +17,13 @@ namespace RimTalk.UI;
 
 public class DebugWindow : Window
 {
+    private enum DebugViewMode
+    {
+        MainTable,
+        GroupedByPawn,
+        ActiveRequests
+    }
+
     // Layout Constants
     private const float RowHeight = 22f;
     private const float FilterBarHeight = 30f;
@@ -31,6 +38,14 @@ public class DebugWindow : Window
     private const float StateColumnWidth = 65f;
     private const float InteractionTypeColumnWidth = 50f;
 
+    // Active Request Column Widths
+    private const float ARTimeWidth = 65f;
+    private const float ARInitiatorWidth = 80f;
+    private const float ARRecipientWidth = 80f;
+    private const float ARTypeWidth = 60f;
+    private const float ARElapsedWidth = 60f;
+    private const float ARStatusWidth = 60f;
+
     // Grouping Column Widths
     private const float GroupedPawnNameWidth = 80f;
     private const float GroupedRequestsWidth = 60f;
@@ -43,6 +58,7 @@ public class DebugWindow : Window
 
     // State Variables
     private Vector2 _tableScrollPosition;
+    private Vector2 _activeRequestsScrollPosition;
     private Vector2 _detailsScrollPosition;
     private bool _stickToBottom = true;
 
@@ -57,6 +73,7 @@ public class DebugWindow : Window
 
     private List<PawnState> _pawnStates;
     private List<ApiLog> _requests;
+    private List<TalkRequest> _cachedActiveViewList = [];
     private readonly Dictionary<string, List<ApiLog>> _talkLogsByPawn = new();
 
     // Controls
@@ -64,6 +81,7 @@ public class DebugWindow : Window
     private string _pawnFilter;
     private string _textSearch;
     private State _stateFilter;
+    private RequestStatus? _activeRequestStatusFilter;
     private ApiLog _selectedLog;
 
     // Temporary Editable State
@@ -72,7 +90,7 @@ public class DebugWindow : Window
     private string _tempResponse;
     private string _tempContexts;
 
-    private bool _groupingEnabled;
+    private DebugViewMode _viewMode;
     private string _sortColumn;
     private bool _sortAscending;
     private readonly List<string> _expandedPawns;
@@ -100,7 +118,7 @@ public class DebugWindow : Window
         preventCameraMotion = false;
 
         var settings = Settings.Get();
-        _groupingEnabled = settings.DebugGroupingEnabled;
+        _viewMode = 0;
         _sortColumn = settings.DebugSortColumn;
         _sortAscending = settings.DebugSortAscending;
         _expandedPawns = [];
@@ -109,6 +127,7 @@ public class DebugWindow : Window
         _pawnFilter = string.Empty;
         _textSearch = string.Empty;
         _stateFilter = State.None;
+        _activeRequestStatusFilter = null;
     }
 
     public override Vector2 InitialSize => new(1100f, 600f);
@@ -117,7 +136,6 @@ public class DebugWindow : Window
     {
         base.PreClose();
         var settings = Settings.Get();
-        settings.DebugGroupingEnabled = _groupingEnabled;
         settings.DebugSortColumn = _sortColumn;
         settings.DebugSortAscending = _sortAscending;
         settings.Write();
@@ -201,7 +219,6 @@ public class DebugWindow : Window
 
         var allHistory = ApiHistory.GetAll();
         var filtered = ApplyFilters(allHistory);
-
         var apiLogs = filtered as ApiLog[] ?? filtered.ToArray();
         int count = apiLogs.Count();
         _requests = count > _maxRows ? apiLogs.Skip(count - _maxRows).ToList() : apiLogs.ToList();
@@ -220,6 +237,37 @@ public class DebugWindow : Window
             _selectedLog = null;
             _selectedRequestIdForTemp = Guid.Empty;
         }
+
+        var tempActiveList = new List<TalkRequest>();
+        tempActiveList.AddRange(TalkRequestPool.GetAllActive());
+        tempActiveList.AddRange(TalkRequestPool.GetHistory());
+        if (_pawnStates != null)
+            tempActiveList.AddRange(_pawnStates.SelectMany(state => state.TalkRequests));
+
+        IEnumerable<TalkRequest> q = tempActiveList;
+
+        if (!string.IsNullOrWhiteSpace(_pawnFilter))
+        {
+            var needle = _pawnFilter.Trim();
+            q = q.Where(r =>
+                (r.Initiator?.LabelShort ?? "").IndexOf(needle, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                (r.Recipient?.LabelShort ?? "").IndexOf(needle, StringComparison.OrdinalIgnoreCase) >= 0
+            );
+        }
+
+        if (!string.IsNullOrWhiteSpace(_textSearch))
+        {
+            var needle = _textSearch.Trim();
+            q = q.Where(r => (r.Prompt ?? "").IndexOf(needle, StringComparison.OrdinalIgnoreCase) >= 0);
+        }
+
+        if (_activeRequestStatusFilter.HasValue)
+        {
+            q = q.Where(r => r.Status == _activeRequestStatusFilter.Value);
+        }
+
+        _cachedActiveViewList = q.ToList();
+        _cachedActiveViewList.Sort((a, b) => a.CreatedTime.CompareTo(b.CreatedTime));
     }
 
     private void DrawLeftPane(Rect rect)
@@ -231,10 +279,19 @@ public class DebugWindow : Window
         // Table Area
         var tableRect = new Rect(rect.x, rect.y + FilterBarHeight, rect.width, rect.height - FilterBarHeight);
 
-        if (_groupingEnabled)
-            DrawGroupedPawnTable(tableRect);
-        else
-            DrawConsoleTable(tableRect);
+        switch (_viewMode)
+        {
+            case DebugViewMode.ActiveRequests:
+                DrawActiveRequestsTable(tableRect);
+                break;
+            case DebugViewMode.GroupedByPawn:
+                DrawGroupedPawnTable(tableRect);
+                break;
+            case DebugViewMode.MainTable:
+            default:
+                DrawConsoleTable(tableRect);
+                break;
+        }
     }
 
     private void DrawInternalFilterBar(Rect rect)
@@ -242,35 +299,40 @@ public class DebugWindow : Window
         float y = rect.y + 3f;
         float height = 24f;
         float gap = 5f;
-        float startX = rect.x + 5f;
-
-        // Defined widths for fixed elements
-        float iconWidth = 24f;
+        float startX = rect.x;
+        float viewDropdownWidth = 90f;
         float statusWidth = 100f;
         float limitWidth = 90f;
-
-        // Calculate how much horizontal space is used by fixed elements + gaps
-        float totalFixedSpace = 5f + iconWidth + gap + gap + gap + statusWidth + gap + limitWidth;
-
-        // Calculate remaining flexible space
+        float totalFixedSpace = viewDropdownWidth + statusWidth + limitWidth + (4 * gap);
         float flexSpace = rect.width - totalFixedSpace;
-        if (flexSpace < 50f) flexSpace = 50f; // Prevent collapse
-
-        // Allocate space: 35% for Pawn Name, 65% for Text Search
+        if (flexSpace < 50f) flexSpace = 50f;
         float pawnFilterWidth = flexSpace * 0.35f;
         float textSearchWidth = flexSpace * 0.65f;
 
         float currentX = startX;
 
-        // 1. Grouping Checkbox
-        WidgetRow row = new WidgetRow(currentX, y, UIDirection.RightThenUp, 9999f, 0f);
-        row.ToggleableIcon(
-            ref _groupingEnabled,
-            TexButton.ToggleTweak,
-            "RimTalk.DebugWindow.GroupByPawn".Translate(),
-            SoundDefOf.Mouseover_ButtonToggle
-        );
-        currentX += iconWidth + gap;
+        // 1. View Mode Dropdown
+        var viewBtnRect = new Rect(currentX, y, viewDropdownWidth, height);
+        string viewLabel = _viewMode switch
+        {
+            DebugViewMode.MainTable => "RimTalk.DebugWindow.ViewByTime".Translate(),
+            DebugViewMode.GroupedByPawn => "RimTalk.DebugWindow.ViewByPawn".Translate(),
+            DebugViewMode.ActiveRequests => "RimTalk.DebugWindow.ViewTalkRequests".Translate(),
+            _ => _viewMode.ToString()
+        };
+
+        if (Widgets.ButtonText(viewBtnRect, viewLabel))
+        {
+            var options = new List<FloatMenuOption>
+            {
+                new("RimTalk.DebugWindow.ViewByTime".Translate(), () => _viewMode = DebugViewMode.MainTable),
+                new("RimTalk.DebugWindow.ViewByPawn".Translate(), () => _viewMode = DebugViewMode.GroupedByPawn),
+                new("RimTalk.DebugWindow.ViewTalkRequests".Translate(), () => _viewMode = DebugViewMode.ActiveRequests)
+            };
+            Find.WindowStack.Add(new FloatMenu(options));
+        }
+
+        currentX += viewDropdownWidth + gap;
 
         // 2. Pawn Filter
         _pawnFilter = DrawSearchField(new Rect(currentX, y, pawnFilterWidth, height), _pawnFilter,
@@ -284,13 +346,35 @@ public class DebugWindow : Window
 
         // 4. Status Dropdown
         var stateBtnRect = new Rect(currentX, y, statusWidth, height);
-        if (Widgets.ButtonText(stateBtnRect, _stateFilter.GetLabel()))
+        if (_viewMode == DebugViewMode.ActiveRequests)
         {
-            var options = Enum.GetValues(typeof(State))
-                .Cast<State>()
-                .Select(filter => new FloatMenuOption(filter.GetLabel(), () => _stateFilter = filter))
-                .ToList();
-            Find.WindowStack.Add(new FloatMenu(options));
+            string label = _activeRequestStatusFilter.HasValue
+                ? $"RimTalk.DebugWindow.State{_activeRequestStatusFilter.Value}".Translate()
+                : "RimTalk.DebugWindow.StateAll".Translate();
+
+            if (Widgets.ButtonText(stateBtnRect, label))
+            {
+                var options = new List<FloatMenuOption>
+                {
+                    new("RimTalk.DebugWindow.StateAll".Translate(), () => _activeRequestStatusFilter = null)
+                };
+                options.AddRange(Enum.GetValues(typeof(RequestStatus))
+                    .Cast<RequestStatus>()
+                    .Select(s => new FloatMenuOption($"RimTalk.DebugWindow.State{s}".Translate(),
+                        () => _activeRequestStatusFilter = s)));
+                Find.WindowStack.Add(new FloatMenu(options));
+            }
+        }
+        else
+        {
+            if (Widgets.ButtonText(stateBtnRect, _stateFilter.GetLabel()))
+            {
+                var options = Enum.GetValues(typeof(State))
+                    .Cast<State>()
+                    .Select(filter => new FloatMenuOption(filter.GetLabel(), () => _stateFilter = filter))
+                    .ToList();
+                Find.WindowStack.Add(new FloatMenu(options));
+            }
         }
 
         currentX += statusWidth + gap;
@@ -310,6 +394,131 @@ public class DebugWindow : Window
             };
             Find.WindowStack.Add(new FloatMenu(options));
         }
+    }
+
+    private void DrawActiveRequestsTable(Rect rect)
+    {
+        // Header
+        float fixedWidth = ARTimeWidth + ARInitiatorWidth + ARRecipientWidth + ARTypeWidth + ARElapsedWidth +
+                           ARStatusWidth + (ColumnPadding * 6);
+        float promptWidth = Mathf.Max(50f, rect.width - fixedWidth - 16f);
+
+        DrawActiveRequestHeader(new Rect(rect.x, rect.y, rect.width, HeaderHeight), promptWidth);
+
+        var scrollRect = new Rect(rect.x, rect.y + HeaderHeight, rect.width, rect.height - HeaderHeight);
+        float viewWidth = scrollRect.width - 16f;
+        float viewHeight = _cachedActiveViewList.Count * RowHeight;
+        var viewRect = new Rect(0, 0, viewWidth, viewHeight);
+
+        // Auto-scroll logic
+        float maxScroll = Mathf.Max(0f, viewHeight - scrollRect.height);
+        if (_stickToBottom)
+            _activeRequestsScrollPosition.y = maxScroll;
+
+        Widgets.BeginScrollView(scrollRect, ref _activeRequestsScrollPosition, viewRect);
+
+        // Unstick if user manually scrolls up
+        if (_stickToBottom && _activeRequestsScrollPosition.y < maxScroll - 1f)
+            _stickToBottom = false;
+
+        // Iterate the cached list
+        for (int i = 0; i < _cachedActiveViewList.Count; i++)
+        {
+            DrawActiveRequestRow(_cachedActiveViewList[i], i, i * RowHeight, viewWidth, promptWidth);
+        }
+
+        Widgets.EndScrollView();
+
+        DrawStickToBottomOverlay(scrollRect, maxScroll, ref _activeRequestsScrollPosition);
+    }
+
+    private void DrawActiveRequestHeader(Rect rect, float promptWidth)
+    {
+        Widgets.DrawBoxSolid(rect, new Color(0.2f, 0.2f, 0.25f, 0.9f));
+        Text.Font = GameFont.Tiny;
+        float currentX = rect.x + 5f;
+
+        Widgets.Label(new Rect(currentX, rect.y, ARTimeWidth, rect.height),
+            "RimTalk.DebugWindow.HeaderTimestamp".Translate());
+        currentX += ARTimeWidth + ColumnPadding;
+
+        Widgets.Label(new Rect(currentX, rect.y, ARInitiatorWidth, rect.height),
+            "RimTalk.DebugWindow.HeaderInitiator".Translate());
+        currentX += ARInitiatorWidth + ColumnPadding;
+
+        Widgets.Label(new Rect(currentX, rect.y, ARRecipientWidth, rect.height),
+            "RimTalk.DebugWindow.HeaderRecipient".Translate());
+        currentX += ARRecipientWidth + ColumnPadding;
+
+        Widgets.Label(new Rect(currentX, rect.y, promptWidth, rect.height),
+            "RimTalk.DebugWindow.HeaderPrompt".Translate());
+        currentX += promptWidth + ColumnPadding;
+
+        Widgets.Label(new Rect(currentX, rect.y, ARTypeWidth, rect.height),
+            "RimTalk.DebugWindow.HeaderType".Translate());
+        currentX += ARTypeWidth + ColumnPadding;
+
+        Widgets.Label(new Rect(currentX, rect.y, ARElapsedWidth, rect.height),
+            "RimTalk.DebugWindow.HeaderElapsed".Translate());
+        currentX += ARElapsedWidth + ColumnPadding;
+
+        Widgets.Label(new Rect(currentX, rect.y, ARStatusWidth, rect.height),
+            "RimTalk.DebugWindow.HeaderStatus".Translate());
+    }
+
+    private void DrawActiveRequestRow(TalkRequest req, int index, float rowY, float width, float promptWidth)
+    {
+        var rowRect = new Rect(0, rowY, width, RowHeight);
+
+        if (index % 2 == 0) Widgets.DrawBoxSolid(rowRect, new Color(0.15f, 0.15f, 0.15f, 0.4f));
+
+        float currentX = 5f;
+        int currentTick = GenTicks.TicksGame;
+
+        // 1. Time (HH:mm:ss to match main table)
+        Widgets.Label(new Rect(currentX, rowY, ARTimeWidth, RowHeight), req.CreatedTime.ToString("HH:mm:ss"));
+        currentX += ARTimeWidth + ColumnPadding;
+
+        // 2. Initiator
+        var initRect = new Rect(currentX, rowY, ARInitiatorWidth, RowHeight);
+        string initName = req.Initiator?.LabelShort ?? "-";
+        UIUtil.DrawClickablePawnName(initRect, initName, req.Initiator);
+        currentX += ARInitiatorWidth + ColumnPadding;
+
+        // 3. Recipient
+        var recRect = new Rect(currentX, rowY, ARRecipientWidth, RowHeight);
+        if (req.Recipient != null && req.Recipient != req.Initiator)
+            UIUtil.DrawClickablePawnName(recRect, req.Recipient.LabelShort, req.Recipient);
+        else
+            Widgets.Label(recRect, "-");
+        currentX += ARRecipientWidth + ColumnPadding;
+
+        // 4. Prompt (Truncated)
+        string prompt = req.Prompt ?? "";
+        Widgets.Label(new Rect(currentX, rowY, promptWidth, RowHeight), prompt);
+        currentX += promptWidth + ColumnPadding;
+
+        // 5. Type
+        Widgets.Label(new Rect(currentX, rowY, ARTypeWidth, RowHeight), req.TalkType.ToString());
+        currentX += ARTypeWidth + ColumnPadding;
+
+        // 6. Elapsed
+        int ticksElapsed = Math.Max(0,
+            (req.Status == RequestStatus.Pending || req.FinishedTick == -1 ? GenTicks.TicksGame : req.FinishedTick) -
+            req.CreatedTick);
+        string elapsedStr = $"{ticksElapsed / 60}s";
+        Widgets.Label(new Rect(currentX, rowY, ARElapsedWidth, RowHeight), elapsedStr);
+        currentX += ARElapsedWidth + ColumnPadding;
+
+        // 7. Status
+        Color c = GUI.color;
+        if (req.Status == RequestStatus.Expired) GUI.color = Color.gray;
+        else if (req.Status == RequestStatus.Processed) GUI.color = Color.green;
+        else GUI.color = Color.yellow;
+
+        string translationKey = $"RimTalk.DebugWindow.State{req.Status}";
+        Widgets.Label(new Rect(currentX, rowY, ARStatusWidth, RowHeight), translationKey.Translate());
+        GUI.color = c;
     }
 
     private void DrawConsoleTable(Rect rect)
@@ -335,16 +544,15 @@ public class DebugWindow : Window
         if (_stickToBottom && _tableScrollPosition.y < maxScroll - 1f)
             _stickToBottom = false;
 
+        // Determine blocked area for input
         const float btnSize = 30f;
         Rect? overlayContentRect = null;
         if (!_stickToBottom)
         {
             float overlayWinX = scrollRect.xMax - btnSize - 20f;
             float overlayWinY = scrollRect.yMax - btnSize - 5f;
-
             float overlayContentX = overlayWinX - scrollRect.x + _tableScrollPosition.x;
             float overlayContentY = overlayWinY - scrollRect.y + _tableScrollPosition.y;
-
             overlayContentRect = new Rect(overlayContentX, overlayContentY, btnSize, btnSize);
         }
 
@@ -363,39 +571,8 @@ public class DebugWindow : Window
 
         Widgets.EndScrollView();
 
-        // Overlay Button (Scroll to Bottom)
-        if (!_stickToBottom)
-        {
-            var overlayRect = new Rect(scrollRect.xMax - btnSize - 20f, scrollRect.yMax - btnSize - 5f, btnSize,
-                btnSize);
-
-            bool isMouseOver = Mouse.IsOver(overlayRect);
-            Color bgColor = isMouseOver
-                ? new Color(0.3f, 0.3f, 0.3f, 1f)
-                : new Color(0, 0, 0, 0.6f);
-
-            Widgets.DrawBoxSolid(overlayRect, bgColor);
-
-            if (Widgets.ButtonInvisible(overlayRect))
-            {
-                _stickToBottom = true;
-                _tableScrollPosition.y = maxScroll;
-                SoundDefOf.Click.PlayOneShotOnCamera();
-            }
-
-            Text.Font = GameFont.Medium;
-            Text.Anchor = TextAnchor.MiddleLeft;
-
-            var labelRect = overlayRect;
-            labelRect.xMin += 5f;
-
-            Widgets.Label(labelRect, "▼");
-
-            Text.Anchor = TextAnchor.UpperLeft;
-            Text.Font = GameFont.Tiny;
-
-            TooltipHandler.TipRegion(overlayRect, "RimTalk.DebugWindow.AutoScroll".Translate());
-        }
+        // Use Helper Method
+        DrawStickToBottomOverlay(scrollRect, maxScroll, ref _tableScrollPosition);
     }
 
     private void DrawRequestRow(ApiLog request, int rowIndex, float rowY, float totalWidth, float xOffset,
@@ -406,16 +583,6 @@ public class DebugWindow : Window
 
         bool isSelected = _selectedLog != null && _selectedLog.Id == request.Id;
         if (isSelected) Widgets.DrawBoxSolid(rowRect, new Color(0.2f, 0.25f, 0.35f, 0.45f));
-
-        string resp = request.Response ?? _generating;
-        int maxChars = Mathf.FloorToInt(responseColumnWidth / 7f);
-        if (maxChars < 1) maxChars = 1;
-        if (resp.Length > maxChars)
-        {
-            int targetLen = maxChars - 3;
-            targetLen = Mathf.Clamp(targetLen, 1, resp.Length);
-            resp = resp.Substring(0, targetLen) + "...";
-        }
 
         float currentX = xOffset + 5f;
         Widgets.Label(new Rect(currentX, rowRect.y, TimestampColumnWidth, RowHeight),
@@ -431,6 +598,7 @@ public class DebugWindow : Window
             currentX += PawnColumnWidth + ColumnPadding;
         }
 
+        string resp = request.Response ?? _generating;
         Widgets.Label(new Rect(currentX, rowRect.y, responseColumnWidth, RowHeight), resp);
         currentX += responseColumnWidth + ColumnPadding;
 
@@ -562,11 +730,11 @@ public class DebugWindow : Window
         GUI.enabled = true;
 
         y += buttonsRowH + 8f;
-        
+
         if (_selectedLog.GetState() == State.Failed)
         {
             var prevColor = GUI.color;
-            GUI.color = new Color(1f, 0.5f, 0.5f); 
+            GUI.color = new Color(1f, 0.5f, 0.5f);
             string failedMsg = "RimTalk.DebugWindow.FailMsg".Translate();
             Widgets.Label(new Rect(0f, y, inner.width, 20f), failedMsg);
             GUI.color = prevColor;
@@ -700,7 +868,16 @@ public class DebugWindow : Window
         float totalHeight = CalculateGroupedTableHeight(viewWidth);
         var viewRect = new Rect(0, 0, viewWidth, totalHeight);
 
+        // Auto-scroll logic (Using main _tableScrollPosition)
+        float maxScroll = Mathf.Max(0f, totalHeight - rect.height);
+        if (_stickToBottom)
+            _tableScrollPosition.y = maxScroll;
+
         Widgets.BeginScrollView(rect, ref _tableScrollPosition, viewRect);
+
+        // Unstick if user manually scrolls up
+        if (_stickToBottom && _tableScrollPosition.y < maxScroll - 1f)
+            _stickToBottom = false;
 
         float responseColumnWidth = CalculateGroupedResponseColumnWidth(viewRect.width);
 
@@ -708,6 +885,23 @@ public class DebugWindow : Window
         float currentY = HeaderHeight;
 
         var sortedPawns = GetSortedPawnStates().ToList();
+
+        // Filters
+        if (!string.IsNullOrWhiteSpace(_pawnFilter))
+        {
+            var needle = _pawnFilter.Trim();
+            sortedPawns = sortedPawns.Where(p =>
+                (p.Pawn.LabelShort ?? "").IndexOf(needle, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+        }
+
+        if (!string.IsNullOrWhiteSpace(_textSearch))
+        {
+            var needle = _textSearch.Trim();
+            sortedPawns = sortedPawns.Where(p =>
+                    GetLastResponseForPawn(p.Pawn.LabelShort).IndexOf(needle, StringComparison.OrdinalIgnoreCase) >= 0)
+                .ToList();
+        }
+
         for (int i = 0; i < sortedPawns.Count; i++)
         {
             var pawnState = sortedPawns[i];
@@ -759,11 +953,13 @@ public class DebugWindow : Window
 
             currentY += RowHeight;
 
+            // Expanded Inner List Logic
             if (isExpanded && _talkLogsByPawn.TryGetValue(pawnKey, out var requests) && requests.Any())
             {
                 const float indentWidth = 20f;
                 float innerWidth = viewRect.width - indentWidth;
                 float innerResponseWidth = CalculateResponseColumnWidth(innerWidth, false);
+
                 DrawRequestTableHeader(new Rect(indentWidth, currentY, innerWidth, HeaderHeight), innerResponseWidth,
                     false);
                 currentY += HeaderHeight;
@@ -777,6 +973,8 @@ public class DebugWindow : Window
         }
 
         Widgets.EndScrollView();
+
+        DrawStickToBottomOverlay(rect, maxScroll, ref _tableScrollPosition);
     }
 
     private void DrawGroupedHeader(Rect rect, float responseColumnWidth)
@@ -819,7 +1017,7 @@ public class DebugWindow : Window
             "RimTalk.DebugWindow.HeaderResponse".Translate());
         currentX += responseColumnWidth + ColumnPadding;
         Widgets.Label(new Rect(currentX, rect.y, InteractionTypeColumnWidth, rect.height),
-            "RimTalk.DebugWindow.HeaderInteractionType".Translate());
+            "RimTalk.DebugWindow.HeaderType".Translate());
         currentX += InteractionTypeColumnWidth + ColumnPadding;
         Widgets.Label(new Rect(currentX, rect.y, TimeColumnWidth, rect.height),
             "RimTalk.DebugWindow.HeaderTimeMs".Translate());
@@ -829,6 +1027,42 @@ public class DebugWindow : Window
         currentX += TokensColumnWidth + ColumnPadding;
         Widgets.Label(new Rect(currentX, rect.y, StateColumnWidth, rect.height),
             "RimTalk.DebugWindow.HeaderState".Translate());
+    }
+
+    private void DrawStickToBottomOverlay(Rect scrollRect, float maxScroll, ref Vector2 scrollPosition)
+    {
+        if (_stickToBottom) return;
+
+        const float btnSize = 30f;
+        // Position the button inside the scroll rect, bottom-right
+        var overlayRect = new Rect(scrollRect.xMax - btnSize - 20f, scrollRect.yMax - btnSize - 5f, btnSize, btnSize);
+
+        bool isMouseOver = Mouse.IsOver(overlayRect);
+        Color bgColor = isMouseOver
+            ? new Color(0.3f, 0.3f, 0.3f, 1f)
+            : new Color(0, 0, 0, 0.6f);
+
+        Widgets.DrawBoxSolid(overlayRect, bgColor);
+
+        if (Widgets.ButtonInvisible(overlayRect))
+        {
+            _stickToBottom = true;
+            scrollPosition.y = maxScroll;
+            SoundDefOf.Click.PlayOneShotOnCamera();
+        }
+
+        Text.Font = GameFont.Medium;
+        Text.Anchor = TextAnchor.MiddleLeft;
+
+        var labelRect = overlayRect;
+        labelRect.xMin += 5f;
+
+        Widgets.Label(labelRect, "▼");
+
+        Text.Anchor = TextAnchor.UpperLeft;
+        Text.Font = GameFont.Tiny;
+
+        TooltipHandler.TipRegion(overlayRect, "RimTalk.DebugWindow.AutoScroll".Translate());
     }
 
     private void DrawSortableHeader(Rect rect, string column)
@@ -1156,6 +1390,7 @@ public class DebugWindow : Window
     private void Reset()
     {
         TalkHistory.Clear();
+        TalkRequestPool.ClearHistory();
         Stats.Reset();
         ApiHistory.Clear();
         UpdateData();

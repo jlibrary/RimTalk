@@ -81,11 +81,7 @@ internal static class TickManagerPatch
                 {
                     var pawnState = Cache.Get(selectedPawn);
                     if (pawnState.GetNextTalkRequest() != null)
-                    {
                         talkGenerated = TalkService.GenerateTalk(pawnState.GetNextTalkRequest());
-                        if(talkGenerated)
-                            pawnState.TalkRequests.RemoveFirst();
-                    }
                 }
 
                 // 3. Fallback: generate based on current context if nothing else worked

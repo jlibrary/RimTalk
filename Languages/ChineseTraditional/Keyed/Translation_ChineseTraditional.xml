@@ -214,6 +214,9 @@
     <RimTalk.Settings.IncludeWealth>殖民地財富</RimTalk.Settings.IncludeWealth>
 
     <!-- DebugWindow.cs -->
+    <RimTalk.DebugWindow.ViewByTime>依時間</RimTalk.DebugWindow.ViewByTime>
+    <RimTalk.DebugWindow.ViewByPawn>依角色</RimTalk.DebugWindow.ViewByPawn>
+    <RimTalk.DebugWindow.ViewTalkRequests>對話請求</RimTalk.DebugWindow.ViewTalkRequests>
     <RimTalk.DebugWindow.FilterPawn>名稱</RimTalk.DebugWindow.FilterPawn>
     <RimTalk.DebugWindow.Search>搜尋</RimTalk.DebugWindow.Search>
     <RimTalk.DebugWindow.State>狀態</RimTalk.DebugWindow.State>
@@ -223,6 +226,8 @@
     <RimTalk.DebugWindow.StateIgnored>忽略</RimTalk.DebugWindow.StateIgnored>
     <RimTalk.DebugWindow.StateSpoken>已說出</RimTalk.DebugWindow.StateSpoken>
     <RimTalk.DebugWindow.StateFailed>失敗</RimTalk.DebugWindow.StateFailed>
+    <RimTalk.DebugWindow.StateProcessed>已處理</RimTalk.DebugWindow.StateProcessed>
+    <RimTalk.DebugWindow.StateExpired>已過期</RimTalk.DebugWindow.StateExpired>
     <RimTalk.DebugWindow.Last>最近</RimTalk.DebugWindow.Last>
     <RimTalk.DebugWindow.AutoScroll>自動捲動</RimTalk.DebugWindow.AutoScroll>
     <RimTalk.DebugWindow.TooltipSelectForDetails>選擇一列展示細節</RimTalk.DebugWindow.TooltipSelectForDetails>
@@ -263,7 +268,7 @@
     <RimTalk.DebugWindow.StatusBusy>Busy</RimTalk.DebugWindow.StatusBusy>
     <RimTalk.DebugWindow.HeaderPawn>角色</RimTalk.DebugWindow.HeaderPawn>
     <RimTalk.DebugWindow.HeaderResponse>回應</RimTalk.DebugWindow.HeaderResponse>
-    <RimTalk.DebugWindow.HeaderInteractionType>類型</RimTalk.DebugWindow.HeaderInteractionType>
+    <RimTalk.DebugWindow.HeaderType>類型</RimTalk.DebugWindow.HeaderType>
     <RimTalk.DebugWindow.HeaderStatus>狀態</RimTalk.DebugWindow.HeaderStatus>
     <RimTalk.DebugWindow.HeaderLastTalk>上次談話</RimTalk.DebugWindow.HeaderLastTalk>
     <RimTalk.DebugWindow.HeaderRequests>請求</RimTalk.DebugWindow.HeaderRequests>
@@ -272,6 +277,10 @@
     <RimTalk.DebugWindow.HeaderTimeMs>時間(ms)</RimTalk.DebugWindow.HeaderTimeMs>
     <RimTalk.DebugWindow.HeaderTokens>權杖</RimTalk.DebugWindow.HeaderTokens>
     <RimTalk.DebugWindow.HeaderState>狀態</RimTalk.DebugWindow.HeaderState>
+    <RimTalk.DebugWindow.HeaderPrompt>提示</RimTalk.DebugWindow.HeaderPrompt>
+    <RimTalk.DebugWindow.HeaderElapsed>耗時</RimTalk.DebugWindow.HeaderElapsed>
+    <RimTalk.DebugWindow.HeaderInitiator>發起者</RimTalk.DebugWindow.HeaderInitiator>
+    <RimTalk.DebugWindow.HeaderRecipient>接收者</RimTalk.DebugWindow.HeaderRecipient>
     <RimTalk.DebugWindow.TooltipPromptResponse>提示：\n{0}\n\n回應：\n{1}</RimTalk.DebugWindow.TooltipPromptResponse>
     
     <!-- Overlay.cs -->

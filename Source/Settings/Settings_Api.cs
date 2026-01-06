@@ -143,7 +143,7 @@ public partial class Settings
 
         // Draw Add Button (+)
         Color prevColor = GUI.color;
-        GUI.color = Color.green;
+        GUI.color = new Color(0.6f, 0.9f, 0.6f);
         if (Widgets.ButtonText(addButtonRect, "+"))
         {
             SoundDefOf.Click.PlayOneShotOnCamera(null);
@@ -272,7 +272,7 @@ public partial class Settings
         Color prevColor = GUI.color;
         if (canDelete)
         {
-            GUI.color = new Color(1f, 0.3f, 0.3f);
+            GUI.color = new Color(1f, 0.4f, 0.4f);
         }
         else
         {

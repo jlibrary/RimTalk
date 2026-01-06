@@ -214,6 +214,9 @@
     <RimTalk.Settings.IncludeWealth>식민지 자산</RimTalk.Settings.IncludeWealth>
 
     <!-- DebugWindow.cs -->
+    <RimTalk.DebugWindow.ViewByTime>시간순</RimTalk.DebugWindow.ViewByTime>
+    <RimTalk.DebugWindow.ViewByPawn>캐릭터별</RimTalk.DebugWindow.ViewByPawn>
+    <RimTalk.DebugWindow.ViewTalkRequests>대화요청</RimTalk.DebugWindow.ViewTalkRequests>
     <RimTalk.DebugWindow.FilterPawn>이름</RimTalk.DebugWindow.FilterPawn>
     <RimTalk.DebugWindow.Search>검색</RimTalk.DebugWindow.Search>
     <RimTalk.DebugWindow.State>상태</RimTalk.DebugWindow.State>
@@ -223,6 +226,8 @@
     <RimTalk.DebugWindow.StateIgnored>무시됨</RimTalk.DebugWindow.StateIgnored>
     <RimTalk.DebugWindow.StateSpoken>발화됨</RimTalk.DebugWindow.StateSpoken>
     <RimTalk.DebugWindow.StateFailed>실패</RimTalk.DebugWindow.StateFailed>
+    <RimTalk.DebugWindow.StateProcessed>처리됨</RimTalk.DebugWindow.StateProcessed>
+    <RimTalk.DebugWindow.StateExpired>만료됨</RimTalk.DebugWindow.StateExpired>
     <RimTalk.DebugWindow.Last>최근</RimTalk.DebugWindow.Last>
     <RimTalk.DebugWindow.AutoScroll>자동 스크롤</RimTalk.DebugWindow.AutoScroll>
     <RimTalk.DebugWindow.TooltipSelectForDetails>행을 선택하면 자세한 정보가 표시됩니다</RimTalk.DebugWindow.TooltipSelectForDetails>
@@ -263,7 +268,7 @@
     <RimTalk.DebugWindow.StatusBusy>Busy</RimTalk.DebugWindow.StatusBusy>
     <RimTalk.DebugWindow.HeaderPawn>정착민</RimTalk.DebugWindow.HeaderPawn>
     <RimTalk.DebugWindow.HeaderResponse>응답</RimTalk.DebugWindow.HeaderResponse>
-    <RimTalk.DebugWindow.HeaderInteractionType>유형</RimTalk.DebugWindow.HeaderInteractionType>
+    <RimTalk.DebugWindow.HeaderType>유형</RimTalk.DebugWindow.HeaderType>
     <RimTalk.DebugWindow.HeaderStatus>상태</RimTalk.DebugWindow.HeaderStatus>
     <RimTalk.DebugWindow.HeaderLastTalk>마지막 대화</RimTalk.DebugWindow.HeaderLastTalk>
     <RimTalk.DebugWindow.HeaderRequests>요청</RimTalk.DebugWindow.HeaderRequests>
@@ -272,6 +277,10 @@
     <RimTalk.DebugWindow.HeaderTimeMs>시간(ms)</RimTalk.DebugWindow.HeaderTimeMs>
     <RimTalk.DebugWindow.HeaderTokens>토큰</RimTalk.DebugWindow.HeaderTokens>
     <RimTalk.DebugWindow.HeaderState>상태</RimTalk.DebugWindow.HeaderState>
+    <RimTalk.DebugWindow.HeaderPrompt>프롬프트</RimTalk.DebugWindow.HeaderPrompt>
+    <RimTalk.DebugWindow.HeaderElapsed>소요</RimTalk.DebugWindow.HeaderElapsed>
+    <RimTalk.DebugWindow.HeaderInitiator>발신자</RimTalk.DebugWindow.HeaderInitiator>
+    <RimTalk.DebugWindow.HeaderRecipient>수신자</RimTalk.DebugWindow.HeaderRecipient>
     <RimTalk.DebugWindow.TooltipPromptResponse>프롬프트:\n{0}\n\n응답:\n{1}</RimTalk.DebugWindow.TooltipPromptResponse>
     
     <!-- Overlay.cs -->

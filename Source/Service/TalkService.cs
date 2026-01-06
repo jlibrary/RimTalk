@@ -82,6 +82,8 @@ public static class TalkService
         // Offload the AI request and processing to a background thread to avoid blocking the game's main thread.
         Task.Run(() => GenerateAndProcessTalkAsync(talkRequest));
 
+        pawn1.MarkRequestSpoken(talkRequest);
+        
         return true;
     }
 

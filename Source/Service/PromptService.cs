@@ -121,9 +121,9 @@ public static class PromptService
 
         // Dialogue type
         ContextBuilder.BuildDialogueType(sb, talkRequest, pawns, shortName, mainPawn);
+        sb.Append($"\n{status}");
 
         // Time and weather
-        sb.Append($"\n{status}");
         if (contextSettings.IncludeTime)
             sb.Append($"\nTime: {gameData.Hour12HString}");
         if (contextSettings.IncludeDate)

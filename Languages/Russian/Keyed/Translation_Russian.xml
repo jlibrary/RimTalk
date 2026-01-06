@@ -214,6 +214,9 @@
     <RimTalk.Settings.IncludeWealth>Богатство колонии</RimTalk.Settings.IncludeWealth>
 
     <!-- DebugWindow.cs -->
+    <RimTalk.DebugWindow.ViewByTime>По времени</RimTalk.DebugWindow.ViewByTime>
+    <RimTalk.DebugWindow.ViewByPawn>По персонажам</RimTalk.DebugWindow.ViewByPawn>
+    <RimTalk.DebugWindow.ViewTalkRequests>Запросы</RimTalk.DebugWindow.ViewTalkRequests>
     <RimTalk.DebugWindow.FilterPawn>Имя</RimTalk.DebugWindow.FilterPawn>
     <RimTalk.DebugWindow.Search>Поиск</RimTalk.DebugWindow.Search>
     <RimTalk.DebugWindow.State>Состояние</RimTalk.DebugWindow.State>
@@ -223,6 +226,8 @@
     <RimTalk.DebugWindow.StateIgnored>Игн.</RimTalk.DebugWindow.StateIgnored>
     <RimTalk.DebugWindow.StateSpoken>Сказ.</RimTalk.DebugWindow.StateSpoken>
     <RimTalk.DebugWindow.StateFailed>Сбой</RimTalk.DebugWindow.StateFailed>
+    <RimTalk.DebugWindow.StateProcessed>Обработано</RimTalk.DebugWindow.StateProcessed>
+    <RimTalk.DebugWindow.StateExpired>Истек</RimTalk.DebugWindow.StateExpired>
     <RimTalk.DebugWindow.Last>посл.</RimTalk.DebugWindow.Last>
     <RimTalk.DebugWindow.AutoScroll>Автопрокрутка</RimTalk.DebugWindow.AutoScroll>
     <RimTalk.DebugWindow.TooltipSelectForDetails>Выберите строку, чтобы просмотреть подробности</RimTalk.DebugWindow.TooltipSelectForDetails>
@@ -263,7 +268,7 @@
     <RimTalk.DebugWindow.StatusBusy>Занято</RimTalk.DebugWindow.StatusBusy>
     <RimTalk.DebugWindow.HeaderPawn>Пешка</RimTalk.DebugWindow.HeaderPawn>
     <RimTalk.DebugWindow.HeaderResponse>Ответ</RimTalk.DebugWindow.HeaderResponse>
-    <RimTalk.DebugWindow.HeaderInteractionType>Тип</RimTalk.DebugWindow.HeaderInteractionType>
+    <RimTalk.DebugWindow.HeaderType>Тип</RimTalk.DebugWindow.HeaderType>
     <RimTalk.DebugWindow.HeaderStatus>Статус</RimTalk.DebugWindow.HeaderStatus>
     <RimTalk.DebugWindow.HeaderLastTalk>Последний разговор</RimTalk.DebugWindow.HeaderLastTalk>
     <RimTalk.DebugWindow.HeaderRequests>Запросы</RimTalk.DebugWindow.HeaderRequests>
@@ -272,6 +277,10 @@
     <RimTalk.DebugWindow.HeaderTimeMs>Время(мс)</RimTalk.DebugWindow.HeaderTimeMs>
     <RimTalk.DebugWindow.HeaderTokens>Токены</RimTalk.DebugWindow.HeaderTokens>
     <RimTalk.DebugWindow.HeaderState>Состояние</RimTalk.DebugWindow.HeaderState>
+    <RimTalk.DebugWindow.HeaderPrompt>Запрос</RimTalk.DebugWindow.HeaderPrompt>
+    <RimTalk.DebugWindow.HeaderElapsed>Время</RimTalk.DebugWindow.HeaderElapsed>
+    <RimTalk.DebugWindow.HeaderInitiator>Инициатор</RimTalk.DebugWindow.HeaderInitiator>
+    <RimTalk.DebugWindow.HeaderRecipient>Получатель</RimTalk.DebugWindow.HeaderRecipient>
     <RimTalk.DebugWindow.TooltipPromptResponse>Запрос:\n{0}\n\nОтвет:\n{1}</RimTalk.DebugWindow.TooltipPromptResponse>
     
     <!-- Overlay.cs -->

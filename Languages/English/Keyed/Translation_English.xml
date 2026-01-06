@@ -214,6 +214,9 @@
     <RimTalk.Settings.IncludeWealth>Colony Wealth</RimTalk.Settings.IncludeWealth>
     
     <!-- DebugWindow.cs -->
+    <RimTalk.DebugWindow.ViewByTime>By Time</RimTalk.DebugWindow.ViewByTime>
+    <RimTalk.DebugWindow.ViewByPawn>By Pawn</RimTalk.DebugWindow.ViewByPawn>
+    <RimTalk.DebugWindow.ViewTalkRequests>TalkRequests</RimTalk.DebugWindow.ViewTalkRequests>
     <RimTalk.DebugWindow.FilterPawn>Name</RimTalk.DebugWindow.FilterPawn>
     <RimTalk.DebugWindow.Search>Search</RimTalk.DebugWindow.Search>
     <RimTalk.DebugWindow.State>State</RimTalk.DebugWindow.State>
@@ -223,6 +226,8 @@
     <RimTalk.DebugWindow.StateIgnored>Ignored</RimTalk.DebugWindow.StateIgnored>
     <RimTalk.DebugWindow.StateSpoken>Spoken</RimTalk.DebugWindow.StateSpoken>
     <RimTalk.DebugWindow.StateFailed>Failed</RimTalk.DebugWindow.StateFailed>
+    <RimTalk.DebugWindow.StateProcessed>Processed</RimTalk.DebugWindow.StateProcessed>
+    <RimTalk.DebugWindow.StateExpired>Expired</RimTalk.DebugWindow.StateExpired>
     <RimTalk.DebugWindow.Last>Last</RimTalk.DebugWindow.Last>
     <RimTalk.DebugWindow.AutoScroll>Auto Scroll</RimTalk.DebugWindow.AutoScroll>
     <RimTalk.DebugWindow.TooltipSelectForDetails>Select a row to view details</RimTalk.DebugWindow.TooltipSelectForDetails>
@@ -263,7 +268,7 @@
     <RimTalk.DebugWindow.StatusBusy>Busy</RimTalk.DebugWindow.StatusBusy>
     <RimTalk.DebugWindow.HeaderPawn>Pawn</RimTalk.DebugWindow.HeaderPawn>
     <RimTalk.DebugWindow.HeaderResponse>Response</RimTalk.DebugWindow.HeaderResponse>
-    <RimTalk.DebugWindow.HeaderInteractionType>Type</RimTalk.DebugWindow.HeaderInteractionType>
+    <RimTalk.DebugWindow.HeaderType>Type</RimTalk.DebugWindow.HeaderType>
     <RimTalk.DebugWindow.HeaderStatus>Status</RimTalk.DebugWindow.HeaderStatus>
     <RimTalk.DebugWindow.HeaderLastTalk>Last Talk</RimTalk.DebugWindow.HeaderLastTalk>
     <RimTalk.DebugWindow.HeaderRequests>Requests</RimTalk.DebugWindow.HeaderRequests>
@@ -272,6 +277,10 @@
     <RimTalk.DebugWindow.HeaderTimeMs>Time(ms)</RimTalk.DebugWindow.HeaderTimeMs>
     <RimTalk.DebugWindow.HeaderTokens>Tokens</RimTalk.DebugWindow.HeaderTokens>
     <RimTalk.DebugWindow.HeaderState>State</RimTalk.DebugWindow.HeaderState>
+    <RimTalk.DebugWindow.HeaderPrompt>Prompt</RimTalk.DebugWindow.HeaderPrompt>
+    <RimTalk.DebugWindow.HeaderElapsed>Elapsed</RimTalk.DebugWindow.HeaderElapsed>
+    <RimTalk.DebugWindow.HeaderInitiator>Initiator</RimTalk.DebugWindow.HeaderInitiator>
+    <RimTalk.DebugWindow.HeaderRecipient>Recipient</RimTalk.DebugWindow.HeaderRecipient>
     <RimTalk.DebugWindow.TooltipPromptResponse>Prompt:\n{0}\n\nResponse:\n{1}</RimTalk.DebugWindow.TooltipPromptResponse>
     
     <!-- Overlay.cs -->
