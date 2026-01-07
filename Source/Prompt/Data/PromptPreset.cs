@@ -55,11 +55,74 @@ public class PromptPreset : IExposable
     }
 
     /// <summary>
-    /// Adds an entry.
+    /// Adds an entry to the end of the list.
     /// </summary>
     public void AddEntry(PromptEntry entry)
     {
         Entries.Add(entry);
+    }
+
+    /// <summary>
+    /// Inserts an entry at a specific index.
+    /// </summary>
+    /// <param name="entry">The entry to insert</param>
+    /// <param name="index">The index to insert at (0 = beginning, -1 or >= Count = end)</param>
+    public void InsertEntry(PromptEntry entry, int index)
+    {
+        if (index < 0 || index >= Entries.Count)
+        {
+            Entries.Add(entry);
+        }
+        else
+        {
+            Entries.Insert(index, entry);
+        }
+    }
+
+    /// <summary>
+    /// Inserts an entry after a specific entry.
+    /// </summary>
+    /// <param name="entry">The entry to insert</param>
+    /// <param name="afterEntryId">The ID of the entry to insert after</param>
+    /// <returns>True if successful, false if afterEntryId was not found</returns>
+    public bool InsertEntryAfter(PromptEntry entry, string afterEntryId)
+    {
+        var index = Entries.FindIndex(e => e.Id == afterEntryId);
+        if (index < 0)
+        {
+            Entries.Add(entry); // Fall back to adding at end
+            return false;
+        }
+        Entries.Insert(index + 1, entry);
+        return true;
+    }
+
+    /// <summary>
+    /// Inserts an entry before a specific entry.
+    /// </summary>
+    /// <param name="entry">The entry to insert</param>
+    /// <param name="beforeEntryId">The ID of the entry to insert before</param>
+    /// <returns>True if successful, false if beforeEntryId was not found</returns>
+    public bool InsertEntryBefore(PromptEntry entry, string beforeEntryId)
+    {
+        var index = Entries.FindIndex(e => e.Id == beforeEntryId);
+        if (index < 0)
+        {
+            Entries.Add(entry); // Fall back to adding at end
+            return false;
+        }
+        Entries.Insert(index, entry);
+        return true;
+    }
+
+    /// <summary>
+    /// Finds entry index by name (for mods that don't have entry IDs).
+    /// </summary>
+    /// <param name="entryName">The name of the entry to find</param>
+    /// <returns>The entry ID if found, null otherwise</returns>
+    public string FindEntryIdByName(string entryName)
+    {
+        return Entries.FirstOrDefault(e => e.Name == entryName)?.Id;
     }
 
     /// <summary>

@@ -64,7 +64,7 @@ public static class RimTalkPromptAPI
     }
 
     /// <summary>
-    /// Adds a prompt entry to the currently active preset.
+    /// Adds a prompt entry to the currently active preset (at the end).
     /// </summary>
     /// <param name="entry">The prompt entry to add</param>
     /// <returns>Whether the addition was successful</returns>
@@ -82,6 +82,143 @@ public static class RimTalkPromptAPI
         preset.AddEntry(entry);
         Logger.Message($"Added prompt entry: {entry.Name}");
         return true;
+    }
+
+    /// <summary>
+    /// Inserts a prompt entry at a specific index in the currently active preset.
+    /// </summary>
+    /// <param name="entry">The prompt entry to insert</param>
+    /// <param name="index">The index to insert at (0 = beginning, -1 or >= Count = end)</param>
+    /// <returns>Whether the insertion was successful</returns>
+    public static bool InsertPromptEntry(PromptEntry entry, int index)
+    {
+        if (entry == null) return false;
+
+        var preset = PromptManager.Instance.GetActivePreset();
+        if (preset == null)
+        {
+            Logger.Warning("RimTalkPromptAPI.InsertPromptEntry: No active preset");
+            return false;
+        }
+
+        preset.InsertEntry(entry, index);
+        Logger.Message($"Inserted prompt entry: {entry.Name} at index {index}");
+        return true;
+    }
+
+    /// <summary>
+    /// Inserts a prompt entry after a specific entry in the currently active preset.
+    /// </summary>
+    /// <param name="entry">The prompt entry to insert</param>
+    /// <param name="afterEntryId">The ID of the entry to insert after</param>
+    /// <returns>Whether the target entry was found (entry is always added)</returns>
+    public static bool InsertPromptEntryAfter(PromptEntry entry, string afterEntryId)
+    {
+        if (entry == null) return false;
+
+        var preset = PromptManager.Instance.GetActivePreset();
+        if (preset == null)
+        {
+            Logger.Warning("RimTalkPromptAPI.InsertPromptEntryAfter: No active preset");
+            return false;
+        }
+
+        var result = preset.InsertEntryAfter(entry, afterEntryId);
+        Logger.Message($"Inserted prompt entry: {entry.Name} after {afterEntryId} (found: {result})");
+        return result;
+    }
+
+    /// <summary>
+    /// Inserts a prompt entry before a specific entry in the currently active preset.
+    /// </summary>
+    /// <param name="entry">The prompt entry to insert</param>
+    /// <param name="beforeEntryId">The ID of the entry to insert before</param>
+    /// <returns>Whether the target entry was found (entry is always added)</returns>
+    public static bool InsertPromptEntryBefore(PromptEntry entry, string beforeEntryId)
+    {
+        if (entry == null) return false;
+
+        var preset = PromptManager.Instance.GetActivePreset();
+        if (preset == null)
+        {
+            Logger.Warning("RimTalkPromptAPI.InsertPromptEntryBefore: No active preset");
+            return false;
+        }
+
+        var result = preset.InsertEntryBefore(entry, beforeEntryId);
+        Logger.Message($"Inserted prompt entry: {entry.Name} before {beforeEntryId} (found: {result})");
+        return result;
+    }
+
+    /// <summary>
+    /// Inserts a prompt entry after an entry with the specified name.
+    /// Useful when you don't have the entry ID.
+    /// </summary>
+    /// <param name="entry">The prompt entry to insert</param>
+    /// <param name="afterEntryName">The name of the entry to insert after</param>
+    /// <returns>Whether the target entry was found (entry is always added)</returns>
+    public static bool InsertPromptEntryAfterName(PromptEntry entry, string afterEntryName)
+    {
+        if (entry == null || string.IsNullOrEmpty(afterEntryName)) return false;
+
+        var preset = PromptManager.Instance.GetActivePreset();
+        if (preset == null)
+        {
+            Logger.Warning("RimTalkPromptAPI.InsertPromptEntryAfterName: No active preset");
+            return false;
+        }
+
+        var targetId = preset.FindEntryIdByName(afterEntryName);
+        if (targetId == null)
+        {
+            preset.AddEntry(entry); // Fall back to adding at end
+            Logger.Message($"Inserted prompt entry: {entry.Name} (target '{afterEntryName}' not found, added at end)");
+            return false;
+        }
+
+        return InsertPromptEntryAfter(entry, targetId);
+    }
+
+    /// <summary>
+    /// Inserts a prompt entry before an entry with the specified name.
+    /// Useful when you don't have the entry ID.
+    /// </summary>
+    /// <param name="entry">The prompt entry to insert</param>
+    /// <param name="beforeEntryName">The name of the entry to insert before</param>
+    /// <returns>Whether the target entry was found (entry is always added)</returns>
+    public static bool InsertPromptEntryBeforeName(PromptEntry entry, string beforeEntryName)
+    {
+        if (entry == null || string.IsNullOrEmpty(beforeEntryName)) return false;
+
+        var preset = PromptManager.Instance.GetActivePreset();
+        if (preset == null)
+        {
+            Logger.Warning("RimTalkPromptAPI.InsertPromptEntryBeforeName: No active preset");
+            return false;
+        }
+
+        var targetId = preset.FindEntryIdByName(beforeEntryName);
+        if (targetId == null)
+        {
+            preset.AddEntry(entry); // Fall back to adding at end
+            Logger.Message($"Inserted prompt entry: {entry.Name} (target '{beforeEntryName}' not found, added at end)");
+            return false;
+        }
+
+        return InsertPromptEntryBefore(entry, targetId);
+    }
+
+    /// <summary>
+    /// Finds an entry ID by its name in the active preset.
+    /// </summary>
+    /// <param name="entryName">The name of the entry to find</param>
+    /// <returns>The entry ID if found, null otherwise</returns>
+    public static string FindEntryIdByName(string entryName)
+    {
+        if (string.IsNullOrEmpty(entryName)) return null;
+
+        var preset = PromptManager.Instance.GetActivePreset();
+        return preset?.FindEntryIdByName(entryName);
     }
 
     /// <summary>
