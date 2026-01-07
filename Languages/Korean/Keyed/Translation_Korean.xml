@@ -298,4 +298,6 @@
     <RimTalk.FloatMenu.WhatToSayToOther>{0}가 {1}에게 무엇을 말하기를 원하세요?</RimTalk.FloatMenu.WhatToSayToOther>
     <RimTalk.FloatMenu.Send>전송</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>취소</RimTalk.FloatMenu.Cancel>
+    <RimTalk.Settings.ApiTimeout>API Timeout (seconds)</RimTalk.Settings.ApiTimeout>
+    <RimTalk.Settings.ApiTimeoutTooltip>Request timeout in seconds for API calls. Lower values may interrupt long responses.</RimTalk.Settings.ApiTimeoutTooltip>
 </LanguageData>

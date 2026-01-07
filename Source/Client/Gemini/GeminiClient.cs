@@ -73,6 +73,7 @@ public class GeminiClient : IAIClient
         webRequest.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(jsonContent));
         webRequest.downloadHandler = downloadHandler;
         webRequest.SetRequestHeader("Content-Type", "application/json");
+        webRequest.timeout = Settings.Get()?.ApiTimeoutSeconds ?? Constant.RequestTimeoutSeconds;
 
         var asyncOp = webRequest.SendWebRequest();
         while (!asyncOp.isDone)
@@ -157,6 +158,7 @@ public class GeminiClient : IAIClient
     public static async Task<List<string>> FetchModelsAsync(string apiKey, string url)
     {
         using var webRequest = UnityWebRequest.Get($"{url}?key={apiKey}");
+        webRequest.timeout = Settings.Get()?.ApiTimeoutSeconds ?? Constant.RequestTimeoutSeconds;
         var asyncOp = webRequest.SendWebRequest();
         while (!asyncOp.isDone) await Task.Delay(100);
 

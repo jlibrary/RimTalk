@@ -298,4 +298,6 @@
     <RimTalk.FloatMenu.WhatToSayToOther>你想让{0}对{1}说什么？</RimTalk.FloatMenu.WhatToSayToOther>
     <RimTalk.FloatMenu.Send>发送</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>取消</RimTalk.FloatMenu.Cancel>
+    <RimTalk.Settings.ApiTimeout>API 超时时间（秒）</RimTalk.Settings.ApiTimeout>
+    <RimTalk.Settings.ApiTimeoutTooltip>API 请求超时时间，过小可能中断长回复。</RimTalk.Settings.ApiTimeoutTooltip>
 </LanguageData>

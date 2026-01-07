@@ -100,6 +100,7 @@ public class OpenAIClient(
         webRequest.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(jsonContent));
         webRequest.downloadHandler = downloadHandler;
         webRequest.SetRequestHeader("Content-Type", "application/json");
+        webRequest.timeout = Settings.Get()?.ApiTimeoutSeconds ?? Constant.RequestTimeoutSeconds;
 
         if (!string.IsNullOrEmpty(apiKey))
             webRequest.SetRequestHeader("Authorization", $"Bearer {apiKey}");
@@ -151,6 +152,7 @@ public class OpenAIClient(
     public static async Task<List<string>> FetchModelsAsync(string apiKey, string url)
     {
         using var webRequest = UnityWebRequest.Get(url);
+        webRequest.timeout = Settings.Get()?.ApiTimeoutSeconds ?? Constant.RequestTimeoutSeconds;
         webRequest.SetRequestHeader("Authorization", "Bearer " + apiKey);
         
         var asyncOp = webRequest.SendWebRequest();

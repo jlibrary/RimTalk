@@ -4,6 +4,7 @@ namespace RimTalk.Data;
 
 public static class Constant
 {
+    public const int RequestTimeoutSeconds = 30;
     public const string DefaultCloudModel = "gemma-3-27b-it";
     public const string FallbackCloudModel = "gemma-3-12b-it";
     public const string ChooseModel = "(choose model)";

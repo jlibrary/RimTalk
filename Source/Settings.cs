@@ -18,6 +18,8 @@ public partial class Settings : Mod
     private List<string> _discoveredArchivableTypes = [];
     private bool _archivableTypesScanned;
     private int _apiSettingsHash = 0;
+    private string _apiTimeoutBuffer;
+    private bool _apiTimeoutBufferInitialized;
 
     // Tab system
     private enum SettingsTab
@@ -155,6 +157,7 @@ public partial class Settings : Mod
         }
 
         sb.AppendLine(settings.CustomInstruction);
+        sb.AppendLine(settings.ApiTimeoutSeconds.ToString());
         sb.AppendLine(settings.AllowSimultaneousConversations.ToString());
         sb.AppendLine(settings.AllowSlavesToTalk.ToString());
         sb.AppendLine(settings.AllowPrisonersToTalk.ToString());

@@ -298,4 +298,6 @@
     <RimTalk.FloatMenu.WhatToSayToOther>Que voulez-vous que {0} dise à {1} ?</RimTalk.FloatMenu.WhatToSayToOther>
     <RimTalk.FloatMenu.Send>Envoyer</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>Annuler</RimTalk.FloatMenu.Cancel>
+    <RimTalk.Settings.ApiTimeout>API Timeout (seconds)</RimTalk.Settings.ApiTimeout>
+    <RimTalk.Settings.ApiTimeoutTooltip>Request timeout in seconds for API calls. Lower values may interrupt long responses.</RimTalk.Settings.ApiTimeoutTooltip>
 </LanguageData>
