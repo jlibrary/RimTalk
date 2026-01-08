@@ -134,7 +134,7 @@ public class Player2Client : IAIClient
 
         float inactivityTimer = 0f;
         ulong lastBytes = 0;
-        const float connectTimeout = 10f;
+        const float connectTimeout = 30f;
         const float readTimeout = 30f;
 
         while (!asyncOp.isDone)
