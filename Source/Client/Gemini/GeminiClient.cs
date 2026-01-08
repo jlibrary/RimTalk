@@ -75,10 +75,42 @@ public class GeminiClient : IAIClient
         webRequest.SetRequestHeader("Content-Type", "application/json");
 
         var asyncOp = webRequest.SendWebRequest();
+
+        float inactivityTimer = 0f;
+        ulong lastBytes = 0;
+        const float connectTimeout = 10f;
+        const float readTimeout = 30f;
+
         while (!asyncOp.isDone)
         {
             if (Current.Game == null) return null;
             await Task.Delay(100);
+
+            ulong currentBytes = webRequest.downloadedBytes;
+            bool hasStartedReceiving = currentBytes > 0;
+
+            if (currentBytes > lastBytes)
+            {
+                inactivityTimer = 0f;
+                lastBytes = currentBytes;
+            }
+            else
+            {
+                inactivityTimer += 0.1f;
+            }
+
+            // Cloud Timeout Logic
+            if (!hasStartedReceiving && inactivityTimer > connectTimeout)
+            {
+                webRequest.Abort();
+                throw new TimeoutException($"Connection timed out ({connectTimeout}s)");
+            }
+            
+            if (hasStartedReceiving && inactivityTimer > readTimeout)
+            {
+                webRequest.Abort();
+                throw new TimeoutException($"Read timed out ({readTimeout}s)");
+            }
         }
 
         string responseText = downloadHandler.text;
