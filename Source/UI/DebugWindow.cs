@@ -611,9 +611,10 @@ public class DebugWindow : Window
         Widgets.Label(new Rect(currentX, rowRect.y, TimeColumnWidth, RowHeight), elapsedMsText);
         currentX += TimeColumnWidth + ColumnPadding;
 
-        string tokenCountText = request.Response == null
-            ? "" : request.Payload?.TokenCount == 0
-                ? "-" : request.Payload?.TokenCount.ToString();
+        int count = request.Payload?.TokenCount ?? 0;
+        string tokenCountText = count != 0
+            ? count.ToString()
+            : request.IsFirstDialogue ? "-" : "";
         Widgets.Label(new Rect(currentX, rowRect.y, TokensColumnWidth, RowHeight), tokenCountText);
         currentX += TokensColumnWidth + ColumnPadding;
 

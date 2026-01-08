@@ -158,10 +158,24 @@ public class Overlay : MapComponent
 
         float iconSize = OptionsBarHeight - 4f;
         _dragHandleRect.Set(currentOverlayRect.x, currentOverlayRect.y, currentOverlayRect.width, OptionsBarHeight);
-        _gearIconScreenRect.Set(currentOverlayRect.xMax - iconSize - 5f, currentOverlayRect.y + 2f, iconSize,
-            iconSize);
-        _settingsDropdownRect.Set(_gearIconScreenRect.x - DropdownWidth + _gearIconScreenRect.width,
-            _gearIconScreenRect.yMax, DropdownWidth, DropdownHeight);
+        _gearIconScreenRect.Set(currentOverlayRect.xMax - iconSize - 5f, currentOverlayRect.y + 2f, iconSize, iconSize);
+
+        float dropdownY = _gearIconScreenRect.yMax;
+        
+        // Check if the dropdown would go off the bottom of the screen
+        if (dropdownY + DropdownHeight > Verse.UI.screenHeight)
+        {
+            // If so, position it above the gear icon instead
+            dropdownY = _gearIconScreenRect.y - DropdownHeight;
+        }
+
+        _settingsDropdownRect.Set(
+            _gearIconScreenRect.x - DropdownWidth + _gearIconScreenRect.width,
+            dropdownY, 
+            DropdownWidth, 
+            DropdownHeight
+        );
+
         _screenResizeHandleRect.Set(currentOverlayRect.xMax - ResizeHandleSize,
             currentOverlayRect.yMax - ResizeHandleSize,
             ResizeHandleSize, ResizeHandleSize);
@@ -422,6 +436,7 @@ public class Overlay : MapComponent
     }
 }
 
+// ... [OverlayPatch remains unchanged] ...
 [HarmonyPatch(typeof(UIRoot_Play), nameof(UIRoot_Play.UIRootOnGUI))]
 public static class OverlayPatch
 {

@@ -49,7 +49,7 @@ public class OpenAIClient(
     {
         string jsonContent = BuildRequestJson(instruction, messages, stream: true);
         var jsonParser = new JsonStreamParser<T>();
-        
+
         var streamHandler = new OpenAIStreamHandler(chunk =>
         {
             foreach (var response in jsonParser.Parse(chunk))
@@ -57,8 +57,9 @@ public class OpenAIClient(
         });
 
         await SendRequestAsync(jsonContent, streamHandler);
-        
-        return new Payload(_endpointUrl, model, jsonContent, streamHandler.GetFullText(), streamHandler.GetTotalTokens());
+
+        return new Payload(_endpointUrl, model, jsonContent, streamHandler.GetFullText(),
+            streamHandler.GetTotalTokens());
     }
 
     private string BuildRequestJson(string instruction, List<(Role role, string message)> messages, bool stream)
@@ -112,16 +113,51 @@ public class OpenAIClient(
         }
 
         var asyncOp = webRequest.SendWebRequest();
+
+        // Determine if target is local
+        bool isLocal = _endpointUrl.Contains("localhost") || _endpointUrl.Contains("127.0.0.1") ||
+                       _endpointUrl.Contains("192.168.") || _endpointUrl.Contains("10.");
+
+        float inactivityTimer = 0f;
+        ulong lastBytes = 0;
+        float connectTimeout = isLocal ? 300f : 60f;
+        float readTimeout = 60f; 
+
         while (!asyncOp.isDone)
         {
             if (Current.Game == null) return null;
             await Task.Delay(100);
+            
+            ulong currentBytes = webRequest.downloadedBytes;
+            bool hasStartedReceiving = currentBytes > 0;
+
+            if (currentBytes > lastBytes)
+            {
+                inactivityTimer = 0f;
+                lastBytes = currentBytes;
+            }
+            else
+            {
+                inactivityTimer += 0.1f;
+            }
+
+            if (!hasStartedReceiving && inactivityTimer > connectTimeout)
+            {
+                webRequest.Abort();
+                throw new TimeoutException($"Connection timed out (Waited {connectTimeout}s for first token)");
+            }
+
+            if (hasStartedReceiving && inactivityTimer > readTimeout)
+            {
+                webRequest.Abort();
+                throw new TimeoutException($"Read timed out (Stalled for {readTimeout}s during generation)");
+            }
         }
 
         string responseText = downloadHandler.text;
-        
+
         // Recover text for streaming errors
-        if ((webRequest.responseCode >= 400 || webRequest.isNetworkError || webRequest.isHttpError) && 
+        if ((webRequest.responseCode >= 400 || webRequest.isNetworkError || webRequest.isHttpError) &&
             downloadHandler is OpenAIStreamHandler sHandler)
         {
             responseText = sHandler.GetAllReceivedText();
@@ -131,16 +167,18 @@ public class OpenAIClient(
         if (webRequest.responseCode == 429)
         {
             string errorMsg = ErrorUtil.ExtractErrorMessage(responseText) ?? "Quota exceeded";
-            throw new QuotaExceededException(errorMsg, new Payload(_endpointUrl, model, jsonContent, responseText, 0, errorMsg));
+            throw new QuotaExceededException(errorMsg,
+                new Payload(_endpointUrl, model, jsonContent, responseText, 0, errorMsg));
         }
 
         if (webRequest.isNetworkError || webRequest.isHttpError)
         {
             string errorMsg = ErrorUtil.ExtractErrorMessage(responseText) ?? webRequest.error;
             Logger.Error($"Request failed: {webRequest.responseCode} - {errorMsg}");
-            throw new AIRequestException(errorMsg, new Payload(_endpointUrl, model, jsonContent, responseText, 0, errorMsg));
+            throw new AIRequestException(errorMsg,
+                new Payload(_endpointUrl, model, jsonContent, responseText, 0, errorMsg));
         }
-        
+
         if (downloadHandler is DownloadHandlerBuffer)
             Logger.Debug($"API response: \n{responseText}");
         else if (downloadHandler is OpenAIStreamHandler sh)
@@ -154,7 +192,7 @@ public class OpenAIClient(
         using var webRequest = UnityWebRequest.Get(url);
         webRequest.timeout = Settings.Get()?.ApiTimeoutSeconds ?? Constant.RequestTimeoutSeconds;
         webRequest.SetRequestHeader("Authorization", "Bearer " + apiKey);
-        
+
         var asyncOp = webRequest.SendWebRequest();
         while (!asyncOp.isDone) await Task.Delay(100);
 
