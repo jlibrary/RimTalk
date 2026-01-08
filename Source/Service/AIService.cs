@@ -18,20 +18,37 @@ public static class AIService
     private static bool _firstInstruction = true;
 
     /// <summary>
-    /// Streaming chat that invokes callback as each player's dialogue is parsed
+    /// Streaming chat that invokes callback as each player's dialogue is parsed.
+    /// Keeps original signature for compatibility, but prioritizes request.PromptMessages if built in sync layer.
     /// </summary>
     public static async Task ChatStreaming(TalkRequest request, string instruction,
         List<(Role role, string message)> messages,
         Action<TalkResponse> onPlayerResponseReceived)
     {
-        var currentMessages = new List<(Role role, string message)>(messages) { (Role.User, request.Prompt) };
+        // Prioritize PromptMessages built in sync layer
+        List<(Role role, string message)> prefixMessages;
+        List<(Role role, string message)> currentMessages;
+        
+        if (request.PromptMessages != null && request.PromptMessages.Count > 0)
+        {
+            // Use new preset system (PromptMessages contains everything)
+            prefixMessages = request.PromptMessages;
+            currentMessages = new List<(Role role, string message)>();  // Empty, already included in prefixMessages
+        }
+        else
+        {
+            // Fallback to legacy path: use instruction and messages parameters
+            var fullInstruction = $"{instruction}\n{request.Context}";
+            prefixMessages = new List<(Role role, string message)> { (Role.System, fullInstruction) };
+            currentMessages = new List<(Role role, string message)>(messages) { (Role.User, request.Prompt) };
+        }
+        
         var apiLog = ApiHistory.AddRequest(request, Channel.Stream);
         var lastApiLog = apiLog;
 
         var payload = await ExecuteWithRetry(apiLog, async client =>
         {
-            var fullInstruction = $"{instruction}\n{request.Context}";
-            return await client.GetStreamingChatCompletionAsync<TalkResponse>(fullInstruction, currentMessages,
+            return await client.GetStreamingChatCompletionAsync<TalkResponse>(prefixMessages, currentMessages,
                 response =>
                 {
                     if (Cache.GetByName(response.Name) == null) return;
@@ -42,7 +59,7 @@ public static class AIService
                     int elapsedMs = (int)(DateTime.Now - lastApiLog.Timestamp).TotalMilliseconds;
                     if (lastApiLog == apiLog) elapsedMs -= lastApiLog.ElapsedMs;
 
-                    var newLog = ApiHistory.AddResponse(apiLog.Id, response.Text, response.Name, 
+                    var newLog = ApiHistory.AddResponse(apiLog.Id, response.Text, response.Name,
                         response.InteractionRaw, elapsedMs: elapsedMs);
                     
                     response.Id = newLog.Id;
@@ -60,10 +77,11 @@ public static class AIService
     public static async Task<T> Query<T>(TalkRequest request) where T : class, IJsonData
     {
         var messages = new List<(Role role, string message)> { (Role.User, request.Prompt) };
+        var prefixMessages = new List<(Role role, string message)> { (Role.System, request.Context) };
         var apiLog = ApiHistory.AddRequest(request, Channel.Query);
 
-        var payload = await ExecuteWithRetry(apiLog, async client => 
-            await client.GetChatCompletionAsync(request.Context, messages));
+        var payload = await ExecuteWithRetry(apiLog, async client =>
+            await client.GetChatCompletionAsync(prefixMessages, messages));
 
         if (string.IsNullOrEmpty(payload.Response) || !string.IsNullOrEmpty(payload.ErrorMessage))
         {

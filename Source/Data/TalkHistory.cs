@@ -39,7 +39,9 @@ public static class TalkHistory
 
         lock (messages)
         {
-            messages.Add((Role.User, request));
+            // Prompt/request should be stored as System role (not User)
+            // AI-generated response is stored as Assistant (AI) role
+            messages.Add((Role.System, request));
             messages.Add((Role.AI, response));
             EnsureMessageLimit(messages);
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using HarmonyLib;
+using RimTalk.Prompt;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -23,7 +24,7 @@ public partial class Settings : Mod
     private enum SettingsTab
     {
         Basic,
-        AIInstruction,
+        PromptPreset,
         Context,
         EventFilter
     }
@@ -174,7 +175,7 @@ public partial class Settings : Mod
         float tabWidth = rect.width / 4f;
 
         Rect basicTabRect = new Rect(rect.x, rect.y, tabWidth, 30f);
-        Rect instructionTabRect = new Rect(rect.x + tabWidth, rect.y, tabWidth, 30f);
+        Rect promptTabRect = new Rect(rect.x + tabWidth, rect.y, tabWidth, 30f);
         Rect contextTabRect = new Rect(rect.x + tabWidth * 2, rect.y, tabWidth, 30f);
         Rect filterTabRect = new Rect(rect.x + tabWidth * 3, rect.y, tabWidth, 30f);
 
@@ -185,11 +186,11 @@ public partial class Settings : Mod
             _currentTab = SettingsTab.Basic;
         }
 
-        // AI Instruction Tab
-        GUI.color = _currentTab == SettingsTab.AIInstruction ? Color.white : Color.gray;
-        if (Widgets.ButtonText(instructionTabRect, "RimTalk.Settings.AIInstruction".Translate()))
+        // Prompt Preset Tab
+        GUI.color = _currentTab == SettingsTab.PromptPreset ? Color.white : Color.gray;
+        if (Widgets.ButtonText(promptTabRect, "RimTalk.Settings.PromptPresets".Translate()))
         {
-            _currentTab = SettingsTab.AIInstruction;
+            _currentTab = SettingsTab.PromptPreset;
         }
 
         // Context Tab
@@ -240,8 +241,8 @@ public partial class Settings : Mod
             case SettingsTab.Basic:
                 DrawBasicSettings(listing);
                 break;
-            case SettingsTab.AIInstruction:
-                DrawAIInstructionSettings(listing);
+            case SettingsTab.PromptPreset:
+                DrawPromptPresetSettings(listing);
                 break;
             case SettingsTab.Context:
                 DrawContextFilterSettings(listing);
@@ -267,8 +268,8 @@ public partial class Settings : Mod
             case SettingsTab.Basic:
                 DrawBasicSettings(listing);
                 break;
-            case SettingsTab.AIInstruction:
-                DrawAIInstructionSettings(listing);
+            case SettingsTab.PromptPreset:
+                DrawPromptPresetSettings(listing);
                 break;
             case SettingsTab.Context:
                 DrawContextFilterSettings(listing);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using RimTalk.Data;
+using RimTalk.Prompt;
 using RimTalk.Source.Data;
 using RimTalk.UI;
 using RimTalk.Util;
@@ -79,6 +80,23 @@ public static class TalkService
         talkRequest.Context = PromptService.BuildContext(pawns);
         PromptService.DecoratePrompt(talkRequest, pawns, status);
         
+        // Save Participants for PromptManager (collected only once in sync layer)
+        talkRequest.Participants = pawns;
+        
+        // Build PromptMessages in sync layer using PromptManager
+        var mustacheContext = MustacheContext.FromTalkRequest(talkRequest);
+        mustacheContext.DialogueType = GetDialogueTypeDescription(talkRequest, pawns);
+        talkRequest.PromptMessages = PromptManager.Instance.BuildPromptMessagesAsRoles(mustacheContext);
+        
+        // Fallback to legacy instruction if new system returns empty
+        if (talkRequest.PromptMessages == null || talkRequest.PromptMessages.Count == 0)
+        {
+            talkRequest.PromptMessages = new List<(Role role, string content)>
+            {
+                (Role.System, $"{Constant.Instruction}\n{talkRequest.Context}")
+            };
+        }
+        
         // Offload the AI request and processing to a background thread to avoid blocking the game's main thread.
         Task.Run(() => GenerateAndProcessTalkAsync(talkRequest));
 
@@ -89,6 +107,7 @@ public static class TalkService
 
     /// <summary>
     /// Handles the asynchronous AI streaming and processes the responses.
+    /// Simplified: All data preparation is done in sync layer, this only handles sending and response processing.
     /// </summary>
     private static async Task GenerateAndProcessTalkAsync(TalkRequest talkRequest)
     {
@@ -99,11 +118,12 @@ public static class TalkService
             
             var receivedResponses = new List<TalkResponse>();
 
+            // PromptMessages already built in sync layer, passed via talkRequest
             // Call the streaming chat service. The callback is executed as each piece of dialogue is parsed.
             await AIService.ChatStreaming(
                 talkRequest,
-                Constant.Instruction, 
-                TalkHistory.GetMessageHistory(initiator),
+                Constant.Instruction,  // Keep signature compatible
+                TalkHistory.GetMessageHistory(initiator),  // Keep signature compatible
                 talkResponse =>
                 {
                     Logger.Debug($"Streamed: {talkResponse}");
@@ -265,5 +285,37 @@ public static class TalkService
     private static bool AnyPawnHasPendingResponses()
     {
         return Cache.GetAll().Any(pawnState => pawnState.TalkResponses.Count > 0);
+    }
+
+    /// <summary>
+    /// Generates a description of the dialogue type for mustache template
+    /// </summary>
+    private static string GetDialogueTypeDescription(TalkRequest request, List<Pawn> pawns)
+    {
+        var mainPawn = pawns[0];
+        var shortName = mainPawn.LabelShort;
+        
+        if (request.TalkType == TalkType.User && pawns.Count > 1)
+        {
+            var mode = Settings.Get().PlayerDialogueMode;
+            if (mode == Settings.PlayerDialogueMode.Manual)
+                return $"{pawns[1].LabelShort}({pawns[1].GetRole()}) said to '{shortName}'. Generate dialogue starting after this. Do not generate any further lines for {pawns[1].LabelShort}";
+            else
+                return $"{pawns[1].LabelShort}({pawns[1].GetRole()}) said to '{shortName}'. Generate multi turn dialogues starting after this (do not repeat initial dialogue), beginning with {mainPawn.LabelShort}";
+        }
+        
+        if (pawns.Count == 1)
+        {
+            return $"{shortName} short monologue";
+        }
+        
+        if (mainPawn.IsInCombat() || mainPawn.GetMapRole() == MapRole.Invading)
+        {
+            return mainPawn.IsSlave || mainPawn.IsPrisoner
+                ? $"{shortName} dialogue short (worry)"
+                : $"{shortName} dialogue short, urgent tone ({mainPawn.GetMapRole().ToString().ToLower()}/command)";
+        }
+        
+        return $"{shortName} starts conversation, taking turns";
     }
 }

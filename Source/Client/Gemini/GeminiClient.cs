@@ -23,9 +23,9 @@ public class GeminiClient : IAIClient
 
     private readonly Random _random = new Random();
 
-    public async Task<Payload> GetChatCompletionAsync(string instruction, List<(Role role, string message)> messages)
+    public async Task<Payload> GetChatCompletionAsync(List<(Role role, string message)> prefixMessages, List<(Role role, string message)> messages)
     {
-        string jsonContent = BuildRequestJson(instruction, messages);
+        string jsonContent = BuildRequestJson(prefixMessages, messages);
         string responseText = await SendRequestAsync(GenerateEndpoint, jsonContent, new DownloadHandlerBuffer());
 
         var response = JsonUtil.DeserializeFromJson<GeminiResponse>(responseText);
@@ -42,10 +42,10 @@ public class GeminiClient : IAIClient
         return new Payload(BaseUrl, CurrentModel, jsonContent, content, tokens);
     }
 
-    public async Task<Payload> GetStreamingChatCompletionAsync<T>(string instruction,
+    public async Task<Payload> GetStreamingChatCompletionAsync<T>(List<(Role role, string message)> prefixMessages,
         List<(Role role, string message)> messages, Action<T> onResponseParsed) where T : class
     {
-        string jsonContent = BuildRequestJson(instruction, messages);
+        string jsonContent = BuildRequestJson(prefixMessages, messages);
         var jsonParser = new JsonStreamParser<T>();
         
         var streamHandler = new GeminiStreamHandler(chunk =>
@@ -149,28 +149,73 @@ public class GeminiClient : IAIClient
         return responseText;
     }
 
-    private string BuildRequestJson(string instruction, List<(Role role, string message)> messages)
+    private string BuildRequestJson(List<(Role role, string message)> prefixMessages, List<(Role role, string message)> messages)
     {
         SystemInstruction systemInstruction = null;
         var contents = new List<Content>();
 
+        // Extract system messages from prefix for Gemini's system instruction
+        var systemParts = new List<string>();
+        var nonSystemPrefix = new List<(Role role, string message)>();
+
+        if (prefixMessages != null)
+        {
+            foreach (var pm in prefixMessages)
+            {
+                if (pm.role == Role.System)
+                {
+                    systemParts.Add(pm.message);
+                }
+                else
+                {
+                    nonSystemPrefix.Add(pm);
+                }
+            }
+        }
+
         // Handle specific model requirements
         if (CurrentModel.Contains("gemma"))
         {
-            // Gemma: Instruction as user message
-            contents.Add(new Content { Role = "user", Parts = [new Part { Text = $"{_random.Next()} {instruction}" }] });
+            // Gemma: System instruction as user message
+            if (systemParts.Count > 0)
+            {
+                contents.Add(new Content { Role = "user", Parts = [new Part { Text = $"{_random.Next()} {string.Join("\n\n", systemParts)}" }] });
+            }
         }
         else
         {
             // Standard: System instruction
-            systemInstruction = new SystemInstruction { Parts = [new Part { Text = instruction }] };
+            if (systemParts.Count > 0)
+            {
+                systemInstruction = new SystemInstruction { Parts = [new Part { Text = string.Join("\n\n", systemParts) }] };
+            }
         }
 
+        // Add non-system prefix messages
+        contents.AddRange(nonSystemPrefix.Select(m => new Content
+        {
+            Role = m.role == Role.User ? "user" : "model",
+            Parts = [new Part { Text = m.message }]
+        }));
+
+        // Add conversation messages
         contents.AddRange(messages.Select(m => new Content
         {
             Role = m.role == Role.User ? "user" : "model",
             Parts = [new Part { Text = m.message }]
         }));
+
+        // Gemini API requires at least one content message and must end with "user" role
+        // If all messages were system messages, add a placeholder user message
+        if (contents.Count == 0)
+        {
+            contents.Add(new Content { Role = "user", Parts = [new Part { Text = "Please generate dialogue based on the context above." }] });
+        }
+        // If the last message is "model", add a user message to trigger response
+        else if (contents.Count > 0 && contents[^1].Role == "model")
+        {
+            contents.Add(new Content { Role = "user", Parts = [new Part { Text = "Continue the conversation." }] });
+        }
 
         var config = new GenerationConfig();
         if (CurrentModel.Contains("flash"))
