@@ -130,7 +130,7 @@ public static class ContextBuilder
             if (degreeData != null)
             {
                 var traitText = infoLevel == PromptService.InfoLevel.Full
-                    ? $"{degreeData.label}:{ContextHelper.Sanitize(degreeData.description, pawn)}"
+                    ? $"{degreeData.label}:{CommonUtil.Sanitize(degreeData.description, pawn)}"
                     : degreeData.label;
                 traits.Add(traitText);
             }
@@ -216,8 +216,8 @@ public static class ContextBuilder
         
         // For Short level, only include latest 3 thoughts
         var thoughts = infoLevel == PromptService.InfoLevel.Short
-            ? allThoughts.Keys.Take(3).Select(t => ContextHelper.Sanitize(t.LabelCap))
-            : allThoughts.Keys.Select(t => ContextHelper.Sanitize(t.LabelCap));
+            ? allThoughts.Keys.Take(3).Select(t => CommonUtil.Sanitize(t.LabelCap))
+            : allThoughts.Keys.Select(t => CommonUtil.Sanitize(t.LabelCap));
 
         if (thoughts.Any())
             return $"Memory: {string.Join(", ", thoughts)}";

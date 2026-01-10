@@ -66,18 +66,11 @@ public static class ContextHelper
         return data != null && data.linkFlags.HasFlag((Enum)LinkFlags.Wall);
     }
 
-    public static string Sanitize(string text, Pawn pawn = null)
-    {
-        if (pawn != null)
-            text = text.Formatted(pawn.Named("PAWN")).AdjustedFor(pawn).Resolve();
-        return text.StripTags().RemoveLineBreaks();
-    }
-
     public static string FormatBackstory(string label, BackstoryDef backstory, Pawn pawn, InfoLevel infoLevel)
     {
         var result = $"{label}: {backstory.title}({backstory.titleShort})";
         if (infoLevel == InfoLevel.Full)
-            result += $":{Sanitize(backstory.description, pawn)}";
+            result += $":{CommonUtil.Sanitize(backstory.description, pawn)}";
         return result;
     }
 

@@ -187,4 +187,25 @@ public static class CommonUtil
         TimeSpeed currentGameSpeed = Find.TickManager.CurTimeSpeed;
         return (int)currentGameSpeed < settings.DisableAiAtSpeed;
     }
+    
+    public static string Sanitize(string text, Pawn pawn = null)
+    {
+        if (pawn != null)
+            text = text.Formatted(pawn.Named("PAWN")).AdjustedFor(pawn).Resolve();
+        return text.StripTags().RemoveLineBreaks();
+    }
+    
+    public static string StripFormattingTags(string text)
+    {
+        if (string.IsNullOrEmpty(text))
+            return text;
+    
+        // Remove common RimWorld rich text tags
+        text = Regex.Replace(text, @"<color[^>]*>|</color>", string.Empty);
+        text = Regex.Replace(text, @"<b>|</b>", string.Empty);
+        text = Regex.Replace(text, @"<i>|</i>", string.Empty);
+        text = Regex.Replace(text, @"<size[^>]*>|</size>", string.Empty);
+    
+        return text;
+    }
 }
