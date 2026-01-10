@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -259,6 +260,13 @@ public static class ContextBuilder
         if (equipment.Any())
             return $"Equipment: {string.Join(", ", equipment)}";
         return null;
+    }
+
+    [Obsolete("Use BuildDialogueInstructions instead. Kept for backward compatibility.")]
+    public static void BuildDialogueType(StringBuilder sb, TalkRequest talkRequest, List<Pawn> pawns, string shortName,
+        Pawn mainPawn)
+    {
+        BuildDialogueInstructions(sb, talkRequest, pawns);
     }
 
     public static void BuildDialogueInstructions(StringBuilder sb, TalkRequest talkRequest, List<Pawn> pawns)
