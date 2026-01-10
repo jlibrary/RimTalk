@@ -30,7 +30,7 @@ public class TalkRequest(string prompt, Pawn initiator, Pawn recipient = null, T
     public bool IsExpired()
     {
         int duration = 20;
-        if (TalkType == TalkType.User) return false;
+        if (TalkType.IsFromUser()) return false;
         if (TalkType == TalkType.Urgent)
         {
             duration = 5;

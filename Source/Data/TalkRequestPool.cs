@@ -9,7 +9,25 @@ public static class TalkRequestPool
 {
     private static readonly List<TalkRequest> Requests = [];
     private static readonly List<TalkRequest> History = [];
+    private static readonly Queue<Pawn> UserRequestQueue = [];
+    private static readonly HashSet<Pawn> UserRequestSet = [];
     private const int MaxHistorySize = 500;
+
+    public static void QueueUserRequest(Pawn pawn)
+    {
+        if (UserRequestSet.Add(pawn))
+        {
+            UserRequestQueue.Enqueue(pawn);
+        }
+    }
+
+    public static Pawn DequeueUserRequestPawn()
+    {
+        if (UserRequestQueue.Count == 0) return null;
+        var pawn = UserRequestQueue.Dequeue();
+        UserRequestSet.Remove(pawn);
+        return pawn;
+    }
 
     public static void Add(string prompt, Pawn initiator = null, Pawn recipient = null, int mapId = 0)
     {

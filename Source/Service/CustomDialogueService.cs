@@ -61,11 +61,23 @@ public static class CustomDialogueService
         if (initiatorState == null || !initiatorState.CanDisplayTalk())
             return;
 
-        PawnState recipientState = Cache.Get(recipient);
-        if (recipientState != null && recipientState.CanDisplayTalk())
-            recipientState.AddTalkRequest(message, initiator, TalkType.User);
+        TalkType talkType;
 
-        ApiLog apiLog = ApiHistory.AddUserHistory(initiator, recipient, message);
+        if (recipient == null)
+        {
+            // Announcement
+            talkType = TalkType.Announcement;
+            initiatorState.AddTalkRequest(message, null, talkType);
+        }
+        else
+        {
+            talkType = TalkType.User;
+            PawnState recipientState = Cache.Get(recipient);
+            if (recipientState != null && recipientState.CanDisplayTalk())
+                recipientState.AddTalkRequest(message, initiator, talkType);
+        }
+
+        ApiLog apiLog = ApiHistory.AddUserHistory(initiator, recipient, message, talkType);
         
         if (initiator.IsPlayer())
         {
@@ -74,7 +86,7 @@ public static class CustomDialogueService
         }
         else
         {
-            TalkResponse talkResponse = new(TalkType.User, initiator.LabelShort, message)
+            TalkResponse talkResponse = new(talkType, initiator.LabelShort, message)
             {
                 Id = apiLog.Id
             };

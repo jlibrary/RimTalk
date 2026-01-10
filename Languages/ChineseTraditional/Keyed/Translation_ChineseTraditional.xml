@@ -296,6 +296,7 @@
     <RimTalk.Gizmo.ChatWithTargetDesc>發起與{0}的對話。</RimTalk.Gizmo.ChatWithTargetDesc>
     <RimTalk.FloatMenu.WhatToSayToSelf>你想對{0}說什麼？</RimTalk.FloatMenu.WhatToSayToSelf>
     <RimTalk.FloatMenu.WhatToSayToOther>你想讓{0}對{1}說什麼？</RimTalk.FloatMenu.WhatToSayToOther>
+    <RimTalk.FloatMenu.WhatToAnnounce>選擇 {0} 要對所有人說的話</RimTalk.FloatMenu.WhatToAnnounce>
     <RimTalk.FloatMenu.Send>發送</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>取消</RimTalk.FloatMenu.Cancel>
 </LanguageData>

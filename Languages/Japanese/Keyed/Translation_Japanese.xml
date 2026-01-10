@@ -296,6 +296,7 @@
     <RimTalk.Gizmo.ChatWithTargetDesc>{0}との会話を開始します。</RimTalk.Gizmo.ChatWithTargetDesc>
     <RimTalk.FloatMenu.WhatToSayToSelf>{0}に何を言いたいですか？</RimTalk.FloatMenu.WhatToSayToSelf>
     <RimTalk.FloatMenu.WhatToSayToOther>{0}に{1}に何を言わせたいですか？</RimTalk.FloatMenu.WhatToSayToOther>
+    <RimTalk.FloatMenu.WhatToAnnounce>{0}{0}がみんなに話す内容を選択</RimTalk.FloatMenu.WhatToAnnounce>
     <RimTalk.FloatMenu.Send>送信</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>キャンセル</RimTalk.FloatMenu.Cancel>
 </LanguageData>

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using RimTalk.Service;
 using RimTalk.Source.Data;
 using RimTalk.Util;
 using RimWorld;
@@ -35,7 +36,7 @@ public class PawnState(Pawn pawn)
                 var request = currentNode.Value;
                 
                 // If we overwrite a request, send it to global history as expired/overwritten
-                if (request.TalkType != TalkType.User)
+                if (!request.TalkType.IsFromUser())
                 {
                     TalkRequestPool.AddToHistory(request, RequestStatus.Expired);
                     TalkRequests.Remove(currentNode);
@@ -47,11 +48,12 @@ public class PawnState(Pawn pawn)
         // 2. Create and Enqueue
         var newRequest = new TalkRequest(prompt, Pawn, recipient, talkType) { Status = RequestStatus.Pending };
 
-        if (talkType == TalkType.User)
+        if (talkType.IsFromUser())
         {
             TalkRequests.AddFirst(newRequest);
             IgnoreAllTalkResponses();
             Cache.Get(recipient)?.IgnoreAllTalkResponses();
+            TalkRequestPool.QueueUserRequest(Pawn);
         }
         else if (talkType is TalkType.Event or TalkType.QuestOffer)
         {
