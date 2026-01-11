@@ -56,11 +56,10 @@ public static class ApiHistory
         return newLog;
     }
     
-    public static ApiLog AddUserHistory(Pawn initiator, Pawn recipient, string text, TalkType talkType = TalkType.User)
+    public static ApiLog AddUserHistory(Pawn initiator, Pawn recipient, string text)
     {
-        var recipientName = recipient != null ? recipient.LabelShort : "all";
-        var prompt = $"{initiator.LabelShort} talked to {recipientName}"; 
-        TalkRequest talkRequest = new(prompt, initiator, recipient, talkType);
+        var prompt = $"{initiator.LabelShort} talked to {recipient.LabelShort}"; 
+        TalkRequest talkRequest = new(prompt, initiator, recipient, TalkType.User);
         var log = new ApiLog(initiator.LabelShort, talkRequest, text, null, DateTime.Now, Channel.User);
         History[log.Id] = log;
         return log;

@@ -31,7 +31,7 @@ public static class TalkService
         if (AIService.IsBusy()) return false;
 
         PawnState pawn1 = Cache.Get(talkRequest.Initiator);
-        if (!talkRequest.TalkType.IsFromUser() && (pawn1 == null || !pawn1.CanGenerateTalk())) return false;
+        if (talkRequest.TalkType != TalkType.User && (pawn1 == null || !pawn1.CanGenerateTalk())) return false;
         
         if (!settings.AllowSimultaneousConversations && AnyPawnHasPendingResponses()) return false;
 
@@ -42,19 +42,18 @@ public static class TalkService
             talkRequest.Recipient = null;
         }
 
-        bool longRange = talkRequest.TalkType == TalkType.Announcement;
-        List<Pawn> nearbyPawns = PawnSelector.GetAllNearByPawns(talkRequest.Initiator, null, longRange);
+        List<Pawn> nearbyPawns = PawnSelector.GetAllNearByPawns(talkRequest.Initiator);
         if (talkRequest.Recipient.IsPlayer()) nearbyPawns.Insert(0, talkRequest.Recipient);
         var (status, isInDanger) = talkRequest.Initiator.GetPawnStatusFull(nearbyPawns);
         
         // Avoid spamming generations if the pawn's status hasn't changed recently.
-        if (!talkRequest.TalkType.IsFromUser() && status == pawn1.LastStatus && pawn1.RejectCount < 2)
+        if (talkRequest.TalkType != TalkType.User && status == pawn1.LastStatus && pawn1.RejectCount < 2)
         {
             pawn1.RejectCount++;
             return false;
         }
         
-        if (!talkRequest.TalkType.IsFromUser() && isInDanger) talkRequest.TalkType = TalkType.Urgent;
+        if (talkRequest.TalkType != TalkType.User && isInDanger) talkRequest.TalkType = TalkType.Urgent;
         
         pawn1.RejectCount = 0;
         pawn1.LastStatus = status;
@@ -68,12 +67,12 @@ public static class TalkService
                 return pawnState.CanDisplayTalk() && pawnState.TalkResponses.Empty();
             }))
             .Distinct()
-            .Take(talkRequest.TalkType == TalkType.Announcement ? 10 : settings.Context.MaxPawnContextCount)
+            .Take(settings.Context.MaxPawnContextCount)
             .ToList();
         
         if (pawns.Count == 1) talkRequest.IsMonologue = true;
 
-        if (!settings.AllowMonologue && talkRequest.IsMonologue && !talkRequest.TalkType.IsFromUser())
+        if (!settings.AllowMonologue && talkRequest.IsMonologue && talkRequest.TalkType != TalkType.User)
             return false;
 
         // Build the context and decorate the prompt with current status information.
@@ -176,16 +175,16 @@ public static class TalkService
                 continue;
             }
 
-            int replyInterval = RimTalkSettings.ReplyInterval;
-
-            if (talk.TalkType == TalkType.Announcement)
+            if (!talk.IsReply() && !CommonUtil.HasPassed(pawnState.LastTalkTick, Settings.Get().TalkInterval))
             {
-                replyInterval = 1;
+                continue;
             }
-            else if (pawn.IsInDanger())
+
+            int replyInterval = RimTalkSettings.ReplyInterval;
+            if (pawn.IsInDanger())
             {
                 replyInterval = 2;
-                pawnState.IgnoreAllTalkResponses([TalkType.Urgent, TalkType.User, TalkType.Announcement]);
+                pawnState.IgnoreAllTalkResponses([TalkType.Urgent, TalkType.User]);
             }
 
             // Enforce a delay for replies to make conversations feel more natural.

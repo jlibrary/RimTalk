@@ -61,10 +61,9 @@ public class PawnSelector
         return GetNearbyPawnsInternal(pawn1, pawn2, detectionType, onlyTalkable: true);
     }
 
-    public static List<Pawn> GetAllNearByPawns(Pawn pawn1, Pawn pawn2 = null, bool longRange = false)
+    public static List<Pawn> GetAllNearByPawns(Pawn pawn1, Pawn pawn2 = null)
     {
-        DetectionType detectionType = longRange ? DetectionType.Viewing : DetectionType.Hearing;
-        return GetNearbyPawnsInternal(pawn1, pawn2, detectionType, onlyTalkable: false);
+        return GetNearbyPawnsInternal(pawn1, pawn2, DetectionType.Hearing, onlyTalkable: false);
     }
 
     public static Pawn SelectNextAvailablePawn()
@@ -81,7 +80,7 @@ public class PawnSelector
             var pawnState = Cache.Get(pawn);
 
             var minTick = pawnState.TalkRequests
-                .Where(req => req.TalkType.IsFromUser())
+                .Where(req => req.TalkType == TalkType.User)
                 .Select(req => req.CreatedTick)
                 .DefaultIfEmpty(int.MaxValue)
                 .Min();

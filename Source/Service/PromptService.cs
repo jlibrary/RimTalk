@@ -118,9 +118,10 @@ public static class PromptService
         var sb = new StringBuilder();
         var gameData = CommonUtil.GetInGameData();
         var mainPawn = pawns[0];
+        var shortName = $"{mainPawn.LabelShort}";
 
         // Dialogue type
-        ContextBuilder.BuildDialogueInstructions(sb, talkRequest, pawns);
+        ContextBuilder.BuildDialogueType(sb, talkRequest, pawns, shortName, mainPawn);
         sb.Append($"\n{status}");
 
         // Time and weather

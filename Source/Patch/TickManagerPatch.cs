@@ -1,7 +1,6 @@
 using HarmonyLib;
 using RimTalk.Data;
 using RimTalk.Service;
-using RimTalk.Source.Data;
 using RimTalk.Util;
 using RimWorld;
 using Verse;
@@ -65,19 +64,6 @@ internal static class TickManagerPatch
         {
             CustomDialogueService.Tick();
             TalkService.DisplayTalk();
-        }
-
-        if (IsNow(1))
-        {
-            while (TalkRequestPool.DequeueUserRequestPawn() is { } userRequestPawn)
-            {
-                var pawnState = Cache.Get(userRequestPawn);
-                var request = pawnState.GetNextTalkRequest();
-                if (!request.TalkType.IsFromUser()) continue;
-                if (!TalkService.GenerateTalk(request))
-                    TalkRequestPool.QueueUserRequest(userRequestPawn);
-                return;
-            }
         }
 
         if (IsNow(TalkInterval))

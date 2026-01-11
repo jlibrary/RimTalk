@@ -329,10 +329,4 @@ DONE:
         var aggs = CollectNearbyContext(pawn, distance, maxPerKind, maxCellsToScan, maxThingsTotal, maxItemThings);
         return FormatNearbyContext(aggs);
     }
-    
-    [Obsolete("Use CommonUtil.Sanitize instead. Kept for backward compatibility.")]
-    public static string Sanitize(string text, Pawn pawn = null)
-    {
-        return CommonUtil.Sanitize(text, pawn);
-    }
 }

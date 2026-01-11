@@ -261,35 +261,21 @@ public static class ContextBuilder
         return null;
     }
 
-    public static void BuildDialogueInstructions(StringBuilder sb, TalkRequest talkRequest, List<Pawn> pawns)
+    public static void BuildDialogueType(StringBuilder sb, TalkRequest talkRequest, List<Pawn> pawns, string shortName, Pawn mainPawn)
     {
-        Pawn mainPawn = pawns[0];
-        string mainPawnName = pawns[0].LabelShort;
-        
-        if (talkRequest.TalkType.IsFromUser())
+        if (talkRequest.TalkType == TalkType.User)
         {
-            if (talkRequest.TalkType == TalkType.Announcement)
-            {
-                sb.Append($"{mainPawnName}({mainPawn.GetRole()}) announced '{talkRequest.Prompt}'. All who heard this line respond next. Do not repeat the original line.");
-            }
-            else
-            {
-                sb.Append($"{pawns[1].LabelShort}({pawns[1].GetRole()}) said to {mainPawnName}: '{talkRequest.Prompt}'. ");
-
-                bool isManualPlayerDialogue = pawns[1].IsPlayer() && 
-                                              Settings.Get().PlayerDialogueMode == Settings.PlayerDialogueMode.Manual;
-
-                if (isManualPlayerDialogue)
-                    sb.Append($"Generate dialogue starting after this. Do not generate any further lines for {pawns[1].LabelShort}");
-                else
-                    sb.Append($"Generate multi turn dialogues starting after this (do not repeat initial dialogue), beginning with {mainPawnName}");
-            }
+            sb.Append($"{pawns[1].LabelShort}({pawns[1].GetRole()}) said to '{shortName}: {talkRequest.Prompt}'.");
+            if (Settings.Get().PlayerDialogueMode == Settings.PlayerDialogueMode.Manual)
+                sb.Append($"Generate dialogue starting after this. Do not generate any further lines for {pawns[1].LabelShort}");
+            else if (Settings.Get().PlayerDialogueMode == Settings.PlayerDialogueMode.AIDriven)
+                sb.Append($"Generate multi turn dialogues starting after this (do not repeat initial dialogue), beginning with {mainPawn.LabelShort}");
         }
         else
         {
             if (pawns.Count == 1)
             {
-                sb.Append($"{mainPawnName} short monologue");
+                sb.Append($"{shortName} short monologue");
             }
             else if (mainPawn.IsInCombat() || mainPawn.GetMapRole() == MapRole.Invading)
             {
@@ -298,12 +284,12 @@ public static class ContextBuilder
 
                 talkRequest.TalkType = TalkType.Urgent;
                 sb.Append(mainPawn.IsSlave || mainPawn.IsPrisoner
-                    ? $"{mainPawnName} dialogue short (worry)"
-                    : $"{mainPawnName} dialogue short, urgent tone ({mainPawn.GetMapRole().ToString().ToLower()}/command)");
+                    ? $"{shortName} dialogue short (worry)"
+                    : $"{shortName} dialogue short, urgent tone ({mainPawn.GetMapRole().ToString().ToLower()}/command)");
             }
             else
             {
-                sb.Append($"{mainPawnName} starts conversation, taking turns");
+                sb.Append($"{shortName} starts conversation, taking turns");
             }
 
             if (mainPawn.InMentalState)
