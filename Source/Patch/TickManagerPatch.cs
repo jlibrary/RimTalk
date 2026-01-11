@@ -1,6 +1,7 @@
 using HarmonyLib;
 using RimTalk.Data;
 using RimTalk.Service;
+using RimTalk.Source.Data;
 using RimTalk.Util;
 using RimWorld;
 using Verse;
@@ -17,6 +18,7 @@ internal static class TickManagerPatch
     private static bool _noApiKeyMessageShown;
     private static bool _initialCacheRefresh;
     private static bool _chatHistoryCleared;
+    private static int _lastTalkEndTick;
 
     public static void Postfix()
     {
@@ -66,7 +68,28 @@ internal static class TickManagerPatch
             TalkService.DisplayTalk();
         }
 
-        if (IsNow(TalkInterval))
+        if (IsNow(1))
+        {
+            // User-initiated talks are checked every second
+            while (UserRequestPool.GetNextUserRequest() is { } pawn)
+            {
+                var pawnState = Cache.Get(pawn);
+                var request = pawnState.GetNextTalkRequest();
+                if (!request.TalkType.IsFromUser()) continue;
+                if (TalkService.GenerateTalk(request))
+                    UserRequestPool.Remove(pawn);
+                return;
+            }
+        }
+
+        if (AIService.IsBusy())
+        {
+            _lastTalkEndTick = GenTicks.TicksGame;
+            return;
+        }
+
+        int intervalTicks = CommonUtil.GetTicksForDuration(TalkInterval);
+        if (intervalTicks > 0 && GenTicks.TicksGame - _lastTalkEndTick >= intervalTicks)
         {
             // Select a pawn based on the current iteration strategy
             Pawn selectedPawn = PawnSelector.SelectNextAvailablePawn();
@@ -91,6 +114,8 @@ internal static class TickManagerPatch
                     TalkService.GenerateTalk(talkRequest);
                 }
             }
+            
+            _lastTalkEndTick = GenTicks.TicksGame;
         }
     }
 
@@ -113,5 +138,6 @@ internal static class TickManagerPatch
     {
         _noApiKeyMessageShown = false;
         _initialCacheRefresh = false;
+        _lastTalkEndTick = GenTicks.TicksGame;
     }
 }

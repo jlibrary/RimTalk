@@ -95,12 +95,12 @@ public static class PawnUtil
 
     public static bool IsVisitor(this Pawn pawn)
     {
-        return pawn?.Faction != null && pawn.Faction != Faction.OfPlayer && !pawn.HostileTo(Faction.OfPlayer);
+        return pawn?.Faction != null && pawn.Faction != Faction.OfPlayer && !pawn.HostileTo(Faction.OfPlayer) && !pawn.IsPrisoner;
     }
 
     public static bool IsEnemy(this Pawn pawn)
     {
-        return pawn != null && pawn.HostileTo(Faction.OfPlayer);
+        return pawn != null && pawn.HostileTo(Faction.OfPlayer) && !pawn.IsPrisoner;
     }
 
     public static bool IsBaby(this Pawn pawn)

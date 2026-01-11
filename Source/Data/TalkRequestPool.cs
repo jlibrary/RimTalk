@@ -10,18 +10,9 @@ public static class TalkRequestPool
     private static readonly List<TalkRequest> Requests = [];
     private static readonly List<TalkRequest> History = [];
     private const int MaxHistorySize = 500;
-
-    public static void Add(string prompt, Pawn initiator = null, Pawn recipient = null, int mapId = 0)
-    {
-        var request = new TalkRequest(prompt, initiator, recipient, TalkType.Event)
-        {
-            MapId = mapId,
-            Status = RequestStatus.Pending
-        };
-        Requests.Add(request);
-    }
-
-    public static void Add(string prompt, Pawn initiator, Pawn recipient, int mapId, TalkType talkType)
+  
+    
+    public static void Add(string prompt, Pawn initiator = null, Pawn recipient = null, int mapId = 0, TalkType talkType = TalkType.Event)
     {
         var request = new TalkRequest(prompt, initiator, recipient, talkType)
         {

@@ -31,7 +31,7 @@ public static class TalkService
         if (AIService.IsBusy()) return false;
 
         PawnState pawn1 = Cache.Get(talkRequest.Initiator);
-        if (talkRequest.TalkType != TalkType.User && (pawn1 == null || !pawn1.CanGenerateTalk())) return false;
+        if (!talkRequest.TalkType.IsFromUser() && (pawn1 == null || !pawn1.CanGenerateTalk())) return false;
         
         if (!settings.AllowSimultaneousConversations && AnyPawnHasPendingResponses()) return false;
 
@@ -47,13 +47,13 @@ public static class TalkService
         var (status, isInDanger) = talkRequest.Initiator.GetPawnStatusFull(nearbyPawns);
         
         // Avoid spamming generations if the pawn's status hasn't changed recently.
-        if (talkRequest.TalkType != TalkType.User && status == pawn1.LastStatus && pawn1.RejectCount < 2)
+        if (!talkRequest.TalkType.IsFromUser() && status == pawn1.LastStatus && pawn1.RejectCount < 2)
         {
             pawn1.RejectCount++;
             return false;
         }
         
-        if (talkRequest.TalkType != TalkType.User && isInDanger) talkRequest.TalkType = TalkType.Urgent;
+        if (!talkRequest.TalkType.IsFromUser() && isInDanger) talkRequest.TalkType = TalkType.Urgent;
         
         pawn1.RejectCount = 0;
         pawn1.LastStatus = status;
@@ -72,7 +72,7 @@ public static class TalkService
         
         if (pawns.Count == 1) talkRequest.IsMonologue = true;
 
-        if (!settings.AllowMonologue && talkRequest.IsMonologue && talkRequest.TalkType != TalkType.User)
+        if (!settings.AllowMonologue && talkRequest.IsMonologue && !talkRequest.TalkType.IsFromUser())
             return false;
 
         // Build the context and decorate the prompt with current status information.
@@ -144,7 +144,12 @@ public static class TalkService
     {
         if (!responses.Any()) return;
         string serializedResponses = JsonUtil.SerializeToJson(responses);
-        foreach (var pawn in responses.Select(r => Cache.GetByName(r.Name)?.Pawn).Distinct().Where(p => p != null))
+        var uniquePawns = responses
+            .Select(r => Cache.GetByName(r.Name)?.Pawn)
+            .Where(p => p != null)
+            .Distinct();
+
+        foreach (var pawn in uniquePawns)
         {
             TalkHistory.AddMessageHistory(pawn, prompt, serializedResponses);
         }
@@ -171,11 +176,6 @@ public static class TalkService
             if (TalkHistory.IsTalkIgnored(talk.ParentTalkId) || !pawnState.CanDisplayTalk())
             {
                 pawnState.IgnoreTalkResponse();
-                continue;
-            }
-
-            if (!talk.IsReply() && !CommonUtil.HasPassed(pawnState.LastTalkTick, Settings.Get().TalkInterval))
-            {
                 continue;
             }
 

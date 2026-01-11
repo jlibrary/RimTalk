@@ -47,7 +47,7 @@ public class Hediff_Persona : Hediff
         
             if (pawn.IsSlave || pawn.IsPrisoner || pawn.IsVisitor() || pawn.IsEnemy())
             {
-                hediff.TalkInitiationWeight = 0.3f;
+                hediff.TalkInitiationWeight = 0.2f;
             }
             else
             {

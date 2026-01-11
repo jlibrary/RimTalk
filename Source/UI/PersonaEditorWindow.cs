@@ -107,7 +107,7 @@ public class PersonaEditorWindow : Window
 
         // Slider itself (leave room for value display)
         Rect frequencySliderRect = new Rect(sliderX, sliderRowRect.y, sliderWidth - 40f, sliderRowRect.height);
-        _talkInitiationWeight = Widgets.HorizontalSlider(frequencySliderRect, _talkInitiationWeight, 0f, 2.0f, true);
+        _talkInitiationWeight = Widgets.HorizontalSlider(frequencySliderRect, _talkInitiationWeight, 0f, 1.0f, true);
 
         // Value label (numeric display)
         Rect valueLabelRect = new Rect(frequencySliderRect.xMax + 5f, sliderRowRect.y, 40f, sliderRowRect.height);

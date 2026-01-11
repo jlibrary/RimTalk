@@ -1,11 +1,10 @@
 using System;
 using HarmonyLib;
 using RimTalk.Data;
-using RimTalk.Service;
 using RimTalk.Util;
 using Verse;
 
-namespace RimTalk.Patch;
+namespace RimTalk.Compatibility;
 
 // This is meant to be a temporary compatibility patch for Character Editor mod;
 // As soon as communicated with its author, it will be removed/edited as needed.

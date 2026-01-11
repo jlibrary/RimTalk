@@ -10,7 +10,7 @@ public static class CommonUtil
 {
     public static bool HasPassed(int pastTick, double seconds)
     {
-        return GenTicks.TicksGame - pastTick > GetTicksForDuration(seconds);
+        return GenTicks.TicksGame - pastTick >= GetTicksForDuration(seconds);
     }
     public static int GetTicksForDuration(double seconds)
     {

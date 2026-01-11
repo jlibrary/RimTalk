@@ -35,7 +35,7 @@ public class PawnState(Pawn pawn)
                 var request = currentNode.Value;
                 
                 // If we overwrite a request, send it to global history as expired/overwritten
-                if (request.TalkType != TalkType.User)
+                if (!request.TalkType.IsFromUser())
                 {
                     TalkRequestPool.AddToHistory(request, RequestStatus.Expired);
                     TalkRequests.Remove(currentNode);
@@ -47,11 +47,12 @@ public class PawnState(Pawn pawn)
         // 2. Create and Enqueue
         var newRequest = new TalkRequest(prompt, Pawn, recipient, talkType) { Status = RequestStatus.Pending };
 
-        if (talkType == TalkType.User)
+        if (talkType.IsFromUser())
         {
             TalkRequests.AddFirst(newRequest);
             IgnoreAllTalkResponses();
             Cache.Get(recipient)?.IgnoreAllTalkResponses();
+            UserRequestPool.Add(Pawn);
         }
         else if (talkType is TalkType.Event or TalkType.QuestOffer)
         {
@@ -106,7 +107,7 @@ public class PawnState(Pawn pawn)
     {
         if (Pawn.IsPlayer()) return true;
         return !IsGeneratingTalk && CanDisplayTalk() && Pawn.Awake() && TalkResponses.Empty() 
-               && CommonUtil.HasPassed(LastTalkTick, Settings.Get().TalkInterval);;
+               && CommonUtil.HasPassed(LastTalkTick, RimTalkSettings.ReplyInterval);
     }
     
     public void IgnoreTalkResponse()

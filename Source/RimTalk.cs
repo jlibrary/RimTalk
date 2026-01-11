@@ -42,6 +42,7 @@ public class RimTalk : GameComponent
         PatchThoughtHandlerGetDistinctMoodThoughtGroups.Clear();
         Cache.GetAll().ToList().ForEach(pawnState => pawnState.IgnoreAllTalkResponses());
         Cache.InitializePlayerPawn();
+        UserRequestPool.Clear();
 
         if (soft) return;
 

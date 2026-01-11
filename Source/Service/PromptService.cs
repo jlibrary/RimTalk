@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using RimTalk.Data;
 using RimTalk.Util;
+using RimWorld;
 using Verse;
 using Verse.AI.Group;
 using Cache = RimTalk.Data.Cache;
@@ -59,7 +60,7 @@ public static class PromptService
         AppendIfNotEmpty(sb, ContextBuilder.GetIdeologyContext(pawn, infoLevel));
 
         // Stop here for invaders and visitors
-        if (pawn.IsEnemy() || pawn.IsVisitor())
+        if ((pawn.IsEnemy() || pawn.IsVisitor()) && !pawn.IsQuestLodger())
             return sb.ToString();
 
         AppendIfNotEmpty(sb, ContextBuilder.GetBackstoryContext(pawn, infoLevel));

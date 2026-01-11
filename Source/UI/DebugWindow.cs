@@ -935,9 +935,9 @@ public class DebugWindow : Window
             currentX += GroupedLastTalkWidth + ColumnPadding;
 
             _talkLogsByPawn.TryGetValue(pawnKey, out var pawnRequests);
-            var requestsWithTokens = pawnRequests?.Where(r => r.Payload?.TokenCount != 0).ToList();
+            var initiatingRequests = pawnRequests?.Where(r => r.IsFirstDialogue).ToList();
             Widgets.Label(new Rect(currentX, rowRect.y, GroupedRequestsWidth, RowHeight),
-                (requestsWithTokens?.Count ?? 0).ToString());
+                (initiatingRequests?.Count ?? 0).ToString());
             currentX += GroupedRequestsWidth + ColumnPadding;
 
             Widgets.Label(new Rect(currentX, rowRect.y, GroupedChattinessWidth, RowHeight),
@@ -1289,28 +1289,36 @@ public class DebugWindow : Window
                 return _sortAscending
                     ? _pawnStates.OrderBy(p => p.Pawn.LabelShort)
                     : _pawnStates.OrderByDescending(p => p.Pawn.LabelShort);
+        
             case "Requests":
                 return _sortAscending
                     ? _pawnStates.OrderBy(p =>
-                        _talkLogsByPawn.TryGetValue(p.Pawn.LabelShort, out var value) ? value.Count : 0)
+                        _talkLogsByPawn.TryGetValue(p.Pawn.LabelShort, out var logs) 
+                            ? logs.Count(r => r.IsFirstDialogue) : 0)
                     : _pawnStates.OrderByDescending(p =>
-                        _talkLogsByPawn.TryGetValue(p.Pawn.LabelShort, out var value1) ? value1.Count : 0);
+                        _talkLogsByPawn.TryGetValue(p.Pawn.LabelShort, out var logs) 
+                            ? logs.Count(r => r.IsFirstDialogue) : 0);
+
             case "Response":
                 return _sortAscending
                     ? _pawnStates.OrderBy(p => GetLastResponseForPawn(p.Pawn.LabelShort))
                     : _pawnStates.OrderByDescending(p => GetLastResponseForPawn(p.Pawn.LabelShort));
+        
             case "Status":
                 return _sortAscending
                     ? _pawnStates.OrderBy(p => p.CanDisplayTalk())
                     : _pawnStates.OrderByDescending(p => p.CanDisplayTalk());
+        
             case "Last Talk":
                 return _sortAscending
                     ? _pawnStates.OrderBy(p => p.LastTalkTick)
                     : _pawnStates.OrderByDescending(p => p.LastTalkTick);
+        
             case "Chattiness":
                 return _sortAscending
                     ? _pawnStates.OrderBy(p => p.TalkInitiationWeight)
                     : _pawnStates.OrderByDescending(p => p.TalkInitiationWeight);
+        
             default:
                 return _pawnStates;
         }
