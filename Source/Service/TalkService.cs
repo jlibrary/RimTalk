@@ -144,9 +144,8 @@ public static class TalkService
     {
         if (!responses.Any()) return;
         string serializedResponses = JsonUtil.SerializeToJson(responses);
-        foreach (var talkResponse in responses)
+        foreach (var pawn in responses.Select(r => Cache.GetByName(r.Name)?.Pawn).Distinct().Where(p => p != null))
         {
-            Pawn pawn = Cache.GetByName(talkResponse.Name)?.Pawn;
             TalkHistory.AddMessageHistory(pawn, prompt, serializedResponses);
         }
     }
