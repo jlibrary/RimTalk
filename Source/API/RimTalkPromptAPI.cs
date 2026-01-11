@@ -36,7 +36,7 @@ public static class RimTalkPromptAPI
 
         var fullName = $"{SanitizeModId(modId)}.{variableName.ToLowerInvariant()}";
         MustacheParser.RegisterProvider(fullName, provider);
-        Logger.Message($"Mod '{modId}' registered variable: {{{{{fullName}}}}}");
+        Logger.Debug($"Mod '{modId}' registered variable: {{{{{fullName}}}}}");
     }
 
     /// <summary>
@@ -50,7 +50,7 @@ public static class RimTalkPromptAPI
 
         var fullName = $"{SanitizeModId(modId)}.{variableName.ToLowerInvariant()}";
         MustacheParser.UnregisterProvider(fullName);
-        Logger.Message($"Mod '{modId}' unregistered variable: {{{{{fullName}}}}}");
+        Logger.Debug($"Mod '{modId}' unregistered variable: {{{{{fullName}}}}}");
     }
 
     /// <summary>
@@ -80,7 +80,7 @@ public static class RimTalkPromptAPI
         }
 
         preset.AddEntry(entry);
-        Logger.Message($"Added prompt entry: {entry.Name}");
+        Logger.Debug($"Added prompt entry: {entry.Name}");
         return true;
     }
 
@@ -102,7 +102,7 @@ public static class RimTalkPromptAPI
         }
 
         preset.InsertEntry(entry, index);
-        Logger.Message($"Inserted prompt entry: {entry.Name} at index {index}");
+        Logger.Debug($"Inserted prompt entry: {entry.Name} at index {index}");
         return true;
     }
 
@@ -124,7 +124,7 @@ public static class RimTalkPromptAPI
         }
 
         var result = preset.InsertEntryAfter(entry, afterEntryId);
-        Logger.Message($"Inserted prompt entry: {entry.Name} after {afterEntryId} (found: {result})");
+        Logger.Debug($"Inserted prompt entry: {entry.Name} after {afterEntryId} (found: {result})");
         return result;
     }
 
@@ -146,7 +146,7 @@ public static class RimTalkPromptAPI
         }
 
         var result = preset.InsertEntryBefore(entry, beforeEntryId);
-        Logger.Message($"Inserted prompt entry: {entry.Name} before {beforeEntryId} (found: {result})");
+        Logger.Debug($"Inserted prompt entry: {entry.Name} before {beforeEntryId} (found: {result})");
         return result;
     }
 
@@ -172,7 +172,7 @@ public static class RimTalkPromptAPI
         if (targetId == null)
         {
             preset.AddEntry(entry); // Fall back to adding at end
-            Logger.Message($"Inserted prompt entry: {entry.Name} (target '{afterEntryName}' not found, added at end)");
+            Logger.Debug($"Inserted prompt entry: {entry.Name} (target '{afterEntryName}' not found, added at end)");
             return false;
         }
 
@@ -201,7 +201,7 @@ public static class RimTalkPromptAPI
         if (targetId == null)
         {
             preset.AddEntry(entry); // Fall back to adding at end
-            Logger.Message($"Inserted prompt entry: {entry.Name} (target '{beforeEntryName}' not found, added at end)");
+            Logger.Debug($"Inserted prompt entry: {entry.Name} (target '{beforeEntryName}' not found, added at end)");
             return false;
         }
 
@@ -339,7 +339,7 @@ public static class RimTalkPromptAPI
         }
 
         MustacheParser.RegisterAppender(variableName.ToLowerInvariant(), appender);
-        Logger.Message($"Mod '{modId}' registered appender for variable: {{{{{variableName}}}}}");
+        Logger.Debug($"Mod '{modId}' registered appender for variable: {{{{{variableName}}}}}");
     }
 
     /// <summary>
@@ -353,7 +353,7 @@ public static class RimTalkPromptAPI
         if (string.IsNullOrEmpty(variableName) || appender == null) return;
 
         MustacheParser.UnregisterAppender(variableName.ToLowerInvariant(), appender);
-        Logger.Message($"Mod '{modId}' removed appender for variable: {{{{{variableName}}}}}");
+        Logger.Debug($"Mod '{modId}' removed appender for variable: {{{{{variableName}}}}}");
     }
 
     /// <summary>
@@ -410,8 +410,7 @@ public static class RimTalkPromptAPI
             Position = position,
             InChatDepth = inChatDepth,
             SourceModId = sourceModId,
-            Enabled = true,
-            Editable = true
+            Enabled = true
         };
     }
 

@@ -33,9 +33,6 @@ public class PromptEntry : IExposable
     /// <summary>Whether enabled</summary>
     public bool Enabled = true;
     
-    /// <summary>Whether editable by user (built-in prompts can be set to false)</summary>
-    public bool Editable = true;
-    
     /// <summary>Source mod's package ID (null means RimTalk built-in or user created)</summary>
     public string SourceModId;
 
@@ -60,7 +57,6 @@ public class PromptEntry : IExposable
         Scribe_Values.Look(ref Position, "position", PromptPosition.Relative);
         Scribe_Values.Look(ref InChatDepth, "inChatDepth", 0);
         Scribe_Values.Look(ref Enabled, "enabled", true);
-        Scribe_Values.Look(ref Editable, "editable", true);
         Scribe_Values.Look(ref SourceModId, "sourceModId");
         
         // Ensure Id is not empty
@@ -72,14 +68,13 @@ public class PromptEntry : IExposable
     {
         return new PromptEntry
         {
-            Id = Guid.NewGuid().ToString(), // 新ID
+            Id = Guid.NewGuid().ToString(), // New ID for cloned entry
             Name = Name + " (Copy)",
             Content = Content,
             Role = Role,
             Position = Position,
             InChatDepth = InChatDepth,
             Enabled = Enabled,
-            Editable = true,
             SourceModId = null
         };
     }

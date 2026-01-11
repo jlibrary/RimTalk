@@ -38,6 +38,11 @@ public class TalkRequest(string prompt, Pawn initiator, Pawn recipient = null, T
     /// </summary>
     public List<(Role role, string content)> PromptMessages { get; set; }
 
+    /// <summary>
+    /// Pre-built prompt segments (built by PromptManager in sync layer)
+    /// </summary>
+    public List<PromptMessageSegment> PromptMessageSegments { get; set; }
+
     public bool IsExpired()
     {
         int duration = 20;

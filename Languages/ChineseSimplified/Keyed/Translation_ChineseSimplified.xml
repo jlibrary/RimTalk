@@ -87,6 +87,7 @@
     <RimTalk.Settings.PromptPreset.NewPreset>+ 新建预设</RimTalk.Settings.PromptPreset.NewPreset>
     <RimTalk.Settings.PromptPreset.NewPresetName>新预设</RimTalk.Settings.PromptPreset.NewPresetName>
     <RimTalk.Settings.PromptPreset.Activate>激活</RimTalk.Settings.PromptPreset.Activate>
+    <RimTalk.Settings.PromptPreset.Rename>重命名</RimTalk.Settings.PromptPreset.Rename>
     <RimTalk.Settings.PromptPreset.Duplicate>复制</RimTalk.Settings.PromptPreset.Duplicate>
     <RimTalk.Settings.PromptPreset.Delete>删除</RimTalk.Settings.PromptPreset.Delete>
     <RimTalk.Settings.PromptPreset.Entries>条目</RimTalk.Settings.PromptPreset.Entries>
@@ -101,8 +102,6 @@
     <RimTalk.Settings.PromptPreset.Depth>深度：</RimTalk.Settings.PromptPreset.Depth>
     <RimTalk.Settings.PromptPreset.Content>内容：</RimTalk.Settings.PromptPreset.Content>
     <RimTalk.Settings.PromptPreset.InsertVariable>插入变量</RimTalk.Settings.PromptPreset.InsertVariable>
-    <RimTalk.Settings.PromptPreset.Editable>✓ 可编辑</RimTalk.Settings.PromptPreset.Editable>
-    <RimTalk.Settings.PromptPreset.Locked>⚠ 已锁定（系统条目）</RimTalk.Settings.PromptPreset.Locked>
     <RimTalk.Settings.PromptPreset.UserVariables>用户变量</RimTalk.Settings.PromptPreset.UserVariables>
     <RimTalk.Settings.PromptPreset.ModVariables>Mod 变量</RimTalk.Settings.PromptPreset.ModVariables>
     <RimTalk.Settings.PromptPreset.CustomVariables>自定义变量</RimTalk.Settings.PromptPreset.CustomVariables>
@@ -148,11 +147,16 @@
 
 变量：
 • 内置变量：{{pawns.all}}、{{pawn1.name}}、{{weather}} 等
+• 循环变量：{{#pawns}}...{{/pawns}} 用于遍历对话中的角色
+    •例子：
+    •{{#pawns}}{{index}}. {{name}} - {{mood}}{{/pawns}}
 • 运行时变量：setvar/getvar 用于 AI 控制的值
     •例子：
     •{{setvar::counter::1}}
     •当前计数：{{getvar::counter}}
 聊天历史：使用 {{chat.history}} 条目控制对话历史的插入位置。
+
+特别提醒：如果您正在使用硅基流动，请确保您的提示词顺序遵从System→User→Assistant→User的循环，以确保正确的对话流。
 </RimTalk.Settings.AdvancedHelpContent>
     
     <RimTalk.Settings.EventFilter>事件过滤器</RimTalk.Settings.EventFilter>
@@ -328,6 +332,7 @@
     <RimTalk.DebugWindow.Undo>撤销</RimTalk.DebugWindow.Undo>
     <RimTalk.DebugWindow.Prompt>提示词</RimTalk.DebugWindow.Prompt>
     <RimTalk.DebugWindow.Response>回应</RimTalk.DebugWindow.Response>
+    <RimTalk.DebugWindow.PromptMessages>提示词消息</RimTalk.DebugWindow.PromptMessages>
     <RimTalk.DebugWindow.Contexts>上下文</RimTalk.DebugWindow.Contexts>
     <RimTalk.DebugWindow.Generating>[正在生成...]</RimTalk.DebugWindow.Generating>
     <RimTalk.DebugWindow.StatusDisabled>已禁用</RimTalk.DebugWindow.StatusDisabled>
@@ -420,6 +425,9 @@
     <RimTalk.MustacheVar.pawn.relations>社交关系</RimTalk.MustacheVar.pawn.relations>
     <RimTalk.MustacheVar.pawn.equipment>装备和服装</RimTalk.MustacheVar.pawn.equipment>
     <RimTalk.MustacheVar.pawn.status>当前状态</RimTalk.MustacheVar.pawn.status>
+    <RimTalk.MustacheVar.pawn.genes>显性基因</RimTalk.MustacheVar.pawn.genes>
+    <RimTalk.MustacheVar.pawn.ideology>思想和模因</RimTalk.MustacheVar.pawn.ideology>
+    <RimTalk.MustacheVar.pawn.captive_status>囚犯/奴隶状态</RimTalk.MustacheVar.pawn.captive_status>
     
     <!-- Pawn 2+ Variables -->
     <RimTalk.MustacheVar.pawn2.name>角色 2 的简称</RimTalk.MustacheVar.pawn2.name>
@@ -427,9 +435,17 @@
     <RimTalk.MustacheVar.pawn3.name>角色 3 的简称</RimTalk.MustacheVar.pawn3.name>
     <RimTalk.MustacheVar.pawnN.xxx>任意角色 N 的属性（N=1,2,3...）</RimTalk.MustacheVar.pawnN.xxx>
     
+    <!-- Sections（Mustache 循环块） -->
+    <RimTalk.MustacheVar.Category.Sections>Section 循环</RimTalk.MustacheVar.Category.Sections>
+    <RimTalk.MustacheVar.section.pawns>遍历对话中的角色</RimTalk.MustacheVar.section.pawns>
+    <RimTalk.MustacheVar.section.index>当前角色索引（从1开始）</RimTalk.MustacheVar.section.index>
+    <RimTalk.MustacheVar.section.name>当前角色的名字（Section 内部）</RimTalk.MustacheVar.section.name>
+    <RimTalk.MustacheVar.section.profile>当前角色的资料（Section 内部）</RimTalk.MustacheVar.section.profile>
+    
     <!-- Dialogue Variables -->
-    <RimTalk.MustacheVar.dialogue.type>对话事件类型</RimTalk.MustacheVar.dialogue.type>
-    <RimTalk.MustacheVar.dialogue.status>对话状态</RimTalk.MustacheVar.dialogue.status>
+    <RimTalk.MustacheVar.dialogue>完整的装饰提示词（时间、天气、位置等）</RimTalk.MustacheVar.dialogue>
+    <RimTalk.MustacheVar.dialogue.type>对话类型描述</RimTalk.MustacheVar.dialogue.type>
+    <RimTalk.MustacheVar.dialogue.status>发起者当前活动状态</RimTalk.MustacheVar.dialogue.status>
     <RimTalk.MustacheVar.dialogue.ismonologue>是否为独白</RimTalk.MustacheVar.dialogue.ismonologue>
     
     <!-- Time Variables -->
@@ -458,6 +474,7 @@
     
     <!-- System Variables -->
     <RimTalk.MustacheVar.lang>当前游戏语言</RimTalk.MustacheVar.lang>
+    <RimTalk.MustacheVar.json.format>JSON 输出格式（根据设置动态变化）</RimTalk.MustacheVar.json.format>
     <RimTalk.MustacheVar.context>传统上下文变量</RimTalk.MustacheVar.context>
     <RimTalk.MustacheVar.chat.history>之前的聊天记录</RimTalk.MustacheVar.chat.history>
     

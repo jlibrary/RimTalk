@@ -25,7 +25,6 @@ public class RimTalkSettings : ModSettings
     // New Prompt System
     public PromptManager PromptSystem = new();
     public bool UseAdvancedPromptMode = false;  // Default to Simple Mode
-    public string SimpleInstruction = "";       // Simple Mode instruction text
     public Dictionary<string, bool> EnabledArchivableTypes = new();
     public bool DisplayTalkWhenDrafted = true;
     public bool AllowMonologue = true;
@@ -186,7 +185,6 @@ public class RimTalkSettings : ModSettings
         // New Prompt System
         Scribe_Deep.Look(ref PromptSystem, "promptSystem");
         Scribe_Values.Look(ref UseAdvancedPromptMode, "useAdvancedPromptMode", false);
-        Scribe_Values.Look(ref SimpleInstruction, "simpleInstruction", "");
 
         // Debug window settings
         Scribe_Values.Look(ref ButtonDisplay, "buttonDisplay", Settings.ButtonDisplayMode.Toggle, true);

@@ -35,6 +35,9 @@ public class MustacheContext
     /// <summary>Dialogue status description (initiator's current state)</summary>
     public string DialogueStatus { get; set; }
     
+    /// <summary>Full dialogue prompt (result of DecoratePrompt, includes time/weather/location/etc.)</summary>
+    public string DialoguePrompt { get; set; }
+    
     /// <summary>Chat history (Role, Message) - for inserting history in entries</summary>
     public List<(Role role, string message)> ChatHistory { get; set; } = new();
 
@@ -45,6 +48,9 @@ public class MustacheContext
     
     // Compatibility property - Pawns alias
     public List<Pawn> Pawns => AllPawns;
+    
+    /// <summary>Current pawn index in section iteration (for {{index}} variable)</summary>
+    public int ScopedPawnIndex { get; set; }
 
     public MustacheContext()
     {
@@ -85,7 +91,8 @@ public class MustacheContext
             VariableStore = PromptManager.Instance?.VariableStore ?? new VariableStore(),
             // Use data already built in TalkRequest
             PawnContext = request?.Context,
-            DialogueStatus = request?.Prompt,
+            // DialogueType and DialogueStatus are set separately by the caller
+            // to avoid pollution from DecoratePrompt which fills request.Prompt with full context
             ChatHistory = request?.Initiator != null
                 ? TalkHistory.GetMessageHistory(request.Initiator)
                 : new List<(Role role, string message)>()

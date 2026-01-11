@@ -11,17 +11,12 @@ namespace RimTalk;
 
 public partial class Settings
 {
-    // Prompt preset UI state
+    // Prompt preset UI state (Advanced Mode)
     private Vector2 _presetListScrollPos = Vector2.zero;
     private Vector2 _entryListScrollPos = Vector2.zero;
-    private Vector2 _entryContentScrollPos = Vector2.zero;
-    private Vector2 _variableScrollPos = Vector2.zero;
-    private Vector2 _simpleInstructionScrollPos = Vector2.zero;
     private string _selectedPresetId;
     private string _selectedEntryId;
     private int _rightPanelMode; // 0=Entry Editor, 1=Variable Preview
-    private string _simpleInstructionBuffer;
-    private bool _simpleInstructionInitialized;
 
     private void DrawPromptPresetSettings(Listing_Standard listingStandard)
     {
@@ -38,13 +33,9 @@ public partial class Settings
         }
     }
 
-    /// <summary>
-    /// Simple Mode: Single text area for custom instructions (default for new users)
-    /// </summary>
+    // Simple Mode: Reuse DrawAIInstructionSettings with just a mode switch button
     private void DrawSimplePromptMode(Listing_Standard listingStandard, RimTalkSettings settings)
     {
-        var manager = PromptManager.Instance;
-        
         // Title with mode switch button
         Rect titleRect = listingStandard.GetRect(30f);
         Text.Font = GameFont.Medium;
@@ -57,94 +48,17 @@ public partial class Settings
             Find.WindowStack.Add(Dialog_MessageBox.CreateConfirmation(
                 "RimTalk.Settings.AdvancedModeWarning".Translate(),
                 () => {
-                    SyncSimpleToAdvanced(settings, manager);
                     settings.UseAdvancedPromptMode = true;
                 }));
         }
         
         listingStandard.Gap(6f);
-
-        // Info tip
-        Text.Font = GameFont.Tiny;
-        GUI.color = Color.green;
-        Rect tipRect = listingStandard.GetRect(Text.LineHeight);
-        Widgets.Label(tipRect, "RimTalk.Settings.SimpleModeTip".Translate());
-        GUI.color = Color.white;
-        Text.Font = GameFont.Small;
-        listingStandard.Gap(6f);
-
-        // Warning about rate limits
-        Text.Font = GameFont.Tiny;
-        GUI.color = Color.yellow;
-        Rect rateLimitRect = listingStandard.GetRect(Text.LineHeight);
-        Widgets.Label(rateLimitRect, "RimTalk.Settings.RateLimitWarning".Translate());
-        GUI.color = Color.white;
-        Text.Font = GameFont.Small;
-        listingStandard.Gap(6f);
-
-        // Initialize buffer if needed
-        if (!_simpleInstructionInitialized)
-        {
-            _simpleInstructionBuffer = GetSimpleInstructionContent(settings, manager);
-            _simpleInstructionInitialized = true;
-        }
-
-        // Token info display
-        int currentTokens = CommonUtil.EstimateTokenCount(_simpleInstructionBuffer ?? "");
-        int maxAllowedTokens = CommonUtil.GetMaxAllowedTokens(settings.TalkInterval);
-        string tokenInfo = "RimTalk.Settings.TokenInfo".Translate(currentTokens, maxAllowedTokens);
-
-        if (currentTokens > maxAllowedTokens)
-        {
-            GUI.color = Color.red;
-            tokenInfo += "RimTalk.Settings.OverLimit".Translate();
-        }
-        else
-        {
-            GUI.color = Color.green;
-        }
-
-        Text.Font = GameFont.Tiny;
-        Rect tokenInfoRect = listingStandard.GetRect(Text.LineHeight);
-        Widgets.Label(tokenInfoRect, tokenInfo);
-        GUI.color = Color.white;
-        Text.Font = GameFont.Small;
-        listingStandard.Gap(6f);
-
-        // Text area for simple instruction
-        float textAreaHeight = 350f;
-        Rect textAreaRect = listingStandard.GetRect(textAreaHeight);
         
-        string newInstruction = Widgets.TextArea(textAreaRect, _simpleInstructionBuffer ?? "");
-        if (newInstruction != _simpleInstructionBuffer)
-        {
-            _simpleInstructionBuffer = newInstruction;
-            settings.SimpleInstruction = newInstruction;
-        }
-
-        listingStandard.Gap(6f);
-
-        // Bottom buttons
-        Rect buttonRect = listingStandard.GetRect(30f);
-        
-        // Reset to default button
-        if (Widgets.ButtonText(new Rect(buttonRect.x, buttonRect.y, 200f, 30f), "RimTalk.Settings.ResetToDefault".Translate()))
-        {
-            Find.WindowStack.Add(Dialog_MessageBox.CreateConfirmation(
-                "RimTalk.Settings.ResetConfirm".Translate(),
-                () => {
-                    manager.ResetToDefaults();
-                    _simpleInstructionBuffer = GetDefaultSimpleInstruction();
-                    settings.SimpleInstruction = _simpleInstructionBuffer;
-                }));
-        }
-
-        listingStandard.Gap(10f);
+        // Reuse the existing AI instruction editor
+        DrawAIInstructionSettings(listingStandard);
     }
 
-    /// <summary>
-    /// Advanced Mode: Full preset/entry management interface
-    /// </summary>
+    // Advanced Mode: Full preset/entry management interface
     private void DrawAdvancedPromptMode(Listing_Standard listingStandard, RimTalkSettings settings)
     {
         var manager = PromptManager.Instance;
@@ -158,9 +72,7 @@ public partial class Settings
         // Switch to Simple button
         if (Widgets.ButtonText(new Rect(titleRect.xMax - 170f, titleRect.y, 170f, 28f), "RimTalk.Settings.SwitchToSimple".Translate()))
         {
-            SyncAdvancedToSimple(settings, manager);
             settings.UseAdvancedPromptMode = false;
-            _simpleInstructionInitialized = false; // Reset to reload
         }
         
         listingStandard.Gap(6f);
@@ -228,85 +140,6 @@ public partial class Settings
         }
     }
 
-    /// <summary>
-    /// Get the simple instruction content from Base Instruction entry
-    /// </summary>
-    private string GetSimpleInstructionContent(RimTalkSettings settings, PromptManager manager)
-    {
-        // First check if there's a saved simple instruction
-        if (!string.IsNullOrEmpty(settings.SimpleInstruction))
-        {
-            return settings.SimpleInstruction;
-        }
-        
-        // Otherwise get from Base Instruction entry
-        var preset = manager.GetActivePreset();
-        if (preset != null)
-        {
-            var baseEntry = preset.Entries.FirstOrDefault(e => e.Name == "Base Instruction");
-            if (baseEntry != null)
-            {
-                return baseEntry.Content;
-            }
-        }
-        
-        return GetDefaultSimpleInstruction();
-    }
-
-    /// <summary>
-    /// Get the default simple instruction
-    /// </summary>
-    private string GetDefaultSimpleInstruction()
-    {
-        return @"Role-play RimWorld character per profile
-
-Rules:
-Preserve original names (no translation)
-Keep dialogue short ({{lang}} only, 1-2 sentences)
-
-Roles:
-Prisoner: wary, hesitant; mention confinement; plead or bargain
-Slave: fearful, obedient; reference forced labor and exhaustion; call colonists ""master""
-Visitor: polite, curious, deferential; treat other visitors in the same group as companions
-Enemy: hostile, aggressive; terse commands/threats
-
-Monologue = 1 turn. Conversation = 4-8 short turns";
-    }
-
-    /// <summary>
-    /// Sync Simple Mode content to Advanced Mode (Base Instruction entry)
-    /// </summary>
-    private void SyncSimpleToAdvanced(RimTalkSettings settings, PromptManager manager)
-    {
-        if (string.IsNullOrEmpty(settings.SimpleInstruction)) return;
-        
-        var preset = manager.GetActivePreset();
-        if (preset != null)
-        {
-            var baseEntry = preset.Entries.FirstOrDefault(e => e.Name == "Base Instruction");
-            if (baseEntry != null)
-            {
-                baseEntry.Content = settings.SimpleInstruction;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Sync Advanced Mode content to Simple Mode (from Base Instruction entry)
-    /// </summary>
-    private void SyncAdvancedToSimple(RimTalkSettings settings, PromptManager manager)
-    {
-        var preset = manager.GetActivePreset();
-        if (preset != null)
-        {
-            var baseEntry = preset.Entries.FirstOrDefault(e => e.Name == "Base Instruction");
-            if (baseEntry != null)
-            {
-                settings.SimpleInstruction = baseEntry.Content;
-            }
-        }
-    }
-
     private void DrawPresetListPanel(Rect rect, PromptManager manager)
     {
         Widgets.DrawBoxSolid(rect, new Color(0.1f, 0.1f, 0.1f, 0.5f));
@@ -365,6 +198,12 @@ Monologue = 1 turn. Conversation = 4-8 short turns";
             if (!selectedPreset.IsActive && Widgets.ButtonText(new Rect(rect.x + 5f, y, rect.width - 10f, 24f), "RimTalk.Settings.PromptPreset.Activate".Translate()))
             {
                 manager.SetActivePreset(selectedPreset.Id);
+            }
+            y += 26f;
+            
+            if (Widgets.ButtonText(new Rect(rect.x + 5f, y, rect.width - 10f, 24f), "RimTalk.Settings.PromptPreset.Rename".Translate()))
+            {
+                Find.WindowStack.Add(new Dialog_RenamePreset(selectedPreset));
             }
             y += 26f;
             
@@ -556,17 +395,8 @@ Monologue = 1 turn. Conversation = 4-8 short turns";
         y += 30f;
 
         // Content editing area
-        Rect contentRect = new Rect(rect.x + 10f, y, rect.width - 20f, rect.height - y + rect.y - 50f);
+        Rect contentRect = new Rect(rect.x + 10f, y, rect.width - 20f, rect.height - y + rect.y - 10f);
         selectedEntry.Content = Widgets.TextArea(contentRect, selectedEntry.Content);
-        y = contentRect.y + contentRect.height + 10f;
-
-        // Bottom info
-        Text.Font = GameFont.Tiny;
-        GUI.color = selectedEntry.Editable ? Color.green : Color.yellow;
-        Widgets.Label(new Rect(rect.x + 10f, y, rect.width - 20f, 20f),
-            selectedEntry.Editable ? "RimTalk.Settings.PromptPreset.Editable".Translate() : "RimTalk.Settings.PromptPreset.Locked".Translate());
-        GUI.color = Color.white;
-        Text.Font = GameFont.Small;
     }
 
     private void ShowVariableInsertMenu(PromptEntry entry)
@@ -756,5 +586,43 @@ Monologue = 1 turn. Conversation = 4-8 short turns";
         }));
         
         Find.WindowStack.Add(new FloatMenu(options));
+    }
+
+    /// <summary>
+    /// Simple dialog for renaming a preset
+    /// </summary>
+    private class Dialog_RenamePreset : Window
+    {
+        private readonly PromptPreset _preset;
+        private string _newName;
+
+        public override Vector2 InitialSize => new(400f, 150f);
+
+        public Dialog_RenamePreset(PromptPreset preset)
+        {
+            _preset = preset;
+            _newName = preset.Name;
+            doCloseX = true;
+            absorbInputAroundWindow = true;
+            closeOnClickedOutside = true;
+        }
+
+        public override void DoWindowContents(Rect inRect)
+        {
+            Text.Font = GameFont.Medium;
+            Widgets.Label(new Rect(0f, 0f, inRect.width, 30f), "RimTalk.Settings.PromptPreset.Rename".Translate());
+            Text.Font = GameFont.Small;
+
+            _newName = Widgets.TextField(new Rect(0f, 40f, inRect.width, 30f), _newName);
+
+            if (Widgets.ButtonText(new Rect(inRect.width - 120f, inRect.height - 35f, 120f, 35f), "OK".Translate()))
+            {
+                if (!string.IsNullOrWhiteSpace(_newName))
+                {
+                    _preset.Name = _newName.Trim();
+                }
+                Close();
+            }
+        }
     }
 }

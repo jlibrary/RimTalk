@@ -18,37 +18,18 @@ public static class AIService
     private static bool _firstInstruction = true;
 
     /// <summary>
-    /// Streaming chat that invokes callback as each player's dialogue is parsed.
-    /// Keeps original signature for compatibility, but prioritizes request.PromptMessages if built in sync layer.
+    /// Streaming chat that invokes callback as each player's dialogue is parsed
     /// </summary>
-    public static async Task ChatStreaming(TalkRequest request, string instruction,
-        List<(Role role, string message)> messages,
-        Action<TalkResponse> onPlayerResponseReceived)
+    public static async Task ChatStreaming(TalkRequest request, Action<TalkResponse> onPlayerResponseReceived)
     {
-        // Prioritize PromptMessages built in sync layer
-        List<(Role role, string message)> prefixMessages;
-        List<(Role role, string message)> currentMessages;
-        
-        if (request.PromptMessages != null && request.PromptMessages.Count > 0)
-        {
-            // Use new preset system (PromptMessages contains everything)
-            prefixMessages = request.PromptMessages;
-            currentMessages = new List<(Role role, string message)>();  // Empty, already included in prefixMessages
-        }
-        else
-        {
-            // Fallback to legacy path: use instruction and messages parameters
-            var fullInstruction = $"{instruction}\n{request.Context}";
-            prefixMessages = new List<(Role role, string message)> { (Role.System, fullInstruction) };
-            currentMessages = new List<(Role role, string message)>(messages) { (Role.User, request.Prompt) };
-        }
-        
+        var prefixMessages = request.PromptMessages ?? new List<(Role role, string message)>();
         var apiLog = ApiHistory.AddRequest(request, Channel.Stream);
         var lastApiLog = apiLog;
 
         var payload = await ExecuteWithRetry(apiLog, async client =>
         {
-            return await client.GetStreamingChatCompletionAsync<TalkResponse>(prefixMessages, currentMessages,
+            // All prompt messages are already in prefixMessages, pass empty list for messages
+            return await client.GetStreamingChatCompletionAsync<TalkResponse>(prefixMessages, new List<(Role, string)>(),
                 response =>
                 {
                     if (Cache.GetByName(response.Name) == null) return;

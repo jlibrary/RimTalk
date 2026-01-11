@@ -29,8 +29,12 @@ public static class MustacheParser
     // Regex to match {{...}}
     private static readonly Regex MustacheRegex = new(@"\{\{(.+?)\}\}", RegexOptions.Compiled);
     
+    // Regex to match section blocks {{#section}}...{{/section}}
+    private static readonly Regex SectionRegex = new(@"\{\{#(\w+)\}\}(.*?)\{\{/\1\}\}", RegexOptions.Compiled | RegexOptions.Singleline);
+    
     // Pawn index matching regex (pawn1, pawn2, pawn3...)
     private static readonly Regex PawnIndexRegex = new(@"^pawn(\d+)\.(.+)$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    
 
     /// <summary>
     /// Parses and substitutes mustache syntax.
@@ -45,6 +49,10 @@ public static class MustacheParser
         
         try
         {
+            // Step 1: Process section blocks {{#section}}...{{/section}}
+            template = ProcessSections(template, context);
+            
+            // Step 2: Process regular variables {{...}}
             return MustacheRegex.Replace(template, match =>
             {
                 var expression = match.Groups[1].Value.Trim();
@@ -56,6 +64,145 @@ public static class MustacheParser
             Logger.Error($"MustacheParser.Parse failed: {ex.Message}");
             return template; // Return original on error
         }
+    }
+    
+    /// <summary>
+    /// Processes section blocks like {{#pawns}}...{{/pawns}}.
+    /// Supports iterating over pawn collections.
+    /// </summary>
+    private static string ProcessSections(string template, MustacheContext context)
+    {
+        return SectionRegex.Replace(template, match =>
+        {
+            var sectionName = match.Groups[1].Value.ToLowerInvariant();
+            var innerTemplate = match.Groups[2].Value;
+            
+            return sectionName switch
+            {
+                "pawns" => ProcessPawnsSection(innerTemplate, context),
+                _ => match.Value // Unknown section, keep as-is
+            };
+        });
+    }
+    
+    /// <summary>
+    /// Processes {{#pawns}}...{{/pawns}} section.
+    /// Iterates over all pawns in context.Pawns.
+    /// Inside the block, variables like {{name}}, {{job}} refer to the current pawn.
+    /// </summary>
+    private static string ProcessPawnsSection(string innerTemplate, MustacheContext context)
+    {
+        var pawns = context.Pawns;
+        if (pawns == null || pawns.Count == 0)
+            return "";
+        
+        var sb = new StringBuilder();
+        for (int i = 0; i < pawns.Count; i++)
+        {
+            var pawn = pawns[i];
+            if (pawn == null || pawn.IsPlayer()) continue;
+            
+            // Create a child context with the current pawn as the scope
+            var pawnContext = CreatePawnScopedContext(pawn, context, i);
+            
+            // Parse the inner template with the pawn-scoped context
+            var result = ParseWithPawnScope(innerTemplate, pawnContext);
+            if (!string.IsNullOrWhiteSpace(result))
+            {
+                if (sb.Length > 0) sb.AppendLine();
+                sb.Append(result.TrimEnd());
+            }
+        }
+        
+        return sb.ToString();
+    }
+    
+    /// <summary>
+    /// Creates a context scoped to a specific pawn for section iteration.
+    /// </summary>
+    private static MustacheContext CreatePawnScopedContext(Pawn pawn, MustacheContext parentContext, int index)
+    {
+        return new MustacheContext
+        {
+            CurrentPawn = pawn,
+            AllPawns = parentContext.AllPawns,  // Use AllPawns instead of read-only Pawns
+            Map = parentContext.Map ?? pawn?.Map,
+            DialoguePrompt = parentContext.DialoguePrompt,
+            DialogueType = parentContext.DialogueType,
+            DialogueStatus = parentContext.DialogueStatus,
+            TalkRequest = parentContext.TalkRequest,  // Preserve TalkRequest for IsMonologue
+            PawnContext = parentContext.PawnContext,
+            VariableStore = parentContext.VariableStore,
+            ChatHistory = parentContext.ChatHistory,
+            // Store the current index for {{index}} variable
+            ScopedPawnIndex = index
+        };
+    }
+    
+    /// <summary>
+    /// Parses a template with pawn-scoped variables.
+    /// Variables like {{name}}, {{job}} resolve to the scoped pawn's properties.
+    /// </summary>
+    private static string ParseWithPawnScope(string template, MustacheContext context)
+    {
+        return MustacheRegex.Replace(template, match =>
+        {
+            var expression = match.Groups[1].Value.Trim().ToLowerInvariant();
+            
+            // Check if it's a pawn property (no prefix)
+            var pawnValue = GetScopedPawnProperty(expression, context);
+            if (pawnValue != null)
+                return pawnValue;
+            
+            // Fall back to regular expression evaluation
+            return EvaluateExpression(expression, context);
+        });
+    }
+    
+    /// <summary>
+    /// Gets a property value from the scoped pawn in section context.
+    /// Returns null if the expression is not a simple pawn property.
+    /// </summary>
+    private static string GetScopedPawnProperty(string expression, MustacheContext context)
+    {
+        var pawn = context.CurrentPawn;
+        if (pawn == null) return null;
+        
+        // Handle special index variable
+        if (expression == "index")
+            return (context.ScopedPawnIndex + 1).ToString(); // 1-based index
+        
+        if (expression == "index0")
+            return context.ScopedPawnIndex.ToString(); // 0-based index
+        
+        // Try to get pawn property
+        return expression switch
+        {
+            "name" => pawn.LabelShort ?? "",
+            "fullname" => pawn.Name?.ToStringFull ?? "",
+            "gender" => pawn.gender.ToString(),
+            "age" => pawn.ageTracker?.AgeBiologicalYears.ToString() ?? "",
+            "race" => GetPawnRace(pawn),
+            "mood" => pawn.needs?.mood?.MoodString ?? "",
+            "moodpercent" => pawn.needs?.mood?.CurLevelPercentage.ToString("P0") ?? "",
+            "personality" => Cache.Get(pawn)?.Personality ?? "",
+            "title" => pawn.story?.title ?? "",
+            "faction" => pawn.Faction?.Name ?? "",
+            "job" => GetPawnActivity(pawn),
+            "role" => pawn.GetRole() ?? "",
+            "profile" => GetPawnProfile(pawn),
+            "backstory" => GetPawnBackstory(pawn),
+            "traits" => GetPawnTraits(pawn),
+            "skills" => GetPawnSkills(pawn),
+            "health" => GetPawnHealth(pawn),
+            "thoughts" => GetPawnThoughts(pawn),
+            "relations" => GetPawnRelations(pawn),
+            "equipment" => GetPawnEquipment(pawn),
+            "genes" => GetPawnGenes(pawn),
+            "ideology" => GetPawnIdeology(pawn),
+            "captive_status" => GetPawnCaptiveStatus(pawn),
+            _ => null // Not a pawn property, return null to fall back
+        };
     }
 
     /// <summary>
@@ -79,13 +226,17 @@ public static class MustacheParser
 
     /// <summary>
     /// Handles setvar command: {{setvar::key::value}}
+    /// Value can contain :: separators, they will be preserved.
     /// </summary>
     private static string HandleSetVar(string[] parts, MustacheContext context)
     {
         if (parts.Length >= 2 && context.VariableStore != null)
         {
             var key = parts[1].Trim();
-            var value = parts.Length >= 3 ? parts[2] : "";
+            // Join all parts after key with :: to preserve separators in value
+            var value = parts.Length >= 3
+                ? string.Join("::", parts, 2, parts.Length - 2)
+                : "";
             context.VariableStore.SetVar(key, value);
         }
         return ""; // setvar produces no output
@@ -186,7 +337,7 @@ public static class MustacheParser
             "pawn.personality" => Cache.Get(pawn)?.Personality ?? "",
             "pawn.title" => pawn?.story?.title ?? "",
             "pawn.faction" => pawn?.Faction?.Name ?? "",
-            "pawn.job" => pawn?.CurJob?.def?.label ?? "",
+            "pawn.job" => GetPawnActivity(pawn),
             "pawn.role" => pawn?.GetRole() ?? "",
             "pawn.profile" => GetPawnProfile(pawn),
             
@@ -197,20 +348,20 @@ public static class MustacheParser
             
             // Time related
             "time.hour" => map != null ? GenLocalDate.HourOfDay(map).ToString() : "",
-            "time.hour12" => map != null ? GetHour12String(map) : "",
+            "time.hour12" => map != null ? CommonUtil.GetInGameHour12HString(map) : "",
             "time.day" => map != null ? GenLocalDate.DayOfYear(map).ToString() : "",
             "time.date" => map != null ? GetDateString(map) : "",
             "time.quadrum" => map != null ? GenDate.Quadrum(Find.TickManager.TicksAbs, map.Tile).Label() : "",
             "time.year" => map != null ? GenLocalDate.Year(map).ToString() : "",
             "time.season" => map != null ? GenLocalDate.Season(map).Label() : "",
             
-            // Weather/environment related
+            // Weather/environment related - reuse MustacheContextProvider methods to avoid duplication
             "weather" => map?.weatherManager?.curWeather?.label ?? "",
             "temperature" => map != null ? Mathf.RoundToInt(map.mapTemperature.OutdoorTemp).ToString() : "",
-            "location" => GetLocationString(pawn),
+            "location" => MustacheContextProvider.GetLocationString(pawn),
             "terrain" => pawn?.Position.GetTerrain(pawn.Map)?.LabelCap ?? "",
-            "beauty" => GetBeautyString(pawn),
-            "cleanliness" => GetCleanlinessString(pawn),
+            "beauty" => MustacheContextProvider.GetBeautyString(pawn),
+            "cleanliness" => MustacheContextProvider.GetCleanlinessString(pawn),
             "surroundings" => GetSurroundingsString(pawn),
             "wealth" => map != null ? Describer.Wealth(map.wealthWatcher.WealthTotal) : "",
             
@@ -220,6 +371,7 @@ public static class MustacheParser
             "colony.population" => map?.mapPawns?.FreeColonistsCount.ToString() ?? "",
             
             // Dialogue related
+            "dialogue" => context.DialoguePrompt ?? "",
             "dialogue.type" => context.DialogueType ?? "",
             "dialogue.status" => context.DialogueStatus ?? "",
             "dialogue.ismonologue" => context.IsMonologue ? "true" : "false",
@@ -227,8 +379,15 @@ public static class MustacheParser
             // Language
             "lang" => LanguageDatabase.activeLanguage?.info?.friendlyNameNative ?? "English",
             
+            // JSON format instruction (dynamic based on ApplyMoodAndSocialEffects setting)
+            "json.format" => Constant.GetJsonInstruction(Settings.Get().ApplyMoodAndSocialEffects),
+            
             // Legacy compatibility - context variable
             "context" => context.PawnContext ?? "",
+            
+            // Chat history marker - returns empty string when parsed inline
+            // (actual history insertion is handled by PromptManager.BuildMessages)
+            "chat.history" => "",
             
             // Unknown variable - keep as-is for debugging
             _ => $"{{{{unknown:{varName}}}}}"
@@ -250,6 +409,11 @@ public static class MustacheParser
         var pawn = pawns[index - 1]; // Convert to 0-based index
         var property = match.Groups[2].Value.ToLowerInvariant();
         
+        return GetPawnProperty(pawn, property, context);
+    }
+
+    private static string GetPawnProperty(Pawn pawn, string property, MustacheContext context)
+    {
         return property switch
         {
             "name" => pawn?.LabelShort ?? "",
@@ -262,7 +426,7 @@ public static class MustacheParser
             "personality" => Cache.Get(pawn)?.Personality ?? "",
             "title" => pawn?.story?.title ?? "",
             "faction" => pawn?.Faction?.Name ?? "",
-            "job" => pawn?.CurJob?.def?.label ?? "",
+            "job" => GetPawnActivity(pawn),
             "role" => pawn?.GetRole() ?? "",
             "profile" => GetPawnProfile(pawn),
             "backstory" => GetPawnBackstory(pawn),
@@ -272,12 +436,14 @@ public static class MustacheParser
             "thoughts" => GetPawnThoughts(pawn),
             "relations" => GetPawnRelations(pawn),
             "equipment" => GetPawnEquipment(pawn),
-            "status" => GetPawnStatus(pawn, context),
+            "genes" => GetPawnGenes(pawn),
+            "ideology" => GetPawnIdeology(pawn),
+            "captive_status" => GetPawnCaptiveStatus(pawn),
             _ => ""
         };
     }
 
-    #region Pawn Context Helpers
+    // ===== Pawn Context Helpers =====
 
     private static string GetPawnProfile(Pawn pawn)
     {
@@ -288,7 +454,8 @@ public static class MustacheParser
     private static string GetPawnBackstory(Pawn pawn)
     {
         if (pawn == null) return "";
-        return PromptService.CreatePawnBackstory(pawn, PromptService.InfoLevel.Normal);
+        // Return only the childhood and adulthood backstory, not the full pawn introduction
+        return ContextBuilder.GetBackstoryContext(pawn, PromptService.InfoLevel.Normal) ?? "";
     }
 
     private static string GetPawnTraits(Pawn pawn)
@@ -327,19 +494,34 @@ public static class MustacheParser
         return ContextBuilder.GetEquipmentContext(pawn, PromptService.InfoLevel.Normal) ?? "";
     }
 
-    private static string GetPawnStatus(Pawn pawn, MustacheContext context)
+    private static string GetPawnGenes(Pawn pawn)
     {
         if (pawn == null) return "";
-        
-        var sb = new StringBuilder();
-        
-        // Current job
-        var job = pawn.CurJob?.def?.label;
-        if (!string.IsNullOrEmpty(job))
-            sb.Append($"{pawn.LabelShort} is {job}.");
-        
-        return sb.ToString();
+        return ContextBuilder.GetNotableGenesContext(pawn, PromptService.InfoLevel.Normal) ?? "";
     }
+
+    private static string GetPawnIdeology(Pawn pawn)
+    {
+        if (pawn == null) return "";
+        return ContextBuilder.GetIdeologyContext(pawn, PromptService.InfoLevel.Normal) ?? "";
+    }
+
+    private static string GetPawnCaptiveStatus(Pawn pawn)
+    {
+        if (pawn == null) return "";
+        return ContextBuilder.GetPrisonerSlaveContext(pawn, PromptService.InfoLevel.Normal) ?? "";
+    }
+    /// <summary>
+    /// Gets a pawn's current activity using GetActivity() extension method.
+    /// Returns detailed descriptions like "enjoying packaged survival meal" instead of just "ingest".
+    /// </summary>
+    private static string GetPawnActivity(Pawn pawn)
+    {
+        if (pawn == null) return "";
+        var activity = pawn.GetActivity();
+        return string.IsNullOrEmpty(activity) ? "wandering" : activity;
+    }
+
 
     private static string GetAllPawnsProfiles(MustacheContext context)
     {
@@ -374,16 +556,14 @@ public static class MustacheParser
             if (pawn.IsPlayer()) continue;
             
             var role = pawn.GetRole();
-            var job = pawn.CurJob?.def?.label ?? "wandering";
-            summaries.Add($"- {pawn.LabelShort}({role}) is {job}.");
+            var activity = GetPawnActivity(pawn);
+            summaries.Add($"- {pawn.LabelShort}({role}) is {activity}.");
         }
         
         return string.Join("\n", summaries);
     }
 
-    #endregion
-
-    #region Environment Helpers
+    // ===== Environment Helpers =====
 
     private static string GetDateString(Map map)
     {
@@ -392,50 +572,13 @@ public static class MustacheParser
         return gameData.DateString;
     }
 
-    private static string GetLocationString(Pawn pawn)
-    {
-        if (pawn?.Map == null) return "";
-        
-        var locationStatus = ContextHelper.GetPawnLocationStatus(pawn);
-        if (string.IsNullOrEmpty(locationStatus)) return "";
-        
-        var temperature = Mathf.RoundToInt(pawn.Position.GetTemperature(pawn.Map));
-        var room = pawn.GetRoom();
-        var roomRole = room is { PsychologicallyOutdoors: false } ? room.Role?.label ?? "" : "";
-
-        return string.IsNullOrEmpty(roomRole)
-            ? $"{locationStatus};{temperature}C"
-            : $"{locationStatus};{temperature}C;{roomRole}";
-    }
-
-    private static string GetBeautyString(Pawn pawn)
-    {
-        if (pawn?.Map == null) return "";
-        
-        var nearbyCells = ContextHelper.GetNearbyCells(pawn);
-        if (nearbyCells.Count == 0) return "";
-        
-        var beautySum = nearbyCells.Sum(c => BeautyUtility.CellBeauty(c, pawn.Map));
-        return Describer.Beauty(beautySum / nearbyCells.Count);
-    }
-
-    private static string GetCleanlinessString(Pawn pawn)
-    {
-        if (pawn?.Map == null) return "";
-        
-        var room = pawn.GetRoom();
-        if (room is not { PsychologicallyOutdoors: false }) return "";
-        
-        return Describer.Cleanliness(room.GetStat(RoomStatDefOf.Cleanliness));
-    }
+    // GetLocationString, GetBeautyString, GetCleanlinessString now reuse ContextBuilder methods
 
     private static string GetSurroundingsString(Pawn pawn)
     {
         if (pawn?.Map == null) return "";
         return ContextHelper.CollectNearbyContextText(pawn, 3) ?? "";
     }
-
-    #endregion
 
     /// <summary>
     /// Gets a pawn's race.
@@ -450,19 +593,7 @@ public static class MustacheParser
         return pawn.def.label;
     }
 
-    /// <summary>
-    /// Gets 12-hour format time.
-    /// </summary>
-    private static string GetHour12String(Map map)
-    {
-        var hour = GenLocalDate.HourOfDay(map);
-        var hour12 = hour % 12;
-        if (hour12 == 0) hour12 = 12;
-        var amPm = hour < 12 ? "AM" : "PM";
-        return $"{hour12} {amPm}";
-    }
-
-    #region Variable Registry
+    // ===== Variable Registry =====
 
     /// <summary>
     /// Gets all available built-in variables (for UI display).
@@ -498,7 +629,9 @@ public static class MustacheParser
                 ("pawn1.thoughts", "RimTalk.MustacheVar.pawn.thoughts".Translate()),
                 ("pawn1.relations", "RimTalk.MustacheVar.pawn.relations".Translate()),
                 ("pawn1.equipment", "RimTalk.MustacheVar.pawn.equipment".Translate()),
-                ("pawn1.status", "RimTalk.MustacheVar.pawn.status".Translate())
+                ("pawn1.genes", "RimTalk.MustacheVar.pawn.genes".Translate()),
+                ("pawn1.ideology", "RimTalk.MustacheVar.pawn.ideology".Translate()),
+                ("pawn1.captive_status", "RimTalk.MustacheVar.pawn.captive_status".Translate())
             },
             ["RimTalk.MustacheVar.Category.Pawn2Plus".Translate()] = new()
             {
@@ -507,8 +640,16 @@ public static class MustacheParser
                 ("pawn3.name", "RimTalk.MustacheVar.pawn3.name".Translate()),
                 ("pawnN.xxx", "RimTalk.MustacheVar.pawnN.xxx".Translate())
             },
+            ["RimTalk.MustacheVar.Category.Sections".Translate()] = new()
+            {
+                ("#pawns}}...{{/pawns", "RimTalk.MustacheVar.section.pawns".Translate()),
+                ("index", "RimTalk.MustacheVar.section.index".Translate()),
+                ("name", "RimTalk.MustacheVar.section.name".Translate()),
+                ("profile", "RimTalk.MustacheVar.section.profile".Translate())
+            },
             ["RimTalk.MustacheVar.Category.Dialogue".Translate()] = new()
             {
+                ("dialogue", "RimTalk.MustacheVar.dialogue".Translate()),
                 ("dialogue.type", "RimTalk.MustacheVar.dialogue.type".Translate()),
                 ("dialogue.status", "RimTalk.MustacheVar.dialogue.status".Translate()),
                 ("dialogue.ismonologue", "RimTalk.MustacheVar.dialogue.ismonologue".Translate())
@@ -543,6 +684,7 @@ public static class MustacheParser
             ["RimTalk.MustacheVar.Category.System".Translate()] = new()
             {
                 ("lang", "RimTalk.MustacheVar.lang".Translate()),
+                ("json.format", "RimTalk.MustacheVar.json.format".Translate()),
                 ("context", "RimTalk.MustacheVar.context".Translate()),
                 ("chat.history", "RimTalk.MustacheVar.chat.history".Translate())
             },
@@ -555,9 +697,7 @@ public static class MustacheParser
         };
     }
 
-    #endregion
-
-    #region Mod API
+    // ===== Mod API =====
 
     /// <summary>
     /// Registers a custom variable provider (for other mods to use).
@@ -664,5 +804,4 @@ public static class MustacheParser
         return Appenders.Keys;
     }
 
-    #endregion
 }

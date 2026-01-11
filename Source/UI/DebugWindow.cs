@@ -86,9 +86,10 @@ public class DebugWindow : Window
 
     // Temporary Editable State
     private Guid _selectedRequestIdForTemp = Guid.Empty;
-    private string _tempPrompt;
     private string _tempResponse;
-    private string _tempContexts;
+    private string _tempPromptSegmentsText;
+    private List<PromptMessageSegment> _tempPromptSegments = [];
+    private readonly HashSet<int> _expandedPromptSegmentIndices = new();
 
     private DebugViewMode _viewMode;
     private string _sortColumn;
@@ -99,8 +100,7 @@ public class DebugWindow : Window
     private const string ControlNamePawnFilter = "PawnFilterField";
     private const string ControlNameTextSearch = "TextSearchField";
     private const string ControlNameDetailResponse = "DetailResponseField";
-    private const string ControlNameDetailPrompt = "DetailPromptField";
-    private const string ControlNameDetailContexts = "DetailContextsField";
+    private const string ControlNameDetailMessages = "DetailMessagesField";
 
     // Styles
     private GUIStyle _contextStyle;
@@ -663,9 +663,10 @@ public class DebugWindow : Window
         if (_selectedLog.Id != _selectedRequestIdForTemp)
         {
             _selectedRequestIdForTemp = _selectedLog.Id;
-            _tempPrompt = _selectedLog.TalkRequest.Prompt ?? string.Empty;
             _tempResponse = _selectedLog.Response ?? string.Empty;
-            _tempContexts = _selectedLog.TalkRequest.Context;
+            _tempPromptSegments = ResolvePromptSegments(_selectedLog);
+            _tempPromptSegmentsText = FormatPromptSegments(_tempPromptSegments);
+            _expandedPromptSegmentIndices.Clear();
         }
         else if (string.IsNullOrEmpty(_tempResponse) && !string.IsNullOrEmpty(_selectedLog.Response))
         {
@@ -744,19 +745,15 @@ public class DebugWindow : Window
         float blockSpacing = 10f;
         float headerH = 18f;
 
-        // Calculate heights dynamically based on current (possibly edited) content
+        // Calculate heights dynamically based on current content
         float viewWidth = scrollOuter.width - 16f;
         float textAreaWidth = viewWidth - 8f;
-        float promptH = Mathf.Max(70f,
-            _monoTinyStyle.CalcHeight(new GUIContent(_tempPrompt), textAreaWidth) + 10f);
         float respH = Mathf.Max(40f,
             _monoTinyStyle.CalcHeight(new GUIContent(_tempResponse), textAreaWidth) + 10f);
-        float ctxH = Mathf.Max(70f,
-            _monoTinyStyle.CalcHeight(new GUIContent(_tempContexts), textAreaWidth) + 10f);
+        float msgH = CalculatePromptSegmentsHeight(_tempPromptSegments, viewWidth);
 
         var viewH = headerH + respH + blockSpacing +
-                    headerH + promptH + blockSpacing +
-                    headerH + ctxH + 10f;
+                    msgH + 10f;
 
         var view = new Rect(0f, 0f, scrollOuter.width - 16f, viewH);
 
@@ -774,26 +771,9 @@ public class DebugWindow : Window
             readOnly: true);
         yy += blockSpacing;
 
-        // Prompt Block
-        DrawSelectableBlock(ref yy, view.width, "RimTalk.DebugWindow.Prompt".Translate(),
-            ref _tempPrompt, promptH, ControlNameDetailPrompt,
-            onCopy: () =>
-            {
-                GUIUtility.systemCopyBuffer = _tempPrompt;
-                Messages.Message("RimTalk.DebugWindow.Copied".Translate(), MessageTypeDefOf.TaskCompletion, false);
-            },
-            onReset: () => _tempPrompt = _selectedLog.TalkRequest.Prompt ?? string.Empty);
-        yy += blockSpacing;
-
-        // Contexts Block
-        DrawSelectableBlock(ref yy, view.width, "RimTalk.DebugWindow.Contexts".Translate(),
-            ref _tempContexts, ctxH, ControlNameDetailContexts,
-            onCopy: () =>
-            {
-                GUIUtility.systemCopyBuffer = _tempContexts;
-                Messages.Message("RimTalk.DebugWindow.Copied".Translate(), MessageTypeDefOf.TaskCompletion, false);
-            },
-            onReset: () => _tempContexts = _selectedLog.TalkRequest.Context);
+        // Prompt Messages Block (segmented, collapsible)
+        DrawPromptMessagesBlock(ref yy, view.width, "RimTalk.DebugWindow.PromptMessages".Translate(),
+            _tempPromptSegments, _tempPromptSegmentsText);
 
         Widgets.EndScrollView();
 
@@ -855,6 +835,83 @@ public class DebugWindow : Window
             content = GUI.TextArea(textRect, content, _monoTinyStyle);
 
         y += contentHeight;
+    }
+
+    private void DrawPromptMessagesBlock(ref float y, float width, string title,
+        List<PromptMessageSegment> segments, string combinedText)
+    {
+        float headerHeight = 18f;
+
+        Text.Font = GameFont.Tiny;
+        GUI.color = Color.gray;
+
+        Vector2 labelSize = Text.CalcSize(title);
+        Rect labelRect = new Rect(0f, y, labelSize.x, headerHeight);
+        Widgets.Label(labelRect, title);
+
+        Rect copyRect = new Rect(labelRect.xMax + 8f, y, 16f, 16f);
+        if (Widgets.ButtonImage(copyRect, TexButton.Copy))
+        {
+            GUIUtility.systemCopyBuffer = combinedText ?? "";
+            Messages.Message("RimTalk.DebugWindow.Copied".Translate(), MessageTypeDefOf.TaskCompletion, false);
+        }
+
+        TooltipHandler.TipRegion(copyRect, "RimTalk.DebugWindow.Copy".Translate());
+
+        GUI.color = Color.white;
+        y += headerHeight;
+
+        if (segments == null || segments.Count == 0)
+        {
+            GUI.color = Color.gray;
+            Widgets.Label(new Rect(0f, y, width, 20f), "-");
+            GUI.color = Color.white;
+            y += 20f;
+            return;
+        }
+
+        const float messageHeaderHeight = 22f;
+        const float messageSpacing = 6f;
+
+        for (int i = 0; i < segments.Count; i++)
+        {
+            var segment = segments[i];
+            string preview = GetPromptMessagePreview(segment.Content);
+            string roleLabel = GetRoleLabel(segment.Role);
+            string entryName = string.IsNullOrWhiteSpace(segment.EntryName) ? "Entry" : segment.EntryName;
+            string state = _expandedPromptSegmentIndices.Contains(i) ? "[-]" : "[+]";
+            string label = $"{state} {i + 1}. {entryName} ({roleLabel}): {preview}";
+
+            var headerRect = new Rect(0f, y, width, messageHeaderHeight);
+            Widgets.DrawBoxSolid(headerRect, new Color(0.12f, 0.12f, 0.12f, 0.6f));
+            Widgets.Label(new Rect(headerRect.x + 6f, headerRect.y + 2f, headerRect.width - 12f, headerRect.height),
+                label);
+
+            if (Widgets.ButtonInvisible(headerRect))
+            {
+                if (_expandedPromptSegmentIndices.Contains(i))
+                    _expandedPromptSegmentIndices.Remove(i);
+                else
+                    _expandedPromptSegmentIndices.Add(i);
+            }
+
+            y += messageHeaderHeight;
+
+            if (_expandedPromptSegmentIndices.Contains(i))
+            {
+                string safeContent = segment.Content ?? "";
+                float bodyHeight = Mathf.Max(40f,
+                    _monoTinyStyle.CalcHeight(new GUIContent(safeContent), width - 8f) + 10f);
+                var bodyRect = new Rect(0f, y, width, bodyHeight);
+                Widgets.DrawBoxSolid(bodyRect, new Color(0.05f, 0.05f, 0.05f, 0.55f));
+
+                var textRect = bodyRect.ContractedBy(4f);
+                GUI.TextArea(textRect, safeContent, _monoTinyStyle);
+                y += bodyHeight;
+            }
+
+            y += messageSpacing;
+        }
     }
 
     private void DrawGroupedPawnTable(Rect rect)
@@ -1254,8 +1311,7 @@ public class DebugWindow : Window
             if (focused == ControlNamePawnFilter ||
                 focused == ControlNameTextSearch ||
                 focused == ControlNameDetailResponse ||
-                focused == ControlNameDetailPrompt ||
-                focused == ControlNameDetailContexts)
+                focused == ControlNameDetailMessages)
             {
                 GUI.FocusControl(null);
             }
@@ -1374,6 +1430,114 @@ public class DebugWindow : Window
         return "";
     }
 
+    private static List<PromptMessageSegment> ResolvePromptSegments(ApiLog log)
+    {
+        var request = log?.TalkRequest;
+        if (request?.PromptMessageSegments != null && request.PromptMessageSegments.Count > 0)
+            return request.PromptMessageSegments;
+
+        var segments = new List<PromptMessageSegment>();
+        if (request == null) return segments;
+
+        if (request.PromptMessages != null && request.PromptMessages.Count > 0)
+        {
+            for (int i = 0; i < request.PromptMessages.Count; i++)
+            {
+                var (role, content) = request.PromptMessages[i];
+                segments.Add(new PromptMessageSegment($"message-{i}", $"Message {i + 1}", role, content));
+            }
+            return segments;
+        }
+
+        var instruction = $"{Constant.Instruction}\n{request.Context}";
+        segments.Add(new PromptMessageSegment("legacy-instruction", "Legacy Instruction", Role.System, instruction));
+
+        if (request.Initiator != null)
+        {
+            foreach (var (role, message) in TalkHistory.GetMessageHistory(request.Initiator))
+            {
+                segments.Add(new PromptMessageSegment("legacy-history", "Legacy Chat History", role, message));
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.Prompt))
+            segments.Add(new PromptMessageSegment("legacy-prompt", "Legacy Prompt", Role.User, request.Prompt));
+
+        return segments;
+    }
+
+    private float CalculatePromptSegmentsHeight(List<PromptMessageSegment> segments, float width)
+    {
+        float height = 18f;
+        if (segments == null || segments.Count == 0)
+            return height + 20f;
+
+        const float messageHeaderHeight = 22f;
+        const float messageSpacing = 6f;
+
+        for (int i = 0; i < segments.Count; i++)
+        {
+            height += messageHeaderHeight;
+            if (_expandedPromptSegmentIndices.Contains(i))
+            {
+                string content = segments[i].Content ?? "";
+                height += Mathf.Max(40f,
+                    _monoTinyStyle.CalcHeight(new GUIContent(content), width - 8f) + 10f);
+            }
+            height += messageSpacing;
+        }
+
+        return height;
+    }
+
+    private static string GetPromptMessagePreview(string content)
+    {
+        if (string.IsNullOrWhiteSpace(content))
+            return "(empty)";
+
+        var firstLine = content.Replace("\r", "").Split('\n')[0].Trim();
+        if (firstLine.Length > 80)
+            firstLine = firstLine.Substring(0, 77) + "...";
+
+        return firstLine;
+    }
+
+    private static string GetRoleLabel(Role role)
+    {
+        return role == Role.AI ? "Assistant" : role.ToString();
+    }
+
+    /// <summary>
+    /// Formats prompt segments into a readable string with entry and role headers.
+    /// Example output:
+    /// Entry: Base Instruction
+    /// Role: system
+    /// [content]
+    /// </summary>
+    private static string FormatPromptSegments(List<PromptMessageSegment> segments)
+    {
+        if (segments == null || segments.Count == 0)
+            return "(No prompt segments available)";
+
+        var sb = new StringBuilder();
+        for (int i = 0; i < segments.Count; i++)
+        {
+            var segment = segments[i];
+            var roleLabel = segment.Role == Role.AI ? "assistant" : segment.Role.ToString().ToLowerInvariant();
+            var entryName = string.IsNullOrWhiteSpace(segment.EntryName) ? "Entry" : segment.EntryName;
+            sb.Append("Entry: ");
+            sb.AppendLine(entryName);
+            sb.Append("Role: ");
+            sb.AppendLine(roleLabel);
+            sb.AppendLine(segment.Content ?? "");
+            
+            // Add blank line between messages (except after the last one)
+            if (i < segments.Count - 1)
+                sb.AppendLine();
+        }
+        return sb.ToString();
+    }
+
     private void Resend()
     {
         if (AIService.IsBusy())
@@ -1383,8 +1547,7 @@ public class DebugWindow : Window
         }
 
         TalkRequest debugRequest = _selectedLog.TalkRequest.Clone();
-        debugRequest.Prompt = _tempPrompt;
-        debugRequest.Context = _tempContexts;
+        // Note: Resend uses the original PromptMessages from the TalkRequest
         if (_selectedLog.Channel == Channel.Stream)
             TalkService.GenerateTalkDebug(debugRequest);
         else if (_selectedLog.Channel == Channel.Query)

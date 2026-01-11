@@ -87,7 +87,8 @@ public static class CommonUtil
         return GenDate.HourOfDay(absTicks, longLat.x);
     }
 
-    private static string GetInGameHour12HString(long absTicks, Vector2 longLat)
+    // Converts 24h to 12h format with am/pm suffix
+    public static string GetInGameHour12HString(long absTicks, Vector2 longLat)
     {
         int hour24 = GetInGameHour(absTicks, longLat);
 
@@ -99,6 +100,15 @@ public static class CommonUtil
 
         string ampm = hour24 < 12 ? "am" : "pm";
         return $"{hour12}{ampm}";
+    }
+
+    // Overload for Map parameter - convenience method for MustacheParser
+    public static string GetInGameHour12HString(Map map)
+    {
+        if (map == null) return "";
+        long absTicks = Find.TickManager.TicksAbs;
+        Vector2 longLat = Find.WorldGrid.LongLatOf(map.Tile);
+        return GetInGameHour12HString(absTicks, longLat);
     }
 
     // Returns the year, quarter, and day.

@@ -87,6 +87,7 @@
     <RimTalk.Settings.PromptPreset.NewPreset>+ New Preset</RimTalk.Settings.PromptPreset.NewPreset>
     <RimTalk.Settings.PromptPreset.NewPresetName>New Preset</RimTalk.Settings.PromptPreset.NewPresetName>
     <RimTalk.Settings.PromptPreset.Activate>Activate</RimTalk.Settings.PromptPreset.Activate>
+    <RimTalk.Settings.PromptPreset.Rename>Rename</RimTalk.Settings.PromptPreset.Rename>
     <RimTalk.Settings.PromptPreset.Duplicate>Duplicate</RimTalk.Settings.PromptPreset.Duplicate>
     <RimTalk.Settings.PromptPreset.Delete>Delete</RimTalk.Settings.PromptPreset.Delete>
     <RimTalk.Settings.PromptPreset.Entries>Entries</RimTalk.Settings.PromptPreset.Entries>
@@ -101,8 +102,6 @@
     <RimTalk.Settings.PromptPreset.Depth>Depth:</RimTalk.Settings.PromptPreset.Depth>
     <RimTalk.Settings.PromptPreset.Content>Content:</RimTalk.Settings.PromptPreset.Content>
     <RimTalk.Settings.PromptPreset.InsertVariable>Insert Variable</RimTalk.Settings.PromptPreset.InsertVariable>
-    <RimTalk.Settings.PromptPreset.Editable>✓ Editable</RimTalk.Settings.PromptPreset.Editable>
-    <RimTalk.Settings.PromptPreset.Locked>⚠ Locked (system entry)</RimTalk.Settings.PromptPreset.Locked>
     <RimTalk.Settings.PromptPreset.UserVariables>User Variables</RimTalk.Settings.PromptPreset.UserVariables>
     <RimTalk.Settings.PromptPreset.ModVariables>Mod Variables</RimTalk.Settings.PromptPreset.ModVariables>
     <RimTalk.Settings.PromptPreset.CustomVariables>Custom Variables</RimTalk.Settings.PromptPreset.CustomVariables>
@@ -148,6 +147,9 @@ ENTRIES: Each entry is a message sent to the AI. You can:
 
 VARIABLES:
 • Built-in: {{pawns.all}}, {{pawn1.name}}, {{weather}}, etc.
+• Loop Variables: {{#pawns}}...{{/pawns}} to iterate over dialogue pawns
+    • Example:
+    • {{#pawns}}{{index}}. {{name}} - {{mood}}{{/pawns}}
 • Runtime: setvar/getvar for AI-controlled values
     • Example:
     • {{setvar::counter::1}}
@@ -329,6 +331,7 @@ For detailed documentation, see the docs/ folder in the mod directory.</RimTalk.
     <RimTalk.DebugWindow.Undo>Undo</RimTalk.DebugWindow.Undo>
     <RimTalk.DebugWindow.Prompt>Prompt</RimTalk.DebugWindow.Prompt>
     <RimTalk.DebugWindow.Response>Response</RimTalk.DebugWindow.Response>
+    <RimTalk.DebugWindow.PromptMessages>Prompt Messages</RimTalk.DebugWindow.PromptMessages>
     <RimTalk.DebugWindow.Contexts>Contexts</RimTalk.DebugWindow.Contexts>
     <RimTalk.DebugWindow.Generating>[Generating...]</RimTalk.DebugWindow.Generating>
     <RimTalk.DebugWindow.StatusDisabled>Disabled</RimTalk.DebugWindow.StatusDisabled>
@@ -421,6 +424,9 @@ For detailed documentation, see the docs/ folder in the mod directory.</RimTalk.
     <RimTalk.MustacheVar.pawn.relations>Social relations</RimTalk.MustacheVar.pawn.relations>
     <RimTalk.MustacheVar.pawn.equipment>Equipment and apparel</RimTalk.MustacheVar.pawn.equipment>
     <RimTalk.MustacheVar.pawn.status>Current status</RimTalk.MustacheVar.pawn.status>
+    <RimTalk.MustacheVar.pawn.genes>Notable genes</RimTalk.MustacheVar.pawn.genes>
+    <RimTalk.MustacheVar.pawn.ideology>Ideology and memes</RimTalk.MustacheVar.pawn.ideology>
+    <RimTalk.MustacheVar.pawn.captive_status>Prisoner/slave status</RimTalk.MustacheVar.pawn.captive_status>
     
     <!-- Pawn 2+ Variables -->
     <RimTalk.MustacheVar.pawn2.name>Pawn 2's short name</RimTalk.MustacheVar.pawn2.name>
@@ -428,9 +434,17 @@ For detailed documentation, see the docs/ folder in the mod directory.</RimTalk.
     <RimTalk.MustacheVar.pawn3.name>Pawn 3's short name</RimTalk.MustacheVar.pawn3.name>
     <RimTalk.MustacheVar.pawnN.xxx>Any pawn N's property (N=1,2,3...)</RimTalk.MustacheVar.pawnN.xxx>
     
+    <!-- Sections (Mustache Loop Blocks) -->
+    <RimTalk.MustacheVar.Category.Sections>Section Loops</RimTalk.MustacheVar.Category.Sections>
+    <RimTalk.MustacheVar.section.pawns>Loop over dialogue pawns</RimTalk.MustacheVar.section.pawns>
+    <RimTalk.MustacheVar.section.index>Current pawn index (1-based)</RimTalk.MustacheVar.section.index>
+    <RimTalk.MustacheVar.section.name>Current pawn's name (inside section)</RimTalk.MustacheVar.section.name>
+    <RimTalk.MustacheVar.section.profile>Current pawn's profile (inside section)</RimTalk.MustacheVar.section.profile>
+    
     <!-- Dialogue Variables -->
-    <RimTalk.MustacheVar.dialogue.type>Type of dialogue event</RimTalk.MustacheVar.dialogue.type>
-    <RimTalk.MustacheVar.dialogue.status>Dialogue status</RimTalk.MustacheVar.dialogue.status>
+    <RimTalk.MustacheVar.dialogue>Full decorated prompt (time, weather, location, etc.)</RimTalk.MustacheVar.dialogue>
+    <RimTalk.MustacheVar.dialogue.type>Dialogue type description</RimTalk.MustacheVar.dialogue.type>
+    <RimTalk.MustacheVar.dialogue.status>Initiator's current activity status</RimTalk.MustacheVar.dialogue.status>
     <RimTalk.MustacheVar.dialogue.ismonologue>Whether this is a monologue</RimTalk.MustacheVar.dialogue.ismonologue>
     
     <!-- Time Variables -->
@@ -459,6 +473,7 @@ For detailed documentation, see the docs/ folder in the mod directory.</RimTalk.
     
     <!-- System Variables -->
     <RimTalk.MustacheVar.lang>Current game language</RimTalk.MustacheVar.lang>
+    <RimTalk.MustacheVar.json.format>JSON output format (dynamic based on settings)</RimTalk.MustacheVar.json.format>
     <RimTalk.MustacheVar.context>Legacy context variable</RimTalk.MustacheVar.context>
     <RimTalk.MustacheVar.chat.history>Previous chat history</RimTalk.MustacheVar.chat.history>
     
