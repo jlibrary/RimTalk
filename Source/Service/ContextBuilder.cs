@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -353,5 +354,11 @@ public static class ContextBuilder
                 }
             }
         }
+    }
+    
+    [Obsolete("Use CommonUtil.Sanitize instead. Kept for backward compatibility.")]
+    public static string Sanitize(string text, Pawn pawn = null)
+    {
+        return CommonUtil.Sanitize(text, pawn);
     }
 }
