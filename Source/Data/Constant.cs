@@ -8,10 +8,10 @@ public static class Constant
     public const string FallbackCloudModel = "gemma-3-12b-it";
     public const string ChooseModel = "(choose model)";
 
-    public static readonly string Lang = LanguageDatabase.activeLanguage.info.friendlyNameNative;
-    public static readonly HediffDef VocalLinkDef = DefDatabase<HediffDef>.GetNamed("VocalLinkImplant");
+    public static string Lang => LanguageDatabase.activeLanguage?.info?.friendlyNameNative ?? "English";
+    public static HediffDef VocalLinkDef => DefDatabase<HediffDef>.GetNamedSilentFail("VocalLinkImplant");
 
-    public static readonly string DefaultInstruction =
+    public static string DefaultInstruction =>
         $"""
          Role-play RimWorld character per profile
 
@@ -53,7 +53,7 @@ public static class Constant
         }
     }
 
-    public static readonly string PersonaGenInstruction =
+    public static string PersonaGenInstruction =>
         $"""
          Create a funny persona (to be used as conversation style) in {Lang}. Must be short in 1 sentence.
          Include: how they speak, their main attitude, and one weird quirk that makes them memorable.
@@ -62,7 +62,8 @@ public static class Constant
          Must return JSON only, with fields 'persona' (string) and 'chattiness' (float).
          """;
 
-    public static readonly PersonalityData[] Personalities =
+    private static PersonalityData[] _personalities;
+    public static PersonalityData[] Personalities => _personalities ??=
     [
         new("RimTalk.Persona.CheerfulHelper".Translate(), 0.75f),
         new("RimTalk.Persona.CynicalRealist".Translate(), 0.4f),
@@ -114,12 +115,12 @@ public static class Constant
         new("RimTalk.Persona.Vengeful".Translate(), 0.35f)
     ];
 
-    public static readonly PersonalityData PersonaAnimal =
-        new("RimTalk.Persona.Animal".Translate(), 0.2f);
+    private static PersonalityData _personaAnimal;
+    public static PersonalityData PersonaAnimal => _personaAnimal ??= new("RimTalk.Persona.Animal".Translate(), 0.2f);
 
-    public static readonly PersonalityData PersonaMech =
-        new("RimTalk.Persona.Mech".Translate(), 0.2f);
+    private static PersonalityData _personaMech;
+    public static PersonalityData PersonaMech => _personaMech ??= new("RimTalk.Persona.Mech".Translate(), 0.2f);
 
-    public static readonly PersonalityData PersonaNonHuman =
-        new("RimTalk.Persona.NonHuman".Translate(), 0.2f);
+    private static PersonalityData _personaNonHuman;
+    public static PersonalityData PersonaNonHuman => _personaNonHuman ??= new("RimTalk.Persona.NonHuman".Translate(), 0.2f);
 }
