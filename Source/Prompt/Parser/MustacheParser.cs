@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using RimTalk.API;
 using RimTalk.Data;
 using RimTalk.Service;
 using RimTalk.Util;
@@ -19,13 +20,6 @@ namespace RimTalk.Prompt;
 /// </summary>
 public static class MustacheParser
 {
-    // Registered custom variable providers (mod extensions)
-    private static readonly Dictionary<string, Func<MustacheContext, string>> CustomProviders = new();
-    
-    // Registered appenders for existing variables (mod extensions)
-    // Each variable can have multiple appenders that modify the value in order
-    private static readonly Dictionary<string, List<Func<MustacheContext, string, string>>> Appenders = new();
-    
     // Regex to match {{...}}
     private static readonly Regex MustacheRegex = new(@"\{\{(.+?)\}\}", RegexOptions.Compiled);
     
@@ -161,6 +155,7 @@ public static class MustacheParser
     
     /// <summary>
     /// Gets a property value from the scoped pawn in section context.
+    /// Supports hooks and custom pawn variables for extensibility.
     /// Returns null if the expression is not a simple pawn property.
     /// </summary>
     private static string GetScopedPawnProperty(string expression, MustacheContext context)
@@ -175,15 +170,42 @@ public static class MustacheParser
         if (expression == "index0")
             return context.ScopedPawnIndex.ToString(); // 0-based index
         
-        // Try to get pawn property
-        return expression switch
+        // Try to get pawn property using shared method
+        var result = GetRawPawnPropertyValue(pawn, expression);
+        
+        // If not a built-in property, check for custom pawn variables
+        if (result == null)
+        {
+            if (ContextHookRegistry.TryGetPawnVariable(expression, pawn, out var customValue))
+                return customValue;
+            return null; // Return null to fall back to regular evaluation
+        }
+        
+        // Apply hooks via unified API if there's a matching category
+        var category = MapVarNameToCategory(expression);
+        if (category != null)
+            return ContextHookRegistry.ApplyPawnHooks(category.Value, pawn, result);
+        
+        return result;
+    }
+    
+    /// <summary>
+    /// Gets the raw property value for a pawn without applying hooks.
+    /// This is the shared core implementation used by both GetScopedPawnProperty and GetPawnProperty.
+    /// Returns null if the property is not recognized.
+    /// </summary>
+    private static string GetRawPawnPropertyValue(Pawn pawn, string property)
+    {
+        if (pawn == null) return null;
+        
+        return property switch
         {
             "name" => pawn.LabelShort ?? "",
             "fullname" => pawn.Name?.ToStringFull ?? "",
             "gender" => pawn.gender.ToString(),
             "age" => pawn.ageTracker?.AgeBiologicalYears.ToString() ?? "",
             "race" => GetPawnRace(pawn),
-            "mood" => pawn.needs?.mood?.MoodString ?? "",
+            "mood" => GetPawnMood(pawn),
             "moodpercent" => pawn.needs?.mood?.CurLevelPercentage.ToString("P0") ?? "",
             "personality" => Cache.Get(pawn)?.Personality ?? "",
             "title" => pawn.story?.title ?? "",
@@ -201,7 +223,12 @@ public static class MustacheParser
             "genes" => GetPawnGenes(pawn),
             "ideology" => GetPawnIdeology(pawn),
             "captive_status" => GetPawnCaptiveStatus(pawn),
-            _ => null // Not a pawn property, return null to fall back
+            "location" => MustacheContextProvider.GetLocationString(pawn),
+            "terrain" => pawn?.Position.GetTerrain(pawn.Map)?.LabelCap ?? "",
+            "beauty" => MustacheContextProvider.GetBeautyString(pawn),
+            "cleanliness" => MustacheContextProvider.GetCleanlinessString(pawn),
+            "surroundings" => GetSurroundingsString(pawn),
+            _ => null // Not a built-in pawn property
         };
     }
 
@@ -263,50 +290,80 @@ public static class MustacheParser
     {
         var lowerExpr = expression.ToLowerInvariant().Trim();
         
-        // 1. Check if there's a mod-registered provider (full replacement)
-        if (CustomProviders.TryGetValue(lowerExpr, out var provider))
-        {
-            try
-            {
-                return provider(context) ?? "";
-            }
-            catch (Exception ex)
-            {
-                Logger.Warning($"Custom provider '{lowerExpr}' failed: {ex.Message}");
-                return "";
-            }
-        }
+        // 1. Check for custom context variables (e.g., {{memory}})
+        if (ContextHookRegistry.TryGetContextVariable(lowerExpr, context, out var contextValue))
+            return contextValue;
         
-        // 2. Get built-in variable value
+        // 2. Check for custom environment variables (e.g., {{radiation}})
+        var map = context.Map ?? context.CurrentPawn?.Map;
+        if (map != null && ContextHookRegistry.TryGetEnvironmentVariable(lowerExpr, map, out var envValue))
+            return envValue;
+        
+        // 3. Get built-in variable value
         var result = EvaluateBuiltinVariable(lowerExpr, context);
         
-        // 3. Apply any registered appenders to modify the result
+        // 4. Apply any registered hooks to modify the result
         result = ApplyAppenders(lowerExpr, context, result);
         
         return result;
     }
     
-    /// <summary>
-    /// Applies all registered appenders to modify the variable value.
-    /// </summary>
+    // Applies hooks to modify the variable value using unified ContextHookRegistry.
+    // Maps mustache variable names to ContextCategory for hook application.
     private static string ApplyAppenders(string varName, MustacheContext context, string originalValue)
     {
-        if (!Appenders.TryGetValue(varName, out var appenderList) || appenderList.Count == 0)
+        var pawn = context.CurrentPawn;
+        var map = context.Map ?? pawn?.Map;
+        
+        // Try to map varName to a ContextCategory and apply hooks
+        var category = MapVarNameToCategory(varName);
+        if (category == null)
             return originalValue;
         
-        var result = originalValue;
-        foreach (var appender in appenderList)
+        if (category.Value.Type == ContextType.Pawn && pawn != null)
+            return ContextHookRegistry.ApplyPawnHooks(category.Value, pawn, originalValue);
+        
+        if (category.Value.Type == ContextType.Environment && map != null)
+            return ContextHookRegistry.ApplyEnvironmentHooks(category.Value, map, originalValue);
+        
+        return originalValue;
+    }
+    
+    // Maps mustache variable names to ContextCategory for hook application.
+    private static ContextCategory? MapVarNameToCategory(string varName)
+    {
+        return varName switch
         {
-            try
-            {
-                result = appender(context, result) ?? result;
-            }
-            catch (Exception ex)
-            {
-                Logger.Warning($"Appender for '{varName}' failed: {ex.Message}");
-            }
-        }
-        return result;
+            // Pawn categories
+            "pawn.race" or "race" => ContextCategories.Pawn.Race,
+            "pawn.mood" or "mood" => ContextCategories.Pawn.Mood,
+            "backstory" => ContextCategories.Pawn.Backstory,
+            "traits" => ContextCategories.Pawn.Traits,
+            "skills" => ContextCategories.Pawn.Skills,
+            "health" => ContextCategories.Pawn.Health,
+            "thoughts" => ContextCategories.Pawn.Thoughts,
+            "relations" => ContextCategories.Pawn.Relations,
+            "equipment" => ContextCategories.Pawn.Equipment,
+            "genes" => ContextCategories.Pawn.Genes,
+            "ideology" => ContextCategories.Pawn.Ideology,
+            "captive_status" => ContextCategories.Pawn.CaptiveStatus,
+            
+            // Pawn location-based categories (moved from Environment)
+            "location" => ContextCategories.Pawn.Location,
+            "terrain" => ContextCategories.Pawn.Terrain,
+            "beauty" => ContextCategories.Pawn.Beauty,
+            "cleanliness" => ContextCategories.Pawn.Cleanliness,
+            "surroundings" => ContextCategories.Pawn.Surroundings,
+            
+            // Environment categories
+            "weather" => ContextCategories.Environment.Weather,
+            "wealth" => ContextCategories.Environment.Wealth,
+            "time.hour" or "time.hour12" => ContextCategories.Environment.Time,
+            "time.date" => ContextCategories.Environment.Date,
+            "time.season" => ContextCategories.Environment.Season,
+            
+            _ => null
+        };
     }
 
     /// <summary>
@@ -414,33 +471,29 @@ public static class MustacheParser
 
     private static string GetPawnProperty(Pawn pawn, string property, MustacheContext context)
     {
-        return property switch
+        // Get raw property value using shared method
+        var result = GetRawPawnPropertyValue(pawn, property);
+        
+        // If not a built-in property, check for custom pawn variables
+        if (result == null)
         {
-            "name" => pawn?.LabelShort ?? "",
-            "fullname" => pawn?.Name?.ToStringFull ?? "",
-            "gender" => pawn?.gender.ToString() ?? "",
-            "age" => pawn?.ageTracker?.AgeBiologicalYears.ToString() ?? "",
-            "race" => GetPawnRace(pawn),
-            "mood" => pawn?.needs?.mood?.MoodString ?? "",
-            "moodpercent" => pawn?.needs?.mood?.CurLevelPercentage.ToString("P0") ?? "",
-            "personality" => Cache.Get(pawn)?.Personality ?? "",
-            "title" => pawn?.story?.title ?? "",
-            "faction" => pawn?.Faction?.Name ?? "",
-            "job" => GetPawnActivity(pawn),
-            "role" => pawn?.GetRole() ?? "",
-            "profile" => GetPawnProfile(pawn),
-            "backstory" => GetPawnBackstory(pawn),
-            "traits" => GetPawnTraits(pawn),
-            "skills" => GetPawnSkills(pawn),
-            "health" => GetPawnHealth(pawn),
-            "thoughts" => GetPawnThoughts(pawn),
-            "relations" => GetPawnRelations(pawn),
-            "equipment" => GetPawnEquipment(pawn),
-            "genes" => GetPawnGenes(pawn),
-            "ideology" => GetPawnIdeology(pawn),
-            "captive_status" => GetPawnCaptiveStatus(pawn),
-            _ => ""
-        };
+            if (ContextHookRegistry.TryGetPawnVariable(property, pawn, out var customValue))
+                return customValue;
+            return "";
+        }
+        
+        // Apply hooks via unified API if there's a matching category
+        var category = MapVarNameToCategory(property);
+        if (category != null && pawn != null)
+            return ContextHookRegistry.ApplyPawnHooks(category.Value, pawn, result);
+        
+        return result;
+    }
+
+    private static string GetPawnMood(Pawn pawn)
+    {
+        if (pawn == null) return "";
+        return ContextBuilder.GetMoodContext(pawn, PromptService.InfoLevel.Normal) ?? "";
     }
 
     // ===== Pawn Context Helpers =====
@@ -696,112 +749,4 @@ public static class MustacheParser
             }
         };
     }
-
-    // ===== Mod API =====
-
-    /// <summary>
-    /// Registers a custom variable provider (for other mods to use).
-    /// </summary>
-    /// <param name="name">Variable name (e.g., "mymod.customvar")</param>
-    /// <param name="provider">Provider function</param>
-    public static void RegisterProvider(string name, Func<MustacheContext, string> provider)
-    {
-        if (string.IsNullOrEmpty(name) || provider == null) return;
-        CustomProviders[name.ToLowerInvariant()] = provider;
-        Logger.Debug($"Registered mustache provider: {name}");
-    }
-
-    /// <summary>
-    /// Unregisters a custom variable provider.
-    /// </summary>
-    public static void UnregisterProvider(string name)
-    {
-        if (string.IsNullOrEmpty(name)) return;
-        CustomProviders.Remove(name.ToLowerInvariant());
-        Logger.Debug($"Unregistered mustache provider: {name}");
-    }
-
-    /// <summary>
-    /// Checks if a provider is registered.
-    /// </summary>
-    public static bool HasProvider(string name)
-    {
-        return !string.IsNullOrEmpty(name) && CustomProviders.ContainsKey(name.ToLowerInvariant());
-    }
-
-    /// <summary>
-    /// Gets all registered provider names (for UI display).
-    /// </summary>
-    public static IEnumerable<string> GetRegisteredProviders()
-    {
-        return CustomProviders.Keys;
-    }
-
-    /// <summary>
-    /// Registers an appender that can modify an existing variable's value.
-    /// Unlike providers which replace values, appenders receive the original value
-    /// and can modify it (e.g., append additional information).
-    /// </summary>
-    /// <param name="name">Variable name to append to (e.g., "weather")</param>
-    /// <param name="appender">Appender function that takes (context, originalValue) and returns modified value</param>
-    public static void RegisterAppender(string name, Func<MustacheContext, string, string> appender)
-    {
-        if (string.IsNullOrEmpty(name) || appender == null) return;
-        
-        var lowerName = name.ToLowerInvariant();
-        if (!Appenders.ContainsKey(lowerName))
-        {
-            Appenders[lowerName] = new List<Func<MustacheContext, string, string>>();
-        }
-        Appenders[lowerName].Add(appender);
-        Logger.Debug($"Registered mustache appender for: {name}");
-    }
-
-    /// <summary>
-    /// Unregisters a specific appender from a variable.
-    /// </summary>
-    public static void UnregisterAppender(string name, Func<MustacheContext, string, string> appender)
-    {
-        if (string.IsNullOrEmpty(name) || appender == null) return;
-        
-        var lowerName = name.ToLowerInvariant();
-        if (Appenders.TryGetValue(lowerName, out var list))
-        {
-            list.Remove(appender);
-            if (list.Count == 0)
-            {
-                Appenders.Remove(lowerName);
-            }
-        }
-        Logger.Debug($"Unregistered mustache appender for: {name}");
-    }
-
-    /// <summary>
-    /// Unregisters all appenders for a variable.
-    /// </summary>
-    public static void UnregisterAllAppenders(string name)
-    {
-        if (string.IsNullOrEmpty(name)) return;
-        
-        var lowerName = name.ToLowerInvariant();
-        Appenders.Remove(lowerName);
-        Logger.Debug($"Unregistered all mustache appenders for: {name}");
-    }
-
-    /// <summary>
-    /// Checks if a variable has any appenders registered.
-    /// </summary>
-    public static bool HasAppenders(string name)
-    {
-        return !string.IsNullOrEmpty(name) && Appenders.ContainsKey(name.ToLowerInvariant());
-    }
-
-    /// <summary>
-    /// Gets all variable names that have appenders registered.
-    /// </summary>
-    public static IEnumerable<string> GetVariablesWithAppenders()
-    {
-        return Appenders.Keys;
-    }
-
 }

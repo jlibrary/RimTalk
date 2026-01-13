@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using RimTalk.Prompt;
 using RimTalk.Util;
+using Verse;
 
 namespace RimTalk.API;
 
@@ -12,57 +13,124 @@ namespace RimTalk.API;
 /// </summary>
 public static class RimTalkPromptAPI
 {
+    // ===== Custom Variable Registration API =====
+    
     /// <summary>
-    /// Registers a custom mustache variable.
+    /// Registers a new pawn property variable (e.g., "bloodtype" for {{pawn1.bloodtype}}, {{pawn2.bloodtype}}, etc.).
+    /// These are independent variables that mods can use in templates.
     /// </summary>
-    /// <param name="modId">The mod's package ID (e.g., "MyMod.PackageId")</param>
-    /// <param name="variableName">Variable name without prefix (e.g., "health" becomes {{modid.health}})</param>
-    /// <param name="provider">Function that provides the variable value</param>
+    /// <param name="modId">The mod's package ID</param>
+    /// <param name="variableName">Variable name (e.g., "bloodtype" for {{pawn1.bloodtype}})</param>
+    /// <param name="provider">Function that takes a Pawn and returns the variable value</param>
+    /// <param name="description">Description for UI display (optional)</param>
+    /// <param name="priority">Priority for ordering (lower = first, default 100)</param>
     /// <example>
-    /// RimTalkPromptAPI.RegisterVariable(
+    /// RimTalkPromptAPI.RegisterPawnVariable(
     ///     "MyMod.PackageId",
-    ///     "customhealth",
-    ///     ctx => ctx.CurrentPawn?.health?.summaryHealth?.SummaryHealthPercent.ToString("P0") ?? ""
+    ///     "bloodtype",
+    ///     pawn => GetBloodType(pawn),
+    ///     "Blood type of the pawn"
     /// );
-    /// // Usage: {{mymod.customhealth}}
+    /// // Usage: {{pawn1.bloodtype}}, {{pawn2.bloodtype}}, etc.
     /// </example>
-    public static void RegisterVariable(string modId, string variableName, Func<MustacheContext, string> provider)
+    public static void RegisterPawnVariable(
+        string modId,
+        string variableName,
+        Func<Pawn, string> provider,
+        string description = null,
+        int priority = 100)
     {
         if (string.IsNullOrEmpty(modId) || string.IsNullOrEmpty(variableName) || provider == null)
         {
-            Logger.Warning("RimTalkPromptAPI.RegisterVariable: Invalid parameters");
+            Logger.Warning("RimTalkPromptAPI.RegisterPawnVariable: Invalid parameters");
             return;
         }
-
-        var fullName = $"{SanitizeModId(modId)}.{variableName.ToLowerInvariant()}";
-        MustacheParser.RegisterProvider(fullName, provider);
-        Logger.Debug($"Mod '{modId}' registered variable: {{{{{fullName}}}}}");
+        
+        ContextHookRegistry.RegisterPawnVariable(variableName, SanitizeModId(modId), provider, description, priority);
+        Logger.Debug($"Mod '{modId}' registered pawn variable: {{{{pawnN.{variableName}}}}}");
     }
-
+    
     /// <summary>
-    /// Unregisters a custom mustache variable.
+    /// Registers a new environment variable (e.g., "radiation" for {{radiation}}).
+    /// These are independent variables that mods can use in templates.
     /// </summary>
     /// <param name="modId">The mod's package ID</param>
-    /// <param name="variableName">The variable name</param>
-    public static void UnregisterVariable(string modId, string variableName)
+    /// <param name="variableName">Variable name (e.g., "radiation")</param>
+    /// <param name="provider">Function that takes a Map and returns the variable value</param>
+    /// <param name="description">Description for UI display (optional)</param>
+    /// <param name="priority">Priority for ordering (lower = first, default 100)</param>
+    /// <example>
+    /// RimTalkPromptAPI.RegisterEnvironmentVariable(
+    ///     "MyMod.PackageId",
+    ///     "radiation",
+    ///     map => GetRadiationLevel(map),
+    ///     "Current radiation level"
+    /// );
+    /// // Usage: {{radiation}}
+    /// </example>
+    public static void RegisterEnvironmentVariable(
+        string modId,
+        string variableName,
+        Func<Map, string> provider,
+        string description = null,
+        int priority = 100)
     {
-        if (string.IsNullOrEmpty(modId) || string.IsNullOrEmpty(variableName)) return;
-
-        var fullName = $"{SanitizeModId(modId)}.{variableName.ToLowerInvariant()}";
-        MustacheParser.UnregisterProvider(fullName);
-        Logger.Debug($"Mod '{modId}' unregistered variable: {{{{{fullName}}}}}");
+        if (string.IsNullOrEmpty(modId) || string.IsNullOrEmpty(variableName) || provider == null)
+        {
+            Logger.Warning("RimTalkPromptAPI.RegisterEnvironmentVariable: Invalid parameters");
+            return;
+        }
+        
+        ContextHookRegistry.RegisterEnvironmentVariable(variableName, SanitizeModId(modId), provider, description, priority);
+        Logger.Debug($"Mod '{modId}' registered environment variable: {{{{{variableName}}}}}");
     }
-
+    
     /// <summary>
-    /// Checks if a variable is registered.
+    /// Registers a new context variable (e.g., "memory" for {{memory}}).
+    /// Context variables have access to the full MustacheContext including all pawns, dialogue info, etc.
     /// </summary>
-    public static bool IsVariableRegistered(string modId, string variableName)
+    /// <param name="modId">The mod's package ID</param>
+    /// <param name="variableName">Variable name (e.g., "memory")</param>
+    /// <param name="provider">Function that takes MustacheContext and returns the variable value</param>
+    /// <param name="description">Description for UI display (optional)</param>
+    /// <param name="priority">Priority for ordering (lower = first, default 100)</param>
+    /// <example>
+    /// RimTalkPromptAPI.RegisterContextVariable(
+    ///     "MyMod.PackageId",
+    ///     "memory",
+    ///     ctx => GetMemoryContext(ctx.CurrentPawn),
+    ///     "AI memory content for this pawn"
+    /// );
+    /// // Usage: {{memory}}
+    /// </example>
+    public static void RegisterContextVariable(
+        string modId,
+        string variableName,
+        Func<MustacheContext, string> provider,
+        string description = null,
+        int priority = 100)
     {
-        if (string.IsNullOrEmpty(modId) || string.IsNullOrEmpty(variableName)) return false;
-        var fullName = $"{SanitizeModId(modId)}.{variableName.ToLowerInvariant()}";
-        return MustacheParser.HasProvider(fullName);
+        if (string.IsNullOrEmpty(modId) || string.IsNullOrEmpty(variableName) || provider == null)
+        {
+            Logger.Warning("RimTalkPromptAPI.RegisterContextVariable: Invalid parameters");
+            return;
+        }
+        
+        ContextHookRegistry.RegisterContextVariable(variableName, SanitizeModId(modId), provider, description, priority);
+        Logger.Debug($"Mod '{modId}' registered context variable: {{{{{variableName}}}}}");
+    }
+    
+    /// <summary>
+    /// Gets all registered custom variables (for UI display).
+    /// </summary>
+    /// <returns>Enumerable of (Name, ModId, Description, Type) tuples</returns>
+    public static IEnumerable<(string Name, string ModId, string Description, string Type)> GetRegisteredCustomVariables()
+    {
+        return ContextHookRegistry.GetAllCustomVariables();
     }
 
+    // ===== Prompt Entry API =====
+    
     /// <summary>
     /// Adds a prompt entry to the currently active preset (at the end).
     /// </summary>
@@ -305,83 +373,165 @@ public static class RimTalkPromptAPI
         return PromptManager.Instance.Presets;
     }
 
+    // ===== Unified Hook API =====
+    // All hook methods now use the unified ContextHookRegistry
+    
     /// <summary>
-    /// Gets all registered mod variables.
-    /// </summary>
-    /// <returns>List of variable names</returns>
-    public static IEnumerable<string> GetRegisteredModVariables()
-    {
-        return MustacheParser.GetRegisteredProviders();
-    }
-
-    /// <summary>
-    /// Registers an appender to modify an existing variable's value.
-    /// Unlike RegisterVariable which replaces the value, appenders receive the original value
-    /// and can modify it (e.g., append additional information).
-    /// </summary>
-    /// <param name="modId">The mod's package ID (e.g., "MyMod.PackageId")</param>
-    /// <param name="variableName">Variable name to append to (e.g., "weather", "pawn1.health")</param>
-    /// <param name="appender">Function that receives (context, originalValue) and returns modified value</param>
-    /// <example>
-    /// RimTalkPromptAPI.AppendToVariable(
-    ///     "MyMod.PackageId",
-    ///     "weather",
-    ///     (ctx, original) => original + "; Wind: Northeast"
-    /// );
-    /// // Result: {{weather}} originally outputs "Sunny" → now outputs "Sunny; Wind: Northeast"
-    /// </example>
-    public static void AppendToVariable(string modId, string variableName, Func<MustacheContext, string, string> appender)
-    {
-        if (string.IsNullOrEmpty(modId) || string.IsNullOrEmpty(variableName) || appender == null)
-        {
-            Logger.Warning("RimTalkPromptAPI.AppendToVariable: Invalid parameters");
-            return;
-        }
-
-        MustacheParser.RegisterAppender(variableName.ToLowerInvariant(), appender);
-        Logger.Debug($"Mod '{modId}' registered appender for variable: {{{{{variableName}}}}}");
-    }
-
-    /// <summary>
-    /// Removes an appender from a variable.
+    /// Registers a pawn context hook that applies to all pawn context properties.
     /// </summary>
     /// <param name="modId">The mod's package ID</param>
-    /// <param name="variableName">Variable name</param>
-    /// <param name="appender">The same appender function that was registered</param>
-    public static void RemoveAppender(string modId, string variableName, Func<MustacheContext, string, string> appender)
+    /// <param name="category">The context category to hook (use ContextCategories.Pawn.*)</param>
+    /// <param name="operation">The hook operation (Append, Prepend, or Override)</param>
+    /// <param name="handler">Function that receives (pawn, originalValue) and returns modified value</param>
+    /// <param name="priority">Priority (lower = earlier execution, default 100)</param>
+    /// <example>
+    /// RimTalkPromptAPI.RegisterPawnHook(
+    ///     "MyMod.PackageId",
+    ///     ContextCategories.Pawn.Health,
+    ///     ContextHookRegistry.HookOperation.Append,
+    ///     (pawn, original) => original + $"; Toxicity: {pawn.GetToxicityLevel()}"
+    /// );
+    /// </example>
+    public static void RegisterPawnHook(
+        string modId,
+        ContextCategory category,
+        ContextHookRegistry.HookOperation operation,
+        Func<Pawn, string, string> handler,
+        int priority = 100)
     {
-        if (string.IsNullOrEmpty(variableName) || appender == null) return;
-
-        MustacheParser.UnregisterAppender(variableName.ToLowerInvariant(), appender);
-        Logger.Debug($"Mod '{modId}' removed appender for variable: {{{{{variableName}}}}}");
+        if (string.IsNullOrEmpty(modId) || handler == null)
+        {
+            Logger.Warning("RimTalkPromptAPI.RegisterPawnHook: Invalid parameters");
+            return;
+        }
+        
+        ContextHookRegistry.RegisterPawnHook(category, operation, SanitizeModId(modId), handler, priority);
+        Logger.Debug($"Mod '{modId}' registered {operation} hook for {category}");
     }
-
+    
     /// <summary>
-    /// Removes all appenders for a variable registered by any mod.
-    /// Use with caution - this removes all appenders, not just yours.
+    /// Registers an environment context hook that applies to all environment context properties.
     /// </summary>
-    /// <param name="variableName">Variable name</param>
-    public static void RemoveAllAppenders(string variableName)
+    /// <param name="modId">The mod's package ID</param>
+    /// <param name="category">The context category to hook (use ContextCategories.Environment.*)</param>
+    /// <param name="operation">The hook operation (Append, Prepend, or Override)</param>
+    /// <param name="handler">Function that receives (map, originalValue) and returns modified value</param>
+    /// <param name="priority">Priority (lower = earlier execution, default 100)</param>
+    /// <example>
+    /// RimTalkPromptAPI.RegisterEnvironmentHook(
+    ///     "MyMod.PackageId",
+    ///     ContextCategories.Environment.Weather,
+    ///     ContextHookRegistry.HookOperation.Append,
+    ///     (map, original) => original + "; Wind: Strong NE"
+    /// );
+    /// </example>
+    public static void RegisterEnvironmentHook(
+        string modId,
+        ContextCategory category,
+        ContextHookRegistry.HookOperation operation,
+        Func<Map, string, string> handler,
+        int priority = 100)
     {
-        if (string.IsNullOrEmpty(variableName)) return;
-        MustacheParser.UnregisterAllAppenders(variableName.ToLowerInvariant());
+        if (string.IsNullOrEmpty(modId) || handler == null)
+        {
+            Logger.Warning("RimTalkPromptAPI.RegisterEnvironmentHook: Invalid parameters");
+            return;
+        }
+        
+        ContextHookRegistry.RegisterEnvironmentHook(category, operation, SanitizeModId(modId), handler, priority);
+        Logger.Debug($"Mod '{modId}' registered {operation} hook for {category}");
     }
-
+    
     /// <summary>
-    /// Checks if a variable has any appenders registered.
+    /// Injects a new pawn section that appears alongside existing pawn context sections.
     /// </summary>
-    public static bool HasAppenders(string variableName)
+    /// <param name="modId">The mod's package ID</param>
+    /// <param name="sectionName">Name for the new section (used as variable key)</param>
+    /// <param name="anchor">The category to anchor relative to (use ContextCategories.Pawn.*)</param>
+    /// <param name="position">Position relative to anchor (Before or After)</param>
+    /// <param name="provider">Function that takes a pawn and returns the section content</param>
+    /// <param name="priority">Priority (lower = earlier within same position, default 100)</param>
+    /// <example>
+    /// RimTalkPromptAPI.InjectPawnSection(
+    ///     "MyMod.PackageId",
+    ///     "bloodtype",
+    ///     ContextCategories.Pawn.Health,
+    ///     ContextHookRegistry.InjectPosition.After,
+    ///     pawn => $"Blood Type: {GetBloodType(pawn)}"
+    /// );
+    /// </example>
+    public static void InjectPawnSection(
+        string modId,
+        string sectionName,
+        ContextCategory anchor,
+        ContextHookRegistry.InjectPosition position,
+        Func<Pawn, string> provider,
+        int priority = 100)
     {
-        if (string.IsNullOrEmpty(variableName)) return false;
-        return MustacheParser.HasAppenders(variableName.ToLowerInvariant());
+        if (string.IsNullOrEmpty(modId) || string.IsNullOrEmpty(sectionName) || provider == null)
+        {
+            Logger.Warning("RimTalkPromptAPI.InjectPawnSection: Invalid parameters");
+            return;
+        }
+        
+        ContextHookRegistry.InjectPawnSection(sectionName, SanitizeModId(modId), anchor, position, provider, priority);
+        Logger.Debug($"Mod '{modId}' injected pawn section '{sectionName}' {position} {anchor}");
     }
-
+    
     /// <summary>
-    /// Gets all variable names that have appenders registered.
+    /// Injects a new environment section that appears alongside existing environment context sections.
     /// </summary>
-    public static IEnumerable<string> GetVariablesWithAppenders()
+    /// <param name="modId">The mod's package ID</param>
+    /// <param name="sectionName">Name for the new section (used as variable key)</param>
+    /// <param name="anchor">The category to anchor relative to (use ContextCategories.Environment.*)</param>
+    /// <param name="position">Position relative to anchor (Before or After)</param>
+    /// <param name="provider">Function that takes a map and returns the section content</param>
+    /// <param name="priority">Priority (lower = earlier within same position, default 100)</param>
+    /// <example>
+    /// RimTalkPromptAPI.InjectEnvironmentSection(
+    ///     "MyMod.PackageId",
+    ///     "windspeed",
+    ///     ContextCategories.Environment.Weather,
+    ///     ContextHookRegistry.InjectPosition.After,
+    ///     map => $"Wind: {GetWindSpeed(map)}"
+    /// );
+    /// </example>
+    public static void InjectEnvironmentSection(
+        string modId,
+        string sectionName,
+        ContextCategory anchor,
+        ContextHookRegistry.InjectPosition position,
+        Func<Map, string> provider,
+        int priority = 100)
     {
-        return MustacheParser.GetVariablesWithAppenders();
+        if (string.IsNullOrEmpty(modId) || string.IsNullOrEmpty(sectionName) || provider == null)
+        {
+            Logger.Warning("RimTalkPromptAPI.InjectEnvironmentSection: Invalid parameters");
+            return;
+        }
+        
+        ContextHookRegistry.InjectEnvironmentSection(sectionName, SanitizeModId(modId), anchor, position, provider, priority);
+        Logger.Debug($"Mod '{modId}' injected environment section '{sectionName}' {position} {anchor}");
+    }
+    
+    /// <summary>
+    /// Unregisters all hooks and injected sections registered by a specific mod.
+    /// Call this when your mod is unloaded or disabled.
+    /// </summary>
+    /// <param name="modId">The mod's package ID</param>
+    public static void UnregisterAllHooks(string modId)
+    {
+        if (string.IsNullOrEmpty(modId)) return;
+        ContextHookRegistry.UnregisterMod(SanitizeModId(modId));
+        Logger.Debug($"Mod '{modId}' unregistered all hooks");
+    }
+    
+    /// <summary>
+    /// Checks if there are any hooks registered.
+    /// </summary>
+    public static bool HasAnyHooks()
+    {
+        return ContextHookRegistry.HasAnyHooks || ContextHookRegistry.HasAnyInjections;
     }
 
     /// <summary>

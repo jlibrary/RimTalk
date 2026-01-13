@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using RimTalk.API;
 using RimTalk.Data;
 using RimTalk.Prompt;
 using RimTalk.Util;
@@ -416,15 +417,16 @@ public partial class Settings
             }
         }
         
-        // Mod registered variables
-        var modVars = MustacheParser.GetRegisteredProviders().ToList();
-        if (modVars.Count > 0)
+        // Mod registered custom variables
+        var customVars = ContextHookRegistry.GetAllCustomVariables().ToList();
+        if (customVars.Count > 0)
         {
             options.Add(new FloatMenuOption("--- " + "RimTalk.Settings.PromptPreset.ModVariables".Translate() + " ---", null));
-            foreach (var mv in modVars)
+            foreach (var (name, modId, desc, type) in customVars)
             {
-                options.Add(new FloatMenuOption($"{{{{{mv}}}}}",
-                    () => InsertAtCursor(entry, $"{{{{{mv}}}}}")));
+                var displayText = string.IsNullOrEmpty(desc) ? $"{{{{{name}}}}}" : $"{{{{{name}}}}} - {desc}";
+                options.Add(new FloatMenuOption(displayText,
+                    () => InsertAtCursor(entry, $"{{{{{name}}}}}")));
             }
         }
 

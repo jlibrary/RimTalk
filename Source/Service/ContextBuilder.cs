@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using HarmonyLib;
+using RimTalk.API;
 using RimTalk.Data;
 using RimTalk.Source.Data;
 using RimTalk.Util;
@@ -314,20 +315,23 @@ public static class ContextBuilder
 
     public static void BuildLocationContext(StringBuilder sb, ContextSettings contextSettings, Pawn mainPawn)
     {
-        if (contextSettings.IncludeLocationAndTemperature)
-        {
-            var locationStatus = ContextHelper.GetPawnLocationStatus(mainPawn);
-            if (!string.IsNullOrEmpty(locationStatus))
-            {
-                var temperature = Mathf.RoundToInt(mainPawn.Position.GetTemperature(mainPawn.Map));
-                var room = mainPawn.GetRoom();
-                var roomRole = room is { PsychologicallyOutdoors: false } ? room.Role?.label ?? "Room" : "";
+        if (!contextSettings.IncludeLocationAndTemperature) return;
+        
+        var locationStatus = ContextHelper.GetPawnLocationStatus(mainPawn);
+        if (string.IsNullOrEmpty(locationStatus)) return;
+        
+        var temperature = Mathf.RoundToInt(mainPawn.Position.GetTemperature(mainPawn.Map));
+        var room = mainPawn.GetRoom();
+        var roomRole = room is { PsychologicallyOutdoors: false } ? room.Role?.label ?? "Room" : "";
 
-                sb.Append(string.IsNullOrEmpty(roomRole)
-                    ? $"\nLocation: {locationStatus};{temperature}C"
-                    : $"\nLocation: {locationStatus};{temperature}C;{roomRole}");
-            }
-        }
+        var locationInfo = string.IsNullOrEmpty(roomRole)
+            ? $"{locationStatus};{temperature}C"
+            : $"{locationStatus};{temperature}C;{roomRole}";
+        
+        // Apply pawn hooks (location is now a pawn property)
+        locationInfo = ContextHookRegistry.ApplyPawnHooks(
+            ContextCategories.Pawn.Location, mainPawn, locationInfo);
+        sb.Append($"\nLocation: {locationInfo}");
     }
 
     public static void BuildEnvironmentContext(StringBuilder sb, ContextSettings contextSettings, Pawn mainPawn)
@@ -336,7 +340,11 @@ public static class ContextBuilder
         {
             var terrain = mainPawn.Position.GetTerrain(mainPawn.Map);
             if (terrain != null)
-                sb.Append($"\nTerrain: {terrain.LabelCap}");
+            {
+                var value = ContextHookRegistry.ApplyPawnHooks(
+                    ContextCategories.Pawn.Terrain, mainPawn, terrain.LabelCap);
+                sb.Append($"\nTerrain: {value}");
+            }
         }
 
         if (contextSettings.IncludeBeauty)
@@ -345,23 +353,30 @@ public static class ContextBuilder
             if (nearbyCells.Count > 0)
             {
                 var beautySum = nearbyCells.Sum(c => BeautyUtility.CellBeauty(c, mainPawn.Map));
-                sb.Append($"\nCellBeauty: {Describer.Beauty(beautySum / nearbyCells.Count)}");
+                var value = ContextHookRegistry.ApplyPawnHooks(
+                    ContextCategories.Pawn.Beauty, mainPawn, Describer.Beauty(beautySum / nearbyCells.Count));
+                sb.Append($"\nCellBeauty: {value}");
             }
         }
 
         var pawnRoom = mainPawn.GetRoom();
         if (contextSettings.IncludeCleanliness && pawnRoom is { PsychologicallyOutdoors: false })
-            sb.Append($"\nCleanliness: {Describer.Cleanliness(pawnRoom.GetStat(RoomStatDefOf.Cleanliness))}");
+        {
+            var value = ContextHookRegistry.ApplyPawnHooks(
+                ContextCategories.Pawn.Cleanliness, mainPawn,
+                Describer.Cleanliness(pawnRoom.GetStat(RoomStatDefOf.Cleanliness)));
+            sb.Append($"\nCleanliness: {value}");
+        }
 
         if (contextSettings.IncludeSurroundings)
         {
+            var surroundingsText = ContextHelper.CollectNearbyContextText(mainPawn, 3);
+            if (!string.IsNullOrEmpty(surroundingsText))
             {
-                var surroundingsText = ContextHelper.CollectNearbyContextText(mainPawn, 3);
-                if (!string.IsNullOrEmpty(surroundingsText))
-                {
-                    sb.Append("\nSurroundings:\n");
-                    sb.Append(surroundingsText);
-                }
+                var value = ContextHookRegistry.ApplyPawnHooks(
+                    ContextCategories.Pawn.Surroundings, mainPawn, surroundingsText);
+                sb.Append("\nSurroundings:\n");
+                sb.Append(value);
             }
         }
     }
