@@ -378,6 +378,12 @@ public class PromptManager : IExposable
         Presets.Clear();
         VariableStore.Clear();
         InitializeDefaults();
+        
+        // Clear blacklist so mod entries can be re-added on next startup
+        foreach (var preset in Presets)
+        {
+            preset.ClearBlacklist();
+        }
     }
 
     public void ExposeData()

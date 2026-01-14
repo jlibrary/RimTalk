@@ -1,4 +1,5 @@
 using System;
+using System.Text.RegularExpressions;
 using Verse;
 
 namespace RimTalk.Prompt;
@@ -8,11 +9,29 @@ namespace RimTalk.Prompt;
 /// </summary>
 public class PromptEntry : IExposable
 {
-    /// <summary>Unique identifier</summary>
-    public string Id = Guid.NewGuid().ToString();
+    private string _id = Guid.NewGuid().ToString();
+    private string _sourceModId;
+    private string _name = "New Prompt";
+    
+    /// <summary>
+    /// Unique identifier. For mod entries, this is deterministically generated from SourceModId and Name.
+    /// </summary>
+    public string Id
+    {
+        get => _id;
+        set => _id = value;
+    }
     
     /// <summary>Display name (e.g., "Base Instruction", "Difficulty Settings")</summary>
-    public string Name = "New Prompt";
+    public string Name
+    {
+        get => _name;
+        set
+        {
+            _name = value;
+            UpdateIdIfModEntry();
+        }
+    }
     
     /// <summary>Prompt content (supports mustache syntax)</summary>
     public string Content = "";
@@ -33,8 +52,46 @@ public class PromptEntry : IExposable
     /// <summary>Whether enabled</summary>
     public bool Enabled = true;
     
-    /// <summary>Source mod's package ID (null means RimTalk built-in or user created)</summary>
-    public string SourceModId;
+    /// <summary>
+    /// Source mod's package ID (null means RimTalk built-in or user created).
+    /// Setting this will automatically generate a deterministic ID based on SourceModId and Name.
+    /// </summary>
+    public string SourceModId
+    {
+        get => _sourceModId;
+        set
+        {
+            _sourceModId = value;
+            UpdateIdIfModEntry();
+        }
+    }
+    
+    /// <summary>
+    /// Updates the ID to be deterministic if this is a mod entry.
+    /// </summary>
+    private void UpdateIdIfModEntry()
+    {
+        if (!string.IsNullOrEmpty(_sourceModId) && !string.IsNullOrEmpty(_name))
+        {
+            _id = GenerateDeterministicId(_sourceModId, _name);
+        }
+    }
+    
+    /// <summary>
+    /// Generates a deterministic ID from modId and name.
+    /// </summary>
+    public static string GenerateDeterministicId(string modId, string name)
+    {
+        var sanitizedModId = SanitizeForId(modId);
+        var sanitizedName = SanitizeForId(name);
+        return $"mod_{sanitizedModId}_{sanitizedName}";
+    }
+    
+    private static string SanitizeForId(string input)
+    {
+        if (string.IsNullOrEmpty(input)) return "unknown";
+        return Regex.Replace(input.ToLowerInvariant(), @"[^a-z0-9]", "");
+    }
 
     public PromptEntry()
     {
@@ -42,7 +99,7 @@ public class PromptEntry : IExposable
 
     public PromptEntry(string name, string content, PromptRole role = PromptRole.System, int inChatDepth = 0)
     {
-        Name = name;
+        _name = name;
         Content = content;
         Role = role;
         InChatDepth = inChatDepth;
@@ -50,18 +107,18 @@ public class PromptEntry : IExposable
 
     public void ExposeData()
     {
-        Scribe_Values.Look(ref Id, "id", Guid.NewGuid().ToString());
-        Scribe_Values.Look(ref Name, "name", "New Prompt");
+        Scribe_Values.Look(ref _id, "id", Guid.NewGuid().ToString());
+        Scribe_Values.Look(ref _name, "name", "New Prompt");
         Scribe_Values.Look(ref Content, "content", "");
         Scribe_Values.Look(ref Role, "role", PromptRole.System);
         Scribe_Values.Look(ref Position, "position", PromptPosition.Relative);
         Scribe_Values.Look(ref InChatDepth, "inChatDepth", 0);
         Scribe_Values.Look(ref Enabled, "enabled", true);
-        Scribe_Values.Look(ref SourceModId, "sourceModId");
+        Scribe_Values.Look(ref _sourceModId, "sourceModId");
         
         // Ensure Id is not empty
-        if (string.IsNullOrEmpty(Id))
-            Id = Guid.NewGuid().ToString();
+        if (string.IsNullOrEmpty(_id))
+            _id = Guid.NewGuid().ToString();
     }
 
     public PromptEntry Clone()
