@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -126,31 +127,15 @@ public static class PromptService
         ContextBuilder.BuildDialogueType(sb, talkRequest, pawns, shortName, mainPawn);
         sb.Append($"\n{status}");
 
-        // Time and weather (apply environment hooks)
+        // Time and weather (apply environment hooks with injections)
         if (contextSettings.IncludeTime)
-        {
-            var value = ContextHookRegistry.ApplyEnvironmentHooks(
-                ContextCategories.Environment.Time, mainPawn.Map, gameData.Hour12HString);
-            sb.Append($"\nTime: {value}");
-        }
+            sb.Append($"\nTime: {ApplyEnvironmentWithHook(mainPawn.Map, ContextCategories.Environment.Time, gameData.Hour12HString)}");
         if (contextSettings.IncludeDate)
-        {
-            var value = ContextHookRegistry.ApplyEnvironmentHooks(
-                ContextCategories.Environment.Date, mainPawn.Map, gameData.DateString);
-            sb.Append($"\nToday: {value}");
-        }
+            sb.Append($"\nToday: {ApplyEnvironmentWithHook(mainPawn.Map, ContextCategories.Environment.Date, gameData.DateString)}");
         if (contextSettings.IncludeSeason)
-        {
-            var value = ContextHookRegistry.ApplyEnvironmentHooks(
-                ContextCategories.Environment.Season, mainPawn.Map, gameData.SeasonString);
-            sb.Append($"\nSeason: {value}");
-        }
+            sb.Append($"\nSeason: {ApplyEnvironmentWithHook(mainPawn.Map, ContextCategories.Environment.Season, gameData.SeasonString)}");
         if (contextSettings.IncludeWeather)
-        {
-            var value = ContextHookRegistry.ApplyEnvironmentHooks(
-                ContextCategories.Environment.Weather, mainPawn.Map, gameData.WeatherString);
-            sb.Append($"\nWeather: {value}");
-        }
+            sb.Append($"\nWeather: {ApplyEnvironmentWithHook(mainPawn.Map, ContextCategories.Environment.Weather, gameData.WeatherString)}");
 
         // Location
         ContextBuilder.BuildLocationContext(sb, contextSettings, mainPawn);
@@ -159,12 +144,7 @@ public static class PromptService
         ContextBuilder.BuildEnvironmentContext(sb, contextSettings, mainPawn);
 
         if (contextSettings.IncludeWealth)
-        {
-            var value = ContextHookRegistry.ApplyEnvironmentHooks(
-                ContextCategories.Environment.Wealth, mainPawn.Map,
-                Describer.Wealth(mainPawn.Map.wealthWatcher.WealthTotal));
-            sb.Append($"\nWealth: {value}");
-        }
+            sb.Append($"\nWealth: {ApplyEnvironmentWithHook(mainPawn.Map, ContextCategories.Environment.Wealth, Describer.Wealth(mainPawn.Map.wealthWatcher.WealthTotal))}");
 
         if (AIService.IsFirstInstruction())
             sb.Append($"\nin {Constant.Lang}");
@@ -182,12 +162,50 @@ public static class PromptService
     }
     
     /// <summary>
-    /// Appends context text with hook application.
+    /// Appends pawn context text with hook and injection application.
     /// </summary>
     private static void AppendWithHook(StringBuilder sb, Pawn pawn, ContextCategory category, string text)
     {
-        if (string.IsNullOrEmpty(text)) return;
-        var hooked = ContextHookRegistry.ApplyPawnHooks(category, pawn, text);
-        sb.AppendLine(hooked);
+        // Render Before injections
+        if (ContextHookRegistry.HasAnyInjections)
+            foreach (var (_, pos, _, provider) in ContextHookRegistry.GetInjectedSectionsAt(category))
+                if (pos == ContextHookRegistry.InjectPosition.Before && provider is Func<Pawn, string> p)
+                    AppendIfNotEmpty(sb, p(pawn));
+        
+        // Apply hooks (always call to allow Override hooks on empty categories)
+        var hooked = ContextHookRegistry.ApplyPawnHooks(category, pawn, text ?? "");
+        AppendIfNotEmpty(sb, hooked);
+        
+        // Render After injections
+        if (ContextHookRegistry.HasAnyInjections)
+            foreach (var (_, pos, _, provider) in ContextHookRegistry.GetInjectedSectionsAt(category))
+                if (pos == ContextHookRegistry.InjectPosition.After && provider is Func<Pawn, string> p)
+                    AppendIfNotEmpty(sb, p(pawn));
+    }
+    
+    /// <summary>
+    /// Appends environment context text with hook and injection application.
+    /// </summary>
+    private static string ApplyEnvironmentWithHook(Map map, ContextCategory category, string text)
+    {
+        var sb = new StringBuilder();
+        
+        // Render Before injections
+        if (ContextHookRegistry.HasAnyInjections)
+            foreach (var (_, pos, _, provider) in ContextHookRegistry.GetInjectedSectionsAt(category))
+                if (pos == ContextHookRegistry.InjectPosition.Before && provider is Func<Map, string> p)
+                    AppendIfNotEmpty(sb, p(map));
+        
+        // Apply hooks
+        var hooked = ContextHookRegistry.ApplyEnvironmentHooks(category, map, text ?? "");
+        AppendIfNotEmpty(sb, hooked);
+        
+        // Render After injections
+        if (ContextHookRegistry.HasAnyInjections)
+            foreach (var (_, pos, _, provider) in ContextHookRegistry.GetInjectedSectionsAt(category))
+                if (pos == ContextHookRegistry.InjectPosition.After && provider is Func<Map, string> p)
+                    AppendIfNotEmpty(sb, p(map));
+        
+        return sb.ToString().TrimEnd();
     }
 }
