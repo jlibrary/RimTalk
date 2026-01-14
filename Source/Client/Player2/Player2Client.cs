@@ -65,11 +65,11 @@ public class Player2Client : IAIClient
         }
     }
 
-    public async Task<Payload> GetChatCompletionAsync(string instruction, List<(Role role, string message)> messages)
+    public async Task<Payload> GetChatCompletionAsync(List<(Role role, string message)> prefixMessages, List<(Role role, string message)> messages)
     {
         await EnsureHealthCheck();
 
-        string jsonContent = BuildRequestJson(instruction, messages, stream: false);
+        string jsonContent = BuildRequestJson(prefixMessages, messages, stream: false);
         string responseText = await SendRequestAsync($"{CurrentApiUrl}/v1/chat/completions", jsonContent,
             new DownloadHandlerBuffer());
 
@@ -80,12 +80,12 @@ public class Player2Client : IAIClient
         return new Payload(CurrentApiUrl, null, jsonContent, content, tokens);
     }
 
-    public async Task<Payload> GetStreamingChatCompletionAsync<T>(string instruction,
+    public async Task<Payload> GetStreamingChatCompletionAsync<T>(List<(Role role, string message)> prefixMessages,
         List<(Role role, string message)> messages, Action<T> onResponseParsed) where T : class
     {
         await EnsureHealthCheck();
 
-        string jsonContent = BuildRequestJson(instruction, messages, stream: true);
+        string jsonContent = BuildRequestJson(prefixMessages, messages, stream: true);
         var jsonParser = new JsonStreamParser<T>();
 
         var streamHandler = new Player2StreamHandler(chunk =>
@@ -100,15 +100,24 @@ public class Player2Client : IAIClient
             streamHandler.GetTotalTokens());
     }
 
-    private string BuildRequestJson(string instruction, List<(Role role, string message)> messages, bool stream)
+    private string BuildRequestJson(List<(Role role, string message)> prefixMessages, List<(Role role, string message)> messages, bool stream)
     {
         var allMessages = new List<Message>();
-        if (!string.IsNullOrEmpty(instruction))
-            allMessages.Add(new Message { Role = "system", Content = instruction });
+        
+        // Add prefix messages with their original roles
+        if (prefixMessages != null)
+        {
+            allMessages.AddRange(prefixMessages.Select(m => new Message
+            {
+                Role = RoleToString(m.role),
+                Content = m.message
+            }));
+        }
 
+        // Add conversation messages
         allMessages.AddRange(messages.Select(m => new Message
         {
-            Role = m.role == Role.User ? "user" : "assistant",
+            Role = RoleToString(m.role),
             Content = m.message
         }));
 
@@ -117,6 +126,17 @@ public class Player2Client : IAIClient
             Messages = allMessages,
             Stream = stream
         });
+    }
+
+    private static string RoleToString(Role role)
+    {
+        return role switch
+        {
+            Role.System => "system",
+            Role.User => "user",
+            Role.AI => "assistant",
+            _ => "user"
+        };
     }
 
     private async Task<string> SendRequestAsync(string url, string jsonContent, DownloadHandler downloadHandler)

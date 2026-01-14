@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using RimTalk.Data;
+using RimTalk.Prompt;
 using RimTalk.Source.Data;
 using RimTalk.UI;
 using RimTalk.Util;
@@ -77,7 +78,22 @@ public static class TalkService
 
         // Build the context and decorate the prompt with current status information.
         talkRequest.Context = PromptService.BuildContext(pawns);
+        // Get dialogue type BEFORE DecoratePrompt modifies talkRequest.Prompt
+        string dialogueTypeString = MustacheContextProvider.GetDialogueTypeString(talkRequest, pawns);
         PromptService.DecoratePrompt(talkRequest, pawns, status);
+        
+        // Build prompt messages using PromptManager (encapsulates all Mustache variable collection)
+        talkRequest.PromptMessages = PromptManager.Instance.PreparePromptForRequest(
+            talkRequest, pawns, status, dialogueTypeString);
+        
+        // Fallback to legacy instruction if new system returns empty
+        if (talkRequest.PromptMessages == null || talkRequest.PromptMessages.Count == 0)
+        {
+            talkRequest.PromptMessages = new List<(Role role, string content)>
+            {
+                (Role.System, $"{Constant.Instruction}\n{talkRequest.Context}")
+            };
+        }
         
         // Offload the AI request and processing to a background thread to avoid blocking the game's main thread.
         Task.Run(() => GenerateAndProcessTalkAsync(talkRequest));
@@ -100,11 +116,7 @@ public static class TalkService
             var receivedResponses = new List<TalkResponse>();
 
             // Call the streaming chat service. The callback is executed as each piece of dialogue is parsed.
-            await AIService.ChatStreaming(
-                talkRequest,
-                Constant.Instruction, 
-                TalkHistory.GetMessageHistory(initiator),
-                talkResponse =>
+            await AIService.ChatStreaming(talkRequest, talkResponse =>
                 {
                     Logger.Debug($"Streamed: {talkResponse}");
 

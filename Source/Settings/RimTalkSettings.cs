@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using RimTalk.Data;
+using RimTalk.Prompt;
 using UnityEngine;
 using Verse;
 
@@ -19,7 +20,11 @@ public class RimTalkSettings : ModSettings
     public const int ReplyInterval = 4;
     public bool ProcessNonRimTalkInteractions = true;
     public bool AllowSimultaneousConversations = false;
-    public string CustomInstruction = "";
+    public string CustomInstruction = ""; // Legacy - will be migrated to PromptManager
+    
+    // New Prompt System
+    public PromptManager PromptSystem = new();
+    public bool UseAdvancedPromptMode = false;  // Default to Simple Mode
     public Dictionary<string, bool> EnabledArchivableTypes = new();
     public bool DisplayTalkWhenDrafted = true;
     public bool AllowMonologue = true;
@@ -176,6 +181,10 @@ public class RimTalkSettings : ModSettings
         Scribe_Values.Look(ref ApplyMoodAndSocialEffects, "applyMoodAndSocialEffects", false);
         
         Scribe_Deep.Look(ref Context, "context");
+        
+        // New Prompt System
+        Scribe_Deep.Look(ref PromptSystem, "promptSystem");
+        Scribe_Values.Look(ref UseAdvancedPromptMode, "useAdvancedPromptMode", false);
 
         // Debug window settings
         Scribe_Values.Look(ref ButtonDisplay, "buttonDisplay", Settings.ButtonDisplayMode.Toggle, true);
@@ -229,6 +238,20 @@ public class RimTalkSettings : ModSettings
 
         if (Context == null)
             Context = new ContextSettings();
+        
+        // Initialize PromptSystem if null
+        if (PromptSystem == null)
+            PromptSystem = new PromptManager();
+        
+        // Set the singleton instance
+        PromptManager.SetInstance(PromptSystem);
+        
+        // Migrate legacy CustomInstruction to new system
+        if (Scribe.mode == LoadSaveMode.PostLoadInit && !string.IsNullOrWhiteSpace(CustomInstruction))
+        {
+            PromptSystem.MigrateLegacyInstruction(CustomInstruction);
+            CustomInstruction = ""; // Clear after migration
+        }
             
         // Ensure we have at least one cloud config
         if (CloudConfigs.Count == 0)

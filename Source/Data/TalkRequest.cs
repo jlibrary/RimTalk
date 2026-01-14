@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using RimTalk.Patch;
 using RimTalk.Source.Data;
 using RimTalk.Util;
@@ -24,8 +25,23 @@ public class TalkRequest(string prompt, Pawn initiator, Pawn recipient = null, T
     public int CreatedTick { get; set; } = GenTicks.TicksGame;
     public DateTime CreatedTime { get; set; } = DateTime.Now; 
     public int FinishedTick { get; set; } = -1; 
-    public RequestStatus Status { get; set; } = RequestStatus.Pending; 
+    public RequestStatus Status { get; set; } = RequestStatus.Pending;
     public bool IsMonologue;
+    
+    /// <summary>
+    /// All pawns participating in the dialogue (filled in sync layer)
+    /// </summary>
+    public List<Pawn> Participants { get; set; }
+    
+    /// <summary>
+    /// Pre-built message list (built by PromptManager in sync layer)
+    /// </summary>
+    public List<(Role role, string content)> PromptMessages { get; set; }
+
+    /// <summary>
+    /// Pre-built prompt segments (built by PromptManager in sync layer)
+    /// </summary>
+    public List<PromptMessageSegment> PromptMessageSegments { get; set; }
 
     public bool IsExpired()
     {

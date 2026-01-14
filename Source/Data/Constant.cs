@@ -40,6 +40,7 @@ public static class Constant
                                            """;
 
     // Get the current instruction from settings or fallback to default, always append JSON instruction
+    // NOTE: This is now primarily used as a fallback. The new PromptManager system is preferred.
     public static string Instruction
     {
         get
@@ -51,6 +52,12 @@ public static class Constant
         
             return baseInstruction + "\n" + JsonInstruction + (settings.ApplyMoodAndSocialEffects ? "\n" + SocialInstruction : "");
         }
+    }
+    
+    // JSON instruction for use by PromptManager
+    public static string GetJsonInstruction(bool includeSocialEffects)
+    {
+        return JsonInstruction + (includeSocialEffects ? "\n" + SocialInstruction : "");
     }
 
     public static string PersonaGenInstruction =>
