@@ -283,6 +283,7 @@ namespace RimTalk
             rightListing.CheckboxLabeled("RimTalk.Settings.IncludeCleanliness".Translate(), ref context.IncludeCleanliness);
             rightListing.CheckboxLabeled("RimTalk.Settings.IncludeSurroundings".Translate(), ref context.IncludeSurroundings);
             rightListing.CheckboxLabeled("RimTalk.Settings.IncludeWealth".Translate(), ref context.IncludeWealth);
+            rightListing.CheckboxLabeled("RimTalk.Settings.IncludeRoster".Translate(), ref context.IncludeRoster, "RimTalk.Settings.IncludeRoster.Tooltip".Translate());
 
             rightListing.End();
 

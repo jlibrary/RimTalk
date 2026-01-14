@@ -23,6 +23,16 @@ public static class PromptService
     public static string BuildContext(List<Pawn> pawns)
     {
         var context = new StringBuilder();
+
+        if (Settings.Get().Context.IncludeRoster)
+        {
+            var roster = ContextHelper.GetColonistRoster();
+            if (!string.IsNullOrEmpty(roster))
+            {
+                context.AppendLine(roster);
+                context.AppendLine(); 
+            }
+        }
     
         for (int i = 0; i < pawns.Count; i++)
         {

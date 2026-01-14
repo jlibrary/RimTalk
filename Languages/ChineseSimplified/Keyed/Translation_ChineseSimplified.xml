@@ -482,4 +482,10 @@
     <RimTalk.MustacheVar.setvar>设置运行时变量</RimTalk.MustacheVar.setvar>
     <RimTalk.MustacheVar.getvar>获取运行时变量</RimTalk.MustacheVar.getvar>
     <RimTalk.MustacheVar.getvar.default>获取变量（带默认值）</RimTalk.MustacheVar.getvar.default>
+
+    <!-- Colony Roster -->
+    <RimTalk.Settings.IncludeRoster>包含殖民地成员名单</RimTalk.Settings.IncludeRoster>
+    <RimTalk.Settings.IncludeRoster.Tooltip>在上下文中包含按地图分组的所有殖民者名单。</RimTalk.Settings.IncludeRoster.Tooltip>
+    <RimTalk.Context.ColonyRoster>殖民地成员名单：</RimTalk.Context.ColonyRoster>
+    <RimTalk.Context.InACaravan>远行队中：</RimTalk.Context.InACaravan>
 </LanguageData>

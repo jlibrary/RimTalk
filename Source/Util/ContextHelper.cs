@@ -329,4 +329,53 @@ DONE:
         var aggs = CollectNearbyContext(pawn, distance, maxPerKind, maxCellsToScan, maxThingsTotal, maxItemThings);
         return FormatNearbyContext(aggs);
     }
+
+    public static string GetColonistRoster()
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine("RimTalk.Context.ColonyRoster".Translate());
+
+        var colonists = PawnsFinder.AllMapsCaravansAndTravellingTransporters_Alive_FreeColonists;
+        
+        if (colonists == null || !colonists.Any())
+        {
+            return "";
+        }
+
+        var groupedByMap = colonists.GroupBy(p => p.Map);
+
+        foreach (var group in groupedByMap)
+        {
+            if (group.Key != null)
+            {
+                sb.AppendLine($"  {group.Key.Parent.Label}:");
+            }
+            else
+            {
+                sb.AppendLine($"  {"RimTalk.Context.InACaravan".Translate()}:");
+            }
+
+            foreach (var pawn in group)
+            {
+                string name;
+                var nameTriple = pawn.Name as NameTriple;
+                if (nameTriple != null && (nameTriple.Nick == nameTriple.First || nameTriple.Nick == nameTriple.Last))
+                {
+                    name = nameTriple.ToStringFull;
+                }
+                else
+                {
+                    name = pawn.Name.ToString();
+                }
+
+                string gender = pawn.gender.GetLabel();
+                int bioAge = pawn.ageTracker.AgeBiologicalYears;
+                int chronoAge = pawn.ageTracker.AgeChronologicalYears;
+                string xenotype = pawn.genes?.XenotypeLabel ?? "Human";
+
+                sb.AppendLine($"    {name}: {gender}, biological age {bioAge}, chronological age {chronoAge}, {xenotype}");
+            }
+        }
+        return sb.ToString();
+    }
 }

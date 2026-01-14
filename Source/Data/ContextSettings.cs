@@ -33,6 +33,7 @@ namespace RimTalk.Data
         public bool IncludeCleanliness = false;
         public bool IncludeSurroundings = false;
         public bool IncludeWealth = false;
+        public bool IncludeRoster = true;
 
         public void ExposeData()
         {
@@ -62,6 +63,7 @@ namespace RimTalk.Data
             Scribe_Values.Look(ref IncludeCleanliness, "IncludeCleanliness", false);
             Scribe_Values.Look(ref IncludeSurroundings, "IncludeSurroundings", false);
             Scribe_Values.Look(ref IncludeWealth, "IncludeWealth", false);
+            Scribe_Values.Look(ref IncludeRoster, "IncludeRoster", true);
         }
     }
 }

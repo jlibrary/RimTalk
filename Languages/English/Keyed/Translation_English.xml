@@ -481,4 +481,10 @@ For detailed documentation, see the docs/ folder in the mod directory.</RimTalk.
     <RimTalk.MustacheVar.setvar>Set a runtime variable</RimTalk.MustacheVar.setvar>
     <RimTalk.MustacheVar.getvar>Get a runtime variable</RimTalk.MustacheVar.getvar>
     <RimTalk.MustacheVar.getvar.default>Get variable with default value</RimTalk.MustacheVar.getvar.default>
+
+    <!-- Colony Roster -->
+    <RimTalk.Settings.IncludeRoster>Include Colony Roster</RimTalk.Settings.IncludeRoster>
+    <RimTalk.Settings.IncludeRoster.Tooltip>Includes a roster of all colonists in the context, grouped by map.</RimTalk.Settings.IncludeRoster.Tooltip>
+    <RimTalk.Context.ColonyRoster>Colony Roster:</RimTalk.Context.ColonyRoster>
+    <RimTalk.Context.InACaravan>In a caravan:</RimTalk.Context.InACaravan>
 </LanguageData>
