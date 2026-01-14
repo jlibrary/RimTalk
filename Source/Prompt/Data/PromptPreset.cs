@@ -197,7 +197,6 @@ public class PromptPreset : IExposable
         var entry = Entries[index];
         Entries.RemoveAt(index);
         Entries.Insert(newIndex, entry);
-        // Order is determined by list position, no recalculation needed
     }
 
     public void ExposeData()
@@ -226,10 +225,10 @@ public class PromptPreset : IExposable
         var clone = new PromptPreset
         {
             Id = Guid.NewGuid().ToString(),
-            Name = Name + " (Copy)",
+            Name = Name,
             Description = Description,
             IsActive = false,
-            Entries = new List<PromptEntry>()
+            Entries = []
         };
 
         foreach (var entry in Entries)

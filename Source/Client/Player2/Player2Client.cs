@@ -65,11 +65,14 @@ public class Player2Client : IAIClient
         }
     }
 
-    public async Task<Payload> GetChatCompletionAsync(List<(Role role, string message)> prefixMessages, List<(Role role, string message)> messages)
+    public async Task<Payload> GetChatCompletionAsync(List<(Role role, string message)> prefixMessages, 
+        List<(Role role, string message)> messages, 
+        Action<Payload> onRequestPrepared = null)
     {
         await EnsureHealthCheck();
 
         string jsonContent = BuildRequestJson(prefixMessages, messages, stream: false);
+        onRequestPrepared?.Invoke(new Payload(CurrentApiUrl, null, jsonContent, null, 0));
         string responseText = await SendRequestAsync($"{CurrentApiUrl}/v1/chat/completions", jsonContent,
             new DownloadHandlerBuffer());
 
@@ -81,11 +84,14 @@ public class Player2Client : IAIClient
     }
 
     public async Task<Payload> GetStreamingChatCompletionAsync<T>(List<(Role role, string message)> prefixMessages,
-        List<(Role role, string message)> messages, Action<T> onResponseParsed) where T : class
+        List<(Role role, string message)> messages, 
+        Action<T> onResponseParsed,
+        Action<Payload> onRequestPrepared = null) where T : class
     {
         await EnsureHealthCheck();
 
         string jsonContent = BuildRequestJson(prefixMessages, messages, stream: true);
+        onRequestPrepared?.Invoke(new Payload(CurrentApiUrl, null, jsonContent, null, 0));
         var jsonParser = new JsonStreamParser<T>();
 
         var streamHandler = new Player2StreamHandler(chunk =>

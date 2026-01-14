@@ -2,12 +2,12 @@ namespace RimTalk.Client;
 
 public class Payload(string url, string model, string request, string response, int tokenCount, string errorMessage = null)
 {
-    public readonly string URL = url;
-    public readonly string Model = model;
-    public readonly string Request = request;
-    public readonly string Response = response;
-    public readonly int TokenCount = tokenCount;
-    public string ErrorMessage = errorMessage;
+    public string URL { get; set; } = url;
+    public string Model { get; set; } = model;
+    public string Request { get; set; } = request;
+    public string Response { get; set; } = response;
+    public int TokenCount { get; set; } = tokenCount;
+    public string ErrorMessage { get; set; } = errorMessage;
     
     public override string ToString()
     {

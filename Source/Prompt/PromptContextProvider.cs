@@ -3,7 +3,6 @@ using System.Linq;
 using System.Text;
 using RimTalk.Data;
 using RimTalk.Service;
-using RimTalk.Source.Data;
 using RimTalk.Util;
 using RimWorld;
 using UnityEngine;
@@ -15,7 +14,7 @@ namespace RimTalk.Prompt;
 /// Helper methods for extracting context information from pawns for Mustache templates.
 /// These methods are used by MustacheParser to provide data for template variables.
 /// </summary>
-public static class MustacheContextProvider
+public static class PromptContextProvider
 {
     /// <summary>
     /// Generates a description string of the dialogue type.

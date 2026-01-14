@@ -87,11 +87,11 @@ public static class RimTalkPromptAPI
     
     /// <summary>
     /// Registers a new context variable (e.g., "memory" for {{memory}}).
-    /// Context variables have access to the full MustacheContext including all pawns, dialogue info, etc.
+    /// Context variables have access to the full PromptContext including all pawns, dialogue info, etc.
     /// </summary>
     /// <param name="modId">The mod's package ID</param>
     /// <param name="variableName">Variable name (e.g., "memory")</param>
-    /// <param name="provider">Function that takes MustacheContext and returns the variable value</param>
+    /// <param name="provider">Function that takes PromptContext and returns the variable value</param>
     /// <param name="description">Description for UI display (optional)</param>
     /// <param name="priority">Priority for ordering (lower = first, default 100)</param>
     /// <example>
@@ -106,7 +106,7 @@ public static class RimTalkPromptAPI
     public static void RegisterContextVariable(
         string modId,
         string variableName,
-        Func<MustacheContext, string> provider,
+        Func<PromptContext, string> provider,
         string description = null,
         int priority = 100)
     {

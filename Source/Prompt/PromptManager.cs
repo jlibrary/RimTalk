@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using RimTalk.Data;
 using RimTalk.Service;
-using RimTalk.Source.Data;
 using RimTalk.Util;
 using Verse;
 
@@ -30,6 +30,9 @@ public class PromptManager : IExposable
             return _instance;
         }
     }
+
+    /// <summary>Stores the last used context for UI preview purposes.</summary>
+    public static PromptContext LastContext { get; private set; }
 
     /// <summary>All presets</summary>
     public List<PromptPreset> Presets = new();
@@ -95,88 +98,51 @@ public class PromptManager : IExposable
         if (source == null) return null;
 
         var clone = source.Clone();
+        
+        string baseName = source.Name;
+        // Check if name ends with (n) and extract base name if so
+        var match = Regex.Match(baseName, @"^(.*?)\s*\((\d+)\)$");
+        if (match.Success)
+        {
+            baseName = match.Groups[1].Value.Trim();
+        }
+
+        clone.Name = GetUniqueName(baseName);
         Presets.Add(clone);
         return clone;
     }
 
-    /// <summary>
-    /// Builds the final message list for AI client use.
-    /// Chat history is obtained from context.ChatHistory and inserted at the {{chat.history}} marker.
-    /// Consecutive messages with the same role are automatically merged for API compatibility.
-    /// </summary>
-    /// <param name="context">Parse context (containing ChatHistory)</param>
-    /// <returns>Message list (role, content)</returns>
-    public List<(PromptRole role, string content)> BuildPromptMessages(MustacheContext context)
+    /// <summary>Creates a new preset from the default template</summary>
+    public PromptPreset CreateNewPreset(string baseName)
     {
-        return BuildPromptMessagesInternal(context, null);
+        var preset = CreateDefaultPreset();
+        preset.IsActive = false; // New presets shouldn't auto-activate
+        preset.Name = GetUniqueName(baseName);
+        Presets.Add(preset);
+        return preset;
     }
 
-    private List<(PromptRole role, string content)> BuildPromptMessagesInternal(
-        MustacheContext context,
-        List<PromptMessageSegment> segments)
+    /// <summary>
+    /// Finds a unique name for a preset by appending a suffix if necessary.
+    /// </summary>
+    /// <param name="baseName">The base name to start with</param>
+    /// <param name="excludeId">Optional ID to exclude from uniqueness check (e.g. if checking for an existing preset)</param>
+    /// <returns>A unique preset name</returns>
+    public string GetUniqueName(string baseName, string excludeId = null)
     {
-        var result = new List<(PromptRole role, string content)>();
-        var preset = GetActivePreset();
-        if (preset == null)
+        if (!Presets.Any(p => p.Name == baseName && p.Id != excludeId))
         {
-            Logger.Warning("No active preset found");
-            return result;
+            return baseName;
         }
 
-        // 1. Process Relative position entries (ordered by list position)
-        foreach (var entry in preset.GetRelativeEntries())
+        int i = 1;
+        string newName;
+        do
         {
-            // Check if this entry is the chat history marker
-            if (entry.Content.Trim() == "{{chat.history}}")
-            {
-                // Insert chat history at this position
-                if (context.ChatHistory != null && context.ChatHistory.Count > 0)
-                {
-                    string entryName = string.IsNullOrWhiteSpace(entry.Name) ? "Chat History" : entry.Name;
-                    foreach (var (role, message) in context.ChatHistory)
-                    {
-                        // Map all roles correctly: System -> System, User -> User, AI -> Assistant
-                        var promptRole = role switch
-                        {
-                            Role.System => PromptRole.System,
-                            Role.User => PromptRole.User,
-                            Role.AI => PromptRole.Assistant,
-                            _ => PromptRole.System
-                        };
-                        result.Add((promptRole, message));
-                        segments?.Add(new PromptMessageSegment(entry.Id, entryName, ConvertToRole(promptRole), message));
-                    }
-                }
-                continue; // Don't add the marker itself as a message
-            }
+            newName = $"{baseName} ({i++})";
+        } while (Presets.Any(p => p.Name == newName && p.Id != excludeId));
 
-            var content = MustacheParser.Parse(entry.Content, context);
-            if (!string.IsNullOrWhiteSpace(content))
-            {
-                result.Add((entry.Role, content));
-                string entryName = string.IsNullOrWhiteSpace(entry.Name) ? "Entry" : entry.Name;
-                segments?.Add(new PromptMessageSegment(entry.Id, entryName, ConvertToRole(entry.Role), content));
-            }
-        }
-
-        // 2. Process InChat position entries (insert at specified depth)
-        foreach (var entry in preset.GetInChatEntries())
-        {
-            var content = MustacheParser.Parse(entry.Content, context);
-            if (!string.IsNullOrWhiteSpace(content))
-            {
-                // Calculate insertion position (counting from end of result)
-                var insertIndex = Math.Max(0, result.Count - entry.InChatDepth);
-                result.Insert(insertIndex, (entry.Role, content));
-                string entryName = string.IsNullOrWhiteSpace(entry.Name) ? "Entry" : entry.Name;
-                segments?.Insert(insertIndex, new PromptMessageSegment(entry.Id, entryName, ConvertToRole(entry.Role),
-                    content));
-            }
-        }
-
-        // 3. Merge consecutive messages with the same role for API compatibility
-        // This ensures compatibility with APIs like Gemini that require alternating roles
-        return MergeConsecutiveRoles(result);
+        return newName;
     }
 
     /// <summary>
@@ -222,54 +188,6 @@ public class PromptManager : IExposable
     }
 
     /// <summary>
-    /// Builds prompt messages and converts to Role format for direct use by AIService.
-    /// </summary>
-    /// <param name="context">Parse context</param>
-    /// <returns>Message list in (Role, content) format</returns>
-    public List<(Role role, string content)> BuildPromptMessagesAsRoles(MustacheContext context)
-    {
-        var promptMessages = BuildPromptMessagesInternal(context, null);
-        return promptMessages
-            .Select(m => (ConvertToRole(m.role), m.content))
-            .ToList();
-    }
-
-    public List<(Role role, string content)> BuildPromptMessagesAsRoles(
-        MustacheContext context,
-        List<PromptMessageSegment> segments)
-    {
-        var promptMessages = BuildPromptMessagesInternal(context, segments);
-        return promptMessages
-            .Select(m => (ConvertToRole(m.role), m.content))
-            .ToList();
-    }
-
-    /// <summary>
-    /// Builds system instruction string (for legacy API compatibility).
-    /// </summary>
-    public string BuildSystemInstruction(MustacheContext context)
-    {
-        var preset = GetActivePreset();
-        if (preset == null) return "";
-
-        var systemParts = new List<string>();
-        
-        foreach (var entry in preset.GetRelativeEntries())
-        {
-            if (entry.Role == PromptRole.System)
-            {
-                var content = MustacheParser.Parse(entry.Content, context);
-                if (!string.IsNullOrWhiteSpace(content))
-                {
-                    systemParts.Add(content);
-                }
-            }
-        }
-
-        return string.Join("\n\n", systemParts);
-    }
-
-    /// <summary>
     /// Initializes default presets.
     /// Should only be called after game systems are ready (language, defs, etc.)
     /// </summary>
@@ -305,7 +223,7 @@ public class PromptManager : IExposable
             IsActive = true,
             Entries = new List<PromptEntry>
             {
-                // 1. Base Instruction - reuses Constant.DefaultInstruction
+                // 1. System Section
                 new()
                 {
                     Name = "Base Instruction",
@@ -313,7 +231,6 @@ public class PromptManager : IExposable
                     Position = PromptPosition.Relative,
                     Content = Constant.DefaultInstruction
                 },
-                // 2. JSON Format (dynamic based on ApplyMoodAndSocialEffects setting)
                 new()
                 {
                     Name = "JSON Format",
@@ -321,7 +238,6 @@ public class PromptManager : IExposable
                     Position = PromptPosition.Relative,
                     Content = "{{json.format}}"
                 },
-                // 3. Pawn Profiles
                 new()
                 {
                     Name = "Pawn Profiles",
@@ -329,21 +245,22 @@ public class PromptManager : IExposable
                     Position = PromptPosition.Relative,
                     Content = "{{context}}"
                 },
-                // 4. Dialogue Prompt
+                // 2. History Section
+                new()
+                {
+                    Name = "Chat History",
+                    Role = PromptRole.User, // Visual placeholder
+                    Position = PromptPosition.Relative,
+                    IsMainChatHistory = true,
+                    Content = "{{chat.history}}"  // Special marker - history will be inserted here
+                },
+                // 3. Prompt Section
                 new()
                 {
                     Name = "Dialogue Prompt",
                     Role = PromptRole.User,
                     Position = PromptPosition.Relative,
-                    Content = "{{dialogue}}"
-                },
-                // 5. Chat History
-                new()
-                {
-                    Name = "Chat History",
-                    Role = PromptRole.System,
-                    Position = PromptPosition.Relative,
-                    Content = "{{chat.history}}"  // Special marker - history will be inserted here
+                    Content = "{{prompt}}"
                 }
             }
         };
@@ -394,6 +311,23 @@ public class PromptManager : IExposable
         // Ensure collections are not null
         Presets ??= new List<PromptPreset>();
         VariableStore ??= new VariableStore();
+
+        // Migration: Fix legacy chat history markers
+        if (Scribe.mode == LoadSaveMode.PostLoadInit || Scribe.mode == LoadSaveMode.LoadingVars)
+        {
+            foreach (var preset in Presets)
+            {
+                // If no entry is marked as history, but we have one with the legacy content tag
+                if (!preset.Entries.Any(e => e.IsMainChatHistory))
+                {
+                    var legacyEntry = preset.Entries.FirstOrDefault(e => e.Content.Trim() == "{{chat.history}}");
+                    if (legacyEntry != null)
+                    {
+                        legacyEntry.IsMainChatHistory = true;
+                    }
+                }
+            }
+        }
         
         // Don't initialize defaults here - game systems may not be ready
         // Defaults will be initialized lazily when needed
@@ -408,32 +342,110 @@ public class PromptManager : IExposable
     }
 
     /// <summary>
-    /// Prepares prompt messages for a talk request.
-    /// This method collects all Mustache context variables and builds the prompt messages.
-    /// Must be called AFTER DecoratePrompt has been called on the talkRequest.
+    /// The primary entry point for building AI messages.
+    /// Handles Simple vs Advanced mode switching and provides robust fallbacks.
     /// </summary>
-    /// <param name="talkRequest">The talk request (after DecoratePrompt)</param>
-    /// <param name="pawns">List of participating pawns</param>
-    /// <param name="status">Pawn status string</param>
-    /// <param name="dialogueTypeString">Pre-computed dialogue type string (from ContextBuilder.GetDialogueTypeString, must be called before DecoratePrompt)</param>
-    /// <returns>List of prompt messages with roles, or null if no active preset</returns>
-    public List<(Role role, string content)> PreparePromptForRequest(
-        TalkRequest talkRequest,
-        List<Pawn> pawns,
-        string status,
-        string dialogueTypeString)
+    public List<(Role role, string content)> BuildMessages(TalkRequest talkRequest, List<Pawn> pawns, string status)
     {
-        if (GetActivePreset() == null) return null;
+        var settings = Settings.Get();
         
-        // Build MustacheContext with all necessary data
-        var mustacheContext = MustacheContext.FromTalkRequest(talkRequest, pawns);
-        mustacheContext.DialogueType = dialogueTypeString;
-        mustacheContext.DialogueStatus = status;
-        mustacheContext.DialoguePrompt = talkRequest.Prompt;  // This is now the decorated prompt
-        
+        // 1. Prepare shared context data
+        string dialogueType = PromptContextProvider.GetDialogueTypeString(talkRequest, pawns);
+        talkRequest.Context = PromptService.BuildContext(pawns);
+        PromptService.DecoratePrompt(talkRequest, pawns, status);
+
+        // 2. Build Context Object
+        var context = PromptContext.FromTalkRequest(talkRequest, pawns);
+        context.DialogueType = dialogueType;
+        context.DialogueStatus = status;
+        context.DialoguePrompt = talkRequest.Prompt;
+        LastContext = context;
+
+        // 3. Select Preset (Active for Advanced, Default for Simple)
+        var preset = (settings.UseAdvancedPromptMode) ? GetActivePreset() : CreateDefaultPreset();
+        if (preset == null) preset = CreateDefaultPreset();
+
+        // 4. Build and return
         var segments = new List<PromptMessageSegment>();
-        var messages = BuildPromptMessagesAsRoles(mustacheContext, segments);
+        var messages = BuildMessagesFromPreset(preset, context, segments);
+        
         talkRequest.PromptMessageSegments = segments.Count > 0 ? segments : null;
-        return messages.Count > 0 ? messages : null;
+        
+        return messages.Select(m => ((Role)m.role, m.content)).ToList();
+    }
+
+    private List<(PromptRole role, string content)> BuildMessagesFromPreset(
+        PromptPreset preset,
+        PromptContext context,
+        List<PromptMessageSegment> segments)
+    {
+        var result = new List<(PromptRole role, string content)>();
+        int lastHistoryIndex = 0;
+
+        // 1. Process System entries first (Merged)
+        var systemParts = preset.Entries
+            .Where(e => e.Enabled && e.Role == PromptRole.System && e.Position == PromptPosition.Relative)
+            .Select(e => new { e, content = ScribanParser.Render(e.Content, context) })
+            .Where(x => !string.IsNullOrWhiteSpace(x.content))
+            .ToList();
+
+        foreach (var item in systemParts)
+        {
+            segments?.Add(new PromptMessageSegment(item.e.Id, item.e.Name, Role.System, item.content));
+        }
+
+        if (systemParts.Count > 0)
+        {
+            result.Add((PromptRole.System, string.Join("\n\n", systemParts.Select(x => x.content))));
+        }
+        
+        int systemBoundary = result.Count; // Ensure nothing is inserted above this index
+        lastHistoryIndex = result.Count;
+
+        // 2. Process Relative entries (History/Prompt)
+        foreach (var entry in preset.Entries.Where(e => e.Enabled && e.Role != PromptRole.System && e.Position == PromptPosition.Relative))
+        {
+            if (entry.IsMainChatHistory)
+            {
+                if (context.ChatHistory != null)
+                {
+                    foreach (var (role, message) in context.ChatHistory)
+                    {
+                        var pRole = (PromptRole)role;
+                        result.Add((pRole, message));
+                        segments?.Add(new PromptMessageSegment(entry.Id, entry.Name ?? "History", role, message));
+                    }
+                }
+                lastHistoryIndex = result.Count; // Anchor point set to end of history
+                continue;
+            }
+
+            var content = ScribanParser.Render(entry.Content, context);
+            if (!string.IsNullOrWhiteSpace(content))
+            {
+                result.Add((entry.Role, content));
+                segments?.Add(new PromptMessageSegment(entry.Id, entry.Name ?? "Entry", (Role)entry.Role, content));
+            }
+        }
+
+        // 3. Process InChat entries (Anchored to History)
+        foreach (var entry in preset.GetInChatEntries())
+        {
+            var content = ScribanParser.Render(entry.Content, context);
+            if (!string.IsNullOrWhiteSpace(content))
+            {
+                // Calculate position relative to history end, clamped by system boundary
+                var insertIndex = Math.Max(systemBoundary, lastHistoryIndex - entry.InChatDepth);
+                
+                result.Insert(insertIndex, (entry.Role, content));
+                segments?.Insert(insertIndex, new PromptMessageSegment(entry.Id, entry.Name ?? "Entry", (Role)entry.Role, content));
+                
+                // Shift anchor and boundary forward since we increased the list size
+                if (insertIndex <= lastHistoryIndex) lastHistoryIndex++;
+                systemBoundary++; 
+            }
+        }
+
+        return MergeConsecutiveRoles(result);
     }
 }

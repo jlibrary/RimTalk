@@ -1,550 +1,1007 @@
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
-using RimTalk.API;
-using RimTalk.Data;
 using RimTalk.Prompt;
-using RimTalk.Util;
 using RimWorld;
 using UnityEngine;
 using Verse;
+using Verse.Sound;
 
 namespace RimTalk;
 
 public partial class Settings
 {
-    // Prompt preset UI state (Advanced Mode)
+    private static readonly Color LeftPanelBackground = new(0.05f, 0.05f, 0.05f, 0.55f);
+    private static readonly Color AddGreen = new(0.3f, 0.9f, 0.3f);
+    private static readonly Color DeleteRed = new(1f, 0.4f, 0.4f);
+    private const string DefaultPresetName = "RimTalk Default";
+
+    // Scroll positions
     private Vector2 _presetListScrollPos = Vector2.zero;
     private Vector2 _entryListScrollPos = Vector2.zero;
+    private Vector2 _auxScrollPos = Vector2.zero;
+    private Vector2 _previewScrollPos = Vector2.zero;
+
+    // Selection state
     private string _selectedPresetId;
     private string _selectedEntryId;
-    private int _rightPanelMode; // 0=Entry Editor, 1=Variable Preview
 
-    private void DrawPromptPresetSettings(Listing_Standard listingStandard)
+    // --- Layout State ---
+    // Toggles
+    private bool _showPreview = false;
+    private bool _showSidePanel = false;
+    private int _sidePanelMode = 0; // 0 = Variables, 1 = Help
+
+    // Split Ratios
+    private float _splitRatioVert = 0.5f; // For Top/Bottom (Editor vs Preview)
+    private float _splitRatioHoriz = 0.7f; // For Left/Right (Main vs Side Panel)
+
+    // Dragging State
+    private bool _isDraggingVert = false;
+    private bool _isDraggingHoriz = false;
+    private string _variableSearchQuery = "";
+    private string _depthBuffer = "";
+    private string _depthBufferEntryId = "";
+
+    private enum PresetSection { System, History, Prompt }
+
+    private PresetSection GetSection(PromptEntry entry)
+    {
+        if (entry.IsMainChatHistory || entry.Position == PromptPosition.InChat)
+            return PresetSection.History;
+        if (entry.Role == PromptRole.System && entry.Position == PromptPosition.Relative)
+            return PresetSection.System;
+        return PresetSection.Prompt;
+    }
+
+    public void DrawPromptPresetSettings(Listing_Standard listingStandard, Rect inRect)
     {
         RimTalkSettings settings = Get();
-        
-        // Check which mode to display
         if (settings.UseAdvancedPromptMode)
-        {
-            DrawAdvancedPromptMode(listingStandard, settings);
-        }
+            DrawAdvancedPromptMode(listingStandard, settings, inRect);
         else
-        {
             DrawSimplePromptMode(listingStandard, settings);
-        }
     }
 
-    // Simple Mode: Reuse DrawAIInstructionSettings with just a mode switch button
     private void DrawSimplePromptMode(Listing_Standard listingStandard, RimTalkSettings settings)
     {
-        // Title with mode switch button
-        Rect titleRect = listingStandard.GetRect(30f);
-        Text.Font = GameFont.Medium;
-        Widgets.Label(new Rect(titleRect.x, titleRect.y, titleRect.width - 180f, 30f), "RimTalk.Settings.PromptPresets".Translate());
-        Text.Font = GameFont.Small;
-        
-        // Switch to Advanced button
-        if (Widgets.ButtonText(new Rect(titleRect.xMax - 170f, titleRect.y, 170f, 28f), "RimTalk.Settings.SwitchToAdvanced".Translate()))
-        {
-            Find.WindowStack.Add(Dialog_MessageBox.CreateConfirmation(
-                "RimTalk.Settings.AdvancedModeWarning".Translate(),
-                () => {
-                    settings.UseAdvancedPromptMode = true;
-                }));
-        }
-        
-        listingStandard.Gap(6f);
-        
-        // Reuse the existing AI instruction editor
-        DrawAIInstructionSettings(listingStandard);
+        DrawAIInstructionSettings(listingStandard, showAdvancedSwitch: true);
     }
 
-    // Advanced Mode: Full preset/entry management interface
-    private void DrawAdvancedPromptMode(Listing_Standard listingStandard, RimTalkSettings settings)
+    private void DrawAdvancedPromptMode(Listing_Standard listingStandard, RimTalkSettings settings, Rect containerRect)
     {
         var manager = PromptManager.Instance;
-        
-        // Title with mode switch button
-        Rect titleRect = listingStandard.GetRect(30f);
-        Text.Font = GameFont.Medium;
-        Widgets.Label(new Rect(titleRect.x, titleRect.y, titleRect.width - 180f, 30f), "RimTalk.Settings.PromptPresets".Translate());
-        Text.Font = GameFont.Small;
-        
-        // Switch to Simple button
-        if (Widgets.ButtonText(new Rect(titleRect.xMax - 170f, titleRect.y, 170f, 28f), "RimTalk.Settings.SwitchToSimple".Translate()))
+        if (string.IsNullOrEmpty(_selectedPresetId))
         {
-            settings.UseAdvancedPromptMode = false;
-        }
-        
-        listingStandard.Gap(6f);
-
-        // Main panel area
-        Rect mainRect = listingStandard.GetRect(500f);
-        
-        // Left side: Preset and entry list
-        Rect leftPanel = new Rect(mainRect.x, mainRect.y, 200f, mainRect.height);
-        DrawPresetListPanel(leftPanel, manager);
-
-        // Right side: Display different panels based on mode
-        Rect rightPanel = new Rect(mainRect.x + 210f, mainRect.y, mainRect.width - 210f, mainRect.height);
-        switch (_rightPanelMode)
-        {
-            case 1:
-                DrawVariablePreviewPanel(rightPanel, manager);
-                break;
-            default:
-                DrawEntryEditor(rightPanel, manager);
-                break;
-        }
-
-        listingStandard.Gap(10f);
-
-        // Bottom buttons - 4 buttons
-        Rect buttonRect = listingStandard.GetRect(30f);
-        float buttonWidth = (buttonRect.width - 30f) / 4f;
-        
-        // Mode switch buttons (Entries and Preview only)
-        string[] modeLabels = {
-            "RimTalk.Settings.PromptPreset.ModeEntries".Translate(),
-            "RimTalk.Settings.PromptPreset.ModePreview".Translate()
-        };
-        for (int i = 0; i < 2; i++)
-        {
-            var btnRect = new Rect(buttonRect.x + (buttonWidth + 10f) * i, buttonRect.y, buttonWidth, 30f);
-            GUI.color = _rightPanelMode == i ? Color.green : Color.white;
-            if (Widgets.ButtonText(btnRect, modeLabels[i]))
+            var active = manager.Presets.FirstOrDefault(p => p.IsActive) ??
+                         manager.Presets.FirstOrDefault(p => p.Name == DefaultPresetName) ??
+                         manager.Presets.FirstOrDefault();
+            if (active != null)
             {
-                _rightPanelMode = i;
+                _selectedPresetId = active.Id;
+                _selectedEntryId = active.Entries.FirstOrDefault()?.Id;
             }
-            GUI.color = Color.white;
         }
-        
-        // Help button
-        if (Widgets.ButtonText(new Rect(buttonRect.x + (buttonWidth + 10f) * 2, buttonRect.y, buttonWidth, 30f),
-            "RimTalk.Settings.PromptHelp".Translate()))
-        {
-            Find.WindowStack.Add(new Dialog_MessageBox(
-                "RimTalk.Settings.AdvancedHelpContent".Translate(),
-                "OK".Translate()));
-        }
-        
-        if (Widgets.ButtonText(new Rect(buttonRect.x + (buttonWidth + 10f) * 3, buttonRect.y, buttonWidth, 30f),
-            "RimTalk.Settings.ResetToDefault".Translate()))
-        {
-            Find.WindowStack.Add(Dialog_MessageBox.CreateConfirmation(
-                "RimTalk.Settings.ResetConfirm".Translate(),
-                () => {
-                    manager.ResetToDefaults();
-                    _selectedPresetId = null;
-                    _selectedEntryId = null;
-                }));
-        }
+
+        float currentY = listingStandard.CurHeight;
+        float availableHeight = Mathf.Max(300f, containerRect.height - currentY - 10f);
+
+        Rect mainRect = listingStandard.GetRect(availableHeight);
+
+        float leftPanelWidth = 200f;
+        float panelGap = 4f;
+
+        DrawPresetListPanel(new Rect(mainRect.x, mainRect.y, leftPanelWidth, mainRect.height), manager);
+
+        Rect rightPanelRect = new Rect(mainRect.x + leftPanelWidth + panelGap, mainRect.y,
+            mainRect.width - (leftPanelWidth + panelGap), mainRect.height);
+        DrawEntryEditor(rightPanelRect, manager, settings);
     }
 
     private void DrawPresetListPanel(Rect rect, PromptManager manager)
     {
-        Widgets.DrawBoxSolid(rect, new Color(0.1f, 0.1f, 0.1f, 0.5f));
-        Widgets.DrawBox(rect);
+        Widgets.DrawBoxSolid(rect, LeftPanelBackground);
 
+        float buttonSize = 20f;
+        float listPaddingX = 2f;
+        float scrollBarWidth = 16f;
+        float listWidth = rect.width - (listPaddingX * 2);
+        float viewWidth = listWidth - scrollBarWidth;
+        float rowButtonX = viewWidth - buttonSize - 2f;
+        float headerButtonX = listPaddingX + rowButtonX;
         float y = rect.y + 5f;
-        
-        // Preset title
+
+        // Presets Header
         Text.Font = GameFont.Tiny;
-        Widgets.Label(new Rect(rect.x + 5f, y, rect.width - 10f, 20f), "RimTalk.Settings.PromptPreset.Presets".Translate());
+        GUI.color = Color.gray;
+        Widgets.Label(new Rect(rect.x + 5f, y, rect.width - 35f, 20f),
+            "RimTalk.Settings.PromptPreset.Presets".Translate());
+
+        GUI.color = AddGreen;
+        Rect addPresetRect = new Rect(rect.x + headerButtonX, y, buttonSize, buttonSize);
+        if (Widgets.ButtonText(addPresetRect, "+"))
+        {
+            // Use CreateNewPreset to generate from factory default instead of duplicating current
+            var p = manager.CreateNewPreset("RimTalk.Settings.PromptPreset.NewPresetName".Translate());
+            if (p != null)
+            {
+                _selectedPresetId = p.Id;
+                _selectedEntryId = p.Entries.FirstOrDefault()?.Id;
+            }
+        }
+
+        GUI.color = Color.white;
+        TooltipHandler.TipRegion(addPresetRect, "RimTalk.Settings.PromptPreset.NewPreset".Translate());
         y += 22f;
+
+        // Preset ScrollView
         Text.Font = GameFont.Small;
-
-        // Preset list
-        Rect presetListRect = new Rect(rect.x + 2f, y, rect.width - 4f, 100f);
-        Rect presetViewRect = new Rect(0f, 0f, presetListRect.width - 16f, manager.Presets.Count * 25f);
-        
-        Widgets.BeginScrollView(presetListRect, ref _presetListScrollPos, presetViewRect);
-        float presetY = 0f;
-        foreach (var preset in manager.Presets)
+        Rect listRect = new Rect(rect.x + listPaddingX, y, listWidth, 150f);
+        Rect viewRect = new Rect(0f, 0f, viewWidth, manager.Presets.Count * 25f);
+        Widgets.BeginScrollView(listRect, ref _presetListScrollPos, viewRect);
+        float py = 0f;
+        for (int i = 0; i < manager.Presets.Count; i++)
         {
-            Rect presetRow = new Rect(0f, presetY, presetViewRect.width, 24f);
-            
-            // Selection highlight
-            if (_selectedPresetId == preset.Id)
+            var p = manager.Presets[i];
+            Rect row = new Rect(0f, py, viewRect.width, 24f);
+            if (_selectedPresetId == p.Id) Widgets.DrawHighlight(row);
+
+            if (p.IsActive)
             {
-                Widgets.DrawHighlight(presetRow);
+                GUI.color = Color.green;
+                Text.Anchor = TextAnchor.MiddleCenter;
+                Widgets.Label(new Rect(4f, py, 16f, 24f), "▶");
+                Text.Anchor = TextAnchor.UpperLeft;
+                GUI.color = Color.white;
             }
-            
-            // Active indicator
-            string prefix = preset.IsActive ? "▶ " : "  ";
-            if (Widgets.ButtonText(presetRow, prefix + preset.Name, false))
+
+            if (Widgets.ButtonText(new Rect(24f, py, viewRect.width - 48f, 24f), p.Name, false))
             {
-                _selectedPresetId = preset.Id;
-                _selectedEntryId = null;
+                _selectedPresetId = p.Id;
+                _selectedEntryId = p.Entries.FirstOrDefault()?.Id;
             }
-            
-            presetY += 25f;
+
+            if (p.Name != DefaultPresetName && manager.Presets.Count > 1)
+            {
+                Rect delRect = new Rect(rowButtonX, py + 2f, buttonSize, buttonSize);
+                GUI.color = DeleteRed;
+                if (Widgets.ButtonText(delRect, "×"))
+                {
+                    manager.RemovePreset(p.Id);
+                    if (_selectedPresetId == p.Id)
+                    {
+                        var next = manager.Presets.FirstOrDefault();
+                        _selectedPresetId = next?.Id;
+                        _selectedEntryId = next?.Entries.FirstOrDefault()?.Id;
+                    }
+                }
+
+                GUI.color = Color.white;
+                TooltipHandler.TipRegion(delRect, "RimTalk.Settings.PromptPreset.Delete".Translate());
+            }
+
+            py += 25f;
         }
+
         Widgets.EndScrollView();
+        y += 155f;
 
-        y += 105f;
-
-        // Preset action buttons
-        if (Widgets.ButtonText(new Rect(rect.x + 5f, y, rect.width - 10f, 24f), "RimTalk.Settings.PromptPreset.NewPreset".Translate()))
+        var sel = manager.Presets.FirstOrDefault(x => x.Id == _selectedPresetId);
+        if (sel != null)
         {
-            var newPreset = new PromptPreset("RimTalk.Settings.PromptPreset.NewPresetName".Translate());
-            manager.AddPreset(newPreset);
-            _selectedPresetId = newPreset.Id;
-        }
-        y += 26f;
+            float btnW2 = (rect.width - 15f) / 2f;
 
-        var selectedPreset = manager.Presets.FirstOrDefault(p => p.Id == _selectedPresetId);
-        if (selectedPreset != null)
-        {
-            if (!selectedPreset.IsActive && Widgets.ButtonText(new Rect(rect.x + 5f, y, rect.width - 10f, 24f), "RimTalk.Settings.PromptPreset.Activate".Translate()))
+            bool isAlreadyActive = sel.IsActive;
+            if (isAlreadyActive) GUI.enabled = false;
+            if (Widgets.ButtonText(new Rect(rect.x + 5f, y, btnW2, 24f),
+                    "RimTalk.Settings.PromptPreset.Activate".Translate()))
             {
-                manager.SetActivePreset(selectedPreset.Id);
+                manager.SetActivePreset(sel.Id);
             }
-            y += 26f;
-            
-            if (Widgets.ButtonText(new Rect(rect.x + 5f, y, rect.width - 10f, 24f), "RimTalk.Settings.PromptPreset.Rename".Translate()))
+
+            if (isAlreadyActive) GUI.enabled = true;
+
+            if (Widgets.ButtonText(new Rect(rect.x + 10f + btnW2, y, btnW2, 24f),
+                    "RimTalk.Settings.PromptPreset.Duplicate".Translate()))
             {
-                Find.WindowStack.Add(new Dialog_RenamePreset(selectedPreset));
+                var c = manager.DuplicatePreset(sel.Id);
+                if (c != null)
+                {
+                    _selectedPresetId = c.Id;
+                    _selectedEntryId = c.Entries.FirstOrDefault()?.Id;
+                }
             }
-            y += 26f;
-            
-            if (Widgets.ButtonText(new Rect(rect.x + 5f, y, rect.width - 10f, 24f), "RimTalk.Settings.PromptPreset.Duplicate".Translate()))
+
+            y += 28f;
+
+            if (Widgets.ButtonText(new Rect(rect.x + 5f, y, btnW2, 24f),
+                    "RimTalk.Settings.PromptPreset.Import".Translate())) ShowImportMenu(manager);
+            if (Widgets.ButtonText(new Rect(rect.x + 10f + btnW2, y, btnW2, 24f),
+                    "RimTalk.Settings.PromptPreset.Export".Translate()))
             {
-                var clone = manager.DuplicatePreset(selectedPreset.Id);
-                if (clone != null) _selectedPresetId = clone.Id;
-            }
-            y += 26f;
-            
-            // Export button
-            if (Widgets.ButtonText(new Rect(rect.x + 5f, y, rect.width - 10f, 24f), "RimTalk.Settings.PromptPreset.Export".Translate()))
-            {
-                if (PresetSerializer.ExportToFile(selectedPreset))
+                if (PresetSerializer.ExportToFile(sel))
                 {
                     var exportDir = PresetSerializer.GetExportDirectory();
-                    Messages.Message("RimTalk.Settings.PromptPreset.ExportSuccess".Translate(exportDir), MessageTypeDefOf.PositiveEvent, false);
+                    Messages.Message("RimTalk.Settings.PromptPreset.ExportSuccess".Translate(exportDir),
+                        MessageTypeDefOf.PositiveEvent, false);
                 }
                 else
-                {
-                    Messages.Message("RimTalk.Settings.PromptPreset.ExportFailed".Translate(), MessageTypeDefOf.RejectInput, false);
-                }
+                    Messages.Message("RimTalk.Settings.PromptPreset.ExportFailed".Translate(),
+                        MessageTypeDefOf.RejectInput, false);
             }
-            y += 26f;
-            
-            if (manager.Presets.Count > 1 && Widgets.ButtonText(new Rect(rect.x + 5f, y, rect.width - 10f, 24f), "RimTalk.Settings.PromptPreset.Delete".Translate()))
-            {
-                manager.RemovePreset(selectedPreset.Id);
-                _selectedPresetId = manager.Presets.FirstOrDefault()?.Id;
-                _selectedEntryId = null;
-            }
-            y += 30f;
-        }
-        
-        // Import button (always visible)
-        if (Widgets.ButtonText(new Rect(rect.x + 5f, y, rect.width - 10f, 24f), "RimTalk.Settings.PromptPreset.Import".Translate()))
-        {
-            ShowImportMenu(manager);
-        }
-        y += 26f;
 
-        // Separator line
-        Widgets.DrawLineHorizontal(rect.x + 5f, y, rect.width - 10f);
+            y += 32f;
+        }
+
         y += 5f;
 
-        // Entry title
-        Text.Font = GameFont.Tiny;
-        Widgets.Label(new Rect(rect.x + 5f, y, rect.width - 10f, 20f), "RimTalk.Settings.PromptPreset.Entries".Translate());
-        y += 22f;
-        Text.Font = GameFont.Small;
-
-        // Entry list
-        if (selectedPreset != null)
+        if (sel != null)
         {
-            Rect entryListRect = new Rect(rect.x + 2f, y, rect.width - 4f, rect.height - y + rect.y - 70f);
-            Rect entryViewRect = new Rect(0f, 0f, entryListRect.width - 16f, selectedPreset.Entries.Count * 25f);
-            
-            Widgets.BeginScrollView(entryListRect, ref _entryListScrollPos, entryViewRect);
-            float entryY = 0f;
-            foreach (var entry in selectedPreset.Entries)
+            float ey = 0f;
+            var sections = new[] { PresetSection.System, PresetSection.History, PresetSection.Prompt };
+            var sectionNames = new Dictionary<PresetSection, string>
             {
-                Rect entryRow = new Rect(0f, entryY, entryViewRect.width, 24f);
-                
-                // Selection highlight
-                if (_selectedEntryId == entry.Id)
-                {
-                    Widgets.DrawHighlight(entryRow);
-                }
-                
-                // Enabled state
-                bool enabled = entry.Enabled;
-                Widgets.Checkbox(new Vector2(0f, entryY + 2f), ref enabled, 20f);
-                entry.Enabled = enabled;
-                
-                // Entry name
-                if (Widgets.ButtonText(new Rect(22f, entryY, entryViewRect.width - 22f, 24f), entry.Name, false))
-                {
-                    _selectedEntryId = entry.Id;
-                }
-                
-                entryY += 25f;
+                { PresetSection.System, "RimTalk.Settings.PromptPreset.SectionSystem".Translate() },
+                { PresetSection.History, "RimTalk.Settings.PromptPreset.SectionHistory".Translate() },
+                { PresetSection.Prompt, "RimTalk.Settings.PromptPreset.SectionPrompt".Translate() }
+            };
+
+            // Calculate total height for ScrollView
+            float totalHeight = 0;
+            foreach (var section in sections)
+            {
+                totalHeight += 22f; // Header
+                totalHeight += sel.Entries.Count(en => GetSection(en) == section) * 25f;
             }
+
+            Text.Font = GameFont.Small;
+            Rect eListRect = new Rect(rect.x + listPaddingX, y, listWidth, rect.yMax - y - 35f);
+            Rect eViewRect = new Rect(0f, 0f, viewWidth, totalHeight);
+            Widgets.BeginScrollView(eListRect, ref _entryListScrollPos, eViewRect);
+
+            foreach (var section in sections)
+            {
+                // Section Header
+                Rect headerRect = new Rect(0f, ey, eViewRect.width, 20f);
+                Text.Font = GameFont.Tiny;
+                GUI.color = Color.gray;
+                Widgets.Label(new Rect(5f, ey, eViewRect.width - 30f, 20f), sectionNames[section]);
+                GUI.color = Color.white;
+
+                // Section Add Button
+                GUI.color = AddGreen;
+                Rect addRect = new Rect(rowButtonX, ey, buttonSize, buttonSize);
+                if (Widgets.ButtonText(addRect, "+"))
+                {
+                    PromptEntry newEntry = null;
+                    switch (section)
+                    {
+                        case PresetSection.System:
+                            newEntry = new PromptEntry("RimTalk.Settings.PromptPreset.NewEntryName".Translate(), "",
+                                PromptRole.System);
+                            newEntry.Position = PromptPosition.Relative;
+                            break;
+                        case PresetSection.History:
+                            // If no history marker, add it. Otherwise add InChat entry.
+                            if (!sel.Entries.Any(en => en.IsMainChatHistory))
+                            {
+                                newEntry = new PromptEntry("Chat History", "{{chat.history}}", PromptRole.User);
+                                newEntry.Position = PromptPosition.Relative;
+                                newEntry.IsMainChatHistory = true;
+                            }
+                            else
+                            {
+                                newEntry = new PromptEntry("RimTalk.Settings.PromptPreset.NewEntryName".Translate(),
+                                    "", PromptRole.User);
+                                newEntry.Position = PromptPosition.InChat;
+                                newEntry.InChatDepth = 1; // Default depth
+                            }
+
+                            break;
+                        case PresetSection.Prompt:
+                            newEntry = new PromptEntry("RimTalk.Settings.PromptPreset.NewEntryName".Translate(), "",
+                                PromptRole.User);
+                            newEntry.Position = PromptPosition.Relative;
+                            break;
+                    }
+
+                    if (newEntry != null)
+                    {
+                        // Insert at the end of the section
+                        int lastIndex = -1;
+                        for (int i = 0; i < sel.Entries.Count; i++)
+                        {
+                            if (GetSection(sel.Entries[i]) == section) lastIndex = i;
+                        }
+
+                        if (lastIndex == -1)
+                        {
+                            // If section is empty, find where to insert
+                            if (section == PresetSection.System) sel.Entries.Insert(0, newEntry);
+                            else if (section == PresetSection.History)
+                            {
+                                int sysEnd = sel.Entries.FindLastIndex(en => GetSection(en) == PresetSection.System);
+                                sel.Entries.Insert(sysEnd + 1, newEntry);
+                            }
+                            else sel.Entries.Add(newEntry);
+                        }
+                        else
+                        {
+                            sel.Entries.Insert(lastIndex + 1, newEntry);
+                        }
+
+                        _selectedEntryId = newEntry.Id;
+                    }
+                }
+
+                GUI.color = Color.white;
+
+                ey += 22f;
+                Text.Font = GameFont.Small;
+
+                var sectionEntries = sel.Entries.Where(en => GetSection(en) == section).ToList();
+                for (int i = 0; i < sectionEntries.Count; i++)
+                {
+                    var entry = sectionEntries[i];
+                    Rect erow = new Rect(0f, ey, eViewRect.width, 24f);
+                    if (_selectedEntryId == entry.Id) Widgets.DrawHighlight(erow);
+
+                    bool isHistoryMarker = entry.IsMainChatHistory;
+
+                    bool en = entry.Enabled;
+                    Widgets.Checkbox(new Vector2(4f, ey + 4f), ref en, 16f);
+                    entry.Enabled = en;
+
+                    if (Widgets.ButtonText(new Rect(24f, ey, eViewRect.width - 48f, 24f), entry.Name, false))
+                        _selectedEntryId = entry.Id;
+
+                    if (!isHistoryMarker)
+                    {
+                        Rect edel = new Rect(rowButtonX, ey + 2f, buttonSize, buttonSize);
+                        GUI.color = DeleteRed;
+                        if (Widgets.ButtonText(edel, "×"))
+                        {
+                            sel.RemoveEntry(entry.Id);
+                            if (_selectedEntryId == entry.Id) _selectedEntryId = sel.Entries.FirstOrDefault()?.Id;
+                        }
+
+                        GUI.color = Color.white;
+                        TooltipHandler.TipRegion(edel, "RimTalk.Settings.PromptPreset.Delete".Translate());
+                    }
+
+                    ey += 25f;
+                }
+            }
+
             Widgets.EndScrollView();
 
-            y = rect.y + rect.height - 65f;
-            
-            // Entry action buttons
-            if (Widgets.ButtonText(new Rect(rect.x + 5f, y, rect.width - 10f, 24f), "RimTalk.Settings.PromptPreset.NewEntry".Translate()))
-            {
-                var newEntry = new PromptEntry("RimTalk.Settings.PromptPreset.NewEntryName".Translate(), "", PromptRole.System);
-                selectedPreset.AddEntry(newEntry);
-                _selectedEntryId = newEntry.Id;
-            }
-            y += 26f;
-
-            // Move and delete buttons
             if (_selectedEntryId != null)
             {
-                float btnWidth = (rect.width - 20f) / 3f;
-                if (Widgets.ButtonText(new Rect(rect.x + 5f, y, btnWidth, 24f), "↑"))
+                var selectedEntry = sel.GetEntry(_selectedEntryId);
+                if (selectedEntry != null)
                 {
-                    selectedPreset.MoveEntry(_selectedEntryId, -1);
-                }
-                if (Widgets.ButtonText(new Rect(rect.x + 10f + btnWidth, y, btnWidth, 24f), "↓"))
-                {
-                    selectedPreset.MoveEntry(_selectedEntryId, 1);
-                }
-                if (Widgets.ButtonText(new Rect(rect.x + 15f + btnWidth * 2, y, btnWidth, 24f), "×"))
-                {
-                    selectedPreset.RemoveEntry(_selectedEntryId);
-                    _selectedEntryId = null;
+                    var section = GetSection(selectedEntry);
+                    var sectionEntries = sel.Entries.Where(en => GetSection(en) == section).ToList();
+                    int indexInSection = sectionEntries.IndexOf(selectedEntry);
+
+                    float sw = (rect.width - 15f) / 2f;
+                    
+                    // Up button
+                    bool canMoveUp = indexInSection > 0;
+                    if (canMoveUp && section == PresetSection.History)
+                    {
+                        var prevEntry = sectionEntries[indexInSection - 1];
+                        if (prevEntry.IsMainChatHistory) canMoveUp = false;
+                    }
+
+                    if (canMoveUp)
+                    {
+                        if (Widgets.ButtonText(new Rect(rect.x + 5f, rect.yMax - 32f, sw, 24f), "▲"))
+                        {
+                            int actualIndex = sel.Entries.IndexOf(selectedEntry);
+                            sel.Entries.RemoveAt(actualIndex);
+                            sel.Entries.Insert(actualIndex - 1, selectedEntry);
+                        }
+                    }
+                    else
+                    {
+                        GUI.enabled = false;
+                        Widgets.ButtonText(new Rect(rect.x + 5f, rect.yMax - 32f, sw, 24f), "▲");
+                        GUI.enabled = true;
+                    }
+
+                    // Down button
+                    if (indexInSection < sectionEntries.Count - 1)
+                    {
+                        if (Widgets.ButtonText(new Rect(rect.x + 10f + sw, rect.yMax - 32f, sw, 24f), "▼"))
+                        {
+                            int actualIndex = sel.Entries.IndexOf(selectedEntry);
+                            sel.Entries.RemoveAt(actualIndex);
+                            sel.Entries.Insert(actualIndex + 1, selectedEntry);
+                        }
+                    }
+                    else
+                    {
+                        GUI.enabled = false;
+                        Widgets.ButtonText(new Rect(rect.x + 10f + sw, rect.yMax - 32f, sw, 24f), "▼");
+                        GUI.enabled = true;
+                    }
                 }
             }
         }
     }
 
-    private void DrawEntryEditor(Rect rect, PromptManager manager)
+    private void DrawEntryEditor(Rect rect, PromptManager manager, RimTalkSettings settings)
     {
-        Widgets.DrawBoxSolid(rect, new Color(0.1f, 0.1f, 0.1f, 0.3f));
-        Widgets.DrawBox(rect);
-
-        var selectedPreset = manager.Presets.FirstOrDefault(p => p.Id == _selectedPresetId);
-        var selectedEntry = selectedPreset?.Entries.FirstOrDefault(e => e.Id == _selectedEntryId);
-
-        if (selectedEntry == null)
+        var p = manager.Presets.FirstOrDefault(p => p.Id == _selectedPresetId);
+        if (p == null)
         {
             Text.Anchor = TextAnchor.MiddleCenter;
+            GUI.color = Color.gray;
             Widgets.Label(rect, "RimTalk.Settings.PromptPreset.SelectEntryToEdit".Translate());
+            GUI.color = Color.white;
             Text.Anchor = TextAnchor.UpperLeft;
             return;
         }
 
-        float y = rect.y + 10f;
-        float labelWidth = 80f;
-        float inputWidth = rect.width - labelWidth - 20f;
+        float y = rect.y + 2f;
 
-        // Name
-        Widgets.Label(new Rect(rect.x + 10f, y, labelWidth, 24f), "RimTalk.Settings.PromptPreset.Name".Translate());
-        selectedEntry.Name = Widgets.TextField(new Rect(rect.x + labelWidth + 10f, y, inputWidth, 24f), selectedEntry.Name);
-        y += 30f;
+        // --- Layout Constants ---
+        float labelX = rect.x + 10f;
+        float inputX = rect.x + 115f;
+        float inputWidth = 200f;
+        float topButtonWidth = 200f;
+        float topButtonX = rect.x + rect.width - topButtonWidth - 10f;
+        float dropdownWidth = 120f;
 
-        // Role
-        Widgets.Label(new Rect(rect.x + 10f, y, labelWidth, 24f), "RimTalk.Settings.PromptPreset.Role".Translate());
-        if (Widgets.ButtonText(new Rect(rect.x + labelWidth + 10f, y, 120f, 24f), selectedEntry.Role.ToString()))
+        // -- Row 1: Preset Name & Simple Mode --
+        Widgets.Label(new Rect(labelX, y, 100f, 24f), "RimTalk.Settings.PromptPreset.PresetName".Translate());
+        p.Name = Widgets.TextField(new Rect(inputX, y, inputWidth, 24f), p.Name);
+
+        if (Widgets.ButtonText(new Rect(topButtonX, y, topButtonWidth, 24f),
+                "RimTalk.Settings.SwitchToSimpleSettings".Translate()))
+            settings.UseAdvancedPromptMode = false;
+
+        y += 28f;
+
+        // -- Row 2: Reset Button --
+        if (Widgets.ButtonText(new Rect(topButtonX, y, topButtonWidth, 24f),
+                "RimTalk.Settings.ResetToDefault".Translate()))
         {
-            var options = new List<FloatMenuOption>
+            Find.WindowStack.Add(Dialog_MessageBox.CreateConfirmation("RimTalk.Settings.ResetConfirm".Translate(), () =>
             {
-                new("System", () => selectedEntry.Role = PromptRole.System),
-                new("User", () => selectedEntry.Role = PromptRole.User),
-                new("Assistant", () => selectedEntry.Role = PromptRole.Assistant)
-            };
-            Find.WindowStack.Add(new FloatMenu(options));
-        }
-        y += 30f;
-
-        // Position
-        Widgets.Label(new Rect(rect.x + 10f, y, labelWidth, 24f), "RimTalk.Settings.PromptPreset.Position".Translate());
-        if (Widgets.ButtonText(new Rect(rect.x + labelWidth + 10f, y, 120f, 24f), selectedEntry.Position.ToString()))
-        {
-            var options = new List<FloatMenuOption>
-            {
-                new("RimTalk.Settings.PromptPreset.PositionRelative".Translate(), () => selectedEntry.Position = PromptPosition.Relative),
-                new("RimTalk.Settings.PromptPreset.PositionInChat".Translate(), () => selectedEntry.Position = PromptPosition.InChat)
-            };
-            Find.WindowStack.Add(new FloatMenu(options));
-        }
-        
-        // InChatDepth (only shown for InChat position)
-        if (selectedEntry.Position == PromptPosition.InChat)
-        {
-            Widgets.Label(new Rect(rect.x + labelWidth + 140f, y, 50f, 24f), "RimTalk.Settings.PromptPreset.Depth".Translate());
-            string depthStr = selectedEntry.InChatDepth.ToString();
-            depthStr = Widgets.TextField(new Rect(rect.x + labelWidth + 195f, y, 60f, 24f), depthStr);
-            if (int.TryParse(depthStr, out int depth))
-            {
-                selectedEntry.InChatDepth = depth;
-            }
-        }
-        y += 30f;
-
-        // Content label
-        Widgets.Label(new Rect(rect.x + 10f, y, labelWidth, 24f), "RimTalk.Settings.PromptPreset.Content".Translate());
-        
-        // Insert variable button
-        if (Widgets.ButtonText(new Rect(rect.x + labelWidth + 10f, y, 120f, 24f), "RimTalk.Settings.PromptPreset.InsertVariable".Translate()))
-        {
-            ShowVariableInsertMenu(selectedEntry);
-        }
-        y += 30f;
-
-        // Content editing area
-        Rect contentRect = new Rect(rect.x + 10f, y, rect.width - 20f, rect.height - y + rect.y - 10f);
-        selectedEntry.Content = Widgets.TextArea(contentRect, selectedEntry.Content);
-    }
-
-    private void ShowVariableInsertMenu(PromptEntry entry)
-    {
-        var options = new List<FloatMenuOption>();
-        
-        // Get dynamic variable list from MustacheParser
-        var builtinVars = MustacheParser.GetBuiltinVariables();
-        foreach (var category in builtinVars)
-        {
-            options.Add(new FloatMenuOption($"--- {category.Key} ---", null));
-            foreach (var (name, desc) in category.Value)
-            {
-                var varText = $"{{{{{name}}}}}";
-                var displayText = string.IsNullOrEmpty(desc) ? varText : $"{varText} - {desc}";
-                options.Add(new FloatMenuOption(displayText, () => InsertAtCursor(entry, varText)));
-            }
-        }
-        
-        // Mod registered custom variables
-        var customVars = ContextHookRegistry.GetAllCustomVariables().ToList();
-        if (customVars.Count > 0)
-        {
-            options.Add(new FloatMenuOption("--- " + "RimTalk.Settings.PromptPreset.ModVariables".Translate() + " ---", null));
-            foreach (var (name, modId, desc, type) in customVars)
-            {
-                var displayText = string.IsNullOrEmpty(desc) ? $"{{{{{name}}}}}" : $"{{{{{name}}}}} - {desc}";
-                options.Add(new FloatMenuOption(displayText,
-                    () => InsertAtCursor(entry, $"{{{{{name}}}}}")));
-            }
+                manager.ResetToDefaults();
+                _selectedPresetId = null;
+                _selectedEntryId = null;
+            }));
         }
 
-        Find.WindowStack.Add(new FloatMenu(options));
-    }
-
-    private void InsertAtCursor(PromptEntry entry, string text)
-    {
-        // Simply append to end (Unity's TextArea doesn't easily provide cursor position)
-        entry.Content += text;
-    }
-
-    private Vector2 _previewScrollPos = Vector2.zero;
-
-    private void DrawVariablePreviewPanel(Rect rect, PromptManager manager)
-    {
-        Widgets.DrawBoxSolid(rect, new Color(0.1f, 0.1f, 0.1f, 0.3f));
-        Widgets.DrawBox(rect);
-
-        float y = rect.y + 10f;
-        
-        // Title
-        Text.Font = GameFont.Medium;
-        Widgets.Label(new Rect(rect.x + 10f, y, rect.width - 20f, 30f), "RimTalk.Settings.PromptPreset.VariablePreview".Translate());
-        Text.Font = GameFont.Small;
-        y += 35f;
-
-        // Description
-        Text.Font = GameFont.Tiny;
-        GUI.color = Color.gray;
-        Widgets.Label(new Rect(rect.x + 10f, y, rect.width - 20f, 20f),
-            "RimTalk.Settings.PromptPreset.VariablePreviewHint".Translate());
-        GUI.color = Color.white;
-        Text.Font = GameFont.Small;
-        y += 25f;
-
-        // Variable list area
-        Rect listRect = new Rect(rect.x + 5f, y, rect.width - 10f, rect.height - y + rect.y - 10f);
-        
-        // Calculate content height
-        var builtinVars = MustacheParser.GetBuiltinVariables();
-        int totalItems = builtinVars.Sum(c => c.Value.Count + 1); // +1 for category header
-        totalItems += manager.VariableStore.Count + 1; // setvar vars
-        
-        Rect viewRect = new Rect(0f, 0f, listRect.width - 16f, totalItems * 22f);
-        
-        Widgets.BeginScrollView(listRect, ref _previewScrollPos, viewRect);
-        
-        float varY = 0f;
-        
-        // Built-in variables
-        foreach (var category in builtinVars)
+        var e = p.Entries.FirstOrDefault(x => x.Id == _selectedEntryId);
+        if (e == null)
         {
-            // Category title
-            GUI.color = Color.cyan;
-            Text.Font = GameFont.Tiny;
-            Widgets.Label(new Rect(0f, varY, viewRect.width, 20f), $"▼ {category.Key}");
-            Text.Font = GameFont.Small;
+            Text.Anchor = TextAnchor.MiddleCenter;
+            GUI.color = Color.gray;
+            Widgets.Label(new Rect(rect.x, y + 28f, rect.width, rect.height - (y + 28f)),
+                "RimTalk.Settings.PromptPreset.SelectEntryToEdit".Translate());
             GUI.color = Color.white;
-            varY += 22f;
-            
-            foreach (var (name, desc) in category.Value)
-            {
-                DrawVariableRow(ref varY, viewRect.width, name, desc, null);
-            }
+            Text.Anchor = TextAnchor.UpperLeft;
+            return;
         }
-        
-        // setvar stored variables (runtime variables set by AI)
-        if (manager.VariableStore.Count > 0)
+
+        // -- Row 2 (Left Side): Entry Name --
+        bool isHistoryMarker = e.IsMainChatHistory;
+        var section = GetSection(e);
+
+        Widgets.Label(new Rect(labelX, y, 100f, 24f), "RimTalk.Settings.PromptPreset.EntryName".Translate());
+        if (isHistoryMarker)
         {
-            GUI.color = Color.green;
-            Text.Font = GameFont.Tiny;
-            Widgets.Label(new Rect(0f, varY, viewRect.width, 20f), "▼ " + "RimTalk.Settings.PromptPreset.RuntimeVariables".Translate());
-            Text.Font = GameFont.Small;
-            GUI.color = Color.white;
-            varY += 22f;
-            
-            foreach (var kvp in manager.VariableStore.GetAllVariables())
+            GUI.enabled = false;
+            Widgets.TextField(new Rect(inputX, y, inputWidth, 24f), e.Name);
+            GUI.enabled = true;
+        }
+        else
+        {
+            e.Name = Widgets.TextField(new Rect(inputX, y, inputWidth, 24f), e.Name);
+        }
+
+        y += 28f;
+
+        // -- Row 3: Role --
+        Widgets.Label(new Rect(labelX, y, 80f, 24f), "RimTalk.Settings.PromptPreset.Role".Translate());
+
+        if (section == PresetSection.System)
+        {
+            Widgets.Label(new Rect(inputX, y, dropdownWidth, 24f), e.Role.ToString());
+        }
+        else if (isHistoryMarker)
+        {
+            Widgets.Label(new Rect(inputX, y, dropdownWidth, 24f), "User/Assistant");
+        }
+        else // History (InChat entries) and Prompt Section
+        {
+            if (Widgets.ButtonText(new Rect(inputX, y, dropdownWidth, 24f), e.Role.ToString()))
             {
-                var displayValue = kvp.Value.Length > 50 ? kvp.Value.Substring(0, 47) + "..." : kvp.Value;
-                DrawVariableRow(ref varY, viewRect.width, kvp.Key, "", displayValue);
+                var opts = new List<FloatMenuOption>
+                {
+                    new("User", () => e.Role = PromptRole.User),
+                    new("Assistant", () => e.Role = PromptRole.Assistant)
+                };
+                Find.WindowStack.Add(new FloatMenu(opts));
             }
         }
+
+        y += 28f;
+
+        // -- Row 4: Position --
+        float tabRowY = y;
+        Widgets.Label(new Rect(labelX, tabRowY, 80f, 24f), "RimTalk.Settings.PromptPreset.Position".Translate());
+
+        Widgets.Label(new Rect(inputX, tabRowY, dropdownWidth, 24f), e.Position.ToString());
+
+        if (e.Position == PromptPosition.InChat)
+        {
+            float depthLabelX = inputX + dropdownWidth + 10f;
+            Widgets.Label(new Rect(depthLabelX, tabRowY, 50f, 24f), "RimTalk.Settings.PromptPreset.Depth".Translate());
+            
+            if (_depthBufferEntryId != e.Id)
+            {
+                _depthBuffer = e.InChatDepth.ToString();
+                _depthBufferEntryId = e.Id;
+            }
+
+            _depthBuffer = Widgets.TextField(new Rect(depthLabelX + 55f, tabRowY, 60f, 24f), _depthBuffer);
+            if (int.TryParse(_depthBuffer, out int res)) e.InChatDepth = res;
+        }
+
+        // -- TABS (Toggles) --
+        float tabWidth = 70f;
+        float rightEdge = rect.xMax - 5f;
+
+        void DrawToggleTab(string label, ref bool isOpen, int indexFromRight, bool isRadio = false, int radioMode = 0)
+        {
+            Rect tabRect = new Rect(rightEdge - (tabWidth * (indexFromRight + 1)) - (5f * indexFromRight), tabRowY,
+                tabWidth, 24f);
+
+            bool active = isRadio
+                ? (_showSidePanel && _sidePanelMode == radioMode)
+                : isOpen;
+
+            GUI.color = active ? Color.green : Color.white;
+
+            if (Widgets.ButtonText(tabRect, label))
+            {
+                if (isRadio)
+                {
+                    if (active) _showSidePanel = false;
+                    else
+                    {
+                        _showSidePanel = true;
+                        _sidePanelMode = radioMode;
+                        _auxScrollPos = Vector2.zero;
+                    }
+                }
+                else
+                {
+                    isOpen = !isOpen;
+                    if (isOpen) _previewScrollPos = Vector2.zero;
+                }
+            }
+
+            GUI.color = Color.white;
+        }
+
+        // Help (Side Panel Mode 1)
+        DrawToggleTab("RimTalk.Settings.PromptHelp".Translate(), ref _showSidePanel, 0, true, 1);
+
+        // Variables (Side Panel Mode 0)
+        DrawToggleTab("RimTalk.Settings.ShowVariables".Translate(), ref _showSidePanel, 1, true, 0);
+
+        // Preview (Bottom Panel)
+        DrawToggleTab("RimTalk.Settings.PromptPreset.ModePreview".Translate(), ref _showPreview, 2);
+
+        y += 28f;
+
+        // -- MAIN AREA (Layout Split Logic) --
+        Rect bottomArea = new Rect(rect.x + 10f, y, rect.width - 20f, rect.yMax - y - 5f);
+
+        // 1. Calculate Horizontal Split (Main vs Side Panel)
+        Rect mainWorkRect = bottomArea;
+        Rect sidePanelRect = Rect.zero;
+        Rect splitHorizRect = Rect.zero;
+
+        float splitterSize = 6f;
+
+        if (_showSidePanel)
+        {
+            float minMainW = 150f;
+            float minSideW = 150f;
+            float maxRatioH = (bottomArea.width - minSideW - splitterSize) / bottomArea.width;
+            float minRatioH = minMainW / bottomArea.width;
+
+            _splitRatioHoriz = Mathf.Clamp(_splitRatioHoriz, minRatioH, maxRatioH);
+
+            float leftW = (bottomArea.width * _splitRatioHoriz) - (splitterSize / 2f);
+            float rightW = bottomArea.width - leftW - splitterSize;
+
+            mainWorkRect = new Rect(bottomArea.x, bottomArea.y, leftW, bottomArea.height);
+            splitHorizRect = new Rect(bottomArea.x + leftW, bottomArea.y, splitterSize, bottomArea.height);
+            sidePanelRect = new Rect(bottomArea.x + leftW + splitterSize, bottomArea.y, rightW, bottomArea.height);
+        }
+
+        // 2. Calculate Vertical Split (Editor vs Preview) within mainWorkRect
+        Rect editorRect = mainWorkRect;
+        Rect previewRect = Rect.zero;
+        Rect splitVertRect = Rect.zero;
+
+        if (_showPreview)
+        {
+            float minEditorH = 100f;
+            float minPrevH = 60f;
+            float maxRatioV = (mainWorkRect.height - minPrevH - splitterSize) / mainWorkRect.height;
+            float minRatioV = minEditorH / mainWorkRect.height;
+
+            _splitRatioVert = Mathf.Clamp(_splitRatioVert, minRatioV, maxRatioV);
+
+            float topH = (mainWorkRect.height * _splitRatioVert) - (splitterSize / 2f);
+            float botH = mainWorkRect.height - topH - splitterSize;
+
+            editorRect = new Rect(mainWorkRect.x, mainWorkRect.y, mainWorkRect.width, topH);
+            splitVertRect = new Rect(mainWorkRect.x, mainWorkRect.y + topH, mainWorkRect.width, splitterSize);
+            previewRect = new Rect(mainWorkRect.x, mainWorkRect.y + topH + splitterSize, mainWorkRect.width, botH);
+        }
+
+        // --- DRAWING ---
+
+        // A. Draw Editor
+        float editorInnerWidth = editorRect.width - 20f;
+        float editorContentHeight = Mathf.Ceil(Mathf.Max(editorRect.height, Text.CalcHeight(e.Content, editorInnerWidth) + 25f));
+        Rect editorViewRect = new Rect(0f, 0f, editorInnerWidth, editorContentHeight);
+
+        const string editorControlName = "PromptEntryEditor";
+        Widgets.BeginScrollView(editorRect, ref _promptContentScrollPos, editorViewRect);
+        GUI.SetNextControlName(editorControlName);
         
+        string newContent;
+        if (isHistoryMarker)
+        {
+            Widgets.TextArea(new Rect(0f, 0f, editorInnerWidth, editorContentHeight), e.Content, readOnly: true);
+            newContent = e.Content;
+        }
+        else
+        {
+            newContent = Widgets.TextArea(new Rect(0f, 0f, editorInnerWidth, editorContentHeight), e.Content);
+        }
+        
+        // Auto-scroll logic: only scroll if the cursor position changed
+        if (GUI.GetNameOfFocusedControl() == editorControlName)
+        {
+            TextEditor te = (TextEditor)GUIUtility.GetStateObject(typeof(TextEditor), GUIUtility.keyboardControl);
+            if (te != null && te.cursorIndex != _lastPromptEditorCursorPos)
+            {
+                _lastPromptEditorCursorPos = te.cursorIndex;
+                float cursorY = te.graphicalCursorPos.y;
+                if (cursorY < _promptContentScrollPos.y)
+                    _promptContentScrollPos.y = cursorY;
+                else if (cursorY + 25f > _promptContentScrollPos.y + editorRect.height)
+                    _promptContentScrollPos.y = cursorY + 25f - editorRect.height;
+            }
+        }
+        Widgets.EndScrollView();
+
+        if (newContent != e.Content)
+        {
+            e.Content = newContent;
+            if (_showSidePanel && _sidePanelMode == 0) UpdateSmartFilter(newContent);
+        }
+
+        // B. Draw Preview (if active)
+        if (_showPreview)
+        {
+            Widgets.DrawBoxSolid(splitVertRect, new Color(0.2f, 0.2f, 0.2f));
+            GUI.DrawTexture(new Rect(splitVertRect.center.x - 10f, splitVertRect.center.y - 2f, 20f, 4f),
+                BaseContent.WhiteTex);
+            Widgets.DrawHighlightIfMouseover(splitVertRect);
+
+            // Handle Vertical Splitter Input
+            if (Event.current.type == EventType.MouseDown && splitVertRect.Contains(Event.current.mousePosition))
+            {
+                _isDraggingVert = true;
+                Event.current.Use();
+            }
+
+            Widgets.DrawBoxSolid(previewRect, new Color(0.1f, 0.1f, 0.1f, 0.5f));
+            DrawPreviewContent(previewRect, e.Content);
+        }
+
+        // C. Draw Side Panel (if active)
+        if (_showSidePanel)
+        {
+            Widgets.DrawBoxSolid(splitHorizRect, new Color(0.2f, 0.2f, 0.2f));
+            GUI.DrawTexture(new Rect(splitHorizRect.center.x - 2f, splitHorizRect.center.y - 10f, 4f, 20f),
+                BaseContent.WhiteTex);
+            Widgets.DrawHighlightIfMouseover(splitHorizRect);
+
+            // Handle Horizontal Splitter Input
+            if (Event.current.type == EventType.MouseDown && splitHorizRect.Contains(Event.current.mousePosition))
+            {
+                _isDraggingHoriz = true;
+                Event.current.Use();
+            }
+
+            DrawSidePanel(sidePanelRect, manager, e);
+        }
+
+        // D. Handle Drag Logic (Global)
+        if (_isDraggingVert)
+        {
+            if (Event.current.type == EventType.MouseDrag)
+            {
+                _splitRatioVert += Event.current.delta.y / mainWorkRect.height;
+                Event.current.Use();
+            }
+
+            if (Event.current.rawType == EventType.MouseUp) _isDraggingVert = false;
+        }
+
+        if (_isDraggingHoriz)
+        {
+            if (Event.current.type == EventType.MouseDrag)
+            {
+                _splitRatioHoriz += Event.current.delta.x / bottomArea.width;
+                Event.current.Use();
+            }
+
+            if (Event.current.rawType == EventType.MouseUp) _isDraggingHoriz = false;
+        }
+    }
+
+    private void UpdateSmartFilter(string text)
+    {
+        // Only trigger smart filter if we are in the Variables tab
+        if (!_showSidePanel || _sidePanelMode != 0) return;
+
+        // Try to get cursor position from Unity's TextEditor
+        TextEditor te = (TextEditor)GUIUtility.GetStateObject(typeof(TextEditor), GUIUtility.keyboardControl);
+        if (te == null || te.cursorIndex < 0) return;
+
+        int pos = te.cursorIndex;
+        if (pos > text.Length) pos = text.Length;
+
+        // Look back from cursor to find the start of the current "word"
+        int start = pos - 1;
+        while (start >= 0 && !char.IsWhiteSpace(text[start]) && text[start] != '{' && text[start] != '}')
+        {
+            start--;
+        }
+
+        start++;
+
+        string currentWord = "";
+        if (start < pos)
+        {
+            currentWord = text.Substring(start, pos - start);
+        }
+
+        // Logic to decide when to update the search query
+        bool shouldUpdate = false;
+        
+        // Check if we are inside brackets {{ ... }}
+        int check = start - 1;
+        while (check >= 0 && char.IsWhiteSpace(text[check])) check--;
+        bool insideBrackets = (check >= 1 && text[check] == '{' && text[check-1] == '{');
+
+        if (insideBrackets)
+        {
+            // 1. Always update if it contains a dot (property access)
+            if (currentWord.Contains(".")) shouldUpdate = true;
+            
+            // 2. Update if length >= 2 (standard word)
+            else if (currentWord.Length >= 2) shouldUpdate = true;
+            
+            // 3. Update (clear/shorten) if we are backspacing from a previously longer query
+            else if (_variableSearchQuery.StartsWith(currentWord, StringComparison.OrdinalIgnoreCase) && _variableSearchQuery.Length > currentWord.Length)
+            {
+                shouldUpdate = true;
+            }
+            
+            // 4. Always update if it's empty but inside brackets (to show all variables)
+            else if (currentWord.Length == 0) shouldUpdate = true;
+        }
+
+        if (shouldUpdate)
+        {
+            _variableSearchQuery = currentWord;
+        }
+    }
+
+    private void DrawPreviewContent(Rect rect, string content)
+    {
+        string text = PresetPreviewGenerator.GeneratePreview(content);
+        Text.Font = GameFont.Small;
+
+        Rect innerRect = rect.ContractedBy(5f);
+        float viewWidth = innerRect.width - 16f;
+        float height = Text.CalcHeight(text, viewWidth);
+
+        Rect viewRect = new Rect(0f, 0f, viewWidth, height);
+
+        Widgets.BeginScrollView(innerRect, ref _previewScrollPos, viewRect);
+        Widgets.TextArea(viewRect, text, readOnly: true);
         Widgets.EndScrollView();
     }
 
-    private void DrawVariableRow(ref float y, float width, string name, string desc, string value)
+    private void DrawSidePanel(Rect rect, PromptManager manager, PromptEntry entry)
     {
-        float col1Width = 150f;
-        float col2Width = width - col1Width - 10f;
-        
-        // Variable name
-        Text.Font = GameFont.Tiny;
-        GUI.color = new Color(0.8f, 1f, 0.8f);
-        Widgets.Label(new Rect(10f, y, col1Width, 20f), $"{{{{{name}}}}}");
-        
-        // Description or current value
-        GUI.color = Color.gray;
-        string displayText = value ?? desc;
-        if (!string.IsNullOrEmpty(displayText))
+        Widgets.DrawBoxSolid(rect, new Color(0.1f, 0.1f, 0.1f, 0.5f));
+        Rect contentRect = rect.ContractedBy(5f);
+
+        if (_sidePanelMode == 0)
         {
-            displayText = displayText.Length > 60 ? displayText.Substring(0, 57) + "..." : displayText;
-            Widgets.Label(new Rect(col1Width + 10f, y, col2Width, 20f), displayText);
+            // Variables
+            DrawVariablePreviewContent(contentRect, manager, entry);
         }
+        else
+        {
+            // Help
+            string text = "RimTalk.Settings.AdvancedHelpContent".Translate();
+            Text.Font = GameFont.Small;
+            float viewWidth = contentRect.width - 16f;
+            float height = Text.CalcHeight(text, viewWidth);
+
+            Rect viewRect = new Rect(0f, 0f, viewWidth, height);
+
+            Widgets.BeginScrollView(contentRect, ref _auxScrollPos, viewRect);
+            Widgets.TextArea(viewRect, text, readOnly: true);
+            Widgets.EndScrollView();
+        }
+    }
+
+    private void DrawVariablePreviewContent(Rect rect, PromptManager manager, PromptEntry entry)
+    {
+        // 1. Search Bar
+        Rect searchRect = new Rect(rect.x, rect.y, rect.width, 24f);
+        _variableSearchQuery = Widgets.TextField(searchRect, _variableSearchQuery);
+        if (string.IsNullOrEmpty(_variableSearchQuery))
+        {
+            GUI.color = new Color(1, 1, 1, 0.3f);
+            Widgets.Label(searchRect.ContractedBy(2f, 0f), "RimTalk.Settings.PromptPreset.SearchPlaceholder".Translate());
+            GUI.color = Color.white;
+        }
+
+        Text.Font = GameFont.Tiny;
+        GUI.color = Color.gray;
+        Widgets.Label(new Rect(rect.x, rect.y + 26f, rect.width, 20f),
+            "RimTalk.Settings.PromptPreset.VariablePreviewHint".Translate());
+        GUI.color = Color.white;
+        Text.Font = GameFont.Small;
+
+        Rect listRect = new Rect(rect.x, rect.y + 45f, rect.width, rect.height - 45f);
+        var builtin = VariableDefinitions.GetScribanVariables();
+
+        // 2. Filter Logic
+        string query = _variableSearchQuery.Trim().ToLowerInvariant();
+        var filteredBuiltin = new Dictionary<string, List<(string, string)>>();
+
+        foreach (var cat in builtin)
+        {
+            var matches = cat.Value.Where(v =>
+                v.Item1.ToLowerInvariant().Contains(query) ||
+                v.Item2.ToLowerInvariant().Contains(query) ||
+                cat.Key.ToLowerInvariant().Contains(query)
+            ).ToList();
+
+            if (matches.Any()) filteredBuiltin[cat.Key] = matches;
+        }
+
+        // --- Dynamic Variable Discovery ---
+        if (_variableSearchQuery.Contains("."))
+        {
+            var dynamicVars = VariableDefinitions.GetDynamicVariables(_variableSearchQuery, entry.Content);
+            foreach (var kvp in dynamicVars)
+            {
+                filteredBuiltin[kvp.Key] = kvp.Value;
+            }
+        }
+
+        var runtimeVars = manager.VariableStore.GetAllVariables()
+            .Where(kvp => kvp.Key.ToLowerInvariant().Contains(query) || kvp.Value.ToLowerInvariant().Contains(query))
+            .ToList();
+
+        // 3. Dynamic height calculation
+        float totalRows = filteredBuiltin.Sum(c => c.Value.Count + 1);
+        if (runtimeVars.Any()) totalRows += runtimeVars.Count + 1;
+
+        Rect viewRect = new Rect(0f, 0f, listRect.width - 16f, totalRows * 22f);
+
+        Widgets.BeginScrollView(listRect, ref _auxScrollPos, viewRect);
+        float vy = 0f;
+
+        // 4. Render Filtered Builtin
+        string prefixToStrip = "";
+        int lastDotIndex = _variableSearchQuery.LastIndexOf('.');
+        if (lastDotIndex >= 0)
+        {
+            prefixToStrip = _variableSearchQuery.Substring(0, lastDotIndex + 1);
+        }
+
+        foreach (var cat in filteredBuiltin)
+        {
+            GUI.color = Color.cyan;
+            Text.Font = GameFont.Tiny;
+            Widgets.Label(new Rect(0f, vy, viewRect.width, 20f), $"▼ {cat.Key}");
+            Text.Font = GameFont.Small;
+            GUI.color = Color.white;
+            vy += 22f;
+            foreach (var v in cat.Value)
+            {
+                string displayLabel = null;
+                if (!string.IsNullOrEmpty(prefixToStrip) && v.Item1.StartsWith(prefixToStrip, StringComparison.OrdinalIgnoreCase))
+                {
+                    displayLabel = v.Item1.Substring(prefixToStrip.Length);
+                }
+                DrawVariableRow(ref vy, viewRect.width, v.Item1, v.Item2, null, entry, displayLabel);
+            }
+        }
+
+        // 5. Render Filtered Runtime
+        if (runtimeVars.Any())
+        {
+            GUI.color = Color.green;
+            Text.Font = GameFont.Tiny;
+            Widgets.Label(new Rect(0f, vy, viewRect.width, 20f), "▼ Runtime Variables");
+            Text.Font = GameFont.Small;
+            GUI.color = Color.white;
+            vy += 22f;
+            foreach (var kvp in runtimeVars) DrawVariableRow(ref vy, viewRect.width, kvp.Key, "", kvp.Value, entry);
+        }
+
+        Widgets.EndScrollView();
+    }
+
+    private void DrawVariableRow(ref float y, float w, string n, string d, string v, PromptEntry entry, string displayLabel = null)
+    {
+        Rect rowRect = new Rect(0f, y, w, 20f);
+        if (Mouse.IsOver(rowRect)) Widgets.DrawHighlight(rowRect);
+
+        if (Widgets.ButtonInvisible(rowRect))
+        {
+            InsertVariable(n, entry);
+        }
+
+        Text.Font = GameFont.Tiny;
         
+        string label = displayLabel ?? n;
+        string fullVar = $"{{{{ {label} }}}}";
+        float labelWidth = Text.CalcSize(fullVar).x;
+
+        // 1. Draw Variable Name
+        GUI.color = new Color(0.8f, 1f, 0.8f);
+        Widgets.Label(new Rect(2f, y, labelWidth + 5f, 20f), fullVar);
+
+        // 2. Draw Type Info/Params right next to it
+        string typeInfo = v ?? d;
+        if (!string.IsNullOrEmpty(typeInfo))
+        {
+            GUI.color = new Color(0.5f, 0.5f, 0.5f);
+            float typeX = labelWidth + 10f;
+            float typeW = w - typeX - 5f;
+            if (typeW > 10f)
+            {
+                Widgets.Label(new Rect(typeX, y, typeW, 20f), typeInfo);
+            }
+        }
+
         GUI.color = Color.white;
         Text.Font = GameFont.Small;
         y += 20f;
     }
 
-    /// <summary>
-    /// Shows import menu with available preset files
-    /// </summary>
     private void ShowImportMenu(PromptManager manager)
     {
         var files = PresetSerializer.GetAvailablePresetFiles();
-        
+
         if (files.Count == 0)
         {
             var exportDir = PresetSerializer.GetExportDirectory();
@@ -553,78 +1010,154 @@ public partial class Settings
                 "OK".Translate()));
             return;
         }
-        
+
         var options = new List<FloatMenuOption>();
-        
+
         foreach (var file in files)
         {
-            var fileName = System.IO.Path.GetFileNameWithoutExtension(file);
+            var fileName = Path.GetFileNameWithoutExtension(file);
             options.Add(new FloatMenuOption(fileName, () =>
             {
                 var preset = PresetSerializer.ImportFromFile(file);
                 if (preset != null)
                 {
+                    preset.Name = manager.GetUniqueName(preset.Name);
                     manager.AddPreset(preset);
                     _selectedPresetId = preset.Id;
                     _selectedEntryId = null;
-                    Messages.Message("RimTalk.Settings.PromptPreset.ImportSuccess".Translate(preset.Name), MessageTypeDefOf.PositiveEvent, false);
+                    Messages.Message("RimTalk.Settings.PromptPreset.ImportSuccess".Translate(preset.Name),
+                        MessageTypeDefOf.PositiveEvent, false);
                 }
                 else
                 {
-                    Messages.Message("RimTalk.Settings.PromptPreset.ImportFailed".Translate(), MessageTypeDefOf.RejectInput, false);
+                    Messages.Message("RimTalk.Settings.PromptPreset.ImportFailed".Translate(),
+                        MessageTypeDefOf.RejectInput, false);
                 }
             }));
         }
-        
-        // Add option to open folder
+
         options.Add(new FloatMenuOption("RimTalk.Settings.PromptPreset.OpenFolder".Translate(), () =>
         {
             var exportDir = PresetSerializer.GetExportDirectory();
-            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            Process.Start(new ProcessStartInfo
             {
                 FileName = exportDir,
                 UseShellExecute = true
             });
         }));
-        
+
         Find.WindowStack.Add(new FloatMenu(options));
     }
 
-    /// <summary>
-    /// Simple dialog for renaming a preset
-    /// </summary>
-    private class Dialog_RenamePreset : Window
+    private void InsertVariable(string variableName, PromptEntry entry)
     {
-        private readonly PromptPreset _preset;
-        private string _newName;
+        // 1. Play Sound
+        SoundDefOf.Click.PlayOneShotOnCamera(null);
 
-        public override Vector2 InitialSize => new(400f, 150f);
+        // 2. Get Editor State
+        TextEditor te = (TextEditor)GUIUtility.GetStateObject(typeof(TextEditor), GUIUtility.keyboardControl);
 
-        public Dialog_RenamePreset(PromptPreset preset)
+        if (te != null && te.cursorIndex >= 0 && te.cursorIndex <= entry.Content.Length)
         {
-            _preset = preset;
-            _newName = preset.Name;
-            doCloseX = true;
-            absorbInputAroundWindow = true;
-            closeOnClickedOutside = true;
-        }
+            string text = entry.Content;
+            int cursor = te.cursorIndex;
 
-        public override void DoWindowContents(Rect inRect)
-        {
-            Text.Font = GameFont.Medium;
-            Widgets.Label(new Rect(0f, 0f, inRect.width, 30f), "RimTalk.Settings.PromptPreset.Rename".Translate());
-            Text.Font = GameFont.Small;
-
-            _newName = Widgets.TextField(new Rect(0f, 40f, inRect.width, 30f), _newName);
-
-            if (Widgets.ButtonText(new Rect(inRect.width - 120f, inRect.height - 35f, 120f, 35f), "OK".Translate()))
+            // --- Step A: Identify and Remove Prefix (Autocomplete) ---
+            // Find the partial word to the left (e.g., "pawn.Is")
+            int start = cursor - 1;
+            while (start >= 0)
             {
-                if (!string.IsNullOrWhiteSpace(_newName))
-                {
-                    _preset.Name = _newName.Trim();
-                }
-                Close();
+                char c = text[start];
+                if (!char.IsLetterOrDigit(c) && c != '.' && c != '_') break;
+                start--;
             }
+
+            start++;
+
+            string prefix = "";
+            if (start < cursor) prefix = text.Substring(start, cursor - start);
+
+            // Check if the variable starts with what we typed
+            bool isMatch = !string.IsNullOrEmpty(prefix) &&
+                           variableName.StartsWith(prefix, StringComparison.OrdinalIgnoreCase);
+
+            // If it's a match, delete what we typed so we can replace it cleanly
+            if (isMatch)
+            {
+                text = text.Remove(start, cursor - start);
+                cursor = start;
+            }
+
+            // --- Step B: Check Surroundings (Context) ---
+
+            // Scan backwards ignoring whitespace to see if we are inside {{
+            int ptr = cursor - 1;
+            while (ptr >= 0 && char.IsWhiteSpace(text[ptr])) ptr--;
+
+            bool hasOpenBrackets = (ptr >= 1 && text[ptr] == '{' && text[ptr - 1] == '{');
+
+            // --- Step C: Build the String to Insert ---
+            string finalInsert;
+
+            if (hasOpenBrackets)
+            {
+                // We are already inside brackets (e.g., "{{pawn.Is|")
+
+                // 1. Ensure space after {{
+                // If the character immediately to the left is '{', add a space
+                bool needsLeftSpace = (cursor > 0 && text[cursor - 1] == '{');
+                finalInsert = (needsLeftSpace ? " " : "") + variableName;
+
+                // 2. Ensure closing }}
+                // Scan forward to see if }} exists reasonably close
+                int endPtr = cursor;
+                while (endPtr < text.Length && char.IsWhiteSpace(text[endPtr])) endPtr++;
+
+                bool hasClosingBrackets = (endPtr < text.Length - 1 && text[endPtr] == '}' && text[endPtr + 1] == '}');
+
+                if (!hasClosingBrackets)
+                {
+                    finalInsert += " }}";
+                }
+            }
+            else
+            {
+                // Not inside brackets. Insert the full valid block.
+                finalInsert = $"{{{{ {variableName} }}}}";
+            }
+
+            // --- Step D: Apply and Fix Cursor ---
+            text = text.Insert(cursor, finalInsert);
+            entry.Content = text;
+
+            // Determine final cursor position: Always after the "}}"
+            // If we added "}}", it's at the end of inserted text.
+            // If "}}" already existed, we need to find them and jump past them.
+            int newCursorPos;
+
+            if (hasOpenBrackets)
+            {
+                // Find the first }} after our insertion point
+                int closeIndex = text.IndexOf("}}", cursor);
+                if (closeIndex != -1)
+                    newCursorPos = closeIndex + 2; // Jump past }}
+                else
+                    newCursorPos = cursor + finalInsert.Length;
+            }
+            else
+            {
+                newCursorPos = cursor + finalInsert.Length;
+            }
+
+            // Apply cursor change
+            te.text = text; // Update internal TE text immediately
+            te.cursorIndex = newCursorPos;
+            te.selectIndex = newCursorPos;
+        }
+        else
+        {
+            // Fallback if no focus
+            entry.Content += $"{{{{ {variableName} }}}}";
         }
     }
 }

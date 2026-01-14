@@ -102,15 +102,6 @@ public static class CommonUtil
         return $"{hour12}{ampm}";
     }
 
-    // Overload for Map parameter - convenience method for MustacheParser
-    public static string GetInGameHour12HString(Map map)
-    {
-        if (map == null) return "";
-        long absTicks = Find.TickManager.TicksAbs;
-        Vector2 longLat = Find.WorldGrid.LongLatOf(map.Tile);
-        return GetInGameHour12HString(absTicks, longLat);
-    }
-
     // Returns the year, quarter, and day.
     private static string GetInGameDateString(long absTicks, Vector2 longLat)
     {

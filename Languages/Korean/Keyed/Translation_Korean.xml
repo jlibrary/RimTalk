@@ -71,7 +71,112 @@
 
     <!-- Settings.cs -->
     <RimTalk.Settings.BasicSettings>기본 설정</RimTalk.Settings.BasicSettings>
-    <RimTalk.Settings.AIInstruction>AI 지침</RimTalk.Settings.AIInstruction>
+    <RimTalk.Settings.PromptSetting>프롬프트 설정</RimTalk.Settings.PromptSetting>
+    <RimTalk.Settings.ImportPreset>가져오기</RimTalk.Settings.ImportPreset>
+    <RimTalk.Settings.ExportPreset>내보내기</RimTalk.Settings.ExportPreset>
+    <RimTalk.Settings.ShowVariables>레퍼런스</RimTalk.Settings.ShowVariables>
+    <RimTalk.Settings.ResetConfirm>모든 프롬프트 프리셋과 레퍼런스 데이터를 기본값으로 재설정하시겠습니까? 이 작업은 되돌릴 수 없습니다.</RimTalk.Settings.ResetConfirm>
+    
+    <!-- Settings_PromptPreset.cs -->
+    <RimTalk.Settings.PromptPreset.SearchPlaceholder>객체, 속성, 함수 검색...</RimTalk.Settings.PromptPreset.SearchPlaceholder>
+    <RimTalk.Settings.PromptPreset.ModePreview>미리보기</RimTalk.Settings.PromptPreset.ModePreview>
+    <RimTalk.Settings.PromptPreset.Presets>프리셋</RimTalk.Settings.PromptPreset.Presets>
+    <RimTalk.Settings.PromptPreset.NewPreset>+ 새 프리셋</RimTalk.Settings.PromptPreset.NewPreset>
+    <RimTalk.Settings.PromptPreset.NewPresetName>새 프리셋</RimTalk.Settings.PromptPreset.NewPresetName>
+    <RimTalk.Settings.PromptPreset.Activate>활성화</RimTalk.Settings.PromptPreset.Activate>
+    <RimTalk.Settings.PromptPreset.Duplicate>복제</RimTalk.Settings.PromptPreset.Duplicate>
+    <RimTalk.Settings.PromptPreset.Delete>삭제</RimTalk.Settings.PromptPreset.Delete>
+    <RimTalk.Settings.PromptPreset.SectionSystem>시스템 (System)</RimTalk.Settings.PromptPreset.SectionSystem>
+    <RimTalk.Settings.PromptPreset.SectionHistory>히스토리 (History)</RimTalk.Settings.PromptPreset.SectionHistory>
+    <RimTalk.Settings.PromptPreset.SectionPrompt>프롬프트 (Prompt)</RimTalk.Settings.PromptPreset.SectionPrompt>
+    <RimTalk.Settings.PromptPreset.NewEntry>+ 새 항목</RimTalk.Settings.PromptPreset.NewEntry>
+    <RimTalk.Settings.PromptPreset.NewEntryName>새 항목</RimTalk.Settings.PromptPreset.NewEntryName>
+    <RimTalk.Settings.PromptPreset.SelectEntryToEdit>편집할 항목을 선택하세요</RimTalk.Settings.PromptPreset.SelectEntryToEdit>
+    <RimTalk.Settings.PromptPreset.PresetName>프리셋 이름:</RimTalk.Settings.PromptPreset.PresetName>
+    <RimTalk.Settings.PromptPreset.EntryName>항목 이름:</RimTalk.Settings.PromptPreset.EntryName>
+    <RimTalk.Settings.PromptPreset.Role>역할:</RimTalk.Settings.PromptPreset.Role>
+    <RimTalk.Settings.PromptPreset.Position>위치:</RimTalk.Settings.PromptPreset.Position>
+    <RimTalk.Settings.PromptPreset.PositionRelative>상대적</RimTalk.Settings.PromptPreset.PositionRelative>
+    <RimTalk.Settings.PromptPreset.PositionInChat>채팅내</RimTalk.Settings.PromptPreset.PositionInChat>
+    <RimTalk.Settings.PromptPreset.Depth>깊이:</RimTalk.Settings.PromptPreset.Depth>
+    <RimTalk.Settings.PromptPreset.Content>내용:</RimTalk.Settings.PromptPreset.Content>
+    <RimTalk.Settings.PromptPreset.ModVariables>모드 변수</RimTalk.Settings.PromptPreset.ModVariables>
+    <RimTalk.Settings.PromptPreset.VariablePreviewHint>사용 가능한 모든 객체, 속성, 함수를 표시합니다. 가능하면 게임 내 값이 표시됩니다.</RimTalk.Settings.PromptPreset.VariablePreviewHint>
+    
+    <!-- Import/Export -->
+    <RimTalk.Settings.PromptPreset.Export>내보내기</RimTalk.Settings.PromptPreset.Export>
+    <RimTalk.Settings.PromptPreset.Import>가져오기</RimTalk.Settings.PromptPreset.Import>
+    <RimTalk.Settings.PromptPreset.ExportSuccess>프리셋이 다음 위치로 내보내졌습니다: {0}</RimTalk.Settings.PromptPreset.ExportSuccess>
+    <RimTalk.Settings.PromptPreset.ExportFailed>프리셋 내보내기에 실패했습니다.</RimTalk.Settings.PromptPreset.ExportFailed>
+    <RimTalk.Settings.PromptPreset.ImportSuccess>프리셋을 성공적으로 가져왔습니다: {0}</RimTalk.Settings.PromptPreset.ImportSuccess>
+    <RimTalk.Settings.PromptPreset.ImportFailed>프리셋 가져오기에 실패했습니다.</RimTalk.Settings.PromptPreset.ImportFailed>
+    <RimTalk.Settings.PromptPreset.NoPresetsToImport>프리셋 파일을 찾을 수 없습니다. .json 파일을 다음 위치에 두세요:
+{0}</RimTalk.Settings.PromptPreset.NoPresetsToImport>
+    <RimTalk.Settings.PromptPreset.OpenFolder>폴더 열기</RimTalk.Settings.PromptPreset.OpenFolder>
+    <RimTalk.Settings.PromptPreset.PreviewNotAvailable>미리보기는 게임이 로드된 상태에서만 가능합니다.</RimTalk.Settings.PromptPreset.PreviewNotAvailable>
+    <RimTalk.Settings.PromptPreset.NoRecentInteraction>최근 상호작용을 찾을 수 없습니다. 채팅 요청을 보내거나 상호작용이 발생할 때까지 기다려 미리보기 컨텍스트를 생성하세요.</RimTalk.Settings.PromptPreset.NoRecentInteraction>
+    <RimTalk.Settings.PromptPreset.PreviewError>미리보기 생성 중 오류 발생: {0}</RimTalk.Settings.PromptPreset.PreviewError>
+    
+    <!-- Simple/Advanced Mode -->
+    <RimTalk.Settings.SimpleModeTip>캐릭터 프로필, 채팅 기록, 컨텍스트가 자동으로 포함됩니다.</RimTalk.Settings.SimpleModeTip>
+    <RimTalk.Settings.AdvancedModeWarning>고급 모드에서는 프롬프트 항목, 변수 및 메시지 순서를 완벽하게 제어할 수 있습니다. 현재 지침은 유지됩니다. 계속하시겠습니까?</RimTalk.Settings.AdvancedModeWarning>
+    <RimTalk.Settings.PromptHelp>도움말</RimTalk.Settings.PromptHelp>
+    <RimTalk.Settings.AdvancedHelpContent>고급 프리셋 가이드
+
+고급 모드에서는 AI가 생각하고 세상을 바라보는 방식을 정밀하게 제어할 수 있습니다. 각 프리셋은 세 가지 주요 블록으로 구성됩니다:
+
+1. 시스템 (System - 규칙)
+AI가 항상 염두에 두는 배경 지침입니다. 일반적인 성격이나 형식 규칙을 정의하는 데 사용하세요.
+팁: JSON 역직렬화 오류가 발생하면, AI를 더 엄격하게 유도하기 위해 {{json.format}} 변수를 사용자 정의 JSON 스키마 지침으로 수동으로 덮어쓸 수 있습니다.
+
+2. 히스토리 (History - 흐름)
+이전 메시지가 프롬프트의 어디에 나타날지 관리합니다.
+- 위치: 채팅내 (InChat): 데이터를 대화 로그에 직접 주입합니다.
+- 깊이 (Depth): 주입이 일어나는 위치를 제어합니다.
+    - 깊이 0: 가장 최근 메시지 뒤.
+    - 깊이 5: 과거 5개 메시지 전.
+- 위치: 상대적 (Relative): 항목을 히스토리 블록 바로 앞이나 뒤에 배치합니다.
+
+3. 프롬프트 (Prompt - 트리거)
+퍼즐의 마지막 조각입니다. 보통 AI가 지금 바로 응답을 생성하도록 트리거하는 특정 지침이나 질문입니다.
+
+Scriban 매직 (동적 콘텐츠)
+이중 중괄호 {{ ... }}를 사용하여 실시간 게임 데이터를 삽입하세요.
+
+고급 컨텍스트:
+- 발신자: {{ pawn.LabelShort }} (말하는 폰)
+- 수신자: {{ recipient.LabelShort }} (말을 듣는 폰)
+- 모든 참여자: {{ for p in pawns }}{{ p.LabelShort }}, {{ end }}
+
+고급 예시:
+- 모든 정착민 가져오기:
+  {{ for p in PawnsFinder.AllMaps_FreeColonists }} * {{ p.LabelShort }}는 {{ p.job }}입니다{{ end }}
+
+- 최근 퀘스트 3개 가져오기:
+  {{ for q in Find.QuestManager.QuestsListForReading | array.limit 3 }} - {{ q.name }}: {{ q.description | Sanitize }}{{ end }}
+
+- 맵 환경:
+  날씨는 {{ map.weather }}이며 기온은 {{ map.temperature }}°C입니다.
+
+- 폰 욕구:
+  {{ for need in pawn.needs.AllNeeds }} * {{ need.def.label }}: {{ need.CurLevelPercentage }}{{ end }}
+
+- 상태 확인:
+  {{ if IsInCombat pawn }}당신은 현재 전투 중입니다!{{ end }}
+
+- 복잡한 논리 예시:
+  {{ if recipient != null }}
+  당신은 {{ recipient.LabelShort }}와 대화 중입니다.
+  {{ if recipient.Dead }}...하지만 그는 죽었습니다.{{ end }}
+  {{ else }}
+  당신은 혼잣말을 하고 있습니다.
+  {{ end }}
+
+핵심 팁:
+- 대소문자 구분: 함수는 엄격합니다. getrole이 아닌 GetRole을 사용하세요.
+- 레퍼런스 미리보기: 전용 탭을 사용하여 사용할 수 있는 모든 속성을 확인하세요!
+- JSON: {{json.format}} 변수는 AI 논리에 필수적입니다. 숙련된 사용자인 경우에만 시스템 항목에서 수동으로 덮어쓰세요.</RimTalk.Settings.AdvancedHelpContent>
+    
     <RimTalk.Settings.EventFilter>이벤트 필터</RimTalk.Settings.EventFilter>
     <RimTalk.Settings.ApiKey>클라우드 API 키</RimTalk.Settings.ApiKey>
     <RimTalk.Settings.GetFreeApiKey>무료 API 키 받기</RimTalk.Settings.GetFreeApiKey>
@@ -243,9 +348,10 @@
     <RimTalk.DebugWindow.Copy>복사</RimTalk.DebugWindow.Copy>
     <RimTalk.DebugWindow.Copied>복사 완료</RimTalk.DebugWindow.Copied>
     <RimTalk.DebugWindow.Undo>되돌리기</RimTalk.DebugWindow.Undo>
-    <RimTalk.DebugWindow.Prompt>프롬프트</RimTalk.DebugWindow.Prompt>
-    <RimTalk.DebugWindow.Response>응답</RimTalk.DebugWindow.Response>
-    <RimTalk.DebugWindow.Contexts>컨텍스트</RimTalk.DebugWindow.Contexts>
+    <RimTalk.DebugWindow.Prompt>프롬프트 (Prompt)</RimTalk.DebugWindow.Prompt>
+    <RimTalk.DebugWindow.Response>응답 (Response)</RimTalk.DebugWindow.Response>
+    <RimTalk.DebugWindow.PromptMessages>요청 세부 정보</RimTalk.DebugWindow.PromptMessages>
+    <RimTalk.DebugWindow.Contexts>컨텍스트 (Contexts)</RimTalk.DebugWindow.Contexts>
     <RimTalk.DebugWindow.Generating>[생성 중...]</RimTalk.DebugWindow.Generating>
     <RimTalk.DebugWindow.StatusDisabled>비활성화됨</RimTalk.DebugWindow.StatusDisabled>
     <RimTalk.DebugWindow.StatusProcessing>처리 중</RimTalk.DebugWindow.StatusProcessing>
@@ -281,8 +387,14 @@
     <RimTalk.DebugWindow.HeaderElapsed>소요</RimTalk.DebugWindow.HeaderElapsed>
     <RimTalk.DebugWindow.HeaderInitiator>발신자</RimTalk.DebugWindow.HeaderInitiator>
     <RimTalk.DebugWindow.HeaderRecipient>수신자</RimTalk.DebugWindow.HeaderRecipient>
+    <RimTalk.DebugWindow.HistoryCleared>대화 히스토리가 삭제되었습니다.</RimTalk.DebugWindow.HistoryCleared>
+    <RimTalk.DebugWindow.FormatEntry>항목</RimTalk.DebugWindow.FormatEntry>
+    <RimTalk.DebugWindow.FormatRole>역할</RimTalk.DebugWindow.FormatRole>
+    <RimTalk.DebugWindow.SystemInstruction>시스템 지침 (System Instruction)</RimTalk.DebugWindow.SystemInstruction>
+    <RimTalk.DebugWindow.ChatHistory>채팅 히스토리 (Chat History)</RimTalk.DebugWindow.ChatHistory>
+    <RimTalk.DebugWindow.InputPrompt>입력 프롬프트 (Input Prompt)</RimTalk.DebugWindow.InputPrompt>
     <RimTalk.DebugWindow.TooltipPromptResponse>프롬프트:\n{0}\n\n응답:\n{1}</RimTalk.DebugWindow.TooltipPromptResponse>
-    
+
     <!-- Overlay.cs -->
     <RimTalk.Overlay.Debug>디버그</RimTalk.Overlay.Debug>
     <RimTalk.Overlay.Option>오버레이 옵션</RimTalk.Overlay.Option>
@@ -292,10 +404,17 @@
 
     <!-- FloatMenuMakerMapGetOptionsPatch.cs -->
     <RimTalk.FloatMenu.ChatWith>{0}와 대화하기</RimTalk.FloatMenu.ChatWith>
-    <RimTalk.Gizmo.ChatWithTarget>{0}와(과) 대화하기</RimTalk.Gizmo.ChatWithTarget>
+    <RimTalk.Gizmo.ChatWithTarget>{0}와 대화하기</RimTalk.Gizmo.ChatWithTarget>
     <RimTalk.Gizmo.ChatWithTargetDesc>{0}와(과) 대화를 시작합니다.</RimTalk.Gizmo.ChatWithTargetDesc>
     <RimTalk.FloatMenu.WhatToSayToSelf>{0}에게 무엇을 말하고 싶으세요?</RimTalk.FloatMenu.WhatToSayToSelf>
     <RimTalk.FloatMenu.WhatToSayToOther>{0}가 {1}에게 무엇을 말하기를 원하세요?</RimTalk.FloatMenu.WhatToSayToOther>
     <RimTalk.FloatMenu.Send>전송</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>취소</RimTalk.FloatMenu.Cancel>
+
+    <!-- VariableDefinitions.cs - Variable Registry -->
+    <RimTalk.ScribanVar.Category.PawnShorthands>폰 단축어</RimTalk.ScribanVar.Category.PawnShorthands>
+    <RimTalk.ScribanVar.Category.CoreObjects>핵심 객체</RimTalk.ScribanVar.Category.CoreObjects>
+    <RimTalk.ScribanVar.Category.Context>컨텍스트</RimTalk.ScribanVar.Category.Context>
+    <RimTalk.ScribanVar.Category.GameStatic>게임 객체 (정적)</RimTalk.ScribanVar.Category.GameStatic>
+    <RimTalk.ScribanVar.Category.System>시스템</RimTalk.ScribanVar.Category.System>
 </LanguageData>

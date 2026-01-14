@@ -1,15 +1,15 @@
 using System.Collections.Generic;
 using RimTalk.Data;
 using RimTalk.Source.Data;
-using RimWorld;
 using Verse;
 
 namespace RimTalk.Prompt;
 
 /// <summary>
-/// Mustache syntax parse context - contains all information needed for parsing.
+/// Prompt rendering context - contains all information needed for parsing.
+/// Used by ScribanParser to provide data for templates.
 /// </summary>
-public class MustacheContext
+public class PromptContext
 {
     /// <summary>Current primary pawn</summary>
     public Pawn CurrentPawn { get; set; }
@@ -43,8 +43,8 @@ public class MustacheContext
 
     // Convenience properties - obtained from TalkRequest
     public bool IsMonologue => TalkRequest?.IsMonologue ?? false;
-    public TalkType TalkType => TalkRequest?.TalkType ?? Source.Data.TalkType.Other;
-    public string UserPrompt => TalkType == Source.Data.TalkType.User ? TalkRequest?.Prompt : null;
+    public TalkType TalkType => TalkRequest?.TalkType ?? TalkType.Other;
+    public string UserPrompt => TalkType == TalkType.User ? TalkRequest?.Prompt : null;
     
     // Compatibility property - Pawns alias
     public List<Pawn> Pawns => AllPawns;
@@ -52,12 +52,15 @@ public class MustacheContext
     /// <summary>Current pawn index in section iteration (for {{index}} variable)</summary>
     public int ScopedPawnIndex { get; set; }
 
-    public MustacheContext()
+    /// <summary>Whether this context is being used for preview (e.g. settings menu)</summary>
+    public bool IsPreview { get; set; }
+
+    public PromptContext()
     {
         AllPawns = new List<Pawn>();
     }
 
-    public MustacheContext(Pawn pawn, VariableStore variableStore = null)
+    public PromptContext(Pawn pawn, VariableStore variableStore = null)
     {
         CurrentPawn = pawn;
         AllPawns = pawn != null ? new List<Pawn> { pawn } : new List<Pawn>();
@@ -65,7 +68,7 @@ public class MustacheContext
         VariableStore = variableStore ?? PromptManager.Instance?.VariableStore ?? new VariableStore();
     }
 
-    public MustacheContext(List<Pawn> pawns, VariableStore variableStore = null)
+    public PromptContext(List<Pawn> pawns, VariableStore variableStore = null)
     {
         AllPawns = pawns ?? new List<Pawn>();
         CurrentPawn = AllPawns.Count > 0 ? AllPawns[0] : null;
@@ -77,12 +80,12 @@ public class MustacheContext
     /// Creates context from TalkRequest.
     /// Uses Participants from TalkRequest if available, otherwise falls back to provided pawns list.
     /// </summary>
-    public static MustacheContext FromTalkRequest(TalkRequest request, List<Pawn> pawns = null)
+    public static PromptContext FromTalkRequest(TalkRequest request, List<Pawn> pawns = null)
     {
         // Prefer TalkRequest.Participants (filled in sync layer)
         var participants = request?.Participants ?? pawns ?? new List<Pawn>();
         
-        return new MustacheContext
+        return new PromptContext
         {
             TalkRequest = request,
             AllPawns = participants,

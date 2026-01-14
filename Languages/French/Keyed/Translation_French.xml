@@ -23,7 +23,7 @@
     <RimTalk.Persona.Opportunist>Opportuniste - Malin et persuasif. Parle comme un arnaqueur, négocie et déforme les mots.</RimTalk.Persona.Opportunist>
     <RimTalk.Persona.OptimisticDreamer>Rêveur Optimiste - Imaginatif et plein d'espoir. Enthousiasmé par l'avenir.</RimTalk.Persona.OptimisticDreamer>
     <RimTalk.Persona.Pessimist>Pessimiste - Sombre et résigné. S'attend à l'échec et souligne les risques.</RimTalk.Persona.Pessimist>
-    <RimTalk.Persona.StoicSoldier>Soldat Stoïque - Calme, discipliné et bref. Peu d'émotion, factuel.</RimTalk.Persona.StoicSoldier>
+    <RimTalk.Persona.StoicSoldier>Soldat Stoïque - Calme, diplomé et bref. Peu d'émotion, factuel.</RimTalk.Persona.StoicSoldier>
     <RimTalk.Persona.FreeSpirit>Esprit Libre - Enjoué et insouciant. Résiste aux règles, ignore les soucis.</RimTalk.Persona.FreeSpirit>
     <RimTalk.Persona.Workaholic>Bourreau de Travail - Motivé et infatigable. Obsédé par le devoir et l'efficacité.</RimTalk.Persona.Workaholic>
     <RimTalk.Persona.Slacker>Fainéant - Paresseux et décontracté. Se plaint de l'effort, préfère le confort.</RimTalk.Persona.Slacker>
@@ -71,7 +71,112 @@
 
     <!-- Settings.cs -->
     <RimTalk.Settings.BasicSettings>Paramètres de base</RimTalk.Settings.BasicSettings>
-    <RimTalk.Settings.AIInstruction>Instruction de l'IA</RimTalk.Settings.AIInstruction>
+    <RimTalk.Settings.PromptSetting>Paramètre du prompt</RimTalk.Settings.PromptSetting>
+    <RimTalk.Settings.ImportPreset>Importer</RimTalk.Settings.ImportPreset>
+    <RimTalk.Settings.ExportPreset>Exporter</RimTalk.Settings.ExportPreset>
+    <RimTalk.Settings.ShowVariables>Référence</RimTalk.Settings.ShowVariables>
+    <RimTalk.Settings.ResetConfirm>Êtes-vous sûr de vouloir réinitialiser tous les préréglages de prompt et les données de référence par défaut ? Cela ne peut pas être annulé.</RimTalk.Settings.ResetConfirm>
+    
+    <!-- Settings_PromptPreset.cs -->
+    <RimTalk.Settings.PromptPreset.SearchPlaceholder>Rechercher des objets, propriétés, fonctions...</RimTalk.Settings.PromptPreset.SearchPlaceholder>
+    <RimTalk.Settings.PromptPreset.ModePreview>Aperçu</RimTalk.Settings.PromptPreset.ModePreview>
+    <RimTalk.Settings.PromptPreset.Presets>Préréglages</RimTalk.Settings.PromptPreset.Presets>
+    <RimTalk.Settings.PromptPreset.NewPreset>+ Nouveau Préréglage</RimTalk.Settings.PromptPreset.NewPreset>
+    <RimTalk.Settings.PromptPreset.NewPresetName>Nouveau Préréglage</RimTalk.Settings.PromptPreset.NewPresetName>
+    <RimTalk.Settings.PromptPreset.Activate>Activer</RimTalk.Settings.PromptPreset.Activate>
+    <RimTalk.Settings.PromptPreset.Duplicate>Dupliquer</RimTalk.Settings.PromptPreset.Duplicate>
+    <RimTalk.Settings.PromptPreset.Delete>Supprimer</RimTalk.Settings.PromptPreset.Delete>
+    <RimTalk.Settings.PromptPreset.SectionSystem>Système</RimTalk.Settings.PromptPreset.SectionSystem>
+    <RimTalk.Settings.PromptPreset.SectionHistory>Histoire</RimTalk.Settings.PromptPreset.SectionHistory>
+    <RimTalk.Settings.PromptPreset.SectionPrompt>Prompt</RimTalk.Settings.PromptPreset.SectionPrompt>
+    <RimTalk.Settings.PromptPreset.NewEntry>+ Nouvelle Entrée</RimTalk.Settings.PromptPreset.NewEntry>
+    <RimTalk.Settings.PromptPreset.NewEntryName>Nouvelle Entrée</RimTalk.Settings.PromptPreset.NewEntryName>
+    <RimTalk.Settings.PromptPreset.SelectEntryToEdit>Sélectionnez une entrée à modifier</RimTalk.Settings.PromptPreset.SelectEntryToEdit>
+    <RimTalk.Settings.PromptPreset.PresetName>Nom du Préréglage :</RimTalk.Settings.PromptPreset.PresetName>
+    <RimTalk.Settings.PromptPreset.EntryName>Nom de l'Entrée :</RimTalk.Settings.PromptPreset.EntryName>
+    <RimTalk.Settings.PromptPreset.Role>Rôle :</RimTalk.Settings.PromptPreset.Role>
+    <RimTalk.Settings.PromptPreset.Position>Position :</RimTalk.Settings.PromptPreset.Position>
+    <RimTalk.Settings.PromptPreset.PositionRelative>Relatif</RimTalk.Settings.PromptPreset.PositionRelative>
+    <RimTalk.Settings.PromptPreset.PositionInChat>DansChat</RimTalk.Settings.PromptPreset.PositionInChat>
+    <RimTalk.Settings.PromptPreset.Depth>Profondeur :</RimTalk.Settings.PromptPreset.Depth>
+    <RimTalk.Settings.PromptPreset.Content>Contenu :</RimTalk.Settings.PromptPreset.Content>
+    <RimTalk.Settings.PromptPreset.ModVariables>Variables Mod</RimTalk.Settings.PromptPreset.ModVariables>
+    <RimTalk.Settings.PromptPreset.VariablePreviewHint>Affiche tous les objets, propriétés et fonctions disponibles. Valeurs en jeu affichées si disponibles.</RimTalk.Settings.PromptPreset.VariablePreviewHint>
+    
+    <!-- Import/Export -->
+    <RimTalk.Settings.PromptPreset.Export>Exporter</RimTalk.Settings.PromptPreset.Export>
+    <RimTalk.Settings.PromptPreset.Import>Importer</RimTalk.Settings.PromptPreset.Import>
+    <RimTalk.Settings.PromptPreset.ExportSuccess>Préréglage exporté vers : {0}</RimTalk.Settings.PromptPreset.ExportSuccess>
+    <RimTalk.Settings.PromptPreset.ExportFailed>Échec de l'exportation du préréglage.</RimTalk.Settings.PromptPreset.ExportFailed>
+    <RimTalk.Settings.PromptPreset.ImportSuccess>Préréglage importé avec succès : {0}</RimTalk.Settings.PromptPreset.ImportSuccess>
+    <RimTalk.Settings.PromptPreset.ImportFailed>Échec de l'importation du préréglage.</RimTalk.Settings.PromptPreset.ImportFailed>
+    <RimTalk.Settings.PromptPreset.NoPresetsToImport>Aucun fichier de préréglage trouvé. Placez les fichiers .json dans :
+{0}</RimTalk.Settings.PromptPreset.NoPresetsToImport>
+    <RimTalk.Settings.PromptPreset.OpenFolder>Ouvrir le Dossier</RimTalk.Settings.PromptPreset.OpenFolder>
+    <RimTalk.Settings.PromptPreset.PreviewNotAvailable>L'aperçu n'est disponible que lorsqu'une partie est chargée.</RimTalk.Settings.PromptPreset.PreviewNotAvailable>
+    <RimTalk.Settings.PromptPreset.NoRecentInteraction>Aucune interaction récente trouvée. Veuillez envoyer une demande de chat ou attendre une interaction pour générer un contexte d'aperçu.</RimTalk.Settings.PromptPreset.NoRecentInteraction>
+    <RimTalk.Settings.PromptPreset.PreviewError>Erreur lors de la génération de l'aperçu : {0}</RimTalk.Settings.PromptPreset.PreviewError>
+    
+    <!-- Simple/Advanced Mode -->
+    <RimTalk.Settings.SimpleModeTip>Les profils de personnages, l'historique de chat et le contexte sont automatiquement inclus.</RimTalk.Settings.SimpleModeTip>
+    <RimTalk.Settings.AdvancedModeWarning>Le mode avancé offre un contrôle total sur les entrées de prompt, les variables et l'ordre des messages. Votre instruction actuelle sera préservée. Continuer ?</RimTalk.Settings.AdvancedModeWarning>
+    <RimTalk.Settings.PromptHelp>Aide</RimTalk.Settings.PromptHelp>
+    <RimTalk.Settings.AdvancedHelpContent>Guide du Préréglage Avancé
+
+Le mode avancé vous donne un contrôle chirurgical sur la façon dont l'IA pense et voit le monde. Chaque préréglage est construit à partir de trois blocs principaux :
+
+1. Système (Les Règles)
+Ce sont des instructions de fond que l'IA garde toujours à l'esprit. Utilisez ceci pour définir la personnalité générale ou les règles de formatage.
+CONSEIL : Si vous rencontrez des erreurs de désérialisation JSON, vous pouvez écraser manuellement la variable {{json.format}} avec vos propres instructions de schéma JSON spécifiques pour guider l'IA plus strictement.
+
+2. Histoire (Le Flux)
+Ceci gère l'endroit où les messages précédents apparaissent dans le prompt.
+- Position : DansChat : Injecte les données directement dans le journal de conversation.
+- Profondeur : Contrôle où l'injection se produit.
+    - Profondeur 0 : Après le message le plus récent.
+    - Profondeur 5 : 5 messages en arrière dans le passé.
+- Position : Relatif : Place l'entrée strictement avant ou après le bloc d'histoire.
+
+3. Prompt (Le Déclencheur)
+La pièce finale du puzzle. C'est généralement l'instruction ou la question spécifique qui déclenche la génération d'une réponse par l'IA en ce moment.
+
+Magie Scriban (Contenu Dynamique)
+Utilisez des doubles accolades {{ ... }} pour insérer des données de jeu en temps réel.
+
+Contexte Avancé :
+- Initiateur : {{ pawn.LabelShort }} (Le pion qui parle)
+- Destinataire : {{ recipient.LabelShort }} (Le pion à qui l'on parle)
+- Tous les Participants : {{ for p in pawns }}{{ p.LabelShort }}, {{ end }}
+
+Exemples Avancés :
+- Obtenir tous les Colons :
+  {{ for p in PawnsFinder.AllMaps_FreeColonists }} * {{ p.LabelShort }} est {{ p.job }}{{ end }}
+
+- Obtenir les 3 dernières Quêtes :
+  {{ for q in Find.QuestManager.QuestsListForReading | array.limit 3 }} - {{ q.name }} : {{ q.description | Sanitize }}{{ end }}
+
+- Environnement de la Carte :
+  La météo est {{ map.weather }} et il fait {{ map.temperature }}°C.
+
+- Besoins du Pion :
+  {{ for need in pawn.needs.AllNeeds }} * {{ need.def.label }} : {{ need.CurLevelPercentage }}{{ end }}
+
+- Vérifier le Statut :
+  {{ if IsInCombat pawn }}Vous êtes actuellement dans un combat !{{ end }}
+
+- Exemple de Logique Complexe :
+  {{ if recipient != null }}
+  Vous parlez à {{ recipient.LabelShort }}.
+  {{ if recipient.Dead }}...mais il est mort.{{ end }}
+  {{ else }}
+  Vous pensez par vous-même.
+  {{ end }}
+
+Conseils Cruciaux :
+- Sensibilité à la casse : Les fonctions sont strictes. Utilisez GetRole, pas getrole.
+- Aperçu des Références : Utilisez l'onglet dédié pour voir chaque propriété que vous pouvez utiliser !
+- JSON : La variable {{json.format}} est vitale pour la logique de l'IA. Ne l'écrasez manuellement dans les entrées Système que si vous êtes un utilisateur expérimenté.</RimTalk.Settings.AdvancedHelpContent>
+    
     <RimTalk.Settings.EventFilter>Filtre d'événements</RimTalk.Settings.EventFilter>
     <RimTalk.Settings.ApiKey>Clé API Cloud</RimTalk.Settings.ApiKey>
     <RimTalk.Settings.GetFreeApiKey>Obtenir une clé API gratuite</RimTalk.Settings.GetFreeApiKey>
@@ -245,6 +350,7 @@
     <RimTalk.DebugWindow.Undo>Annuler</RimTalk.DebugWindow.Undo>
     <RimTalk.DebugWindow.Prompt>Prompt</RimTalk.DebugWindow.Prompt>
     <RimTalk.DebugWindow.Response>Réponse</RimTalk.DebugWindow.Response>
+    <RimTalk.DebugWindow.PromptMessages>Détails de la demande</RimTalk.DebugWindow.PromptMessages>
     <RimTalk.DebugWindow.Contexts>Contextes</RimTalk.DebugWindow.Contexts>
     <RimTalk.DebugWindow.Generating>[Génération...]</RimTalk.DebugWindow.Generating>
     <RimTalk.DebugWindow.StatusDisabled>Désactivé</RimTalk.DebugWindow.StatusDisabled>
@@ -281,6 +387,12 @@
     <RimTalk.DebugWindow.HeaderElapsed>Écoulé</RimTalk.DebugWindow.HeaderElapsed>
     <RimTalk.DebugWindow.HeaderInitiator>Émetteur</RimTalk.DebugWindow.HeaderInitiator>
     <RimTalk.DebugWindow.HeaderRecipient>Destinataire</RimTalk.DebugWindow.HeaderRecipient>
+    <RimTalk.DebugWindow.HistoryCleared>Historique des conversations effacé.</RimTalk.DebugWindow.HistoryCleared>
+    <RimTalk.DebugWindow.FormatEntry>Entrée</RimTalk.DebugWindow.FormatEntry>
+    <RimTalk.DebugWindow.FormatRole>Rôle</RimTalk.DebugWindow.FormatRole>
+    <RimTalk.DebugWindow.SystemInstruction>Instruction Système</RimTalk.DebugWindow.SystemInstruction>
+    <RimTalk.DebugWindow.ChatHistory>Historique du Chat</RimTalk.DebugWindow.ChatHistory>
+    <RimTalk.DebugWindow.InputPrompt>Invite de Saisie</RimTalk.DebugWindow.InputPrompt>
     <RimTalk.DebugWindow.TooltipPromptResponse>Prompt :\n{0}\n\nRéponse :\n{1}</RimTalk.DebugWindow.TooltipPromptResponse>
     
     <!-- Overlay.cs -->
@@ -298,4 +410,11 @@
     <RimTalk.FloatMenu.WhatToSayToOther>Que voulez-vous que {0} dise à {1} ?</RimTalk.FloatMenu.WhatToSayToOther>
     <RimTalk.FloatMenu.Send>Envoyer</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>Annuler</RimTalk.FloatMenu.Cancel>
+
+    <!-- VariableDefinitions.cs - Variable Registry -->
+    <RimTalk.ScribanVar.Category.PawnShorthands>Raccourcis de Pions</RimTalk.ScribanVar.Category.PawnShorthands>
+    <RimTalk.ScribanVar.Category.CoreObjects>Objets Principaux</RimTalk.ScribanVar.Category.CoreObjects>
+    <RimTalk.ScribanVar.Category.Context>Contexte</RimTalk.ScribanVar.Category.Context>
+    <RimTalk.ScribanVar.Category.GameStatic>Objets de Jeu (Statiques)</RimTalk.ScribanVar.Category.GameStatic>
+    <RimTalk.ScribanVar.Category.System>Système</RimTalk.ScribanVar.Category.System>
 </LanguageData>

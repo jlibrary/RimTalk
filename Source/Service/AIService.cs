@@ -22,17 +22,17 @@ public static class AIService
     /// </summary>
     public static async Task ChatStreaming(TalkRequest request, Action<TalkResponse> onPlayerResponseReceived)
     {
-        var prefixMessages = request.PromptMessages ?? new List<(Role role, string message)>();
+        var prefixMessages = request.PromptMessages ?? [];
         var apiLog = ApiHistory.AddRequest(request, Channel.Stream);
         var lastApiLog = apiLog;
 
         var payload = await ExecuteWithRetry(apiLog, async client =>
         {
             // All prompt messages are already in prefixMessages, pass empty list for messages
-            return await client.GetStreamingChatCompletionAsync<TalkResponse>(prefixMessages, new List<(Role, string)>(),
+            return await client.GetStreamingChatCompletionAsync<TalkResponse>(prefixMessages, [],
                 response =>
                 {
-                    if (Cache.GetByName(response.Name) == null) return;
+                    if (Cache.GetByName(response.Name) == null) return; 
                     
                     response.TalkType = request.TalkType;
 
@@ -47,7 +47,8 @@ public static class AIService
                     lastApiLog = newLog;
 
                     onPlayerResponseReceived?.Invoke(response);
-                });
+                },
+                prep => ApiHistory.UpdatePayload(apiLog.Id, prep));
         });
 
         HandleFinalStatus(apiLog, payload);
@@ -62,7 +63,7 @@ public static class AIService
         var apiLog = ApiHistory.AddRequest(request, Channel.Query);
 
         var payload = await ExecuteWithRetry(apiLog, async client =>
-            await client.GetChatCompletionAsync(prefixMessages, messages));
+            await client.GetChatCompletionAsync(prefixMessages, messages, prep => ApiHistory.UpdatePayload(apiLog.Id, prep)));
 
         if (string.IsNullOrEmpty(payload.Response) || !string.IsNullOrEmpty(payload.ErrorMessage))
         {

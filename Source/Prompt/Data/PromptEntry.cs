@@ -65,6 +65,12 @@ public class PromptEntry : IExposable
             UpdateIdIfModEntry();
         }
     }
+
+    /// <summary>
+    /// Whether this entry is the designated main chat history marker.
+    /// If true, this entry is used to insert the chat history and is locked in the UI.
+    /// </summary>
+    public bool IsMainChatHistory = false;
     
     /// <summary>
     /// Updates the ID to be deterministic if this is a mod entry.
@@ -115,6 +121,7 @@ public class PromptEntry : IExposable
         Scribe_Values.Look(ref InChatDepth, "inChatDepth", 0);
         Scribe_Values.Look(ref Enabled, "enabled", true);
         Scribe_Values.Look(ref _sourceModId, "sourceModId");
+        Scribe_Values.Look(ref IsMainChatHistory, "isMainChatHistory", false);
         
         // Ensure Id is not empty
         if (string.IsNullOrEmpty(_id))
@@ -126,12 +133,13 @@ public class PromptEntry : IExposable
         return new PromptEntry
         {
             Id = Guid.NewGuid().ToString(), // New ID for cloned entry
-            Name = Name + " (Copy)",
+            Name = Name,
             Content = Content,
             Role = Role,
             Position = Position,
             InChatDepth = InChatDepth,
             Enabled = Enabled,
+            IsMainChatHistory = IsMainChatHistory,
             SourceModId = null
         };
     }

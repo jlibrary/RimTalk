@@ -31,6 +31,7 @@
 
     <ItemGroup>
         <PackageReference Include="Lib.Harmony.Ref" Version="2.*" PrivateAssets="All"/>
+        <PackageReference Include="IndexRange" Version="1.0.3" />
     </ItemGroup>
 
     <!-- Use reference assemblies by default (for other users and CI) -->
@@ -60,11 +61,15 @@
         <Compile Remove="Source/Patch/BubblePatch.cs"/>
     </ItemGroup>
 
-    <!-- Include Bubble library when bubble is enabled -->
-    <ItemGroup Condition=" '$(EnableBubbles)' == 'true' ">
-        <Reference Include="Bubbles">
+    <!-- Include External Libraries -->
+    <ItemGroup>
+        <Reference Include="Bubbles" Condition=" '$(EnableBubbles)' == 'true' ">
             <HintPath>Libs/Bubbles.dll</HintPath>
             <Private>false</Private>
+        </Reference>
+        <Reference Include="Scriban">
+            <HintPath>Libs/Scriban.dll</HintPath>
+            <Private>true</Private>
         </Reference>
     </ItemGroup>
 
@@ -85,6 +90,7 @@
         <Exec Command='rsync -a --delete --checksum "$(ProjectDir)Languages/" "$(DeployPath)Languages/"'/>
         <Exec Command='rsync -a --delete --checksum "$(ProjectDir)Textures/"  "$(DeployPath)Textures/"'/>
         <Exec Command='rsync -a --delete --checksum "$(ProjectDir)$(GameVersion)/"       "$(DeployPath)$(GameVersion)/"'/>
+        <Copy SourceFiles="$(ProjectDir)Libs/Scriban.dll" DestinationFolder="$(DeployPath)$(GameVersion)/Assemblies/" />
         <Message Text="--- macOS deployment finished successfully ---" Importance="high"/>
     </Target>
 
@@ -103,6 +109,7 @@
         <Exec Command='robocopy "$(ProjectDir)Languages" "$(WinModPath)Languages" /MIR' IgnoreExitCode="true"/>
         <Exec Command='robocopy "$(ProjectDir)Textures"  "$(WinModPath)Textures" /MIR' IgnoreExitCode="true"/>
         <Exec Command='robocopy "$(ProjectDir)$(GameVersion)"       "$(WinModPath)$(GameVersion)" /MIR' IgnoreExitCode="true"/>
+        <Copy SourceFiles="$(ProjectDir)Libs/Scriban.dll" DestinationFolder="$(WinModPath)$(GameVersion)\Assemblies\" />
         <Message Text="--- Windows deployment finished successfully ---" Importance="high"/>
     </Target>
 

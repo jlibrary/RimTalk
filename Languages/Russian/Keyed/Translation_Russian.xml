@@ -71,7 +71,111 @@
 
     <!-- Settings.cs -->
     <RimTalk.Settings.BasicSettings>Основные настройки</RimTalk.Settings.BasicSettings>
-    <RimTalk.Settings.AIInstruction>Инструкция для ИИ</RimTalk.Settings.AIInstruction>
+    <RimTalk.Settings.PromptSetting>Настройка подсказки</RimTalk.Settings.PromptSetting>
+    <RimTalk.Settings.ImportPreset>Импорт</RimTalk.Settings.ImportPreset>
+    <RimTalk.Settings.ExportPreset>Экспорт</RimTalk.Settings.ExportPreset>
+    <RimTalk.Settings.ShowVariables>Переменные</RimTalk.Settings.ShowVariables>
+    <RimTalk.Settings.ResetConfirm>Вы уверены, что хотите сбросить все пресеты и справочные данные до значений по умолчанию? Это действие нельзя отменить.</RimTalk.Settings.ResetConfirm>
+    
+    <!-- Settings_PromptPreset.cs -->
+    <RimTalk.Settings.PromptPreset.SearchPlaceholder>Поиск объектов, свойств, функций...</RimTalk.Settings.PromptPreset.SearchPlaceholder>
+    <RimTalk.Settings.PromptPreset.ModePreview>Предпросмотр</RimTalk.Settings.PromptPreset.ModePreview>
+    <RimTalk.Settings.PromptPreset.Presets>Пресеты</RimTalk.Settings.PromptPreset.Presets>
+    <RimTalk.Settings.PromptPreset.NewPreset>+ Новый пресет</RimTalk.Settings.PromptPreset.NewPreset>
+    <RimTalk.Settings.PromptPreset.NewPresetName>Новый пресет</RimTalk.Settings.PromptPreset.NewPresetName>
+    <RimTalk.Settings.PromptPreset.Activate>Активировать</RimTalk.Settings.PromptPreset.Activate>
+    <RimTalk.Settings.PromptPreset.Duplicate>Дублировать</RimTalk.Settings.PromptPreset.Duplicate>
+    <RimTalk.Settings.PromptPreset.Delete>Удалить</RimTalk.Settings.PromptPreset.Delete>
+    <RimTalk.Settings.PromptPreset.SectionSystem>Система (System)</RimTalk.Settings.PromptPreset.SectionSystem>
+    <RimTalk.Settings.PromptPreset.SectionHistory>История (History)</RimTalk.Settings.PromptPreset.SectionHistory>
+    <RimTalk.Settings.PromptPreset.SectionPrompt>Промпт (Prompt)</RimTalk.Settings.PromptPreset.SectionPrompt>
+    <RimTalk.Settings.PromptPreset.NewEntry>+ Новая запись</RimTalk.Settings.PromptPreset.NewEntry>
+    <RimTalk.Settings.PromptPreset.NewEntryName>Новая запись</RimTalk.Settings.PromptPreset.NewEntryName>
+    <RimTalk.Settings.PromptPreset.SelectEntryToEdit>Выберите запись для редактирования</RimTalk.Settings.PromptPreset.SelectEntryToEdit>
+    <RimTalk.Settings.PromptPreset.PresetName>Название пресета:</RimTalk.Settings.PromptPreset.PresetName>
+    <RimTalk.Settings.PromptPreset.EntryName>Название записи:</RimTalk.Settings.PromptPreset.EntryName>
+    <RimTalk.Settings.PromptPreset.Role>Роль:</RimTalk.Settings.PromptPreset.Role>
+    <RimTalk.Settings.PromptPreset.Position>Позиция:</RimTalk.Settings.PromptPreset.Position>
+    <RimTalk.Settings.PromptPreset.PositionRelative>Относительно</RimTalk.Settings.PromptPreset.PositionRelative>
+    <RimTalk.Settings.PromptPreset.PositionInChat>В чате (InChat)</RimTalk.Settings.PromptPreset.PositionInChat>
+    <RimTalk.Settings.PromptPreset.Depth>Глубина:</RimTalk.Settings.PromptPreset.Depth>
+    <RimTalk.Settings.PromptPreset.Content>Содержание:</RimTalk.Settings.PromptPreset.Content>
+    <RimTalk.Settings.PromptPreset.ModVariables>Переменные мода</RimTalk.Settings.PromptPreset.ModVariables>
+    <RimTalk.Settings.PromptPreset.VariablePreviewHint>Показывает все доступные объекты, свойства и функции. Значения из игры отображаются при наличии.</RimTalk.Settings.PromptPreset.VariablePreviewHint>
+    
+    <!-- Import/Export -->
+    <RimTalk.Settings.PromptPreset.Export>Экспорт</RimTalk.Settings.PromptPreset.Export>
+    <RimTalk.Settings.PromptPreset.Import>Импорт</RimTalk.Settings.PromptPreset.Import>
+    <RimTalk.Settings.PromptPreset.ExportSuccess>Пресет экспортирован в: {0}</RimTalk.Settings.PromptPreset.ExportSuccess>
+    <RimTalk.Settings.PromptPreset.ExportFailed>Не удалось экспортировать пресет.</RimTalk.Settings.PromptPreset.ExportFailed>
+    <RimTalk.Settings.PromptPreset.ImportSuccess>Пресет успешно импортирован: {0}</RimTalk.Settings.PromptPreset.ImportSuccess>
+    <RimTalk.Settings.PromptPreset.ImportFailed>Не удалось импортировать пресет.</RimTalk.Settings.PromptPreset.ImportFailed>
+    <RimTalk.Settings.PromptPreset.NoPresetsToImport>Файлы пресетов не найдены. Поместите .json файлы в:\n{0}</RimTalk.Settings.PromptPreset.NoPresetsToImport>
+    <RimTalk.Settings.PromptPreset.OpenFolder>Открыть папку</RimTalk.Settings.PromptPreset.OpenFolder>
+    <RimTalk.Settings.PromptPreset.PreviewNotAvailable>Предпросмотр доступен только во время игры.</RimTalk.Settings.PromptPreset.PreviewNotAvailable>
+    <RimTalk.Settings.PromptPreset.NoRecentInteraction>Недавних взаимодействий не найдено. Отправьте запрос в чат или дождитесь взаимодействия для создания контекста предпросмотра.</RimTalk.Settings.PromptPreset.NoRecentInteraction>
+    <RimTalk.Settings.PromptPreset.PreviewError>Ошибка при генерации предпросмотра: {0}</RimTalk.Settings.PromptPreset.PreviewError>
+    
+    <!-- Simple/Advanced Mode -->
+    <RimTalk.Settings.SimpleModeTip>Профили персонажей, история чата и контекст включаются автоматически.</RimTalk.Settings.SimpleModeTip>
+    <RimTalk.Settings.AdvancedModeWarning>Расширенный режим предоставляет полный контроль над записями промптов, переменными и порядком сообщений. Ваши текущие инструкции будут сохранены. Продолжить?</RimTalk.Settings.AdvancedModeWarning>
+    <RimTalk.Settings.PromptHelp>Помощь</RimTalk.Settings.PromptHelp>
+    <RimTalk.Settings.AdvancedHelpContent>Руководство по расширенным пресетам
+
+Расширенный режим дает вам полный контроль над тем, как ИИ думает и видит мир. Каждый пресет строится из трех основных блоков:
+
+1. Система (Правила)
+Это фоновые инструкции, которые ИИ всегда держит в уме. Используйте это для определения общих правил личности или форматирования.
+СОВЕТ: Если вы столкнулись с ошибками десериализации JSON, вы можете вручную переопределить переменную {{json.format}} собственными инструкциями по схеме JSON, чтобы более строго направлять ИИ.
+
+2. История (Поток)
+Это управляет тем, где предыдущие сообщения появляются в промпте.
+- Позиция: InChat: Вставляет данные напрямую в лог разговора.
+- Глубина (Depth): Управляет тем, где происходит вставка.
+    - Глубина 0: После самого последнего сообщения.
+    - Глубина 5: На 5 сообщений назад в прошлое.
+- Позиция: Relative: Размещает запись строго до или после блока истории.
+
+3. Промпт (Триггер)
+Последняя часть головоломки. Обычно это конкретная инструкция или вопрос, который заставляет ИИ сгенерировать ответ прямо сейчас.
+
+Магия Scriban (Динамический контент)
+Используйте двойные фигурные скобки {{ ... }} для вставки игровых данных в реальном времени.
+
+Расширенный контекст:
+- Инициатор: {{ pawn.LabelShort }} (Говорящая пешка)
+- Получатель: {{ recipient.LabelShort }} (Пешка, к которой обращаются)
+- Все участники: {{ for p in pawns }}{{ p.LabelShort }}, {{ end }}
+
+Расширенные примеры:
+- Получение всех поселенцев:
+  {{ for p in PawnsFinder.AllMaps_FreeColonists }} * {{ p.LabelShort }} — {{ p.job }}{{ end }}
+
+- Получение последних 3 квестов:
+  {{ for q in Find.QuestManager.QuestsListForReading | array.limit 3 }} - {{ q.name }}: {{ q.description | Sanitize }}{{ end }}
+
+- Окружение карты:
+  Погода: {{ map.weather }}, температура: {{ map.temperature }}°C.
+
+- Потребности пешки:
+  {{ for need in pawn.needs.AllNeeds }} * {{ need.def.label }}: {{ need.CurLevelPercentage }}{{ end }}
+
+- Проверка статуса:
+  {{ if IsInCombat pawn }}Вы сейчас в бою!{{ end }}
+
+- Пример сложной логики:
+  {{ if recipient != null }}
+  Вы разговариваете с {{ recipient.LabelShort }}.
+  {{ if recipient.Dead }}...но они мертвы.{{ end }}
+  {{ else }}
+  Вы разговариваете сами с собой.
+  {{ end }}
+
+Важные советы:
+- Чувствительность к регистру: Функции строги. Используйте GetRole, а не getrole.
+- Предпросмотр переменных: Используйте специальную вкладку, чтобы увидеть все свойства, которые вы можете использовать!
+- JSON: Переменная {{json.format}} жизненно важна для логики ИИ. Переопределяйте ее вручную в системных записях только если вы опытный пользователь.</RimTalk.Settings.AdvancedHelpContent>
+    
     <RimTalk.Settings.EventFilter>Фильтр событий</RimTalk.Settings.EventFilter>
     <RimTalk.Settings.ApiKey>Ключ API облака</RimTalk.Settings.ApiKey>
     <RimTalk.Settings.GetFreeApiKey>Получить бесплатный ключ API</RimTalk.Settings.GetFreeApiKey>
@@ -100,7 +204,7 @@
     <RimTalk.Settings.AllowBabiesToTalk>Разрешить младенцам и детям говорить</RimTalk.Settings.AllowBabiesToTalk>
     <RimTalk.Settings.AllowBabiesToTalkTooltip>Включите, чтобы младенцы и маленькие дети могли участвовать в разговорах, сгенерированные ИИ.</RimTalk.Settings.AllowBabiesToTalkTooltip>
     <RimTalk.Settings.AllowNonHumanToTalk>Разрешить говорить не людям</RimTalk.Settings.AllowNonHumanToTalk>
-    <RimTalk.Settings.AllowNonHumanToTalkTooltip>Позволяет животным, механоидом и пользовательским расам говорить после установки Катализатора голосовой связи, полученного у торговцев.</RimTalk.Settings.AllowNonHumanToTalkTooltip>
+    <RimTalk.Settings.AllowNonHumanToTalkTooltip>Позволяет животным, механоидам и пользовательским расам говорить после установки Катализатора голосовой связи, полученного у торговцев.</RimTalk.Settings.AllowNonHumanToTalkTooltip>
     <RimTalk.Settings.ApplyMoodAndSocialEffects>Влияние на настроение и социальные связи</RimTalk.Settings.ApplyMoodAndSocialEffects>
     <RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>Диалоги могут влиять на настроение и отношения колонистов в зависимости от тона разговора.</RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>
 
@@ -243,9 +347,10 @@
     <RimTalk.DebugWindow.Copy>Копировать</RimTalk.DebugWindow.Copy>
     <RimTalk.DebugWindow.Copied>Скопировано</RimTalk.DebugWindow.Copied>
     <RimTalk.DebugWindow.Undo>Отменить</RimTalk.DebugWindow.Undo>
-    <RimTalk.DebugWindow.Prompt>Промпт</RimTalk.DebugWindow.Prompt>
-    <RimTalk.DebugWindow.Response>Ответ</RimTalk.DebugWindow.Response>
-    <RimTalk.DebugWindow.Contexts>Контексты</RimTalk.DebugWindow.Contexts>
+    <RimTalk.DebugWindow.Prompt>Промпт (Prompt)</RimTalk.DebugWindow.Prompt>
+    <RimTalk.DebugWindow.Response>Ответ (Response)</RimTalk.DebugWindow.Response>
+    <RimTalk.DebugWindow.PromptMessages>Подробности запроса</RimTalk.DebugWindow.PromptMessages>
+    <RimTalk.DebugWindow.Contexts>Контексты (Contexts)</RimTalk.DebugWindow.Contexts>
     <RimTalk.DebugWindow.Generating>[Генерация...]</RimTalk.DebugWindow.Generating>
     <RimTalk.DebugWindow.StatusDisabled>Отключено</RimTalk.DebugWindow.StatusDisabled>
     <RimTalk.DebugWindow.StatusProcessing>Обработка</RimTalk.DebugWindow.StatusProcessing>
@@ -281,6 +386,12 @@
     <RimTalk.DebugWindow.HeaderElapsed>Время</RimTalk.DebugWindow.HeaderElapsed>
     <RimTalk.DebugWindow.HeaderInitiator>Инициатор</RimTalk.DebugWindow.HeaderInitiator>
     <RimTalk.DebugWindow.HeaderRecipient>Получатель</RimTalk.DebugWindow.HeaderRecipient>
+    <RimTalk.DebugWindow.HistoryCleared>История разговоров очищена.</RimTalk.DebugWindow.HistoryCleared>
+    <RimTalk.DebugWindow.FormatEntry>Запись</RimTalk.DebugWindow.FormatEntry>
+    <RimTalk.DebugWindow.FormatRole>Роль</RimTalk.DebugWindow.FormatRole>
+    <RimTalk.DebugWindow.SystemInstruction>Системная инструкция (System Instruction)</RimTalk.DebugWindow.SystemInstruction>
+    <RimTalk.DebugWindow.ChatHistory>История чата (Chat History)</RimTalk.DebugWindow.ChatHistory>
+    <RimTalk.DebugWindow.InputPrompt>Подсказка ввода (Input Prompt)</RimTalk.DebugWindow.InputPrompt>
     <RimTalk.DebugWindow.TooltipPromptResponse>Запрос:\n{0}\n\nОтвет:\n{1}</RimTalk.DebugWindow.TooltipPromptResponse>
     
     <!-- Overlay.cs -->
@@ -292,10 +403,17 @@
 
     <!-- FloatMenuMakerMapGetOptionsPatch.cs -->
     <RimTalk.FloatMenu.ChatWith>Общаться с {0}</RimTalk.FloatMenu.ChatWith>
-    <RimTalk.Gizmo.ChatWithTarget>Поговорить с {0}</RimTalk.Gizmo.ChatWithTarget>
+    <RimTalk.Gizmo.ChatWithTarget>Общаться с {0}</RimTalk.Gizmo.ChatWithTarget>
     <RimTalk.Gizmo.ChatWithTargetDesc>Начать разговор с {0}.</RimTalk.Gizmo.ChatWithTargetDesc>
     <RimTalk.FloatMenu.WhatToSayToSelf>Что вы хотите сказать {0}?</RimTalk.FloatMenu.WhatToSayToSelf>
     <RimTalk.FloatMenu.WhatToSayToOther>Что вы хотите, чтобы {0} сказал {1}?</RimTalk.FloatMenu.WhatToSayToOther>
     <RimTalk.FloatMenu.Send>Отправить</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>Отмена</RimTalk.FloatMenu.Cancel>
+
+    <!-- VariableDefinitions.cs - Variable Registry -->
+    <RimTalk.ScribanVar.Category.PawnShorthands>Сокращения пешек</RimTalk.ScribanVar.Category.PawnShorthands>
+    <RimTalk.ScribanVar.Category.CoreObjects>Основные объекты</RimTalk.ScribanVar.Category.CoreObjects>
+    <RimTalk.ScribanVar.Category.Context>Контекст</RimTalk.ScribanVar.Category.Context>
+    <RimTalk.ScribanVar.Category.GameStatic>Игровые объекты (Статические)</RimTalk.ScribanVar.Category.GameStatic>
+    <RimTalk.ScribanVar.Category.System>Система</RimTalk.ScribanVar.Category.System>
 </LanguageData>

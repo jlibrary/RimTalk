@@ -7,25 +7,52 @@ namespace RimTalk;
 
 public partial class Settings
 {
-    private void DrawAIInstructionSettings(Listing_Standard listingStandard)
+    private void DrawAIInstructionSettings(Listing_Standard listingStandard, bool showAdvancedSwitch = false)
     {
         RimTalkSettings settings = Get();
 
-        // Initialize buffer if needed
         if (!_textAreaInitialized)
         {
-            _textAreaBuffer = string.IsNullOrWhiteSpace(settings.CustomInstruction) 
-                ? Constant.DefaultInstruction 
+            _textAreaBuffer = string.IsNullOrWhiteSpace(settings.CustomInstruction)
+                ? Constant.DefaultInstruction
                 : settings.CustomInstruction;
             _textAreaInitialized = true;
         }
 
         var activeConfig = settings.GetActiveConfig();
         var modelName = activeConfig?.SelectedModel ?? "N/A";
-
         var aiInstructionPrompt = "RimTalk.Settings.AIInstructionPrompt".Translate(modelName);
-        var aiInstructionPromptRect = listingStandard.GetRect(Text.CalcHeight(aiInstructionPrompt, listingStandard.ColumnWidth));
-        Widgets.Label(aiInstructionPromptRect, aiInstructionPrompt);
+        
+        float textHeight = Text.CalcHeight(aiInstructionPrompt,
+            listingStandard.ColumnWidth - (showAdvancedSwitch ? 180f : 0f));
+        float headerHeight = Mathf.Max(textHeight, 30f);
+
+        Rect headerRect = listingStandard.GetRect(headerHeight);
+
+        if (showAdvancedSwitch)
+        {
+            float buttonWidth = 170f;
+            Rect buttonRect = new Rect(headerRect.xMax - buttonWidth, headerRect.y, buttonWidth, 28f);
+
+            if (Widgets.ButtonText(buttonRect, "RimTalk.Settings.SwitchToAdvancedSettings".Translate()))
+            {
+                Find.WindowStack.Add(Dialog_MessageBox.CreateConfirmation(
+                    "RimTalk.Settings.AdvancedModeWarning".Translate(),
+                    () => settings.UseAdvancedPromptMode = true));
+            }
+
+            Rect labelRect = new Rect(headerRect.x, headerRect.y, headerRect.width - buttonWidth - 10f,
+                headerRect.height);
+
+            Text.Anchor = TextAnchor.MiddleLeft;
+            Widgets.Label(labelRect, aiInstructionPrompt);
+            Text.Anchor = TextAnchor.UpperLeft;
+        }
+        else
+        {
+            Widgets.Label(headerRect, aiInstructionPrompt);
+        }
+        
         listingStandard.Gap(6f);
 
         // Context information tip
@@ -36,7 +63,7 @@ public partial class Settings
         GUI.color = Color.white;
         Text.Font = GameFont.Small;
         listingStandard.Gap(6f);
-
+        
         // Warning about rate limits
         Text.Font = GameFont.Tiny;
         GUI.color = Color.yellow;
@@ -51,15 +78,7 @@ public partial class Settings
         int maxAllowedTokens = CommonUtil.GetMaxAllowedTokens(settings.TalkInterval);
         string tokenInfo = "RimTalk.Settings.TokenInfo".Translate(currentTokens, maxAllowedTokens);
 
-        if (currentTokens > maxAllowedTokens)
-        {
-            GUI.color = Color.red;
-            tokenInfo += "RimTalk.Settings.OverLimit".Translate();
-        }
-        else
-        {
-            GUI.color = Color.green;
-        }
+        GUI.color = currentTokens > maxAllowedTokens ? Color.red : Color.green;
 
         Text.Font = GameFont.Tiny;
         Rect tokenInfoRect = listingStandard.GetRect(Text.LineHeight);
@@ -68,14 +87,34 @@ public partial class Settings
         Text.Font = GameFont.Small;
         listingStandard.Gap(6f);
 
-        // Use a fixed height for the text area
         float textAreaHeight = 350f;
         Rect textAreaRect = listingStandard.GetRect(textAreaHeight);
-            
-        // Draw the text area - Unity's TextArea handles its own scrolling internally
-        string newInstruction = Widgets.TextArea(textAreaRect, _textAreaBuffer);
 
-        // Update buffer and settings logic
+        float innerWidth = textAreaRect.width - 16f;
+        float contentHeight = Mathf.Max(textAreaHeight, Text.CalcHeight(_textAreaBuffer, innerWidth) + 40f);
+        Rect viewRect = new Rect(0f, 0f, innerWidth, contentHeight);
+
+        const string controlName = "RimTalk_AIInstruction_TextArea";
+        Widgets.BeginScrollView(textAreaRect, ref _aiInstructionScrollPos, viewRect);
+        GUI.SetNextControlName(controlName);
+        string newInstruction = Widgets.TextArea(new Rect(0f, 0f, innerWidth, contentHeight), _textAreaBuffer);
+
+        // Auto-scroll logic: only scroll if the cursor position changed
+        if (GUI.GetNameOfFocusedControl() == controlName)
+        {
+            TextEditor te = (TextEditor)GUIUtility.GetStateObject(typeof(TextEditor), GUIUtility.keyboardControl);
+            if (te != null && te.cursorIndex != _lastTextAreaCursorPos)
+            {
+                _lastTextAreaCursorPos = te.cursorIndex;
+                float cursorY = te.graphicalCursorPos.y;
+                if (cursorY < _aiInstructionScrollPos.y)
+                    _aiInstructionScrollPos.y = cursorY;
+                else if (cursorY + 25f > _aiInstructionScrollPos.y + textAreaHeight)
+                    _aiInstructionScrollPos.y = cursorY + 25f - textAreaHeight;
+            }
+        }
+        Widgets.EndScrollView();
+
         if (newInstruction != _textAreaBuffer)
         {
             _textAreaBuffer = newInstruction;
@@ -84,7 +123,6 @@ public partial class Settings
 
         listingStandard.Gap(6f);
 
-        // Reset to default button
         Rect resetButtonRect = listingStandard.GetRect(30f);
         if (Widgets.ButtonText(resetButtonRect, "RimTalk.Settings.ResetToDefault".Translate()))
         {
@@ -92,7 +130,6 @@ public partial class Settings
             _textAreaBuffer = Constant.DefaultInstruction;
         }
 
-        // Add some extra space at the bottom to ensure everything is visible
         listingStandard.Gap(10f);
     }
 }

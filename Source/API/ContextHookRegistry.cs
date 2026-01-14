@@ -140,11 +140,11 @@ public static class ContextHookRegistry
     
     /// <summary>
     /// Registers a new context variable (e.g., "memory" for {{memory}}).
-    /// Context variables have access to the full MustacheContext including all pawns, dialogue info, etc.
+    /// Context variables have access to the full PromptContext including all pawns, dialogue info, etc.
     /// </summary>
     /// <param name="variableName">Variable name (e.g., "memory")</param>
     /// <param name="modId">Mod package ID for tracking</param>
-    /// <param name="provider">Function that takes MustacheContext and returns the variable value</param>
+    /// <param name="provider">Function that takes PromptContext and returns the variable value</param>
     /// <param name="description">Description for UI display (optional)</param>
     /// <param name="priority">Priority for ordering (lower = first, default 100)</param>
     public static void RegisterContextVariable(

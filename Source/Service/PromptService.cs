@@ -106,7 +106,7 @@ public static class PromptService
             }
         }
 
-        AppendWithHook(sb, pawn, ContextCategories.Pawn.Relations, ContextBuilder.GetRelationsContext(pawn, infoLevel));
+        AppendWithHook(sb, pawn, ContextCategories.Pawn.Social, ContextBuilder.GetRelationsContext(pawn, infoLevel));
         
         if (infoLevel != InfoLevel.Short)
             AppendWithHook(sb, pawn, ContextCategories.Pawn.Equipment, ContextBuilder.GetEquipmentContext(pawn, infoLevel));

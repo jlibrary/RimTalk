@@ -76,24 +76,8 @@ public static class TalkService
         if (!settings.AllowMonologue && talkRequest.IsMonologue && !talkRequest.TalkType.IsFromUser())
             return false;
 
-        // Build the context and decorate the prompt with current status information.
-        talkRequest.Context = PromptService.BuildContext(pawns);
-        // Get dialogue type BEFORE DecoratePrompt modifies talkRequest.Prompt
-        string dialogueTypeString = MustacheContextProvider.GetDialogueTypeString(talkRequest, pawns);
-        PromptService.DecoratePrompt(talkRequest, pawns, status);
-        
-        // Build prompt messages using PromptManager (encapsulates all Mustache variable collection)
-        talkRequest.PromptMessages = PromptManager.Instance.PreparePromptForRequest(
-            talkRequest, pawns, status, dialogueTypeString);
-        
-        // Fallback to legacy instruction if new system returns empty
-        if (talkRequest.PromptMessages == null || talkRequest.PromptMessages.Count == 0)
-        {
-            talkRequest.PromptMessages = new List<(Role role, string content)>
-            {
-                (Role.System, $"{Constant.Instruction}\n{talkRequest.Context}")
-            };
-        }
+        // Delegate prompt assembly to PromptManager (Handles Simple/Advanced modes and fallbacks)
+        talkRequest.PromptMessages = PromptManager.Instance.BuildMessages(talkRequest, pawns, status);
         
         // Offload the AI request and processing to a background thread to avoid blocking the game's main thread.
         Task.Run(() => GenerateAndProcessTalkAsync(talkRequest));

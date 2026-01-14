@@ -30,7 +30,7 @@ public static class ContextCategories
         public static readonly ContextCategory Skills = new("skills", ContextType.Pawn);
         public static readonly ContextCategory Health = new("health", ContextType.Pawn);
         public static readonly ContextCategory Thoughts = new("thoughts", ContextType.Pawn);
-        public static readonly ContextCategory Relations = new("relations", ContextType.Pawn);
+        public static readonly ContextCategory Social = new("social", ContextType.Pawn);
         public static readonly ContextCategory Equipment = new("equipment", ContextType.Pawn);
         public static readonly ContextCategory Genes = new("genes", ContextType.Pawn);
         public static readonly ContextCategory Ideology = new("ideology", ContextType.Pawn);

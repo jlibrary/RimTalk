@@ -33,7 +33,7 @@
     <RimTalk.Persona.Jokester>ジョーク好き - 明るくておどけている。絶えずジョークやダジャレを言います。</RimTalk.Persona.Jokester>
     <RimTalk.Persona.MelancholicPoet>憂鬱な詩人 - 物静かで気分屋。感情を詩的に表現します。</RimTalk.Persona.MelancholicPoet>
     <RimTalk.Persona.Paranoid>被害妄想者 - 神経質で不信感が強い。裏切りを想定し、常に疑っています。</RimTalk.Persona.Paranoid>
-    <RimTalk.Persona.Commander>指揮官 - 自信に満ち、威厳がある。他人を動機づけ、服従を期待します。</RimTalk.Persona.Commander>
+    <RimTalk.Persona.Commander>指揮官 - 自信に満、威厳がある。他人を動機づけ、服従を期待します。</RimTalk.Persona.Commander>
     <RimTalk.Persona.Coward>臆病者 - 内気で怖がり。声に出して心配し、対立を避けます。</RimTalk.Persona.Coward>
     <RimTalk.Persona.ArrogantNoble>傲慢な貴族 - 尊大で見下した態度。格式張った、見下すような言葉を使います。</RimTalk.Persona.ArrogantNoble>
     <RimTalk.Persona.LoyalCompanion>忠実な仲間 - 揺るぎなく、協力的。信頼と団結について語ります。</RimTalk.Persona.LoyalCompanion>
@@ -59,7 +59,7 @@
     <RimTalk.Persona.Gambler>ギャンブラー - リスクを愛し、大胆。偶然の比喩で話します。</RimTalk.Persona.Gambler>
     <RimTalk.Persona.ArtisticSoul>芸術的な魂 - 美、インスピレーション、創造性について語ります。</RimTalk.Persona.ArtisticSoul>
     <RimTalk.Persona.Drifter>放浪者 - 無関心でよそよそしい。気楽な口調で、執着を避けます。</RimTalk.Persona.Drifter>
-    <RimTalk.Persona.Perfectionist>完璧主義者 - 要求が多く、批判的。物事を正しく行うことに固執します。</RimTalk.Persona.Perfectionist>
+    <RimTalk.Persona.Perfectionist>完璧主義者 - 要求が多く、批判的. 物事を正しく行うことに固執します。</RimTalk.Persona.Perfectionist>
     <RimTalk.Persona.Vengeful>復讐心に燃える者 - 恨みを持ち、強烈。復讐に取りつかれています。</RimTalk.Persona.Vengeful>
 
     <RimTalk.Persona.Animal>動物: 単純で感情的、本能優先 - 匂い、空腹、危険についての短く感覚的な文章で話す。</RimTalk.Persona.Animal>
@@ -71,7 +71,112 @@
 
     <!-- Settings.cs -->
     <RimTalk.Settings.BasicSettings>基本設定</RimTalk.Settings.BasicSettings>
-    <RimTalk.Settings.AIInstruction>AIへの指示</RimTalk.Settings.AIInstruction>
+    <RimTalk.Settings.PromptSetting>プロンプト設定</RimTalk.Settings.PromptSetting>
+    <RimTalk.Settings.ImportPreset>インポート</RimTalk.Settings.ImportPreset>
+    <RimTalk.Settings.ExportPreset>エクスポート</RimTalk.Settings.ExportPreset>
+    <RimTalk.Settings.ShowVariables>リファレンス</RimTalk.Settings.ShowVariables>
+    <RimTalk.Settings.ResetConfirm>すべてのプロンプトプリセットとリファレンスデータをデフォルトにリセットしてもよろしいですか？この操作は取り消せません。</RimTalk.Settings.ResetConfirm>
+    
+    <!-- Settings_PromptPreset.cs -->
+    <RimTalk.Settings.PromptPreset.SearchPlaceholder>オブジェクト、プロパティ、関数を検索...</RimTalk.Settings.PromptPreset.SearchPlaceholder>
+    <RimTalk.Settings.PromptPreset.ModePreview>プレビュー</RimTalk.Settings.PromptPreset.ModePreview>
+    <RimTalk.Settings.PromptPreset.Presets>プリセット</RimTalk.Settings.PromptPreset.Presets>
+    <RimTalk.Settings.PromptPreset.NewPreset>+ 新規プリセット</RimTalk.Settings.PromptPreset.NewPreset>
+    <RimTalk.Settings.PromptPreset.NewPresetName>新規プリセット</RimTalk.Settings.PromptPreset.NewPresetName>
+    <RimTalk.Settings.PromptPreset.Activate>有効化</RimTalk.Settings.PromptPreset.Activate>
+    <RimTalk.Settings.PromptPreset.Duplicate>複製</RimTalk.Settings.PromptPreset.Duplicate>
+    <RimTalk.Settings.PromptPreset.Delete>削除</RimTalk.Settings.PromptPreset.Delete>
+    <RimTalk.Settings.PromptPreset.SectionSystem>システム (System)</RimTalk.Settings.PromptPreset.SectionSystem>
+    <RimTalk.Settings.PromptPreset.SectionHistory>履歴 (History)</RimTalk.Settings.PromptPreset.SectionHistory>
+    <RimTalk.Settings.PromptPreset.SectionPrompt>プロンプト (Prompt)</RimTalk.Settings.PromptPreset.SectionPrompt>
+    <RimTalk.Settings.PromptPreset.NewEntry>+ 新規エントリ</RimTalk.Settings.PromptPreset.NewEntry>
+    <RimTalk.Settings.PromptPreset.NewEntryName>新規エントリ</RimTalk.Settings.PromptPreset.NewEntryName>
+    <RimTalk.Settings.PromptPreset.SelectEntryToEdit>編集するエントリを選択してください</RimTalk.Settings.PromptPreset.SelectEntryToEdit>
+    <RimTalk.Settings.PromptPreset.PresetName>プリセット名：</RimTalk.Settings.PromptPreset.PresetName>
+    <RimTalk.Settings.PromptPreset.EntryName>エントリ名：</RimTalk.Settings.PromptPreset.EntryName>
+    <RimTalk.Settings.PromptPreset.Role>ロール：</RimTalk.Settings.PromptPreset.Role>
+    <RimTalk.Settings.PromptPreset.Position>位置：</RimTalk.Settings.PromptPreset.Position>
+    <RimTalk.Settings.PromptPreset.PositionRelative>相対的</RimTalk.Settings.PromptPreset.PositionRelative>
+    <RimTalk.Settings.PromptPreset.PositionInChat>チャット内</RimTalk.Settings.PromptPreset.PositionInChat>
+    <RimTalk.Settings.PromptPreset.Depth>深度：</RimTalk.Settings.PromptPreset.Depth>
+    <RimTalk.Settings.PromptPreset.Content>内容：</RimTalk.Settings.PromptPreset.Content>
+    <RimTalk.Settings.PromptPreset.ModVariables>Mod変数</RimTalk.Settings.PromptPreset.ModVariables>
+    <RimTalk.Settings.PromptPreset.VariablePreviewHint>利用可能なすべてのオブジェクト、プロパティ、関数を表示します。利用可能な場合はゲーム内の値が表示されます。</RimTalk.Settings.PromptPreset.VariablePreviewHint>
+    
+    <!-- Import/Export -->
+    <RimTalk.Settings.PromptPreset.Export>エクスポート</RimTalk.Settings.PromptPreset.Export>
+    <RimTalk.Settings.PromptPreset.Import>インポート</RimTalk.Settings.PromptPreset.Import>
+    <RimTalk.Settings.PromptPreset.ExportSuccess>プリセットをエクスポートしました：{0}</RimTalk.Settings.PromptPreset.ExportSuccess>
+    <RimTalk.Settings.PromptPreset.ExportFailed>プリセットのエクスポートに失敗しました。</RimTalk.Settings.PromptPreset.ExportFailed>
+    <RimTalk.Settings.PromptPreset.ImportSuccess>プリセットを正常にインポートしました：{0}</RimTalk.Settings.PromptPreset.ImportSuccess>
+    <RimTalk.Settings.PromptPreset.ImportFailed>プリセットのインポートに失敗しました。</RimTalk.Settings.PromptPreset.ImportFailed>
+    <RimTalk.Settings.PromptPreset.NoPresetsToImport>プリセットファイルが見つかりません。次の場所に.jsonファイルを配置してください：
+{0}</RimTalk.Settings.PromptPreset.NoPresetsToImport>
+    <RimTalk.Settings.PromptPreset.OpenFolder>フォルダを開く</RimTalk.Settings.PromptPreset.OpenFolder>
+    <RimTalk.Settings.PromptPreset.PreviewNotAvailable>プレビューはゲームがロードされている間のみ利用可能です。</RimTalk.Settings.PromptPreset.PreviewNotAvailable>
+    <RimTalk.Settings.PromptPreset.NoRecentInteraction>最近のインタラクションが見つかりません。チャットリクエストを送信するか、インタラクションが発生してプレビューコンテキストが生成されるまでお待ちください。</RimTalk.Settings.PromptPreset.NoRecentInteraction>
+    <RimTalk.Settings.PromptPreset.PreviewError>プレビューの生成中にエラーが発生しました：{0}</RimTalk.Settings.PromptPreset.PreviewError>
+    
+    <!-- Simple/Advanced Mode -->
+    <RimTalk.Settings.SimpleModeTip>キャラクターのプロフィール、チャット履歴、コンテキストが自動的に含まれます。</RimTalk.Settings.SimpleModeTip>
+    <RimTalk.Settings.AdvancedModeWarning>詳細モードでは、プロンプトエントリ、変数、メッセージの順序を完全に制御できます。現在の指示は保持されます。続行しますか？</RimTalk.Settings.AdvancedModeWarning>
+    <RimTalk.Settings.PromptHelp>ヘルプ</RimTalk.Settings.PromptHelp>
+    <RimTalk.Settings.AdvancedHelpContent>詳細プリセットガイド
+
+詳細モードでは、AIがどのように考え、世界を見るかを外科的に制御できます。各プリセットは3つの主要なブロックで構成されています：
+
+1. システム (System - ルール)
+これらはAIが常に念頭に置いている背景の指示です。これを使用して、一般的な性格や書式のルールを定義します。
+ヒント：JSONのデシリアライズエラーが発生した場合は、{{json.format}} 変数を独自の特定のJSONスキーマの指示で手動で上書きして、AIをより厳密に誘導できます。
+
+2. 履歴 (History - 流れ)
+これは、以前のメッセージがプロンプトのどこに表示されるかを管理します。
+- 位置：チャット内 (InChat)：データを会話ログに直接挿入します。
+- 深度：挿入が行われる場所を制御します。
+    - 深度 0：最新のメッセージの後。
+    - 深度 5：5つ前のメッセージに遡る。
+- 位置：相対的 (Relative)：エントリを履歴ブロックの直前または直後に配置します。
+
+3. プロンプト (Prompt - トリガー)
+パズルの最後のピースです。これは通常、AIに今すぐ応答を生成させるための特定の指示または質問です。
+
+Scribanマジック (動的コンテンツ)
+二重中括弧 {{ ... }} を使用して、リアルタイムのゲームデータを挿入します。
+
+詳細なコンテキスト：
+- 開始者：{{ pawn.LabelShort }} (話しているポーン)
+- 受信者：{{ recipient.LabelShort }} (話しかけられているポーン)
+- 全参加者：{{ for p in pawns }}{{ p.LabelShort }}, {{ end }}
+
+詳細な例：
+- すべての入植者を取得：
+  {{ for p in PawnsFinder.AllMaps_FreeColonists }} * {{ p.LabelShort }} は {{ p.job }}{{ end }}
+
+- 最近の3つのクエストを取得：
+  {{ for q in Find.QuestManager.QuestsListForReading | array.limit 3 }} - {{ q.name }}: {{ q.description | Sanitize }}{{ end }}
+
+- マップ環境：
+  天気は {{ map.weather }} で、気温は {{ map.temperature }}°C です。
+
+- ポーンの欲求：
+  {{ for need in pawn.needs.AllNeeds }} * {{ need.def.label }}: {{ need.CurLevelPercentage }}{{ end }}
+
+- ステータスチェック：
+  {{ if IsInCombat pawn }}あなたは現在戦闘中です！{{ end }}
+
+- 複雑な論理の例：
+  {{ if recipient != null }}
+  あなたは {{ recipient.LabelShort }} と話しています。
+  {{ if recipient.Dead }}...しかし彼らは死んでいます。{{ end }}
+  {{ else }}
+  あなたは独り言を言っています。
+  {{ end }}
+
+重要なヒント：
+- 大文字小文字の区別：関数は厳密です。getrole ではなく GetRole を使用してください。
+- リファレンスプレビュー：専用のタブを使用して、使用できるすべてのプロパティを確認してください！
+- JSON：{{json.format}} 変数はAIの論理にとって不可欠です。上級ユーザーの場合のみ、システムエントリで手動で上書きしてください。</RimTalk.Settings.AdvancedHelpContent>
+    
     <RimTalk.Settings.EventFilter>イベントフィルター</RimTalk.Settings.EventFilter>
     <RimTalk.Settings.ApiKey>クラウドAPIキー</RimTalk.Settings.ApiKey>
     <RimTalk.Settings.GetFreeApiKey>無料APIキーを取得</RimTalk.Settings.GetFreeApiKey>
@@ -243,9 +348,10 @@
     <RimTalk.DebugWindow.Copy>コピー</RimTalk.DebugWindow.Copy>
     <RimTalk.DebugWindow.Copied>コピーしました</RimTalk.DebugWindow.Copied>
     <RimTalk.DebugWindow.Undo>元に戻す</RimTalk.DebugWindow.Undo>
-    <RimTalk.DebugWindow.Prompt>プロンプト</RimTalk.DebugWindow.Prompt>
-    <RimTalk.DebugWindow.Response>レスポンス</RimTalk.DebugWindow.Response>
-    <RimTalk.DebugWindow.Contexts>コンテキスト</RimTalk.DebugWindow.Contexts>
+    <RimTalk.DebugWindow.Prompt>プロンプト (Prompt)</RimTalk.DebugWindow.Prompt>
+    <RimTalk.DebugWindow.Response>レスポンス (Response)</RimTalk.DebugWindow.Response>
+    <RimTalk.DebugWindow.PromptMessages>リクエスト詳細</RimTalk.DebugWindow.PromptMessages>
+    <RimTalk.DebugWindow.Contexts>コンテキスト (Contexts)</RimTalk.DebugWindow.Contexts>
     <RimTalk.DebugWindow.Generating>[生成中...]</RimTalk.DebugWindow.Generating>
     <RimTalk.DebugWindow.StatusDisabled>無効</RimTalk.DebugWindow.StatusDisabled>
     <RimTalk.DebugWindow.StatusProcessing>処理中</RimTalk.DebugWindow.StatusProcessing>
@@ -281,8 +387,14 @@
     <RimTalk.DebugWindow.HeaderElapsed>経過</RimTalk.DebugWindow.HeaderElapsed>
     <RimTalk.DebugWindow.HeaderInitiator>送信者</RimTalk.DebugWindow.HeaderInitiator>
     <RimTalk.DebugWindow.HeaderRecipient>受信者</RimTalk.DebugWindow.HeaderRecipient>
+    <RimTalk.DebugWindow.HistoryCleared>会話履歴がクリアされました。</RimTalk.DebugWindow.HistoryCleared>
+    <RimTalk.DebugWindow.FormatEntry>エントリ</RimTalk.DebugWindow.FormatEntry>
+    <RimTalk.DebugWindow.FormatRole>ロール</RimTalk.DebugWindow.FormatRole>
+    <RimTalk.DebugWindow.SystemInstruction>システム指示 (System Instruction)</RimTalk.DebugWindow.SystemInstruction>
+    <RimTalk.DebugWindow.ChatHistory>チャット履歴 (Chat History)</RimTalk.DebugWindow.ChatHistory>
+    <RimTalk.DebugWindow.InputPrompt>入力プロンプト (Input Prompt)</RimTalk.DebugWindow.InputPrompt>
     <RimTalk.DebugWindow.TooltipPromptResponse>プロンプト：\n{0}\n\n応答：\n{1}</RimTalk.DebugWindow.TooltipPromptResponse>
-    
+
     <!-- Overlay.cs -->
     <RimTalk.Overlay.Debug>デバッグ</RimTalk.Overlay.Debug>
     <RimTalk.Overlay.Option>オーバーレイオプション</RimTalk.Overlay.Option>
@@ -291,11 +403,18 @@
     <RimTalk.Overlay.FontSize>フォントサイズ</RimTalk.Overlay.FontSize>
 
     <!-- FloatMenuMakerMapGetOptionsPatch.cs -->
-    <RimTalk.FloatMenu.ChatWith>{0}とチャット</RimTalk.FloatMenu.ChatWith>
-    <RimTalk.Gizmo.ChatWithTarget>{0}と会話する</RimTalk.Gizmo.ChatWithTarget>
-    <RimTalk.Gizmo.ChatWithTargetDesc>{0}との会話を開始します。</RimTalk.Gizmo.ChatWithTargetDesc>
-    <RimTalk.FloatMenu.WhatToSayToSelf>{0}に何を言いたいですか？</RimTalk.FloatMenu.WhatToSayToSelf>
-    <RimTalk.FloatMenu.WhatToSayToOther>{0}に{1}に何を言わせたいですか？</RimTalk.FloatMenu.WhatToSayToOther>
+    <RimTalk.FloatMenu.ChatWith> {0} とチャット</RimTalk.FloatMenu.ChatWith>
+    <RimTalk.Gizmo.ChatWithTarget> {0} とチャット</RimTalk.Gizmo.ChatWithTarget>
+    <RimTalk.Gizmo.ChatWithTargetDesc> {0} との会話を開始します。</RimTalk.Gizmo.ChatWithTargetDesc>
+    <RimTalk.FloatMenu.WhatToSayToSelf> {0} に何を言いたいですか？</RimTalk.FloatMenu.WhatToSayToSelf>
+    <RimTalk.FloatMenu.WhatToSayToOther> {0} に {1} に何を言わせたいですか？</RimTalk.FloatMenu.WhatToSayToOther>
     <RimTalk.FloatMenu.Send>送信</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>キャンセル</RimTalk.FloatMenu.Cancel>
+
+    <!-- VariableDefinitions.cs - Variable Registry -->
+    <RimTalk.ScribanVar.Category.PawnShorthands>ポーンのショートハンド</RimTalk.ScribanVar.Category.PawnShorthands>
+    <RimTalk.ScribanVar.Category.CoreObjects>コアオブジェクト</RimTalk.ScribanVar.Category.CoreObjects>
+    <RimTalk.ScribanVar.Category.Context>コンテキスト</RimTalk.ScribanVar.Category.Context>
+    <RimTalk.ScribanVar.Category.GameStatic>ゲームオブジェクト (静的)</RimTalk.ScribanVar.Category.GameStatic>
+    <RimTalk.ScribanVar.Category.System>システム</RimTalk.ScribanVar.Category.System>
 </LanguageData>

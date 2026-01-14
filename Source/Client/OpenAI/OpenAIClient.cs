@@ -32,9 +32,12 @@ public class OpenAIClient(
             : trimmed;
     }
 
-    public async Task<Payload> GetChatCompletionAsync(List<(Role role, string message)> prefixMessages, List<(Role role, string message)> messages)
+    public async Task<Payload> GetChatCompletionAsync(List<(Role role, string message)> prefixMessages, 
+        List<(Role role, string message)> messages, 
+        Action<Payload> onRequestPrepared = null)
     {
         string jsonContent = BuildRequestJson(prefixMessages, messages, stream: false);
+        onRequestPrepared?.Invoke(new Payload(_endpointUrl, model, jsonContent, null, 0));
         string responseText = await SendRequestAsync(jsonContent, new DownloadHandlerBuffer());
 
         var response = JsonUtil.DeserializeFromJson<OpenAIResponse>(responseText);
@@ -45,9 +48,12 @@ public class OpenAIClient(
     }
 
     public async Task<Payload> GetStreamingChatCompletionAsync<T>(List<(Role role, string message)> prefixMessages,
-        List<(Role role, string message)> messages, Action<T> onResponseParsed) where T : class
+        List<(Role role, string message)> messages, 
+        Action<T> onResponseParsed,
+        Action<Payload> onRequestPrepared = null) where T : class
     {
         string jsonContent = BuildRequestJson(prefixMessages, messages, stream: true);
+        onRequestPrepared?.Invoke(new Payload(_endpointUrl, model, jsonContent, null, 0));
         var jsonParser = new JsonStreamParser<T>();
 
         var streamHandler = new OpenAIStreamHandler(chunk =>

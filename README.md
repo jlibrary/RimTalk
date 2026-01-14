@@ -23,7 +23,7 @@
     </h3>
 </html>
 
-> Latest Update: 01/15/2026
+> Latest Update: 01/16/2026
 
 ## 1. Overview
 
@@ -35,7 +35,7 @@ RimTalk integrates directly with AI to generate dialogue in real-time. The mod a
 
 -   **AI-driven, context-rich dialogue:** Generates unique speech based on pawn mood, traits, relationships, and current situation.
 -   **Modular prompt presets:** SillyTavern-style entries with role/position control, plus import/export and simple/advanced modes.
--   **Mustache templates:** Built-in variables, pawn indexing (`pawn1`, `pawn2`, ...), `{{#pawns}}` sections, and `setvar/getvar`.
+-   **Scriban templates:** Powerful C#-like logic, iteration (`for p in pawns`), conditionals, and full access to game objects (`pawn`, `map`, `Find`, etc.).
 -   **Structured context control:** Presets and optimization to balance detail, token usage, and conversation history.
 -   **Multi-provider support:** Google Gemini, OpenAI-compatible, custom Base URLs, and local providers with multiple configs.
 -   **Flexible gameplay filters:** Player dialogue modes, monologue control, and faction/prisoner/slave/baby toggles.
@@ -71,7 +71,7 @@ Settings are organized into four tabs: Basic, Prompt Presets, Context Filter, an
 -   **Simple mode:** A single instruction field for quick tuning.
 -   **Advanced mode:** Preset library with activate/duplicate/rename, entry enable/disable, and import/export.
 -   **Entry controls:** Role (System/User/Assistant), position (Relative/InChat), and in-chat depth.
--   **Mustache helpers:** Variable insert menu and preview panel for built-in and runtime variables.
+-   **Scriban helpers:** Variable insert menu and preview panel for built-in and runtime variables.
 
 ### 4.3 Context Filter
 
@@ -87,45 +87,50 @@ Settings are organized into four tabs: Basic, Prompt Presets, Context Filter, an
 -   **Category grouping:** Letters, Messages, and Other are listed separately for quick filtering.
 -   **Safe defaults:** `Verse.Message` is disabled by default; reset restores defaults.
 
-## 5. Prompt System & Mustache Basics
+## 5. Prompt System & Scriban Basics
 
 RimTalk supports three levels of prompt setup, so you are not forced to use presets.
 
 -   **Simple mode (plaintext system context):** A single instruction field; RimTalk appends context automatically.
--   **Simple preset (dialogue + context):** Minimal preset that concatenates `{{dialogue}}` with `{{context}}`.
--   **Complex preset (advanced Mustache):** Full template control with variables, sections, and runtime values.
+-   **Simple preset (dialogue + context):** Minimal preset that concatenates `{{prompt}}` with `{{context}}`.
+-   **Complex preset (advanced Scriban):** Full template control with logic, loops, and direct access to RimWorld objects.
 
-Complex presets resolve Mustache variables at runtime. You can mix static text with variables, iterate over nearby pawns, and store small runtime values with set/get helpers.
+Complex presets use **Scriban**, a powerful templating engine. You can use C#-style logic, access properties of pawns, iterate over lists, and even call utility methods.
 
--   **Pawn variables:** Use `{{pawn1.*}}` for the initiator, `{{pawn2.*}}` and `{{pawn3.*}}` for others (e.g., `{{pawn1.name}}`, `{{pawn1.mood}}`).
--   **Pawn sections:** Use `{{#pawns}}...{{/pawns}}` and inside the block use `{{name}}`, `{{profile}}`, `{{index}}`.
--   **Runtime vars:** `{{setvar::key::value}}` stores data; `{{getvar::key::default}}` reads it later.
--   **History marker:** `{{chat.history}}` is a placeholder; the prompt system can insert conversation history when enabled.
+-   **Core Objects:** Use `{{pawn}}` for the initiator, `{{recipient}}` for the target, and `{{pawns}}` for the list of participants.
+-   **Property Access:** Access any public field or property (e.g., `{{pawn.LabelShort}}`, `{{pawn.gender}}`, `{{pawn.social}}` for relations summary, `{{map.weather}}`).
+-   **Conditionals:** `{{ if recipient != null }}Talking to {{ recipient.LabelShort }}{{ else }}Monologue{{ end }}`.
+-   **Loops:** `{{ for p in pawns }} * {{ p.LabelShort }} ({{ p.GetRole }}){{ end }}`.
+-   **History:** `{{chat.history}}` inserts the conversation log formatted as `[Role] Message`.
 
-Player-view JSON prompt template (reserve `{{User}}` for the upcoming player-name variable):
+Example JSON prompt template:
 
 ```json
 {
   "system": "You are generating in-world dialogue for RimWorld. Keep it concise and immersive.",
-  "player": "{{User}}",
+  "player": "{{settings.PlayerName}}",
   "context": {
-    "dialogue_type": "{{dialogue.type}}",
-    "dialogue_status": "{{dialogue.status}}",
+    "dialogue_type": "{{ctx.DialogueType}}",
+    "dialogue_status": "{{ctx.DialogueStatus}}",
     "pawn": {
-      "name": "{{pawn1.name}}",
-      "profile": "{{pawn1.profile}}",
-      "mood": "{{pawn1.mood}}",
-      "relations": "{{pawn1.relations}}"
+      "name": "{{pawn.name}}",
+      "profile": "{{pawn.profile}}",
+      "mood": "{{pawn.mood}}",
+      "relations": "{{pawn.social}}"
     },
-    "nearby_pawns": "{{pawns.nearby}}",
+    "nearby_pawns": [
+      {{ for p in pawns | array.offset 1 }}
+      { "name": "{{p.name}}", "role": "{{p.role}}" }{{ if !for.last }},{{ end }}
+      {{ end }}
+    ],
     "environment": {
-      "time": "{{time.hour12}}",
-      "weather": "{{weather}}",
-      "location": "{{location}}"
+      "time": "{{hour}}h",
+      "weather": "{{map.weather}}",
+      "location": "{{pawn.location}}"
     }
   },
   "history": "{{chat.history}}",
-  "user_prompt": "{{dialogue}}"
+  "user_prompt": "{{prompt}}"
 }
 ```
 
@@ -163,10 +168,11 @@ Contribution workflow:
 -   **Open a PR** with a short summary and testing notes.
 
 Common PR example: add a new `{{xxx}}` variable
-1) Add a provider in `Source/Prompt/Parser/MustacheParser.cs` (register or extend the built-in map).
-2) If the variable needs pawn/context data, update `Source/Prompt/Parser/MustacheContext.cs` or related context builders.
-3) (Optional) Expose it in the variable list UI for presets so users can insert it.
-4) Test in-game with a prompt entry that includes `{{xxx}}`, confirm output and edge cases.
+1) Use `ContextHookRegistry.RegisterContextVariable` (or `RegisterPawnVariable`) in your mod's initialization.
+2) If you want to modify existing template data, use `ContextHookRegistry.RegisterPawnHook`.
+3) Variables are automatically available in Scriban templates.
+4) (Optional) Add a translation entry in `VariableDefinitions.cs` to expose it in the variable list UI.
+5) Test in-game with a prompt entry that includes `{{xxx}}`, confirm output and edge cases.
 
 ## 9. Compatibility & Notes
 

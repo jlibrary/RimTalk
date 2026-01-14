@@ -71,52 +71,37 @@
 
     <!-- Settings.cs -->
     <RimTalk.Settings.BasicSettings>Basic Settings</RimTalk.Settings.BasicSettings>
-    <RimTalk.Settings.AIInstruction>AI Instruction</RimTalk.Settings.AIInstruction>
-    <RimTalk.Settings.PromptPresets>Prompt Presets</RimTalk.Settings.PromptPresets>
+    <RimTalk.Settings.PromptSetting>Prompt Setting</RimTalk.Settings.PromptSetting>
     <RimTalk.Settings.ImportPreset>Import</RimTalk.Settings.ImportPreset>
     <RimTalk.Settings.ExportPreset>Export</RimTalk.Settings.ExportPreset>
-    <RimTalk.Settings.ShowEntries>Show Entries</RimTalk.Settings.ShowEntries>
-    <RimTalk.Settings.ShowVariables>Show Variables</RimTalk.Settings.ShowVariables>
-    <RimTalk.Settings.ResetConfirm>Are you sure you want to reset all prompt presets and variables to default? This cannot be undone.</RimTalk.Settings.ResetConfirm>
+    <RimTalk.Settings.ShowVariables>Reference</RimTalk.Settings.ShowVariables>
+    <RimTalk.Settings.ResetConfirm>Are you sure you want to reset all prompt presets and reference data to default? This cannot be undone.</RimTalk.Settings.ResetConfirm>
     
     <!-- Settings_PromptPreset.cs -->
-    <RimTalk.Settings.PromptPreset.ModeEntries>Entries</RimTalk.Settings.PromptPreset.ModeEntries>
-    <RimTalk.Settings.PromptPreset.ModeUserVars>User Vars</RimTalk.Settings.PromptPreset.ModeUserVars>
+    <RimTalk.Settings.PromptPreset.SearchPlaceholder>Search objects, properties, functions...</RimTalk.Settings.PromptPreset.SearchPlaceholder>
     <RimTalk.Settings.PromptPreset.ModePreview>Preview</RimTalk.Settings.PromptPreset.ModePreview>
     <RimTalk.Settings.PromptPreset.Presets>Presets</RimTalk.Settings.PromptPreset.Presets>
     <RimTalk.Settings.PromptPreset.NewPreset>+ New Preset</RimTalk.Settings.PromptPreset.NewPreset>
     <RimTalk.Settings.PromptPreset.NewPresetName>New Preset</RimTalk.Settings.PromptPreset.NewPresetName>
     <RimTalk.Settings.PromptPreset.Activate>Activate</RimTalk.Settings.PromptPreset.Activate>
-    <RimTalk.Settings.PromptPreset.Rename>Rename</RimTalk.Settings.PromptPreset.Rename>
     <RimTalk.Settings.PromptPreset.Duplicate>Duplicate</RimTalk.Settings.PromptPreset.Duplicate>
     <RimTalk.Settings.PromptPreset.Delete>Delete</RimTalk.Settings.PromptPreset.Delete>
-    <RimTalk.Settings.PromptPreset.Entries>Entries</RimTalk.Settings.PromptPreset.Entries>
+    <RimTalk.Settings.PromptPreset.SectionSystem>System</RimTalk.Settings.PromptPreset.SectionSystem>
+    <RimTalk.Settings.PromptPreset.SectionHistory>History</RimTalk.Settings.PromptPreset.SectionHistory>
+    <RimTalk.Settings.PromptPreset.SectionPrompt>Prompt</RimTalk.Settings.PromptPreset.SectionPrompt>
     <RimTalk.Settings.PromptPreset.NewEntry>+ New Entry</RimTalk.Settings.PromptPreset.NewEntry>
     <RimTalk.Settings.PromptPreset.NewEntryName>New Entry</RimTalk.Settings.PromptPreset.NewEntryName>
     <RimTalk.Settings.PromptPreset.SelectEntryToEdit>Select an entry to edit</RimTalk.Settings.PromptPreset.SelectEntryToEdit>
-    <RimTalk.Settings.PromptPreset.Name>Name:</RimTalk.Settings.PromptPreset.Name>
+    <RimTalk.Settings.PromptPreset.PresetName>Preset Name:</RimTalk.Settings.PromptPreset.PresetName>
+    <RimTalk.Settings.PromptPreset.EntryName>Entry Name:</RimTalk.Settings.PromptPreset.EntryName>
     <RimTalk.Settings.PromptPreset.Role>Role:</RimTalk.Settings.PromptPreset.Role>
     <RimTalk.Settings.PromptPreset.Position>Position:</RimTalk.Settings.PromptPreset.Position>
     <RimTalk.Settings.PromptPreset.PositionRelative>Relative</RimTalk.Settings.PromptPreset.PositionRelative>
     <RimTalk.Settings.PromptPreset.PositionInChat>InChat</RimTalk.Settings.PromptPreset.PositionInChat>
     <RimTalk.Settings.PromptPreset.Depth>Depth:</RimTalk.Settings.PromptPreset.Depth>
     <RimTalk.Settings.PromptPreset.Content>Content:</RimTalk.Settings.PromptPreset.Content>
-    <RimTalk.Settings.PromptPreset.InsertVariable>Insert Variable</RimTalk.Settings.PromptPreset.InsertVariable>
-    <RimTalk.Settings.PromptPreset.UserVariables>User Variables</RimTalk.Settings.PromptPreset.UserVariables>
     <RimTalk.Settings.PromptPreset.ModVariables>Mod Variables</RimTalk.Settings.PromptPreset.ModVariables>
-    <RimTalk.Settings.PromptPreset.CustomVariables>Custom Variables</RimTalk.Settings.PromptPreset.CustomVariables>
-    <RimTalk.Settings.PromptPreset.CustomVariablesHint>Define variables accessible via {{user.name}}</RimTalk.Settings.PromptPreset.CustomVariablesHint>
-    <RimTalk.Settings.PromptPreset.VarName>Name:</RimTalk.Settings.PromptPreset.VarName>
-    <RimTalk.Settings.PromptPreset.VarValue>Value:</RimTalk.Settings.PromptPreset.VarValue>
-    <RimTalk.Settings.PromptPreset.VarOptions>Options:</RimTalk.Settings.PromptPreset.VarOptions>
-    <RimTalk.Settings.PromptPreset.VarCurrent>Current:</RimTalk.Settings.PromptPreset.VarCurrent>
-    <RimTalk.Settings.PromptPreset.AddVariable>+ Add Variable</RimTalk.Settings.PromptPreset.AddVariable>
-    <RimTalk.Settings.PromptPreset.GlobalVariables>Global Variables: {0} stored (via setvar/getvar)</RimTalk.Settings.PromptPreset.GlobalVariables>
-    <RimTalk.Settings.PromptPreset.ClearAll>Clear All</RimTalk.Settings.PromptPreset.ClearAll>
-    <RimTalk.Settings.PromptPreset.VariablePreview>Variable Preview</RimTalk.Settings.PromptPreset.VariablePreview>
-    <RimTalk.Settings.PromptPreset.VariablePreviewHint>Shows all available mustache variables. In-game values shown when available.</RimTalk.Settings.PromptPreset.VariablePreviewHint>
-    <RimTalk.Settings.PromptPreset.UserVariablesSection>User Variables ({{user.xxx}})</RimTalk.Settings.PromptPreset.UserVariablesSection>
-    <RimTalk.Settings.PromptPreset.RuntimeVariables>Runtime Variables (setvar)</RimTalk.Settings.PromptPreset.RuntimeVariables>
+    <RimTalk.Settings.PromptPreset.VariablePreviewHint>Shows all available objects, properties, and functions. In-game values shown when available.</RimTalk.Settings.PromptPreset.VariablePreviewHint>
     
     <!-- Import/Export -->
     <RimTalk.Settings.PromptPreset.Export>Export</RimTalk.Settings.PromptPreset.Export>
@@ -127,36 +112,69 @@
     <RimTalk.Settings.PromptPreset.ImportFailed>Failed to import preset.</RimTalk.Settings.PromptPreset.ImportFailed>
     <RimTalk.Settings.PromptPreset.NoPresetsToImport>No preset files found. Place .json files in:\n{0}</RimTalk.Settings.PromptPreset.NoPresetsToImport>
     <RimTalk.Settings.PromptPreset.OpenFolder>Open Folder</RimTalk.Settings.PromptPreset.OpenFolder>
+    <RimTalk.Settings.PromptPreset.PreviewNotAvailable>Preview is only available while a game is loaded.</RimTalk.Settings.PromptPreset.PreviewNotAvailable>
+    <RimTalk.Settings.PromptPreset.NoRecentInteraction>No recent interaction found. Please send a chat request or wait for an interaction to generate a preview context.</RimTalk.Settings.PromptPreset.NoRecentInteraction>
+    <RimTalk.Settings.PromptPreset.PreviewError>Error generating preview: {0}</RimTalk.Settings.PromptPreset.PreviewError>
     
     <!-- Simple/Advanced Mode -->
-    <RimTalk.Settings.SwitchToAdvanced>Advanced Mode</RimTalk.Settings.SwitchToAdvanced>
-    <RimTalk.Settings.SwitchToSimple>Simple Mode</RimTalk.Settings.SwitchToSimple>
     <RimTalk.Settings.SimpleModeTip>Character profiles, chat history, and context are automatically included.</RimTalk.Settings.SimpleModeTip>
     <RimTalk.Settings.AdvancedModeWarning>Advanced mode provides full control over prompt entries, variables, and message ordering. Your current instruction will be preserved. Continue?</RimTalk.Settings.AdvancedModeWarning>
     <RimTalk.Settings.PromptHelp>Help</RimTalk.Settings.PromptHelp>
-    <RimTalk.Settings.AdvancedHelpContent>Advanced Mode Instructions:
+    <RimTalk.Settings.AdvancedHelpContent>Advanced Preset Guide
 
-This mode gives you full control over the prompt system:
+Advanced mode gives you surgical control over how the AI thinks and sees the world. Each Preset is built from three main blocks:
 
-PRESETS: Create multiple prompt configurations and switch between them.
+1. System (The Rules)
+These are background instructions that the AI always keeps in mind. Use this to define general personality or formatting rules.
+TIP: If you encounter JSON deserialization errors, you can manually override the {{json.format}} variable with your own specific JSON schema instructions to guide the AI more strictly.
 
-ENTRIES: Each entry is a message sent to the AI. You can:
-• Set the Role (System/User/Assistant)
-• Set the Position (Relative or InChat with depth)
-• Use {{variables}} for dynamic content
+2. History (The Flow)
+This manages where previous messages appear in the prompt.
+- Position: InChat: Injects data directly into the conversation log.
+- Depth: Controls where the injection happens.
+    - Depth 0: After the most recent message.
+    - Depth 5: 5 messages back into the past.
+- Position: Relative: Places the entry strictly before or after the history block.
 
-VARIABLES:
-• Built-in: {{pawns.all}}, {{pawn1.name}}, {{weather}}, etc.
-• Loop Variables: {{#pawns}}...{{/pawns}} to iterate over dialogue pawns
-    • Example:
-    • {{#pawns}}{{index}}. {{name}} - {{mood}}{{/pawns}}
-• Runtime: setvar/getvar for AI-controlled values
-    • Example:
-    • {{setvar::counter::1}}
-    • Current count: {{getvar::counter}}
-CHAT HISTORY: Use {{chat.history}} entry to control where conversation history appears.
+3. Prompt (The Trigger)
+The final piece of the puzzle. This is usually the specific instruction or question that triggers the AI to generate a response right now.
 
-For detailed documentation, see the docs/ folder in the mod directory.</RimTalk.Settings.AdvancedHelpContent>
+Scriban Magic (Dynamic Content)
+Use double braces {{ ... }} to insert real-time game data.
+
+Advanced Context:
+- Initiator: {{ pawn.LabelShort }} (The pawn speaking)
+- Recipient: {{ recipient.LabelShort }} (The pawn being spoken to)
+- All Participants: {{ for p in pawns }}{{ p.LabelShort }}, {{ end }}
+
+Advanced Examples:
+- Getting All Colonists:
+  {{ for p in PawnsFinder.AllMaps_FreeColonists }} * {{ p.LabelShort }} is {{ p.job }}{{ end }}
+
+- Getting Last 3 Quests:
+  {{ for q in Find.QuestManager.QuestsListForReading | array.limit 3 }} - {{ q.name }}: {{ q.description | Sanitize }}{{ end }}
+
+- Map Environment:
+  The weather is {{ map.weather }} and it is {{ map.temperature }}°C.
+
+- Pawn Needs:
+  {{ for need in pawn.needs.AllNeeds }} * {{ need.def.label }}: {{ need.CurLevelPercentage }}{{ end }}
+
+- Check Status:
+  {{ if IsInCombat pawn }}You are currently in a fight!{{ end }}
+
+- Complex Logic Example:
+  {{ if recipient != null }}
+  You are talking to {{ recipient.LabelShort }}.
+  {{ if recipient.Dead }}...but they are dead.{{ end }}
+  {{ else }}
+  You are thinking to yourself.
+  {{ end }}
+
+Crucial Tips:
+- Case Sensitivity: Functions are strict. Use GetRole, not getrole.
+- Reference Preview: Use the dedicated tab to see every property you can use!
+- JSON: The {{json.format}} variable is vital for AI logic. Only override it manually in System entries if you are an experienced user.</RimTalk.Settings.AdvancedHelpContent>
     
     <RimTalk.Settings.EventFilter>Event Filter</RimTalk.Settings.EventFilter>
     <RimTalk.Settings.ApiKey>Cloud API Key</RimTalk.Settings.ApiKey>
@@ -331,7 +349,7 @@ For detailed documentation, see the docs/ folder in the mod directory.</RimTalk.
     <RimTalk.DebugWindow.Undo>Undo</RimTalk.DebugWindow.Undo>
     <RimTalk.DebugWindow.Prompt>Prompt</RimTalk.DebugWindow.Prompt>
     <RimTalk.DebugWindow.Response>Response</RimTalk.DebugWindow.Response>
-    <RimTalk.DebugWindow.PromptMessages>Prompt Messages</RimTalk.DebugWindow.PromptMessages>
+    <RimTalk.DebugWindow.PromptMessages>Request Details</RimTalk.DebugWindow.PromptMessages>
     <RimTalk.DebugWindow.Contexts>Contexts</RimTalk.DebugWindow.Contexts>
     <RimTalk.DebugWindow.Generating>[Generating...]</RimTalk.DebugWindow.Generating>
     <RimTalk.DebugWindow.StatusDisabled>Disabled</RimTalk.DebugWindow.StatusDisabled>
@@ -368,6 +386,12 @@ For detailed documentation, see the docs/ folder in the mod directory.</RimTalk.
     <RimTalk.DebugWindow.HeaderElapsed>Elapsed</RimTalk.DebugWindow.HeaderElapsed>
     <RimTalk.DebugWindow.HeaderInitiator>Initiator</RimTalk.DebugWindow.HeaderInitiator>
     <RimTalk.DebugWindow.HeaderRecipient>Recipient</RimTalk.DebugWindow.HeaderRecipient>
+    <RimTalk.DebugWindow.HistoryCleared>Conversation history cleared.</RimTalk.DebugWindow.HistoryCleared>
+    <RimTalk.DebugWindow.FormatEntry>Entry</RimTalk.DebugWindow.FormatEntry>
+    <RimTalk.DebugWindow.FormatRole>Role</RimTalk.DebugWindow.FormatRole>
+    <RimTalk.DebugWindow.SystemInstruction>System Instruction</RimTalk.DebugWindow.SystemInstruction>
+    <RimTalk.DebugWindow.ChatHistory>Chat History</RimTalk.DebugWindow.ChatHistory>
+    <RimTalk.DebugWindow.InputPrompt>Input Prompt</RimTalk.DebugWindow.InputPrompt>
     <RimTalk.DebugWindow.TooltipPromptResponse>Prompt:\n{0}\n\nResponse:\n{1}</RimTalk.DebugWindow.TooltipPromptResponse>
     
     <!-- Overlay.cs -->
@@ -386,99 +410,10 @@ For detailed documentation, see the docs/ folder in the mod directory.</RimTalk.
     <RimTalk.FloatMenu.Send>Send</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>Cancel</RimTalk.FloatMenu.Cancel>
 
-    <!-- MustacheParser.cs - Variable Registry -->
-    <!-- Category Names -->
-    <RimTalk.MustacheVar.Category.PawnsAll>Pawns (All)</RimTalk.MustacheVar.Category.PawnsAll>
-    <RimTalk.MustacheVar.Category.Pawn1>Pawn 1 (Initiator)</RimTalk.MustacheVar.Category.Pawn1>
-    <RimTalk.MustacheVar.Category.Pawn2Plus>Pawn 2+ (Others)</RimTalk.MustacheVar.Category.Pawn2Plus>
-    <RimTalk.MustacheVar.Category.Dialogue>Dialogue</RimTalk.MustacheVar.Category.Dialogue>
-    <RimTalk.MustacheVar.Category.Time>Time</RimTalk.MustacheVar.Category.Time>
-    <RimTalk.MustacheVar.Category.Environment>Environment</RimTalk.MustacheVar.Category.Environment>
-    <RimTalk.MustacheVar.Category.Colony>Colony</RimTalk.MustacheVar.Category.Colony>
-    <RimTalk.MustacheVar.Category.System>System</RimTalk.MustacheVar.Category.System>
-    <RimTalk.MustacheVar.Category.VariableOps>Variable Operations</RimTalk.MustacheVar.Category.VariableOps>
-    
-    <!-- Pawns (All) Variables -->
-    <RimTalk.MustacheVar.pawns.all>All pawn profiles</RimTalk.MustacheVar.pawns.all>
-    <RimTalk.MustacheVar.pawns.nearby>Summary of nearby pawns</RimTalk.MustacheVar.pawns.nearby>
-    <RimTalk.MustacheVar.pawns.count>Number of pawns in conversation</RimTalk.MustacheVar.pawns.count>
-    
-    <!-- Pawn Variables -->
-    <RimTalk.MustacheVar.pawn.name>Short name</RimTalk.MustacheVar.pawn.name>
-    <RimTalk.MustacheVar.pawn.fullname>Full name</RimTalk.MustacheVar.pawn.fullname>
-    <RimTalk.MustacheVar.pawn.profile>Complete profile</RimTalk.MustacheVar.pawn.profile>
-    <RimTalk.MustacheVar.pawn.backstory>Backstory</RimTalk.MustacheVar.pawn.backstory>
-    <RimTalk.MustacheVar.pawn.gender>Gender</RimTalk.MustacheVar.pawn.gender>
-    <RimTalk.MustacheVar.pawn.age>Biological age</RimTalk.MustacheVar.pawn.age>
-    <RimTalk.MustacheVar.pawn.race>Race/Xenotype</RimTalk.MustacheVar.pawn.race>
-    <RimTalk.MustacheVar.pawn.role>Role (colonist/prisoner/etc)</RimTalk.MustacheVar.pawn.role>
-    <RimTalk.MustacheVar.pawn.faction>Faction name</RimTalk.MustacheVar.pawn.faction>
-    <RimTalk.MustacheVar.pawn.job>Current job</RimTalk.MustacheVar.pawn.job>
-    <RimTalk.MustacheVar.pawn.mood>Mood description</RimTalk.MustacheVar.pawn.mood>
-    <RimTalk.MustacheVar.pawn.moodpercent>Mood percentage</RimTalk.MustacheVar.pawn.moodpercent>
-    <RimTalk.MustacheVar.pawn.personality>Personality description</RimTalk.MustacheVar.pawn.personality>
-    <RimTalk.MustacheVar.pawn.traits>Traits list</RimTalk.MustacheVar.pawn.traits>
-    <RimTalk.MustacheVar.pawn.skills>Skills summary</RimTalk.MustacheVar.pawn.skills>
-    <RimTalk.MustacheVar.pawn.health>Health status</RimTalk.MustacheVar.pawn.health>
-    <RimTalk.MustacheVar.pawn.thoughts>Current thoughts</RimTalk.MustacheVar.pawn.thoughts>
-    <RimTalk.MustacheVar.pawn.relations>Social relations</RimTalk.MustacheVar.pawn.relations>
-    <RimTalk.MustacheVar.pawn.equipment>Equipment and apparel</RimTalk.MustacheVar.pawn.equipment>
-    <RimTalk.MustacheVar.pawn.status>Current status</RimTalk.MustacheVar.pawn.status>
-    <RimTalk.MustacheVar.pawn.genes>Notable genes</RimTalk.MustacheVar.pawn.genes>
-    <RimTalk.MustacheVar.pawn.ideology>Ideology and memes</RimTalk.MustacheVar.pawn.ideology>
-    <RimTalk.MustacheVar.pawn.captive_status>Prisoner/slave status</RimTalk.MustacheVar.pawn.captive_status>
-    
-    <!-- Pawn 2+ Variables -->
-    <RimTalk.MustacheVar.pawn2.name>Pawn 2's short name</RimTalk.MustacheVar.pawn2.name>
-    <RimTalk.MustacheVar.pawn2.profile>Pawn 2's complete profile</RimTalk.MustacheVar.pawn2.profile>
-    <RimTalk.MustacheVar.pawn3.name>Pawn 3's short name</RimTalk.MustacheVar.pawn3.name>
-    <RimTalk.MustacheVar.pawnN.xxx>Any pawn N's property (N=1,2,3...)</RimTalk.MustacheVar.pawnN.xxx>
-    
-    <!-- Sections (Mustache Loop Blocks) -->
-    <RimTalk.MustacheVar.Category.Sections>Section Loops</RimTalk.MustacheVar.Category.Sections>
-    <RimTalk.MustacheVar.section.pawns>Loop over dialogue pawns</RimTalk.MustacheVar.section.pawns>
-    <RimTalk.MustacheVar.section.index>Current pawn index (1-based)</RimTalk.MustacheVar.section.index>
-    <RimTalk.MustacheVar.section.name>Current pawn's name (inside section)</RimTalk.MustacheVar.section.name>
-    <RimTalk.MustacheVar.section.profile>Current pawn's profile (inside section)</RimTalk.MustacheVar.section.profile>
-    
-    <!-- Dialogue Variables -->
-    <RimTalk.MustacheVar.dialogue>Full decorated prompt (time, weather, location, etc.)</RimTalk.MustacheVar.dialogue>
-    <RimTalk.MustacheVar.dialogue.type>Dialogue type description</RimTalk.MustacheVar.dialogue.type>
-    <RimTalk.MustacheVar.dialogue.status>Initiator's current activity status</RimTalk.MustacheVar.dialogue.status>
-    <RimTalk.MustacheVar.dialogue.ismonologue>Whether this is a monologue</RimTalk.MustacheVar.dialogue.ismonologue>
-    
-    <!-- Time Variables -->
-    <RimTalk.MustacheVar.time.hour>Hour (24h format)</RimTalk.MustacheVar.time.hour>
-    <RimTalk.MustacheVar.time.hour12>Hour (12h format with AM/PM)</RimTalk.MustacheVar.time.hour12>
-    <RimTalk.MustacheVar.time.date>Full date string</RimTalk.MustacheVar.time.date>
-    <RimTalk.MustacheVar.time.day>Day of year</RimTalk.MustacheVar.time.day>
-    <RimTalk.MustacheVar.time.season>Current season</RimTalk.MustacheVar.time.season>
-    <RimTalk.MustacheVar.time.quadrum>Current quadrum</RimTalk.MustacheVar.time.quadrum>
-    <RimTalk.MustacheVar.time.year>Current year</RimTalk.MustacheVar.time.year>
-    
-    <!-- Environment Variables -->
-    <RimTalk.MustacheVar.weather>Current weather</RimTalk.MustacheVar.weather>
-    <RimTalk.MustacheVar.temperature>Outdoor temperature</RimTalk.MustacheVar.temperature>
-    <RimTalk.MustacheVar.location>Location and temperature</RimTalk.MustacheVar.location>
-    <RimTalk.MustacheVar.terrain>Ground terrain type</RimTalk.MustacheVar.terrain>
-    <RimTalk.MustacheVar.beauty>Area beauty level</RimTalk.MustacheVar.beauty>
-    <RimTalk.MustacheVar.cleanliness>Room cleanliness</RimTalk.MustacheVar.cleanliness>
-    <RimTalk.MustacheVar.surroundings>Nearby items and objects</RimTalk.MustacheVar.surroundings>
-    <RimTalk.MustacheVar.wealth>Colony wealth description</RimTalk.MustacheVar.wealth>
-    
-    <!-- Colony Variables -->
-    <RimTalk.MustacheVar.colony.name>Colony name</RimTalk.MustacheVar.colony.name>
-    <RimTalk.MustacheVar.colony.wealth>Total colony wealth</RimTalk.MustacheVar.colony.wealth>
-    <RimTalk.MustacheVar.colony.population>Colonist count</RimTalk.MustacheVar.colony.population>
-    
-    <!-- System Variables -->
-    <RimTalk.MustacheVar.lang>Current game language</RimTalk.MustacheVar.lang>
-    <RimTalk.MustacheVar.json.format>JSON output format (dynamic based on settings)</RimTalk.MustacheVar.json.format>
-    <RimTalk.MustacheVar.context>Legacy context variable</RimTalk.MustacheVar.context>
-    <RimTalk.MustacheVar.chat.history>Previous chat history</RimTalk.MustacheVar.chat.history>
-    
-    <!-- Variable Operations -->
-    <RimTalk.MustacheVar.setvar>Set a runtime variable</RimTalk.MustacheVar.setvar>
-    <RimTalk.MustacheVar.getvar>Get a runtime variable</RimTalk.MustacheVar.getvar>
-    <RimTalk.MustacheVar.getvar.default>Get variable with default value</RimTalk.MustacheVar.getvar.default>
+    <!-- VariableDefinitions.cs - Variable Registry -->
+    <RimTalk.ScribanVar.Category.PawnShorthands>Pawn Shorthands</RimTalk.ScribanVar.Category.PawnShorthands>
+    <RimTalk.ScribanVar.Category.CoreObjects>Core Objects</RimTalk.ScribanVar.Category.CoreObjects>
+    <RimTalk.ScribanVar.Category.Context>Context</RimTalk.ScribanVar.Category.Context>
+    <RimTalk.ScribanVar.Category.GameStatic>Game Objects (Static)</RimTalk.ScribanVar.Category.GameStatic>
+    <RimTalk.ScribanVar.Category.System>System</RimTalk.ScribanVar.Category.System>
 </LanguageData>

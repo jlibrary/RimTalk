@@ -71,52 +71,37 @@
 
     <!-- Settings.cs -->
     <RimTalk.Settings.BasicSettings>基本设置</RimTalk.Settings.BasicSettings>
-    <RimTalk.Settings.AIInstruction>AI 指令</RimTalk.Settings.AIInstruction>
-    <RimTalk.Settings.PromptPresets>提示词预设</RimTalk.Settings.PromptPresets>
+    <RimTalk.Settings.PromptSetting>提示词设置</RimTalk.Settings.PromptSetting>
     <RimTalk.Settings.ImportPreset>导入</RimTalk.Settings.ImportPreset>
     <RimTalk.Settings.ExportPreset>导出</RimTalk.Settings.ExportPreset>
-    <RimTalk.Settings.ShowEntries>显示条目</RimTalk.Settings.ShowEntries>
-    <RimTalk.Settings.ShowVariables>显示变量</RimTalk.Settings.ShowVariables>
-    <RimTalk.Settings.ResetConfirm>确定要将所有提示词预设和变量重置为默认值吗？此操作无法撤销。</RimTalk.Settings.ResetConfirm>
+    <RimTalk.Settings.ShowVariables>变量参考</RimTalk.Settings.ShowVariables>
+    <RimTalk.Settings.ResetConfirm>确定要将所有提示词预设和参考数据重置为默认值吗？此操作无法撤销。</RimTalk.Settings.ResetConfirm>
     
     <!-- Settings_PromptPreset.cs -->
-    <RimTalk.Settings.PromptPreset.ModeEntries>条目</RimTalk.Settings.PromptPreset.ModeEntries>
-    <RimTalk.Settings.PromptPreset.ModeUserVars>用户变量</RimTalk.Settings.PromptPreset.ModeUserVars>
+    <RimTalk.Settings.PromptPreset.SearchPlaceholder>搜索对象、属性、函数...</RimTalk.Settings.PromptPreset.SearchPlaceholder>
     <RimTalk.Settings.PromptPreset.ModePreview>预览</RimTalk.Settings.PromptPreset.ModePreview>
     <RimTalk.Settings.PromptPreset.Presets>预设</RimTalk.Settings.PromptPreset.Presets>
     <RimTalk.Settings.PromptPreset.NewPreset>+ 新建预设</RimTalk.Settings.PromptPreset.NewPreset>
     <RimTalk.Settings.PromptPreset.NewPresetName>新预设</RimTalk.Settings.PromptPreset.NewPresetName>
     <RimTalk.Settings.PromptPreset.Activate>激活</RimTalk.Settings.PromptPreset.Activate>
-    <RimTalk.Settings.PromptPreset.Rename>重命名</RimTalk.Settings.PromptPreset.Rename>
     <RimTalk.Settings.PromptPreset.Duplicate>复制</RimTalk.Settings.PromptPreset.Duplicate>
     <RimTalk.Settings.PromptPreset.Delete>删除</RimTalk.Settings.PromptPreset.Delete>
-    <RimTalk.Settings.PromptPreset.Entries>条目</RimTalk.Settings.PromptPreset.Entries>
+    <RimTalk.Settings.PromptPreset.SectionSystem>系统 (System)</RimTalk.Settings.PromptPreset.SectionSystem>
+    <RimTalk.Settings.PromptPreset.SectionHistory>历史 (History)</RimTalk.Settings.PromptPreset.SectionHistory>
+    <RimTalk.Settings.PromptPreset.SectionPrompt>提示 (Prompt)</RimTalk.Settings.PromptPreset.SectionPrompt>
     <RimTalk.Settings.PromptPreset.NewEntry>+ 新建条目</RimTalk.Settings.PromptPreset.NewEntry>
     <RimTalk.Settings.PromptPreset.NewEntryName>新条目</RimTalk.Settings.PromptPreset.NewEntryName>
     <RimTalk.Settings.PromptPreset.SelectEntryToEdit>选择一个条目进行编辑</RimTalk.Settings.PromptPreset.SelectEntryToEdit>
-    <RimTalk.Settings.PromptPreset.Name>名称：</RimTalk.Settings.PromptPreset.Name>
+    <RimTalk.Settings.PromptPreset.PresetName>预设名称：</RimTalk.Settings.PromptPreset.PresetName>
+    <RimTalk.Settings.PromptPreset.EntryName>条目名称：</RimTalk.Settings.PromptPreset.EntryName>
     <RimTalk.Settings.PromptPreset.Role>角色：</RimTalk.Settings.PromptPreset.Role>
     <RimTalk.Settings.PromptPreset.Position>位置：</RimTalk.Settings.PromptPreset.Position>
     <RimTalk.Settings.PromptPreset.PositionRelative>相对</RimTalk.Settings.PromptPreset.PositionRelative>
     <RimTalk.Settings.PromptPreset.PositionInChat>聊天内</RimTalk.Settings.PromptPreset.PositionInChat>
     <RimTalk.Settings.PromptPreset.Depth>深度：</RimTalk.Settings.PromptPreset.Depth>
     <RimTalk.Settings.PromptPreset.Content>内容：</RimTalk.Settings.PromptPreset.Content>
-    <RimTalk.Settings.PromptPreset.InsertVariable>插入变量</RimTalk.Settings.PromptPreset.InsertVariable>
-    <RimTalk.Settings.PromptPreset.UserVariables>用户变量</RimTalk.Settings.PromptPreset.UserVariables>
     <RimTalk.Settings.PromptPreset.ModVariables>Mod 变量</RimTalk.Settings.PromptPreset.ModVariables>
-    <RimTalk.Settings.PromptPreset.CustomVariables>自定义变量</RimTalk.Settings.PromptPreset.CustomVariables>
-    <RimTalk.Settings.PromptPreset.CustomVariablesHint>定义可通过 {{user.name}} 访问的变量</RimTalk.Settings.PromptPreset.CustomVariablesHint>
-    <RimTalk.Settings.PromptPreset.VarName>名称：</RimTalk.Settings.PromptPreset.VarName>
-    <RimTalk.Settings.PromptPreset.VarValue>值：</RimTalk.Settings.PromptPreset.VarValue>
-    <RimTalk.Settings.PromptPreset.VarOptions>选项：</RimTalk.Settings.PromptPreset.VarOptions>
-    <RimTalk.Settings.PromptPreset.VarCurrent>当前：</RimTalk.Settings.PromptPreset.VarCurrent>
-    <RimTalk.Settings.PromptPreset.AddVariable>+ 添加变量</RimTalk.Settings.PromptPreset.AddVariable>
-    <RimTalk.Settings.PromptPreset.GlobalVariables>全局变量：已存储 {0} 个（通过 setvar/getvar）</RimTalk.Settings.PromptPreset.GlobalVariables>
-    <RimTalk.Settings.PromptPreset.ClearAll>全部清除</RimTalk.Settings.PromptPreset.ClearAll>
-    <RimTalk.Settings.PromptPreset.VariablePreview>变量预览</RimTalk.Settings.PromptPreset.VariablePreview>
-    <RimTalk.Settings.PromptPreset.VariablePreviewHint>显示所有可用的 mustache 变量。游戏内可用时显示实际值。</RimTalk.Settings.PromptPreset.VariablePreviewHint>
-    <RimTalk.Settings.PromptPreset.UserVariablesSection>用户变量 ({{user.xxx}})</RimTalk.Settings.PromptPreset.UserVariablesSection>
-    <RimTalk.Settings.PromptPreset.RuntimeVariables>运行时变量 (setvar)</RimTalk.Settings.PromptPreset.RuntimeVariables>
+    <RimTalk.Settings.PromptPreset.VariablePreviewHint>显示所有可用的对象、属性和函数。游戏内可用时显示实际值。</RimTalk.Settings.PromptPreset.VariablePreviewHint>
     
     <!-- Import/Export -->
     <RimTalk.Settings.PromptPreset.Export>导出</RimTalk.Settings.PromptPreset.Export>
@@ -127,37 +112,69 @@
     <RimTalk.Settings.PromptPreset.ImportFailed>导入预设失败。</RimTalk.Settings.PromptPreset.ImportFailed>
     <RimTalk.Settings.PromptPreset.NoPresetsToImport>未找到预设文件。请将 .json 文件放置到：\n{0}</RimTalk.Settings.PromptPreset.NoPresetsToImport>
     <RimTalk.Settings.PromptPreset.OpenFolder>打开文件夹</RimTalk.Settings.PromptPreset.OpenFolder>
+    <RimTalk.Settings.PromptPreset.PreviewNotAvailable>预览仅在加载游戏时可用。</RimTalk.Settings.PromptPreset.PreviewNotAvailable>
+    <RimTalk.Settings.PromptPreset.NoRecentInteraction>未找到最近的互动。请发送聊天请求或等待互动以生成预览上下文。</RimTalk.Settings.PromptPreset.NoRecentInteraction>
+    <RimTalk.Settings.PromptPreset.PreviewError>生成预览时出错：{0}</RimTalk.Settings.PromptPreset.PreviewError>
     
     <!-- Simple/Advanced Mode -->
-    <RimTalk.Settings.SwitchToAdvanced>高级模式</RimTalk.Settings.SwitchToAdvanced>
-    <RimTalk.Settings.SwitchToSimple>简单模式</RimTalk.Settings.SwitchToSimple>
     <RimTalk.Settings.SimpleModeTip>角色资料、聊天历史和上下文信息会自动包含。</RimTalk.Settings.SimpleModeTip>
     <RimTalk.Settings.AdvancedModeWarning>高级模式可以完全控制提示词条目、变量和消息顺序。您当前的指令将被保留。是否继续？</RimTalk.Settings.AdvancedModeWarning>
     <RimTalk.Settings.PromptHelp>帮助</RimTalk.Settings.PromptHelp>
-    <RimTalk.Settings.AdvancedHelpContent>高级模式说明：
+    <RimTalk.Settings.AdvancedHelpContent>高级预设指南
 
-此模式让您完全控制提示词系统：
+高级模式让您可以精确控制 AI 的思考方式和对世界的认知。每个预设由三个主要部分组成：
 
-预设：创建多个提示词配置并在它们之间切换。
+1. 系统 (规则)
+这些是 AI 始终牢记在心的背景指令。使用它来定义一般个性或格式规则。
+提示：如果遇到 JSON 反序列化错误，您可以手动使用您自己的特定 JSON 架构指令覆盖 {{json.format}} 变量，以更严格地引导 AI。
 
-条目：每个条目是发送给 AI 的一条消息。您可以：
-• 设置角色（System/User/Assistant）
-• 设置位置（相对位置或聊天内位置及深度）
-• 使用 {{变量}} 插入动态内容
+2. 历史 (流)
+这管理了之前的消息在提示词中的出现位置。
+- 位置: 聊天内 (InChat): 直接将数据注入对话日志。
+- 深度 (Depth): 控制注入发生的位置。
+    - 深度 0: 在最新消息之后。
+    - 深度 5: 回溯到过去的 5 条消息。
+- 位置: 相对 (Relative): 将条目严格放置在历史区块之前或之后。
 
-变量：
-• 内置变量：{{pawns.all}}、{{pawn1.name}}、{{weather}} 等
-• 循环变量：{{#pawns}}...{{/pawns}} 用于遍历对话中的角色
-    •例子：
-    •{{#pawns}}{{index}}. {{name}} - {{mood}}{{/pawns}}
-• 运行时变量：setvar/getvar 用于 AI 控制的值
-    •例子：
-    •{{setvar::counter::1}}
-    •当前计数：{{getvar::counter}}
-聊天历史：使用 {{chat.history}} 条目控制对话历史的插入位置。
+3. 提示 (触发器)
+拼图的最后一块。这通常是触发 AI 立即生成响应的具体指令或问题。
 
-特别提醒：如果您正在使用硅基流动，请确保您的提示词顺序遵从System→User→Assistant→User的循环，以确保正确的对话流。
-</RimTalk.Settings.AdvancedHelpContent>
+Scriban 魔法 (动态内容)
+使用双大括号 {{ ... }} 插入实时游戏数据。
+
+高级上下文：
+- 发起者：{{ pawn.LabelShort }} (说话的 Pawn)
+- 接收者：{{ recipient.LabelShort }} (被说话的 Pawn)
+- 所有参与者：{{ for p in pawns }}{{ p.LabelShort }}, {{ end }}
+
+高级示例：
+- 获取所有殖민者：
+  {{ for p in PawnsFinder.AllMaps_FreeColonists }} * {{ p.LabelShort }} 是 {{ p.job }}{{ end }}
+
+- 获取最近 3 个任务：
+  {{ for q in Find.QuestManager.QuestsListForReading | array.limit 3 }} - {{ q.name }}: {{ q.description | Sanitize }}{{ end }}
+
+- 地图环境：
+  天气是 {{ map.weather }}，温度是 {{ map.temperature }}°C。
+
+- Pawn 需求：
+  {{ for need in pawn.needs.AllNeeds }} * {{ need.def.label }}: {{ need.CurLevelPercentage }}{{ end }}
+
+- 检查状态：
+  {{ if IsInCombat pawn }}你当前正在战斗！{{ end }}
+
+- 复杂逻辑示例：
+  {{ if recipient != null }}
+  你正在和 {{ recipient.LabelShort }} 交谈。
+  {{ if recipient.Dead }}...但他们已经死了。{{ end }}
+  {{ else }}
+  你正在自言自语。
+  {{ end }}
+
+关键提示：
+- 大小写敏感：函数是严格的。使用 GetRole，而不是 getrole。
+- 参考预览：使用专用选项卡查看您可以使用的每个属性！
+- JSON：{{json.format}} 变量对 AI 逻辑至关重要。仅在您是经验丰富的用户时，才在系统条目中手动覆盖它。</RimTalk.Settings.AdvancedHelpContent>
     
     <RimTalk.Settings.EventFilter>事件过滤器</RimTalk.Settings.EventFilter>
     <RimTalk.Settings.ApiKey>云端 API 密钥</RimTalk.Settings.ApiKey>
@@ -330,156 +347,74 @@
     <RimTalk.DebugWindow.Copy>复制</RimTalk.DebugWindow.Copy>
     <RimTalk.DebugWindow.Copied>已复制</RimTalk.DebugWindow.Copied>
     <RimTalk.DebugWindow.Undo>撤销</RimTalk.DebugWindow.Undo>
-    <RimTalk.DebugWindow.Prompt>提示词</RimTalk.DebugWindow.Prompt>
-    <RimTalk.DebugWindow.Response>回应</RimTalk.DebugWindow.Response>
-    <RimTalk.DebugWindow.PromptMessages>提示词消息</RimTalk.DebugWindow.PromptMessages>
-    <RimTalk.DebugWindow.Contexts>上下文</RimTalk.DebugWindow.Contexts>
+    <RimTalk.DebugWindow.Prompt>提示词 (Prompt)</RimTalk.DebugWindow.Prompt>
+    <RimTalk.DebugWindow.Response>响应 (Response)</RimTalk.DebugWindow.Response>
+    <RimTalk.DebugWindow.PromptMessages>请求详情</RimTalk.DebugWindow.PromptMessages>
+    <RimTalk.DebugWindow.Contexts>上下文 (Contexts)</RimTalk.DebugWindow.Contexts>
     <RimTalk.DebugWindow.Generating>[正在生成...]</RimTalk.DebugWindow.Generating>
     <RimTalk.DebugWindow.StatusDisabled>已禁用</RimTalk.DebugWindow.StatusDisabled>
     <RimTalk.DebugWindow.StatusProcessing>处理中</RimTalk.DebugWindow.StatusProcessing>
-    <RimTalk.DebugWindow.StatusIdle>闲置</RimTalk.DebugWindow.StatusIdle>
+    <RimTalk.DebugWindow.StatusIdle>空闲</RimTalk.DebugWindow.StatusIdle>
     <RimTalk.DebugWindow.GroupByPawn>按角色分组</RimTalk.DebugWindow.GroupByPawn>
-    <RimTalk.DebugWindow.ModSettings>模组设置</RimTalk.DebugWindow.ModSettings>
+    <RimTalk.DebugWindow.ModSettings>设置</RimTalk.DebugWindow.ModSettings>
     <RimTalk.DebugWindow.Export>导出</RimTalk.DebugWindow.Export>
     <RimTalk.DebugWindow.ResetLogs>重置日志</RimTalk.DebugWindow.ResetLogs>
     <RimTalk.DebugWindow.EnableRimTalk>启用 RimTalk</RimTalk.DebugWindow.EnableRimTalk>
     <RimTalk.DebugWindow.AIStatus>AI 状态：</RimTalk.DebugWindow.AIStatus>
     <RimTalk.DebugWindow.TotalCalls>总调用次数：</RimTalk.DebugWindow.TotalCalls>
     <RimTalk.DebugWindow.TotalTokens>总令牌数：</RimTalk.DebugWindow.TotalTokens>
-    <RimTalk.DebugWindow.AvgCallsPerMin>平均调用次数/分钟：</RimTalk.DebugWindow.AvgCallsPerMin>
-    <RimTalk.DebugWindow.AvgTokensPerMin>平均令牌数/分钟：</RimTalk.DebugWindow.AvgTokensPerMin>
-    <RimTalk.DebugWindow.AvgTokensPerCall>平均令牌数/调用：</RimTalk.DebugWindow.AvgTokensPerCall>
-    <RimTalk.DebugWindow.TokensPerSecond>令牌数/秒</RimTalk.DebugWindow.TokensPerSecond>
-    <RimTalk.DebugWindow.SixtySecondsAgo>60 秒前</RimTalk.DebugWindow.SixtySecondsAgo>
+    <RimTalk.DebugWindow.AvgCallsPerMin>平均每分钟调用：</RimTalk.DebugWindow.AvgCallsPerMin>
+    <RimTalk.DebugWindow.AvgTokensPerMin>平均每分钟令牌：</RimTalk.DebugWindow.AvgTokensPerMin>
+    <RimTalk.DebugWindow.AvgTokensPerCall>平均单次调用令牌：</RimTalk.DebugWindow.AvgTokensPerCall>
+    <RimTalk.DebugWindow.TokensPerSecond>令牌/秒</RimTalk.DebugWindow.TokensPerSecond>
+    <RimTalk.DebugWindow.SixtySecondsAgo>60秒前</RimTalk.DebugWindow.SixtySecondsAgo>
     <RimTalk.DebugWindow.Now>现在</RimTalk.DebugWindow.Now>
     <RimTalk.DebugWindow.StatusReady>就绪</RimTalk.DebugWindow.StatusReady>
     <RimTalk.DebugWindow.StatusBusy>忙碌</RimTalk.DebugWindow.StatusBusy>
     <RimTalk.DebugWindow.HeaderPawn>角色</RimTalk.DebugWindow.HeaderPawn>
-    <RimTalk.DebugWindow.HeaderResponse>回应</RimTalk.DebugWindow.HeaderResponse>
+    <RimTalk.DebugWindow.HeaderResponse>响应</RimTalk.DebugWindow.HeaderResponse>
     <RimTalk.DebugWindow.HeaderType>类型</RimTalk.DebugWindow.HeaderType>
     <RimTalk.DebugWindow.HeaderStatus>状态</RimTalk.DebugWindow.HeaderStatus>
-    <RimTalk.DebugWindow.HeaderLastTalk>上次谈话</RimTalk.DebugWindow.HeaderLastTalk>
+    <RimTalk.DebugWindow.HeaderLastTalk>最后对话</RimTalk.DebugWindow.HeaderLastTalk>
     <RimTalk.DebugWindow.HeaderRequests>请求</RimTalk.DebugWindow.HeaderRequests>
     <RimTalk.DebugWindow.HeaderChattiness>对话频率</RimTalk.DebugWindow.HeaderChattiness>
     <RimTalk.DebugWindow.HeaderTimestamp>时间戳</RimTalk.DebugWindow.HeaderTimestamp>
-    <RimTalk.DebugWindow.HeaderTimeMs>时间(ms)</RimTalk.DebugWindow.HeaderTimeMs>
+    <RimTalk.DebugWindow.HeaderTimeMs>用时(ms)</RimTalk.DebugWindow.HeaderTimeMs>
     <RimTalk.DebugWindow.HeaderTokens>令牌</RimTalk.DebugWindow.HeaderTokens>
     <RimTalk.DebugWindow.HeaderState>状态</RimTalk.DebugWindow.HeaderState>
-    <RimTalk.DebugWindow.HeaderPrompt>提示</RimTalk.DebugWindow.HeaderPrompt>
-    <RimTalk.DebugWindow.HeaderElapsed>耗时</RimTalk.DebugWindow.HeaderElapsed>
+    <RimTalk.DebugWindow.HeaderPrompt>提示词</RimTalk.DebugWindow.HeaderPrompt>
+    <RimTalk.DebugWindow.HeaderElapsed>已过时间</RimTalk.DebugWindow.HeaderElapsed>
     <RimTalk.DebugWindow.HeaderInitiator>发起者</RimTalk.DebugWindow.HeaderInitiator>
     <RimTalk.DebugWindow.HeaderRecipient>接收者</RimTalk.DebugWindow.HeaderRecipient>
+    <RimTalk.DebugWindow.HistoryCleared>对话历史已清除。</RimTalk.DebugWindow.HistoryCleared>
+    <RimTalk.DebugWindow.FormatEntry>条目</RimTalk.DebugWindow.FormatEntry>
+    <RimTalk.DebugWindow.FormatRole>角色</RimTalk.DebugWindow.FormatRole>
+    <RimTalk.DebugWindow.SystemInstruction>系统指令 (System Instruction)</RimTalk.DebugWindow.SystemInstruction>
+    <RimTalk.DebugWindow.ChatHistory>聊天历史 (Chat History)</RimTalk.DebugWindow.ChatHistory>
+    <RimTalk.DebugWindow.InputPrompt>输入提示词 (Input Prompt)</RimTalk.DebugWindow.InputPrompt>
     <RimTalk.DebugWindow.TooltipPromptResponse>提示：\n{0}\n\n回应：\n{1}</RimTalk.DebugWindow.TooltipPromptResponse>
-    
+
+
     <!-- Overlay.cs -->
     <RimTalk.Overlay.Debug>调试</RimTalk.Overlay.Debug>
     <RimTalk.Overlay.Option>悬浮窗选项</RimTalk.Overlay.Option>
-    <RimTalk.Overlay.DrawAboveUI>显示在界面之上</RimTalk.Overlay.DrawAboveUI>
+    <RimTalk.Overlay.DrawAboveUI>在 UI 之上绘制</RimTalk.Overlay.DrawAboveUI>
     <RimTalk.Overlay.Opacity>不透明度</RimTalk.Overlay.Opacity>
     <RimTalk.Overlay.FontSize>字体大小</RimTalk.Overlay.FontSize>
 
     <!-- FloatMenuMakerMapGetOptionsPatch.cs -->
-    <RimTalk.FloatMenu.ChatWith>与{0}聊天</RimTalk.FloatMenu.ChatWith>
-    <RimTalk.Gizmo.ChatWithTarget>与{0}交谈</RimTalk.Gizmo.ChatWithTarget>
-    <RimTalk.Gizmo.ChatWithTargetDesc>发起与{0}的对话。</RimTalk.Gizmo.ChatWithTargetDesc>
-    <RimTalk.FloatMenu.WhatToSayToSelf>你想对{0}说什么？</RimTalk.FloatMenu.WhatToSayToSelf>
-    <RimTalk.FloatMenu.WhatToSayToOther>你想让{0}对{1}说什么？</RimTalk.FloatMenu.WhatToSayToOther>
+    <RimTalk.FloatMenu.ChatWith>与 {0} 聊天</RimTalk.FloatMenu.ChatWith>
+    <RimTalk.Gizmo.ChatWithTarget>与 {0} 聊天</RimTalk.Gizmo.ChatWithTarget>
+    <RimTalk.Gizmo.ChatWithTargetDesc>发起与 {0} 的对话。</RimTalk.Gizmo.ChatWithTargetDesc>
+    <RimTalk.FloatMenu.WhatToSayToSelf>你想对 {0} 说什么？</RimTalk.FloatMenu.WhatToSayToSelf>
+    <RimTalk.FloatMenu.WhatToSayToOther>你想让 {0} 对 {1} 说什么？</RimTalk.FloatMenu.WhatToSayToOther>
     <RimTalk.FloatMenu.Send>发送</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>取消</RimTalk.FloatMenu.Cancel>
 
-    <!-- MustacheParser.cs - Variable Registry -->
-    <!-- Category Names -->
-    <RimTalk.MustacheVar.Category.PawnsAll>角色（全部）</RimTalk.MustacheVar.Category.PawnsAll>
-    <RimTalk.MustacheVar.Category.Pawn1>角色 1（发起者）</RimTalk.MustacheVar.Category.Pawn1>
-    <RimTalk.MustacheVar.Category.Pawn2Plus>角色 2+（其他人）</RimTalk.MustacheVar.Category.Pawn2Plus>
-    <RimTalk.MustacheVar.Category.Dialogue>对话</RimTalk.MustacheVar.Category.Dialogue>
-    <RimTalk.MustacheVar.Category.Time>时间</RimTalk.MustacheVar.Category.Time>
-    <RimTalk.MustacheVar.Category.Environment>环境</RimTalk.MustacheVar.Category.Environment>
-    <RimTalk.MustacheVar.Category.Colony>殖民地</RimTalk.MustacheVar.Category.Colony>
-    <RimTalk.MustacheVar.Category.System>系统</RimTalk.MustacheVar.Category.System>
-    <RimTalk.MustacheVar.Category.VariableOps>变量操作</RimTalk.MustacheVar.Category.VariableOps>
-    
-    <!-- Pawns (All) Variables -->
-    <RimTalk.MustacheVar.pawns.all>所有角色资料</RimTalk.MustacheVar.pawns.all>
-    <RimTalk.MustacheVar.pawns.nearby>附近角色摘要</RimTalk.MustacheVar.pawns.nearby>
-    <RimTalk.MustacheVar.pawns.count>对话中的角色数量</RimTalk.MustacheVar.pawns.count>
-    
-    <!-- Pawn Variables -->
-    <RimTalk.MustacheVar.pawn.name>简称</RimTalk.MustacheVar.pawn.name>
-    <RimTalk.MustacheVar.pawn.fullname>全名</RimTalk.MustacheVar.pawn.fullname>
-    <RimTalk.MustacheVar.pawn.profile>完整资料</RimTalk.MustacheVar.pawn.profile>
-    <RimTalk.MustacheVar.pawn.backstory>背景故事</RimTalk.MustacheVar.pawn.backstory>
-    <RimTalk.MustacheVar.pawn.gender>性别</RimTalk.MustacheVar.pawn.gender>
-    <RimTalk.MustacheVar.pawn.age>生理年龄</RimTalk.MustacheVar.pawn.age>
-    <RimTalk.MustacheVar.pawn.race>种族/异种类型</RimTalk.MustacheVar.pawn.race>
-    <RimTalk.MustacheVar.pawn.role>角色类型（殖民者/囚犯等）</RimTalk.MustacheVar.pawn.role>
-    <RimTalk.MustacheVar.pawn.faction>派系名称</RimTalk.MustacheVar.pawn.faction>
-    <RimTalk.MustacheVar.pawn.job>当前工作</RimTalk.MustacheVar.pawn.job>
-    <RimTalk.MustacheVar.pawn.mood>心情描述</RimTalk.MustacheVar.pawn.mood>
-    <RimTalk.MustacheVar.pawn.moodpercent>心情百分比</RimTalk.MustacheVar.pawn.moodpercent>
-    <RimTalk.MustacheVar.pawn.personality>性格描述</RimTalk.MustacheVar.pawn.personality>
-    <RimTalk.MustacheVar.pawn.traits>特性列表</RimTalk.MustacheVar.pawn.traits>
-    <RimTalk.MustacheVar.pawn.skills>技能摘要</RimTalk.MustacheVar.pawn.skills>
-    <RimTalk.MustacheVar.pawn.health>健康状态</RimTalk.MustacheVar.pawn.health>
-    <RimTalk.MustacheVar.pawn.thoughts>当前想法</RimTalk.MustacheVar.pawn.thoughts>
-    <RimTalk.MustacheVar.pawn.relations>社交关系</RimTalk.MustacheVar.pawn.relations>
-    <RimTalk.MustacheVar.pawn.equipment>装备和服装</RimTalk.MustacheVar.pawn.equipment>
-    <RimTalk.MustacheVar.pawn.status>当前状态</RimTalk.MustacheVar.pawn.status>
-    <RimTalk.MustacheVar.pawn.genes>显性基因</RimTalk.MustacheVar.pawn.genes>
-    <RimTalk.MustacheVar.pawn.ideology>思想和模因</RimTalk.MustacheVar.pawn.ideology>
-    <RimTalk.MustacheVar.pawn.captive_status>囚犯/奴隶状态</RimTalk.MustacheVar.pawn.captive_status>
-    
-    <!-- Pawn 2+ Variables -->
-    <RimTalk.MustacheVar.pawn2.name>角色 2 的简称</RimTalk.MustacheVar.pawn2.name>
-    <RimTalk.MustacheVar.pawn2.profile>角色 2 的完整资料</RimTalk.MustacheVar.pawn2.profile>
-    <RimTalk.MustacheVar.pawn3.name>角色 3 的简称</RimTalk.MustacheVar.pawn3.name>
-    <RimTalk.MustacheVar.pawnN.xxx>任意角色 N 的属性（N=1,2,3...）</RimTalk.MustacheVar.pawnN.xxx>
-    
-    <!-- Sections（Mustache 循环块） -->
-    <RimTalk.MustacheVar.Category.Sections>Section 循环</RimTalk.MustacheVar.Category.Sections>
-    <RimTalk.MustacheVar.section.pawns>遍历对话中的角色</RimTalk.MustacheVar.section.pawns>
-    <RimTalk.MustacheVar.section.index>当前角色索引（从1开始）</RimTalk.MustacheVar.section.index>
-    <RimTalk.MustacheVar.section.name>当前角色的名字（Section 内部）</RimTalk.MustacheVar.section.name>
-    <RimTalk.MustacheVar.section.profile>当前角色的资料（Section 内部）</RimTalk.MustacheVar.section.profile>
-    
-    <!-- Dialogue Variables -->
-    <RimTalk.MustacheVar.dialogue>完整的装饰提示词（时间、天气、位置等）</RimTalk.MustacheVar.dialogue>
-    <RimTalk.MustacheVar.dialogue.type>对话类型描述</RimTalk.MustacheVar.dialogue.type>
-    <RimTalk.MustacheVar.dialogue.status>发起者当前活动状态</RimTalk.MustacheVar.dialogue.status>
-    <RimTalk.MustacheVar.dialogue.ismonologue>是否为独白</RimTalk.MustacheVar.dialogue.ismonologue>
-    
-    <!-- Time Variables -->
-    <RimTalk.MustacheVar.time.hour>小时（24小时制）</RimTalk.MustacheVar.time.hour>
-    <RimTalk.MustacheVar.time.hour12>小时（12小时制，含上午/下午）</RimTalk.MustacheVar.time.hour12>
-    <RimTalk.MustacheVar.time.date>完整日期字符串</RimTalk.MustacheVar.time.date>
-    <RimTalk.MustacheVar.time.day>一年中的第几天</RimTalk.MustacheVar.time.day>
-    <RimTalk.MustacheVar.time.season>当前季节</RimTalk.MustacheVar.time.season>
-    <RimTalk.MustacheVar.time.quadrum>当前季象</RimTalk.MustacheVar.time.quadrum>
-    <RimTalk.MustacheVar.time.year>当前年份</RimTalk.MustacheVar.time.year>
-    
-    <!-- Environment Variables -->
-    <RimTalk.MustacheVar.weather>当前天气</RimTalk.MustacheVar.weather>
-    <RimTalk.MustacheVar.temperature>室外温度</RimTalk.MustacheVar.temperature>
-    <RimTalk.MustacheVar.location>位置和温度</RimTalk.MustacheVar.location>
-    <RimTalk.MustacheVar.terrain>地面地形类型</RimTalk.MustacheVar.terrain>
-    <RimTalk.MustacheVar.beauty>区域美观度</RimTalk.MustacheVar.beauty>
-    <RimTalk.MustacheVar.cleanliness>房间清洁度</RimTalk.MustacheVar.cleanliness>
-    <RimTalk.MustacheVar.surroundings>附近的物品和物体</RimTalk.MustacheVar.surroundings>
-    <RimTalk.MustacheVar.wealth>殖民地财富描述</RimTalk.MustacheVar.wealth>
-    
-    <!-- Colony Variables -->
-    <RimTalk.MustacheVar.colony.name>殖民地名称</RimTalk.MustacheVar.colony.name>
-    <RimTalk.MustacheVar.colony.wealth>殖民地总财富</RimTalk.MustacheVar.colony.wealth>
-    <RimTalk.MustacheVar.colony.population>殖民者数量</RimTalk.MustacheVar.colony.population>
-    
-    <!-- System Variables -->
-    <RimTalk.MustacheVar.lang>当前游戏语言</RimTalk.MustacheVar.lang>
-    <RimTalk.MustacheVar.json.format>JSON 输出格式（根据设置动态变化）</RimTalk.MustacheVar.json.format>
-    <RimTalk.MustacheVar.context>传统上下文变量</RimTalk.MustacheVar.context>
-    <RimTalk.MustacheVar.chat.history>之前的聊天记录</RimTalk.MustacheVar.chat.history>
-    
-    <!-- Variable Operations -->
-    <RimTalk.MustacheVar.setvar>设置运行时变量</RimTalk.MustacheVar.setvar>
-    <RimTalk.MustacheVar.getvar>获取运行时变量</RimTalk.MustacheVar.getvar>
-    <RimTalk.MustacheVar.getvar.default>获取变量（带默认值）</RimTalk.MustacheVar.getvar.default>
+    <!-- VariableDefinitions.cs - Variable Registry -->
+    <RimTalk.ScribanVar.Category.PawnShorthands>角色简写</RimTalk.ScribanVar.Category.PawnShorthands>
+    <RimTalk.ScribanVar.Category.CoreObjects>核心对象</RimTalk.ScribanVar.Category.CoreObjects>
+    <RimTalk.ScribanVar.Category.Context>上下文</RimTalk.ScribanVar.Category.Context>
+    <RimTalk.ScribanVar.Category.GameStatic>游戏对象 (静态)</RimTalk.ScribanVar.Category.GameStatic>
+    <RimTalk.ScribanVar.Category.System>系统</RimTalk.ScribanVar.Category.System>
 </LanguageData>

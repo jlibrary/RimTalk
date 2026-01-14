@@ -659,18 +659,19 @@ public class DebugWindow : Window
             return;
         }
 
-        // Initialize temp strings if a new row is selected
-        if (_selectedLog.Id != _selectedRequestIdForTemp)
+        // Initialize or update temp strings if a new row is selected OR if the selected row is still generating
+        bool isGenerating = _selectedLog.Response == null || AIService.IsBusy(); 
+        if (_selectedLog.Id != _selectedRequestIdForTemp || isGenerating)
         {
-            _selectedRequestIdForTemp = _selectedLog.Id;
+            if (_selectedLog.Id != _selectedRequestIdForTemp)
+            {
+                _selectedRequestIdForTemp = _selectedLog.Id;
+                _expandedPromptSegmentIndices.Clear();
+            }
+            
             _tempResponse = _selectedLog.Response ?? string.Empty;
             _tempPromptSegments = ResolvePromptSegments(_selectedLog);
             _tempPromptSegmentsText = FormatPromptSegments(_tempPromptSegments);
-            _expandedPromptSegmentIndices.Clear();
-        }
-        else if (string.IsNullOrEmpty(_tempResponse) && !string.IsNullOrEmpty(_selectedLog.Response))
-        {
-            _tempResponse = _selectedLog.Response;
         }
 
         var header = new StringBuilder();
@@ -906,7 +907,12 @@ public class DebugWindow : Window
                 Widgets.DrawBoxSolid(bodyRect, new Color(0.05f, 0.05f, 0.05f, 0.55f));
 
                 var textRect = bodyRect.ContractedBy(4f);
-                GUI.TextArea(textRect, safeContent, _monoTinyStyle);
+                string newContent = GUI.TextArea(textRect, safeContent, _monoTinyStyle);
+                if (newContent != safeContent)
+                {
+                    segment.Content = newContent;
+                    _tempPromptSegmentsText = FormatPromptSegments(segments);
+                }
                 y += bodyHeight;
             }
 
@@ -1039,17 +1045,17 @@ public class DebugWindow : Window
         GUI.color = Color.white;
 
         float currentX = GroupedExpandIconWidth;
-        DrawSortableHeader(new Rect(currentX, rect.y, GroupedPawnNameWidth, rect.height), "Pawn");
+        DrawSortableHeader(new Rect(currentX, rect.y, GroupedPawnNameWidth, rect.height), "RimTalk.DebugWindow.HeaderPawn", "Pawn");
         currentX += GroupedPawnNameWidth + ColumnPadding;
-        DrawSortableHeader(new Rect(currentX, rect.y, responseColumnWidth, rect.height), "Response");
+        DrawSortableHeader(new Rect(currentX, rect.y, responseColumnWidth, rect.height), "RimTalk.DebugWindow.HeaderResponse", "Response");
         currentX += responseColumnWidth + ColumnPadding;
-        DrawSortableHeader(new Rect(currentX, rect.y, GroupedStatusWidth, rect.height), "Status");
+        DrawSortableHeader(new Rect(currentX, rect.y, GroupedStatusWidth, rect.height), "RimTalk.DebugWindow.HeaderStatus", "Status");
         currentX += GroupedStatusWidth + ColumnPadding;
-        DrawSortableHeader(new Rect(currentX, rect.y, GroupedLastTalkWidth, rect.height), "Last Talk");
+        DrawSortableHeader(new Rect(currentX, rect.y, GroupedLastTalkWidth, rect.height), "RimTalk.DebugWindow.HeaderLastTalk", "Last Talk");
         currentX += GroupedLastTalkWidth + ColumnPadding;
-        DrawSortableHeader(new Rect(currentX, rect.y, GroupedRequestsWidth, rect.height), "Requests");
+        DrawSortableHeader(new Rect(currentX, rect.y, GroupedRequestsWidth, rect.height), "RimTalk.DebugWindow.HeaderRequests", "Requests");
         currentX += GroupedRequestsWidth + ColumnPadding;
-        DrawSortableHeader(new Rect(currentX, rect.y, GroupedChattinessWidth, rect.height), "Chattiness");
+        DrawSortableHeader(new Rect(currentX, rect.y, GroupedChattinessWidth, rect.height), "RimTalk.DebugWindow.HeaderChattiness", "Chattiness");
     }
 
     private void DrawRequestTableHeader(Rect rect, float responseColumnWidth, bool showPawnColumn)
@@ -1120,16 +1126,18 @@ public class DebugWindow : Window
         TooltipHandler.TipRegion(overlayRect, "RimTalk.DebugWindow.AutoScroll".Translate());
     }
 
-    private void DrawSortableHeader(Rect rect, string column)
+    private void DrawSortableHeader(Rect rect, string key, string defaultLabel)
     {
-        string translatedColumn = column.Translate();
-        string arrow = _sortColumn == column ? (_sortAscending ? " ▲" : " ▼") : "";
+        string translatedColumn = key.Translate();
+        if (translatedColumn == key) translatedColumn = defaultLabel; // Fallback if key missing
+        
+        string arrow = _sortColumn == key ? (_sortAscending ? " ▲" : " ▼") : "";
         if (Widgets.ButtonInvisible(rect))
         {
-            if (_sortColumn == column) _sortAscending = !_sortAscending;
+            if (_sortColumn == key) _sortAscending = !_sortAscending;
             else
             {
-                _sortColumn = column;
+                _sortColumn = key;
                 _sortAscending = true;
             }
 
@@ -1341,12 +1349,12 @@ public class DebugWindow : Window
     {
         switch (_sortColumn)
         {
-            case "Pawn":
+            case "RimTalk.DebugWindow.HeaderPawn":
                 return _sortAscending
                     ? _pawnStates.OrderBy(p => p.Pawn.LabelShort)
                     : _pawnStates.OrderByDescending(p => p.Pawn.LabelShort);
         
-            case "Requests":
+            case "RimTalk.DebugWindow.HeaderRequests":
                 return _sortAscending
                     ? _pawnStates.OrderBy(p =>
                         _talkLogsByPawn.TryGetValue(p.Pawn.LabelShort, out var logs) 
@@ -1355,22 +1363,22 @@ public class DebugWindow : Window
                         _talkLogsByPawn.TryGetValue(p.Pawn.LabelShort, out var logs) 
                             ? logs.Count(r => r.IsFirstDialogue) : 0);
 
-            case "Response":
+            case "RimTalk.DebugWindow.HeaderResponse":
                 return _sortAscending
                     ? _pawnStates.OrderBy(p => GetLastResponseForPawn(p.Pawn.LabelShort))
                     : _pawnStates.OrderByDescending(p => GetLastResponseForPawn(p.Pawn.LabelShort));
         
-            case "Status":
+            case "RimTalk.DebugWindow.HeaderStatus":
                 return _sortAscending
                     ? _pawnStates.OrderBy(p => p.CanDisplayTalk())
                     : _pawnStates.OrderByDescending(p => p.CanDisplayTalk());
         
-            case "Last Talk":
+            case "RimTalk.DebugWindow.HeaderLastTalk":
                 return _sortAscending
                     ? _pawnStates.OrderBy(p => p.LastTalkTick)
                     : _pawnStates.OrderByDescending(p => p.LastTalkTick);
         
-            case "Chattiness":
+            case "RimTalk.DebugWindow.HeaderChattiness":
                 return _sortAscending
                     ? _pawnStates.OrderBy(p => p.TalkInitiationWeight)
                     : _pawnStates.OrderByDescending(p => p.TalkInitiationWeight);
@@ -1444,24 +1452,24 @@ public class DebugWindow : Window
             for (int i = 0; i < request.PromptMessages.Count; i++)
             {
                 var (role, content) = request.PromptMessages[i];
-                segments.Add(new PromptMessageSegment($"message-{i}", $"Message {i + 1}", role, content));
+                segments.Add(new PromptMessageSegment($"message-{i}", $"{"RimTalk.DebugWindow.FormatEntry".Translate()} {i + 1}", role, content));
             }
             return segments;
         }
 
         var instruction = $"{Constant.Instruction}\n{request.Context}";
-        segments.Add(new PromptMessageSegment("legacy-instruction", "Legacy Instruction", Role.System, instruction));
+        segments.Add(new PromptMessageSegment("system-instruction", "RimTalk.DebugWindow.SystemInstruction".Translate(), Role.System, instruction));
 
         if (request.Initiator != null)
         {
             foreach (var (role, message) in TalkHistory.GetMessageHistory(request.Initiator))
             {
-                segments.Add(new PromptMessageSegment("legacy-history", "Legacy Chat History", role, message));
+                segments.Add(new PromptMessageSegment("chat-history", "RimTalk.DebugWindow.ChatHistory".Translate(), role, message));
             }
         }
 
         if (!string.IsNullOrWhiteSpace(request.Prompt))
-            segments.Add(new PromptMessageSegment("legacy-prompt", "Legacy Prompt", Role.User, request.Prompt));
+            segments.Add(new PromptMessageSegment("input-prompt", "RimTalk.DebugWindow.InputPrompt".Translate(), Role.User, request.Prompt));
 
         return segments;
     }
@@ -1517,17 +1525,19 @@ public class DebugWindow : Window
     private static string FormatPromptSegments(List<PromptMessageSegment> segments)
     {
         if (segments == null || segments.Count == 0)
-            return "(No prompt segments available)";
+            return $"({"RimTalk.DebugWindow.SelectRowHint".Translate()})";
 
         var sb = new StringBuilder();
         for (int i = 0; i < segments.Count; i++)
         {
             var segment = segments[i];
             var roleLabel = segment.Role == Role.AI ? "assistant" : segment.Role.ToString().ToLowerInvariant();
-            var entryName = string.IsNullOrWhiteSpace(segment.EntryName) ? "Entry" : segment.EntryName;
-            sb.Append("Entry: ");
+            var entryName = string.IsNullOrWhiteSpace(segment.EntryName) ? "RimTalk.DebugWindow.FormatEntry".Translate().Resolve() : segment.EntryName;
+            sb.Append("RimTalk.DebugWindow.FormatEntry".Translate());
+            sb.Append(": ");
             sb.AppendLine(entryName);
-            sb.Append("Role: ");
+            sb.Append("RimTalk.DebugWindow.FormatRole".Translate());
+            sb.Append(": ");
             sb.AppendLine(roleLabel);
             sb.AppendLine(segment.Content ?? "");
             
@@ -1547,7 +1557,14 @@ public class DebugWindow : Window
         }
 
         TalkRequest debugRequest = _selectedLog.TalkRequest.Clone();
-        // Note: Resend uses the original PromptMessages from the TalkRequest
+        
+        // If we have modified segments in the UI, apply them to the resent request
+        if (_tempPromptSegments != null && _tempPromptSegments.Count > 0)
+        {
+            debugRequest.PromptMessageSegments = _tempPromptSegments.Select(s => new PromptMessageSegment(s.EntryId, s.EntryName, s.Role, s.Content)).ToList();
+            debugRequest.PromptMessages = debugRequest.PromptMessageSegments.Select(s => (s.Role, s.Content)).ToList();
+        }
+
         if (_selectedLog.Channel == Channel.Stream)
             TalkService.GenerateTalkDebug(debugRequest);
         else if (_selectedLog.Channel == Channel.Query)
@@ -1563,6 +1580,6 @@ public class DebugWindow : Window
         Stats.Reset();
         ApiHistory.Clear();
         UpdateData();
-        Messages.Message("Conversation history cleared.", MessageTypeDefOf.TaskCompletion, false);
+        Messages.Message("RimTalk.DebugWindow.HistoryCleared".Translate(), MessageTypeDefOf.TaskCompletion, false);
     }
 }
