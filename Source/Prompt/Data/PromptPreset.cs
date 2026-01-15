@@ -24,6 +24,12 @@ public class PromptPreset : IExposable
     
     /// <summary>Whether this is the currently active preset</summary>
     public bool IsActive;
+    
+    /// <summary>
+    /// Set of deleted mod entry IDs. Entries with these IDs will not be re-added by mods.
+    /// Uses the deterministic ID (e.g., "mod_mymod_myentry") directly.
+    /// </summary>
+    public HashSet<string> DeletedModEntryIds = new();
 
     public PromptPreset()
     {
@@ -55,20 +61,42 @@ public class PromptPreset : IExposable
     }
 
     /// <summary>
-    /// Adds an entry to the end of the list.
+    /// Checks if a mod entry should be skipped (blacklisted or duplicate).
     /// </summary>
-    public void AddEntry(PromptEntry entry)
+    private bool ShouldSkipModEntry(PromptEntry entry)
     {
+        if (string.IsNullOrEmpty(entry.SourceModId)) return false;
+        
+        // PromptEntry automatically generates deterministic ID when SourceModId is set
+        // Check blacklist
+        if (DeletedModEntryIds.Contains(entry.Id))
+            return true;
+        
+        // Check duplicates by ID
+        if (Entries.Any(e => e.Id == entry.Id))
+            return true;
+        
+        return false;
+    }
+
+    /// <summary>
+    /// Adds an entry to the end of the list.
+    /// For mod entries, returns false if blacklisted or already exists.
+    /// </summary>
+    public bool AddEntry(PromptEntry entry)
+    {
+        if (ShouldSkipModEntry(entry)) return false;
         Entries.Add(entry);
+        return true;
     }
 
     /// <summary>
     /// Inserts an entry at a specific index.
     /// </summary>
-    /// <param name="entry">The entry to insert</param>
-    /// <param name="index">The index to insert at (0 = beginning, -1 or >= Count = end)</param>
-    public void InsertEntry(PromptEntry entry, int index)
+    public bool InsertEntry(PromptEntry entry, int index)
     {
+        if (ShouldSkipModEntry(entry)) return false;
+        
         if (index < 0 || index >= Entries.Count)
         {
             Entries.Add(entry);
@@ -77,16 +105,16 @@ public class PromptPreset : IExposable
         {
             Entries.Insert(index, entry);
         }
+        return true;
     }
 
     /// <summary>
     /// Inserts an entry after a specific entry.
     /// </summary>
-    /// <param name="entry">The entry to insert</param>
-    /// <param name="afterEntryId">The ID of the entry to insert after</param>
-    /// <returns>True if successful, false if afterEntryId was not found</returns>
     public bool InsertEntryAfter(PromptEntry entry, string afterEntryId)
     {
+        if (ShouldSkipModEntry(entry)) return false;
+        
         var index = Entries.FindIndex(e => e.Id == afterEntryId);
         if (index < 0)
         {
@@ -100,11 +128,10 @@ public class PromptPreset : IExposable
     /// <summary>
     /// Inserts an entry before a specific entry.
     /// </summary>
-    /// <param name="entry">The entry to insert</param>
-    /// <param name="beforeEntryId">The ID of the entry to insert before</param>
-    /// <returns>True if successful, false if beforeEntryId was not found</returns>
     public bool InsertEntryBefore(PromptEntry entry, string beforeEntryId)
     {
+        if (ShouldSkipModEntry(entry)) return false;
+        
         var index = Entries.FindIndex(e => e.Id == beforeEntryId);
         if (index < 0)
         {
@@ -116,27 +143,36 @@ public class PromptPreset : IExposable
     }
 
     /// <summary>
-    /// Finds entry index by name (for mods that don't have entry IDs).
+    /// Finds entry ID by name.
     /// </summary>
-    /// <param name="entryName">The name of the entry to find</param>
-    /// <returns>The entry ID if found, null otherwise</returns>
     public string FindEntryIdByName(string entryName)
     {
         return Entries.FirstOrDefault(e => e.Name == entryName)?.Id;
     }
 
     /// <summary>
-    /// Removes an entry.
+    /// Removes an entry. If it's a mod entry, adds ID to blacklist.
     /// </summary>
     public bool RemoveEntry(string entryId)
     {
         var entry = Entries.FirstOrDefault(e => e.Id == entryId);
-        if (entry != null)
+        if (entry == null) return false;
+        
+        // Add to blacklist if it's a mod entry
+        if (!string.IsNullOrEmpty(entry.SourceModId))
         {
-            Entries.Remove(entry);
-            return true;
+            DeletedModEntryIds.Add(entry.Id);
         }
-        return false;
+        Entries.Remove(entry);
+        return true;
+    }
+    
+    /// <summary>
+    /// Clears the blacklist. Called when resetting to defaults.
+    /// </summary>
+    public void ClearBlacklist()
+    {
+        DeletedModEntryIds.Clear();
     }
 
     /// <summary>
@@ -171,6 +207,11 @@ public class PromptPreset : IExposable
         Scribe_Values.Look(ref Description, "description", "");
         Scribe_Collections.Look(ref Entries, "entries", LookMode.Deep);
         Scribe_Values.Look(ref IsActive, "isActive", false);
+        
+        // Serialize blacklist as List<string> for compatibility
+        List<string> deletedList = DeletedModEntryIds?.ToList() ?? new List<string>();
+        Scribe_Collections.Look(ref deletedList, "deletedModEntryIds", LookMode.Value);
+        DeletedModEntryIds = deletedList?.ToHashSet() ?? new HashSet<string>();
         
         // Ensure collection is not null
         Entries ??= new List<PromptEntry>();
