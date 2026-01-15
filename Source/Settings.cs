@@ -97,6 +97,12 @@ public partial class Settings : Mod
             }
         }
 
+        // Add Defs from XML
+        var letterDefNames = DefDatabase<LetterDef>.AllDefs.Select(def => def.defName);
+        var messageTypeDefNames = DefDatabase<MessageTypeDef>.AllDefs.Select(def => def.defName);
+        foreach (var def in letterDefNames) archivableTypes.Add(def);
+        foreach (var def in messageTypeDefNames) archivableTypes.Add(def);
+
         _discoveredArchivableTypes = archivableTypes.OrderBy(x => x).ToList();
         _archivableTypesScanned = true;
 
