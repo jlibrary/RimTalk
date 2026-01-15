@@ -74,6 +74,11 @@ internal static class TickManagerPatch
             while (UserRequestPool.GetNextUserRequest() is { } pawn)
             {
                 var pawnState = Cache.Get(pawn);
+                if (pawnState == null)
+                {
+                    UserRequestPool.Remove(pawn);
+                    continue;
+                }
                 var request = pawnState.GetNextTalkRequest();
                 
                 if (request == null)
