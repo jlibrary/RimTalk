@@ -56,15 +56,24 @@ public static class ScribanParser
             // 3. ROOT PROPERTIES & SYSTEM
             scriptObject.Add("lang", Constant.Lang);
             
-            // Time shorthand
+            // Time & Date shorthands
+            var ticks = Find.TickManager.TicksAbs;
             if (context.Map != null)
             {
                 var longLat = Find.WorldGrid.LongLatOf(context.Map.Tile);
-                scriptObject.Add("hour", GenDate.HourOfDay(Find.TickManager.TicksAbs, longLat.x));
+                scriptObject.Add("hour", GenDate.HourOfDay(ticks, longLat.x));
+                scriptObject.Add("day", GenDate.DayOfQuadrum(ticks, longLat.x) + 1);
+                scriptObject.Add("quadrum", GenDate.Quadrum(ticks, longLat.x).Label());
+                scriptObject.Add("year", GenDate.Year(ticks, longLat.x));
+                scriptObject.Add("season", GenLocalDate.Season(context.Map).Label());
             }
             else
             {
-                scriptObject.Add("hour", GenDate.HourOfDay(Find.TickManager.TicksAbs, 0));
+                scriptObject.Add("hour", GenDate.HourOfDay(ticks, 0));
+                scriptObject.Add("day", GenDate.DayOfQuadrum(ticks, 0) + 1);
+                scriptObject.Add("quadrum", GenDate.Quadrum(ticks, 0).Label());
+                scriptObject.Add("year", GenDate.Year(ticks, 0));
+                scriptObject.Add("season", Season.Undefined.Label());
             }
             
             var json = new ScriptObject();
