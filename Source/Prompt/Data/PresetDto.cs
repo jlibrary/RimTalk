@@ -67,6 +67,10 @@ public class PresetDto
                 var entry = entryDto.ToEntry();
                 if (entry != null)
                 {
+                    if (!entry.IsMainChatHistory && entry.Content?.Trim() == "{{chat.history}}")
+                    {
+                        entry.IsMainChatHistory = true;
+                    }
                     preset.Entries.Add(entry);
                 }
             }
@@ -99,6 +103,9 @@ public class EntryDto
     
     [DataMember(Name = "enabled")]
     public bool Enabled { get; set; } = true;
+
+    [DataMember(Name = "isMainChatHistory")]
+    public bool IsMainChatHistory { get; set; }
     
     /// <summary>
     /// Converts from PromptEntry to DTO for serialization.
@@ -114,7 +121,8 @@ public class EntryDto
             Role = entry.Role.ToString(),
             Position = entry.Position.ToString(),
             InChatDepth = entry.InChatDepth,
-            Enabled = entry.Enabled
+            Enabled = entry.Enabled,
+            IsMainChatHistory = entry.IsMainChatHistory
         };
     }
     
@@ -130,6 +138,7 @@ public class EntryDto
             Content = Content ?? "",
             InChatDepth = InChatDepth,
             Enabled = Enabled,
+            IsMainChatHistory = IsMainChatHistory,
             SourceModId = null
         };
         
