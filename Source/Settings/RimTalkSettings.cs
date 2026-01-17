@@ -250,7 +250,6 @@ public class RimTalkSettings : ModSettings
         if (Scribe.mode == LoadSaveMode.PostLoadInit && !string.IsNullOrWhiteSpace(CustomInstruction))
         {
             PromptSystem.MigrateLegacyInstruction(CustomInstruction);
-            CustomInstruction = ""; // Clear after migration
         }
             
         // Ensure we have at least one cloud config

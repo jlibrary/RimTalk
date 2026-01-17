@@ -216,6 +216,11 @@ public class PromptManager : IExposable
     // Creates default preset - entry order is determined by list position (drag-to-reorder like SillyTavern)
     private PromptPreset CreateDefaultPreset()
     {
+        var settings = Settings.Get();
+        var baseInstruction = string.IsNullOrWhiteSpace(settings.CustomInstruction)
+            ? Constant.DefaultInstruction
+            : settings.CustomInstruction;
+
         return new PromptPreset
         {
             Name = "RimTalk Default",
@@ -229,7 +234,7 @@ public class PromptManager : IExposable
                     Name = "Base Instruction",
                     Role = PromptRole.System,
                     Position = PromptPosition.Relative,
-                    Content = Constant.DefaultInstruction
+                    Content = baseInstruction
                 },
                 new()
                 {
