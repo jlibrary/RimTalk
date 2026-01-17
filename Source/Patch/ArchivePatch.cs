@@ -16,12 +16,26 @@ public static class ArchivePatch
     public static void Prefix(IArchivable archivable)
     {
         var settings = Settings.Get();
-        string typeName = archivable.GetType().FullName;
+
+        string eventIdentifier;
+        var letter = archivable as Letter;
+        var message = archivable as Message;
+
+        if (letter != null)
+        {
+            eventIdentifier = letter.def.defName;
+        }
+        else if (message != null)
+        {
+            eventIdentifier = message.def.defName;
+        }
+        else
+        {
+            eventIdentifier = archivable.GetType().FullName;
+        }
 
         // Check if this type should be processed
-        bool shouldProcess = settings.EnabledArchivableTypes.ContainsKey(typeName)
-            ? settings.EnabledArchivableTypes[typeName]
-            : false;
+        bool shouldProcess = settings.EnabledArchivableTypes.TryGetValue(eventIdentifier, out var isEnabled) && isEnabled;
 
         if (!shouldProcess)
         {
