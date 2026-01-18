@@ -103,15 +103,34 @@ public static class PawnUtil
         if (pawn == null) return "";
 
         RoyalTitleDef titleDef = null;
+        Faction titleFaction = null;
         if (pawn.royalty != null)
         {
-            titleDef = pawn.royalty.MostSeniorTitle?.def;
+            var mostSenior = pawn.royalty.MostSeniorTitle;
+            if (mostSenior != null)
+            {
+                titleDef = mostSenior.def;
+                titleFaction = mostSenior.faction;
+            }
+
+            if (titleDef == null && Faction.OfEmpire != null)
+            {
+                titleDef = pawn.royalty.GetCurrentTitle(Faction.OfEmpire);
+                titleFaction = titleDef != null ? Faction.OfEmpire : null;
+            }
+
             if (titleDef == null && pawn.Faction != null)
+            {
                 titleDef = pawn.royalty.GetCurrentTitle(pawn.Faction);
+                titleFaction = titleDef != null ? pawn.Faction : null;
+            }
         }
 
         if (titleDef != null)
-            return titleDef.GetLabelFor(pawn);
+        {
+            var titleLabel = titleDef.GetLabelFor(pawn);
+            return titleFaction != null ? $"{titleFaction.Name}: {titleLabel}" : titleLabel;
+        }
 
         return pawn.story?.title ?? "";
     }

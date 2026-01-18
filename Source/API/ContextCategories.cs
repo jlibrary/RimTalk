@@ -72,13 +72,15 @@ public static class ContextCategories
     {
         if (string.IsNullOrEmpty(key)) return null;
         var lowerKey = key.ToLowerInvariant();
-        return Pawn.All.FirstOrDefault(c => c.Key == lowerKey);
+        var cat = Pawn.All.FirstOrDefault(c => c.Key == lowerKey);
+        return string.IsNullOrEmpty(cat.Key) ? null : cat;
     }
     
     public static ContextCategory? TryGetEnvironmentCategory(string key)
     {
         if (string.IsNullOrEmpty(key)) return null;
         var lowerKey = key.ToLowerInvariant();
-        return Environment.All.FirstOrDefault(c => c.Key == lowerKey);
+        var cat = Environment.All.FirstOrDefault(c => c.Key == lowerKey);
+        return string.IsNullOrEmpty(cat.Key) ? null : cat;
     }
 }

@@ -97,7 +97,25 @@ public static class ScribanParser
 
             var templateContext = new TemplateContext { 
                 MemberRenamer = m => m.Name,
-                MemberFilter = m => !(m is MethodInfo mi && mi.ReturnType == typeof(void))
+                MemberFilter = m =>
+                {
+                    if (m is MethodInfo mi && mi.ReturnType == typeof(void)) return false;
+                    if (m.DeclaringType == typeof(Pawn))
+                    {
+                        var name = m.Name;
+                        if (name.Equals("skills", StringComparison.OrdinalIgnoreCase) ||
+                            name.Equals("health", StringComparison.OrdinalIgnoreCase) ||
+                            name.Equals("equipment", StringComparison.OrdinalIgnoreCase) ||
+                            name.Equals("genes", StringComparison.OrdinalIgnoreCase) ||
+                            name.Equals("surroundings", StringComparison.OrdinalIgnoreCase) ||
+                            name.Equals("social", StringComparison.OrdinalIgnoreCase) ||
+                            name.Equals("relations", StringComparison.OrdinalIgnoreCase))
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
             };
             
             // 6. THE BRIDGE (Hooks & Magic Shorthands & Case Insensitivity)
