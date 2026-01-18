@@ -63,27 +63,38 @@ public static class TalkHistory
             
         lock (history)
         {
-            return [..history];
+            int maxAiResponses = Settings.Get().Context.ConversationHistoryCount;
+            int aiCount = history.Count(m => m.role == Role.AI);
+            
+            if (aiCount <= maxAiResponses)
+                return [..history];
+            
+            var result = new List<(Role role, string message)>();
+            int skippedAi = 0;
+            int toSkip = aiCount - maxAiResponses;
+            
+            foreach (var msg in history)
+            {
+                if (msg.role == Role.AI && skippedAi < toSkip)
+                {
+                    skippedAi++;
+                    continue;
+                }
+                result.Add(msg);
+            }
+            
+            return result;
         }
     }
 
     private static void EnsureMessageLimit(List<(Role role, string message)> messages)
     {
-        // First, merge consecutive duplicates to keep role alternation without losing content
-        for (int i = messages.Count - 1; i > 0; i--)
+        int maxAiResponses = Settings.Get().Context.ConversationHistoryCount;
+        
+        int aiCount = messages.Count(m => m.role == Role.AI);
+        while (aiCount > maxAiResponses && messages.Count > 0)
         {
-            if (messages[i].role == messages[i - 1].role)
-            {
-                var merged = $"{messages[i - 1].message}\n{messages[i].message}".Trim();
-                messages[i - 1] = (messages[i - 1].role, merged);
-                messages.RemoveAt(i);
-            }
-        }
-
-        // Then, enforce the maximum message limit by removing the oldest messages
-        int maxMessages = Settings.Get().Context.ConversationHistoryCount;
-        while (messages.Count > maxMessages * 2)
-        {
+            if (messages[0].role == Role.AI) aiCount--;
             messages.RemoveAt(0);
         }
     }
