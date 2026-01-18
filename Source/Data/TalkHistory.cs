@@ -35,7 +35,7 @@ public static class TalkHistory
         return IgnoredCache.Contains(id);
     }
 
-    public static void AddMessageHistory(Pawn pawn, TalkRequest request, List<TalkResponse> responses)
+    public static void AddMessageHistory(Pawn pawn, TalkRequest request, string response)
     {
         var messages = MessageHistory.GetOrAdd(pawn.thingIDNumber, _ => []);
 
@@ -48,20 +48,9 @@ public static class TalkHistory
                     messages.Add((Role.User, userPrompt));
             }
 
-            var aiLines = responses?
-                .Where(r => r != null)
-                .Select(r =>
-                {
-                    var text = CleanHistoryText(r.Text);
-                    if (string.IsNullOrWhiteSpace(text)) return null;
-                    var name = CleanHistoryText(r.Name);
-                    return string.IsNullOrWhiteSpace(name) ? text : $"{name}: {text}";
-                })
-                .Where(line => !string.IsNullOrWhiteSpace(line))
-                .ToList();
-
-            if (aiLines != null && aiLines.Count > 0)
-                messages.Add((Role.AI, string.Join("\n", aiLines)));
+            var aiText = BuildAssistantHistoryText(response);
+            if (!string.IsNullOrWhiteSpace(aiText))
+                messages.Add((Role.AI, aiText));
 
             EnsureMessageLimit(messages);
         }
@@ -104,6 +93,45 @@ public static class TalkHistory
         if (string.IsNullOrWhiteSpace(text)) return "";
         var cleaned = CommonUtil.StripFormattingTags(text);
         return cleaned.Replace("\r\n", " ").Replace("\n", " ").Replace("\r", " ").Trim();
+    }
+
+    private static string BuildAssistantHistoryText(string response)
+    {
+        if (string.IsNullOrWhiteSpace(response)) return "";
+
+        var lines = new List<string>();
+        var trimmed = response.Trim();
+        if (trimmed.StartsWith("[") || trimmed.StartsWith("{"))
+        {
+            try
+            {
+                var parsed = JsonUtil.DeserializeFromJson<List<TalkResponse>>(trimmed);
+                if (parsed != null)
+                {
+                    foreach (var r in parsed)
+                    {
+                        if (r == null) continue;
+                        var text = CleanHistoryText(r.Text);
+                        if (string.IsNullOrWhiteSpace(text)) continue;
+                        var name = CleanHistoryText(r.Name);
+                        lines.Add(string.IsNullOrWhiteSpace(name) ? text : $"{name}: {text}");
+                    }
+                }
+            }
+            catch
+            {
+                lines.Clear();
+            }
+        }
+
+        if (lines.Count == 0)
+        {
+            var cleaned = CleanHistoryText(response);
+            if (!string.IsNullOrWhiteSpace(cleaned))
+                lines.Add(cleaned);
+        }
+
+        return string.Join("\n", lines);
     }
 
     public static void Clear()

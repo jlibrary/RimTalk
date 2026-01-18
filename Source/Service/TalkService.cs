@@ -146,7 +146,8 @@ public static class TalkService
 
         foreach (var pawn in uniquePawns)
         {
-            TalkHistory.AddMessageHistory(pawn, talkRequest, responses);
+            var serializedResponses = JsonUtil.SerializeToJson(responses);
+            TalkHistory.AddMessageHistory(pawn, talkRequest, serializedResponses);
         }
     }
 
