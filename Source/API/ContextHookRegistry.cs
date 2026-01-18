@@ -246,7 +246,7 @@ public static class ContextHookRegistry
     public static IEnumerable<(string Name, string ModId, string Description, string Type)> GetAllCustomVariables()
     {
         foreach (var entry in CustomPawnVariables.Values.OrderBy(e => e.Priority))
-            yield return ($"pawnN.{entry.Name}", entry.ModId, entry.Description ?? "", "Pawn");
+            yield return ($"pawn.{entry.Name}", entry.ModId, entry.Description ?? "", "Pawn");
         
         foreach (var entry in CustomEnvironmentVariables.Values.OrderBy(e => e.Priority))
             yield return (entry.Name, entry.ModId, entry.Description ?? "", "Environment");

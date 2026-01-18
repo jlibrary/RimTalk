@@ -81,15 +81,7 @@ public static class ScribanParser
             scriptObject.Add("json", json);
 
             var chat = new ScriptObject();
-            string historyText = "";
-            if (context.ChatHistory != null && context.ChatHistory.Count > 0)
-            {
-                historyText = string.Join("\n\n", context.ChatHistory.Select(h => $"[{h.role}] {h.message}"));
-            }
-            else if (context.IsPreview)
-            {
-                historyText = "[User] (Preview) Hello!\n\n[AI] (Preview) Greetings from RimTalk. This is a placeholder for chat history.";
-            }
+            string historyText = GetChatHistoryText(context);
             chat.Add("history", historyText);
             scriptObject.Add("chat", chat);
             
@@ -105,7 +97,25 @@ public static class ScribanParser
 
             var templateContext = new TemplateContext { 
                 MemberRenamer = m => m.Name,
-                MemberFilter = m => !(m is MethodInfo mi && mi.ReturnType == typeof(void))
+                MemberFilter = m =>
+                {
+                    if (m is MethodInfo mi && mi.ReturnType == typeof(void)) return false;
+                    if (m.DeclaringType == typeof(Pawn))
+                    {
+                        var name = m.Name;
+                        if (name.Equals("skills", StringComparison.OrdinalIgnoreCase) ||
+                            name.Equals("health", StringComparison.OrdinalIgnoreCase) ||
+                            name.Equals("equipment", StringComparison.OrdinalIgnoreCase) ||
+                            name.Equals("genes", StringComparison.OrdinalIgnoreCase) ||
+                            name.Equals("surroundings", StringComparison.OrdinalIgnoreCase) ||
+                            name.Equals("social", StringComparison.OrdinalIgnoreCase) ||
+                            name.Equals("relations", StringComparison.OrdinalIgnoreCase))
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
             };
             
             // 6. THE BRIDGE (Hooks & Magic Shorthands & Case Insensitivity)
@@ -141,12 +151,24 @@ public static class ScribanParser
                 value = null;
                 
                 // A. RimTalk Magic Hooks
+                if (target is PromptContext ctx)
+                {
+                    if (ContextHookRegistry.TryGetContextVariable(member, ctx, out var ctxValue)) { value = ctxValue; return true; }
+                    var raw = GetMagicContextValue(ctx, member);
+                    if (raw != null) { value = raw; return true; }
+                }
                 if (target is Pawn p)
                 {
-                    if (ContextHookRegistry.TryGetPawnVariable(member, p, out var custom)) { value = custom; return true; }
-                    var cat = ContextCategories.TryGetPawnCategory(member);
+                    var normalized = NormalizePawnMember(member);
+                    if (ContextHookRegistry.TryGetPawnVariable(member, p, out var custom) ||
+                        (normalized != member && ContextHookRegistry.TryGetPawnVariable(normalized, p, out custom)))
+                    {
+                        value = custom;
+                        return true;
+                    }
+                    var cat = ContextCategories.TryGetPawnCategory(normalized);
                     if (cat.HasValue) {
-                        var raw = GetMagicPawnValue(p, member);
+                        var raw = GetMagicPawnValue(p, normalized);
                         value = ContextHookRegistry.ApplyPawnHooks(cat.Value, p, raw);
                         return true;
                     }
@@ -242,12 +264,39 @@ public static class ScribanParser
     private static string GetMagicPawnValue(Pawn pawn, string member) {
         return member.ToLowerInvariant() switch {
             "name" => pawn.LabelShort,
+            "fullname" => pawn.Name?.ToStringFull ?? "",
+            "gender" => pawn.gender.ToString(),
+            "age" => pawn.ageTracker?.AgeBiologicalYears.ToString() ?? "",
+            "race" => ModsConfig.BiotechActive && pawn.genes?.Xenotype != null
+                ? pawn.genes.XenotypeLabel
+                : pawn.def?.LabelCap.RawText ?? "",
+            "title" => pawn.GetTitle(),
+            "faction" => pawn.Faction?.Name ?? "",
             "job" => pawn.GetActivity(),
             "role" => pawn.GetRole(),
             "mood" => pawn.needs?.mood?.MoodString ?? "",
+            "moodpercent" => pawn.needs?.mood != null
+                ? pawn.needs.mood.CurLevelPercentage.ToString("P0")
+                : "",
             "personality" => Cache.Get(pawn)?.Personality ?? "",
+            "profile" => PromptService.CreatePawnContext(pawn, PromptService.InfoLevel.Normal) ?? "",
+            "backstory" => ContextBuilder.GetBackstoryContext(pawn, PromptService.InfoLevel.Normal) ?? "",
+            "traits" => ContextBuilder.GetTraitsContext(pawn, PromptService.InfoLevel.Normal) ?? "",
+            "skills" => ContextBuilder.GetSkillsContext(pawn, PromptService.InfoLevel.Normal) ?? "",
+            "health" => ContextBuilder.GetHealthContext(pawn, PromptService.InfoLevel.Normal) ?? "",
+            "thoughts" => ContextBuilder.GetThoughtsContext(pawn, PromptService.InfoLevel.Normal) ?? "",
+            "fullthought" => ContextBuilder.GetAllThoughtsContext(pawn) ?? "",
+            "relations" => ContextBuilder.GetRelationsContext(pawn, PromptService.InfoLevel.Normal) ?? "",
+            "equipment" => ContextBuilder.GetEquipmentContext(pawn, PromptService.InfoLevel.Normal) ?? "",
+            "genes" => ContextBuilder.GetAllGenesContext(pawn, PromptService.InfoLevel.Normal) ?? "",
+            "notable_genes" => ContextBuilder.GetNotableGenesContext(pawn, PromptService.InfoLevel.Normal) ?? "",
+            "ideology" => ContextBuilder.GetIdeologyContext(pawn, PromptService.InfoLevel.Normal) ?? "",
+            "captive_status" => ContextBuilder.GetPrisonerSlaveContext(pawn, PromptService.InfoLevel.Normal) ?? "",
             "social" => RelationsService.GetRelationsString(pawn),
+            "fullsocial" => RelationsService.GetAllSocialString(pawn),
+            "fullrelation" => RelationsService.GetAllRelationsString(pawn),
             "location" => PromptContextProvider.GetLocationString(pawn),
+            "terrain" => pawn.Map != null ? pawn.Position.GetTerrain(pawn.Map)?.LabelCap ?? "" : "",
             "beauty" => PromptContextProvider.GetBeautyString(pawn),
             "cleanliness" => PromptContextProvider.GetCleanlinessString(pawn),
             "surroundings" => ContextHelper.CollectNearbyContextText(pawn, 3) ?? "",
@@ -261,5 +310,55 @@ public static class ScribanParser
             "temperature" => Mathf.RoundToInt(map.mapTemperature.OutdoorTemp).ToString(),
             _ => null
         };
+    }
+
+    private static string NormalizePawnMember(string member)
+    {
+        if (string.IsNullOrEmpty(member)) return member;
+        return member.ToLowerInvariant() switch
+        {
+            "skilltracker" => "skills",
+            "healthtracker" => "health",
+            "equipmenttracker" => "equipment",
+            "genetracker" => "genes",
+            "surroundingstracker" => "surroundings",
+            _ => member
+        };
+    }
+
+    private static object GetMagicContextValue(PromptContext context, string member) {
+        return member.ToLowerInvariant() switch {
+            "dialogue_type" or "dialoguetype" => context.DialogueType ?? "",
+            "dialogue_status" or "dialoguestatus" => context.DialogueStatus ?? "",
+            "prompt" or "dialogue_prompt" or "dialogueprompt" => context.DialoguePrompt ?? "",
+            "context" or "pawn_context" or "pawncontext" => context.PawnContext ?? "",
+            "user_prompt" or "userprompt" => context.UserPrompt ?? "",
+            "is_monologue" or "ismonologue" => context.IsMonologue,
+            "talk_type" or "talktype" => context.TalkType,
+            "history" or "chat_history" or "chathistory" => GetChatHistoryText(context),
+            "pawn_count" or "pawncount" => context.AllPawns?.Count ?? 0,
+            "map_id" or "mapid" => context.Map?.uniqueID ?? 0,
+            _ => null
+        };
+    }
+
+    private static string GetChatHistoryText(PromptContext context)
+    {
+        if (context.ChatHistory != null && context.ChatHistory.Count > 0)
+        {
+            var lines = context.ChatHistory.Select((h, i) =>
+            {
+                var text = (h.message ?? "").Replace("\r\n", " ").Replace("\n", " ").Replace("\r", " ");
+                return $"- {i + 1} | role={h.role} | text={text}";
+            });
+            return "Conversation history (reference only; do not repeat or continue):\n" + string.Join("\n", lines);
+        }
+
+        if (context.IsPreview)
+            return "Conversation history (reference only; do not repeat or continue):\n" +
+                   "- 1 | role=User | text=Hello!\n" +
+                   "- 2 | role=AI | text=Greetings from RimTalk. This is a placeholder for chat history.";
+
+        return "";
     }
 }

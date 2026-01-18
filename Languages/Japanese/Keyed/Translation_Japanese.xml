@@ -95,6 +95,7 @@
     <RimTalk.Settings.PromptPreset.PresetName>プリセット名：</RimTalk.Settings.PromptPreset.PresetName>
     <RimTalk.Settings.PromptPreset.EntryName>エントリ名：</RimTalk.Settings.PromptPreset.EntryName>
     <RimTalk.Settings.PromptPreset.Role>ロール：</RimTalk.Settings.PromptPreset.Role>
+    <RimTalk.Settings.PromptPreset.CustomRole>カスタムロール：</RimTalk.Settings.PromptPreset.CustomRole>
     <RimTalk.Settings.PromptPreset.Position>位置：</RimTalk.Settings.PromptPreset.Position>
     <RimTalk.Settings.PromptPreset.PositionRelative>相対的</RimTalk.Settings.PromptPreset.PositionRelative>
     <RimTalk.Settings.PromptPreset.PositionInChat>チャット内</RimTalk.Settings.PromptPreset.PositionInChat>

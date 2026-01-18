@@ -38,6 +38,11 @@ public class PromptEntry : IExposable
     
     /// <summary>Message role</summary>
     public PromptRole Role = PromptRole.System;
+
+    /// <summary>
+    /// Optional custom role label. When set, it will be injected into the message content.
+    /// </summary>
+    public string CustomRole = "";
     
     /// <summary>Position type</summary>
     public PromptPosition Position = PromptPosition.Relative;
@@ -117,6 +122,7 @@ public class PromptEntry : IExposable
         Scribe_Values.Look(ref _name, "name", "New Prompt");
         Scribe_Values.Look(ref Content, "content", "");
         Scribe_Values.Look(ref Role, "role", PromptRole.System);
+        Scribe_Values.Look(ref CustomRole, "customRole", "");
         Scribe_Values.Look(ref Position, "position", PromptPosition.Relative);
         Scribe_Values.Look(ref InChatDepth, "inChatDepth", 0);
         Scribe_Values.Look(ref Enabled, "enabled", true);
@@ -136,6 +142,7 @@ public class PromptEntry : IExposable
             Name = Name,
             Content = Content,
             Role = Role,
+            CustomRole = CustomRole,
             Position = Position,
             InChatDepth = InChatDepth,
             Enabled = Enabled,

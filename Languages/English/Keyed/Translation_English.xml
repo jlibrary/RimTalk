@@ -95,6 +95,7 @@
     <RimTalk.Settings.PromptPreset.PresetName>Preset Name:</RimTalk.Settings.PromptPreset.PresetName>
     <RimTalk.Settings.PromptPreset.EntryName>Entry Name:</RimTalk.Settings.PromptPreset.EntryName>
     <RimTalk.Settings.PromptPreset.Role>Role:</RimTalk.Settings.PromptPreset.Role>
+    <RimTalk.Settings.PromptPreset.CustomRole>Custom Role:</RimTalk.Settings.PromptPreset.CustomRole>
     <RimTalk.Settings.PromptPreset.Position>Position:</RimTalk.Settings.PromptPreset.Position>
     <RimTalk.Settings.PromptPreset.PositionRelative>Relative</RimTalk.Settings.PromptPreset.PositionRelative>
     <RimTalk.Settings.PromptPreset.PositionInChat>InChat</RimTalk.Settings.PromptPreset.PositionInChat>
@@ -117,27 +118,24 @@
     <RimTalk.Settings.PromptPreset.PreviewError>Error generating preview: {0}</RimTalk.Settings.PromptPreset.PreviewError>
     
     <!-- Simple/Advanced Mode -->
-    <RimTalk.Settings.SimpleModeTip>Character profiles, chat history, and context are automatically included.</RimTalk.Settings.SimpleModeTip>
+    <RimTalk.Settings.SimpleModeTip>Simple Mode edits only the Base Instruction. The rest are auto-added in order: {{json.format}}, {{context}}, {{chat.history}}, {{prompt}}.</RimTalk.Settings.SimpleModeTip>
     <RimTalk.Settings.AdvancedModeWarning>Advanced mode provides full control over prompt entries, variables, and message ordering. Your current instruction will be preserved. Continue?</RimTalk.Settings.AdvancedModeWarning>
     <RimTalk.Settings.PromptHelp>Help</RimTalk.Settings.PromptHelp>
     <RimTalk.Settings.AdvancedHelpContent>Advanced Preset Guide
 
-Advanced mode gives you surgical control over how the AI thinks and sees the world. Each Preset is built from three main blocks:
+Advanced mode builds the prompt from a list of entries. The list order is the message order unless you use InChat.
 
-1. System (The Rules)
-These are background instructions that the AI always keeps in mind. Use this to define general personality or formatting rules.
-TIP: If you encounter JSON deserialization errors, you can manually override the {{json.format}} variable with your own specific JSON schema instructions to guide the AI more strictly.
-
-2. History (The Flow)
-This manages where previous messages appear in the prompt.
-- Position: InChat: Injects data directly into the conversation log.
-- Depth: Controls where the injection happens.
+Key concepts:
+1. Order: Entries are sent in list order. There is no fixed system/user/assistant sequence.
+2. Role: Each entry can be System, User, or Assistant.
+3. Position:
+- Relative: Follows list order.
+- InChat: Inserts into chat history.
     - Depth 0: After the most recent message.
     - Depth 5: 5 messages back into the past.
-- Position: Relative: Places the entry strictly before or after the history block.
-
-3. Prompt (The Trigger)
-The final piece of the puzzle. This is usually the specific instruction or question that triggers the AI to generate a response right now.
+4. History marker: The entry marked as main history inserts {{chat.history}} at that spot.
+5. Defaults worth keeping: {{json.format}}, {{context}}, {{prompt}}.
+6. Custom Role: If set, the entry is sent as a User message and prefixed with [role: your_role].
 
 Scriban Magic (Dynamic Content)
 Use double braces {{ ... }} to insert real-time game data.
