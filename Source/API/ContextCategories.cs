@@ -31,8 +31,12 @@ public static class ContextCategories
         public static readonly ContextCategory Health = new("health", ContextType.Pawn);
         public static readonly ContextCategory Thoughts = new("thoughts", ContextType.Pawn);
         public static readonly ContextCategory Social = new("social", ContextType.Pawn);
+        public static readonly ContextCategory FullSocial = new("fullsocial", ContextType.Pawn);
+        public static readonly ContextCategory FullRelation = new("fullrelation", ContextType.Pawn);
+        public static readonly ContextCategory FullThought = new("fullthought", ContextType.Pawn);
         public static readonly ContextCategory Equipment = new("equipment", ContextType.Pawn);
         public static readonly ContextCategory Genes = new("genes", ContextType.Pawn);
+        public static readonly ContextCategory NotableGenes = new("notable_genes", ContextType.Pawn);
         public static readonly ContextCategory Ideology = new("ideology", ContextType.Pawn);
         public static readonly ContextCategory CaptiveStatus = new("captive_status", ContextType.Pawn);
         public static readonly ContextCategory Location = new("location", ContextType.Pawn);
