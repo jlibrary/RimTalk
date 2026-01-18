@@ -93,6 +93,11 @@ public static class VariableDefinitions
         dict["RimTalk.ScribanVar.Category.System".Translate()] = new()
         {
             ("lang", "Active native language name"),
+            ("hour", "Current hour (0-23)"),
+            ("day", "Day of quadrum (1-15)"),
+            ("quadrum", "Current quadrum (Aprimay, Jugust, Septober, Decembary)"),
+            ("year", "Current year (e.g. 5500)"),
+            ("season", "Current season (Spring, Summer, Fall, Winter)"),
             ("json.format", "JSON output instructions"),
             ("chat.history", "Full conversation history (Role: Message)")
         };
