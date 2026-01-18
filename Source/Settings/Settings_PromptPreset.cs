@@ -368,7 +368,11 @@ public partial class Settings
 
         if (Widgets.ButtonText(new Rect(topButtonX, y, topButtonWidth, 24f),
                 "RimTalk.Settings.SwitchToSimpleSettings".Translate()))
+        {
             settings.UseAdvancedPromptMode = false;
+            _textAreaInitialized = false;
+            _aiInstructionPresetId = "";
+        }
 
         y += 28f;
 

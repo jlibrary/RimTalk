@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using RimTalk.Data;
 using RimTalk.Prompt;
 using UnityEngine;
@@ -20,7 +22,7 @@ public class RimTalkSettings : ModSettings
     public const int ReplyInterval = 4;
     public bool ProcessNonRimTalkInteractions = true;
     public bool AllowSimultaneousConversations = false;
-    public string CustomInstruction = ""; // Legacy - will be migrated to PromptManager
+    private string _legacyCustomInstruction = "";
     
     // New Prompt System
     public PromptManager PromptSystem = new();
@@ -153,6 +155,13 @@ public class RimTalkSettings : ModSettings
     {
         base.ExposeData();
             
+        if (Scribe.mode == LoadSaveMode.LoadingVars)
+        {
+            string legacyCustomInstruction = "";
+            Scribe_Values.Look(ref legacyCustomInstruction, "customInstruction", "");
+            _legacyCustomInstruction = legacyCustomInstruction;
+        }
+
         Scribe_Collections.Look(ref CloudConfigs, "cloudConfigs", LookMode.Deep);
         Scribe_Deep.Look(ref LocalConfig, "localConfig");
         Scribe_Values.Look(ref UseCloudProviders, "useCloudProviders", true);
@@ -162,7 +171,6 @@ public class RimTalkSettings : ModSettings
         Scribe_Values.Look(ref TalkInterval, "talkInterval", 7);
         Scribe_Values.Look(ref ProcessNonRimTalkInteractions, "processNonRimTalkInteractions", true);
         Scribe_Values.Look(ref AllowSimultaneousConversations, "allowSimultaneousConversations", false);
-        Scribe_Values.Look(ref CustomInstruction, "customInstruction", "");
         Scribe_Values.Look(ref DisplayTalkWhenDrafted, "displayTalkWhenDrafted", true);
         Scribe_Values.Look(ref AllowMonologue, "allowMonologue", true);
         Scribe_Values.Look(ref AllowSlavesToTalk, "allowSlavesToTalk", true);
@@ -245,17 +253,48 @@ public class RimTalkSettings : ModSettings
         
         // Set the singleton instance
         PromptManager.SetInstance(PromptSystem);
-        
-        // Migrate legacy CustomInstruction to new system
-        if (Scribe.mode == LoadSaveMode.PostLoadInit && !string.IsNullOrWhiteSpace(CustomInstruction))
-        {
-            PromptSystem.MigrateLegacyInstruction(CustomInstruction);
-        }
             
+        // One-time migration from legacy customInstruction into Base Instruction
+        if (Scribe.mode == LoadSaveMode.PostLoadInit && !string.IsNullOrWhiteSpace(_legacyCustomInstruction))
+        {
+            var preset = PromptSystem.GetActivePreset();
+            var entry = GetOrCreateBaseInstructionEntry(preset);
+            if (entry != null)
+            {
+                bool isDefault = string.IsNullOrWhiteSpace(entry.Content) || entry.Content == Constant.DefaultInstruction;
+                if (isDefault)
+                    entry.Content = _legacyCustomInstruction;
+            }
+            _legacyCustomInstruction = "";
+        }
+
         // Ensure we have at least one cloud config
         if (CloudConfigs.Count == 0)
         {
             CloudConfigs.Add(new ApiConfig());
         }
+    }
+
+    private static PromptEntry GetOrCreateBaseInstructionEntry(PromptPreset preset)
+    {
+        if (preset == null) return null;
+
+        var entry = preset.Entries.FirstOrDefault(e =>
+            string.Equals(e.Name, "Base Instruction", StringComparison.OrdinalIgnoreCase));
+        if (entry != null) return entry;
+
+        entry = preset.Entries.FirstOrDefault(e =>
+            e.Role == PromptRole.System && e.Position == PromptPosition.Relative);
+        if (entry != null) return entry;
+
+        entry = new PromptEntry
+        {
+            Name = "Base Instruction",
+            Role = PromptRole.System,
+            Position = PromptPosition.Relative,
+            Content = Constant.DefaultInstruction
+        };
+        preset.Entries.Insert(0, entry);
+        return entry;
     }
 }

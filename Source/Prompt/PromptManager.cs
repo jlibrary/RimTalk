@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using RimTalk.Data;
 using RimTalk.Service;
-using RimTalk.Util;
 using Verse;
 
 namespace RimTalk.Prompt;
@@ -39,10 +38,6 @@ public class PromptManager : IExposable
     
     /// <summary>Global variable store (for setvar/getvar)</summary>
     public VariableStore VariableStore = new();
-
-    /// <summary>Cached preset for Simple Mode to avoid recreation on every call</summary>
-    private PromptPreset _simplePresetCache;
-    private string _simplePresetCacheKey = "";
 
     /// <summary>Gets the currently active preset</summary>
     public PromptPreset GetActivePreset()
@@ -220,11 +215,6 @@ public class PromptManager : IExposable
     // Creates default preset - entry order is determined by list position (drag-to-reorder like SillyTavern)
     private PromptPreset CreateDefaultPreset()
     {
-        var settings = Settings.Get();
-        var baseInstruction = string.IsNullOrWhiteSpace(settings.CustomInstruction)
-            ? Constant.DefaultInstruction
-            : settings.CustomInstruction;
-
         return new PromptPreset
         {
             Name = "RimTalk Default",
@@ -238,7 +228,7 @@ public class PromptManager : IExposable
                     Name = "Base Instruction",
                     Role = PromptRole.System,
                     Position = PromptPosition.Relative,
-                    Content = baseInstruction
+                    Content = Constant.DefaultInstruction
                 },
                 new()
                 {
@@ -273,29 +263,6 @@ public class PromptManager : IExposable
                 }
             }
         };
-    }
-
-    /// <summary>Migrates legacy custom instruction</summary>
-    public void MigrateLegacyInstruction(string legacyInstruction)
-    {
-        if (string.IsNullOrWhiteSpace(legacyInstruction)) return;
-
-        var preset = GetActivePreset();
-        if (preset == null) return;
-
-        // Check if already migrated
-        if (preset.Entries.Any(e => e.Name == "Legacy Custom Instruction")) return;
-
-        // Insert at second position (after Base Instruction)
-        preset.Entries.Insert(1, new PromptEntry
-        {
-            Name = "Legacy Custom Instruction",
-            Role = PromptRole.System,
-            Position = PromptPosition.Relative,
-            Content = legacyInstruction
-        });
-
-        Logger.Debug("Migrated legacy custom instruction to new prompt system");
     }
 
     /// <summary>Resets to default settings</summary>
@@ -335,6 +302,9 @@ public class PromptManager : IExposable
                         legacyEntry.IsMainChatHistory = true;
                     }
                 }
+
+                preset.Entries.RemoveAll(e =>
+                    string.Equals(e.Name, "Legacy Custom Instruction", StringComparison.OrdinalIgnoreCase));
             }
         }
         
@@ -352,12 +322,10 @@ public class PromptManager : IExposable
 
     /// <summary>
     /// The primary entry point for building AI messages.
-    /// Handles Simple vs Advanced mode switching and provides robust fallbacks.
+    /// Builds from the active preset and provides robust fallbacks.
     /// </summary>
     public List<(Role role, string content)> BuildMessages(TalkRequest talkRequest, List<Pawn> pawns, string status)
     {
-        var settings = Settings.Get();
-        
         // 1. Prepare shared context data
         string dialogueType = PromptContextProvider.GetDialogueTypeString(talkRequest, pawns);
         talkRequest.Context = PromptService.BuildContext(pawns);
@@ -371,21 +339,7 @@ public class PromptManager : IExposable
         LastContext = context;
 
         // 3. Select Preset (Active for Advanced, Cached for Simple)
-        PromptPreset preset;
-        if (settings.UseAdvancedPromptMode)
-        {
-            preset = GetActivePreset();
-        }
-        else
-        {
-            var cacheKey = settings.CustomInstruction ?? "";
-            if (_simplePresetCache == null || _simplePresetCacheKey != cacheKey)
-            {
-                _simplePresetCache = CreateDefaultPreset();
-                _simplePresetCacheKey = cacheKey;
-            }
-            preset = _simplePresetCache;
-        }
+        PromptPreset preset = GetActivePreset();
         if (preset == null) preset = CreateDefaultPreset();
 
         // 4. Build and return
