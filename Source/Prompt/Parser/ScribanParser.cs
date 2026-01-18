@@ -323,10 +323,19 @@ public static class ScribanParser
     private static string GetChatHistoryText(PromptContext context)
     {
         if (context.ChatHistory != null && context.ChatHistory.Count > 0)
-            return string.Join("\n\n", context.ChatHistory.Select(h => $"[{h.role}] {h.message}"));
+        {
+            var lines = context.ChatHistory.Select((h, i) =>
+            {
+                var text = (h.message ?? "").Replace("\r\n", " ").Replace("\n", " ").Replace("\r", " ");
+                return $"- {i + 1} | role={h.role} | text={text}";
+            });
+            return "Conversation history (reference only; do not repeat or continue):\n" + string.Join("\n", lines);
+        }
 
         if (context.IsPreview)
-            return "[User] (Preview) Hello!\n\n[AI] (Preview) Greetings from RimTalk. This is a placeholder for chat history.";
+            return "Conversation history (reference only; do not repeat or continue):\n" +
+                   "- 1 | role=User | text=Hello!\n" +
+                   "- 2 | role=AI | text=Greetings from RimTalk. This is a placeholder for chat history.";
 
         return "";
     }
