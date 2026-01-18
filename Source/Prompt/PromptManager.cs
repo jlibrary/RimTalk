@@ -385,30 +385,19 @@ public class PromptManager : IExposable
         List<PromptMessageSegment> segments)
     {
         var result = new List<(PromptRole role, string content)>();
-        int lastHistoryIndex = 0;
-
-        // 1. Process System entries first (Merged)
-        var systemParts = preset.Entries
-            .Where(e => e.Enabled && e.Role == PromptRole.System && e.Position == PromptPosition.Relative)
-            .Select(e => new { e, content = ScribanParser.Render(e.Content, context) })
-            .Where(x => !string.IsNullOrWhiteSpace(x.content))
-            .ToList();
-
-        foreach (var item in systemParts)
+        static PromptRole GetEffectiveRole(PromptEntry entry)
         {
-            segments?.Add(new PromptMessageSegment(item.e.Id, item.e.Name, Role.System, item.content));
+            return string.IsNullOrWhiteSpace(entry.CustomRole) ? entry.Role : PromptRole.User;
         }
 
-        if (systemParts.Count > 0)
+        static string ApplyCustomRolePrefix(PromptEntry entry, string content)
         {
-            result.Add((PromptRole.System, string.Join("\n\n", systemParts.Select(x => x.content))));
+            if (string.IsNullOrWhiteSpace(entry.CustomRole)) return content;
+            return $"[role: {entry.CustomRole}]\n{content}";
         }
         
-        int systemBoundary = result.Count; // Ensure nothing is inserted above this index
-        lastHistoryIndex = result.Count;
-
-        // 2. Process Relative entries (History/Prompt)
-        foreach (var entry in preset.Entries.Where(e => e.Enabled && e.Role != PromptRole.System && e.Position == PromptPosition.Relative))
+        // 1. Process Relative entries in list order (free prompt order)
+        foreach (var entry in preset.GetRelativeEntries())
         {
             if (entry.IsMainChatHistory)
             {
@@ -421,33 +410,30 @@ public class PromptManager : IExposable
                         segments?.Add(new PromptMessageSegment(entry.Id, entry.Name ?? "History", role, message));
                     }
                 }
-                lastHistoryIndex = result.Count; // Anchor point set to end of history
                 continue;
             }
 
             var content = ScribanParser.Render(entry.Content, context);
             if (!string.IsNullOrWhiteSpace(content))
             {
-                result.Add((entry.Role, content));
-                segments?.Add(new PromptMessageSegment(entry.Id, entry.Name ?? "Entry", (Role)entry.Role, content));
+                var role = GetEffectiveRole(entry);
+                var finalContent = ApplyCustomRolePrefix(entry, content);
+                result.Add((role, finalContent));
+                segments?.Add(new PromptMessageSegment(entry.Id, entry.Name ?? "Entry", (Role)role, finalContent));
             }
         }
 
-        // 3. Process InChat entries (Anchored to History)
+        // 2. Process InChat entries (insert relative to the current end of the list)
         foreach (var entry in preset.GetInChatEntries())
         {
             var content = ScribanParser.Render(entry.Content, context);
             if (!string.IsNullOrWhiteSpace(content))
             {
-                // Calculate position relative to history end, clamped by system boundary
-                var insertIndex = Math.Max(systemBoundary, lastHistoryIndex - entry.InChatDepth);
-                
-                result.Insert(insertIndex, (entry.Role, content));
-                segments?.Insert(insertIndex, new PromptMessageSegment(entry.Id, entry.Name ?? "Entry", (Role)entry.Role, content));
-                
-                // Shift anchor and boundary forward since we increased the list size
-                if (insertIndex <= lastHistoryIndex) lastHistoryIndex++;
-                systemBoundary++; 
+                var role = GetEffectiveRole(entry);
+                var finalContent = ApplyCustomRolePrefix(entry, content);
+                var insertIndex = Math.Max(0, result.Count - entry.InChatDepth);
+                result.Insert(insertIndex, (role, finalContent));
+                segments?.Insert(insertIndex, new PromptMessageSegment(entry.Id, entry.Name ?? "Entry", (Role)role, finalContent));
             }
         }
 

@@ -90,6 +90,9 @@ public class EntryDto
     
     [DataMember(Name = "role")]
     public string Role { get; set; }
+
+    [DataMember(Name = "customRole")]
+    public string CustomRole { get; set; }
     
     [DataMember(Name = "position")]
     public string Position { get; set; }
@@ -112,6 +115,7 @@ public class EntryDto
             Name = entry.Name,
             Content = entry.Content,
             Role = entry.Role.ToString(),
+            CustomRole = entry.CustomRole,
             Position = entry.Position.ToString(),
             InChatDepth = entry.InChatDepth,
             Enabled = entry.Enabled
@@ -133,10 +137,22 @@ public class EntryDto
             SourceModId = null
         };
         
-        // Parse Role enum
-        if (!string.IsNullOrEmpty(Role) && Enum.TryParse<PromptRole>(Role, true, out var role))
+        if (!string.IsNullOrWhiteSpace(CustomRole))
         {
-            entry.Role = role;
+            entry.CustomRole = CustomRole;
+            entry.Role = PromptRole.User;
+        }
+        else if (!string.IsNullOrEmpty(Role))
+        {
+            if (Enum.TryParse<PromptRole>(Role, true, out var role))
+            {
+                entry.Role = role;
+            }
+            else
+            {
+                entry.CustomRole = Role;
+                entry.Role = PromptRole.User;
+            }
         }
         
         // Parse Position enum
