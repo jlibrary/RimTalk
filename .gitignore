@@ -1,6 +1,7 @@
 /.config
 /*.sln 
 /obj
+/contentfiles
 /*/Assemblies
 .idea
 .vscode

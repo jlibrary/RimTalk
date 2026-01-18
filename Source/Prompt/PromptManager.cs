@@ -375,6 +375,9 @@ public class PromptManager : IExposable
             {
                 if (context.ChatHistory != null)
                 {
+                    const string historyNotice = "Conversation history (reference only; do not repeat or continue).";
+                    result.Add((PromptRole.User, historyNotice));
+                    segments?.Add(new PromptMessageSegment(entry.Id, entry.Name ?? "History", (Role)PromptRole.User, historyNotice));
                     foreach (var (role, message) in context.ChatHistory)
                     {
                         var pRole = (PromptRole)role;
