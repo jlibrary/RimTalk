@@ -98,6 +98,24 @@ public static class PawnUtil
         return pawn?.Faction != null && pawn.Faction != Faction.OfPlayer && !pawn.HostileTo(Faction.OfPlayer) && !pawn.IsPrisoner;
     }
 
+    public static string GetTitle(this Pawn pawn)
+    {
+        if (pawn == null) return "";
+
+        RoyalTitleDef titleDef = null;
+        if (pawn.royalty != null)
+        {
+            titleDef = pawn.royalty.MostSeniorTitle?.def;
+            if (titleDef == null && pawn.Faction != null)
+                titleDef = pawn.royalty.GetCurrentTitle(pawn.Faction);
+        }
+
+        if (titleDef != null)
+            return titleDef.GetLabelFor(pawn);
+
+        return pawn.story?.title ?? "";
+    }
+
     public static bool IsEnemy(this Pawn pawn)
     {
         return pawn != null && pawn.HostileTo(Faction.OfPlayer) && !pawn.IsPrisoner;

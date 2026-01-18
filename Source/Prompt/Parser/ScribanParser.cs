@@ -141,10 +141,16 @@ public static class ScribanParser
                 }
                 if (target is Pawn p)
                 {
-                    if (ContextHookRegistry.TryGetPawnVariable(member, p, out var custom)) { value = custom; return true; }
-                    var cat = ContextCategories.TryGetPawnCategory(member);
+                    var normalized = NormalizePawnMember(member);
+                    if (ContextHookRegistry.TryGetPawnVariable(member, p, out var custom) ||
+                        (normalized != member && ContextHookRegistry.TryGetPawnVariable(normalized, p, out custom)))
+                    {
+                        value = custom;
+                        return true;
+                    }
+                    var cat = ContextCategories.TryGetPawnCategory(normalized);
                     if (cat.HasValue) {
-                        var raw = GetMagicPawnValue(p, member);
+                        var raw = GetMagicPawnValue(p, normalized);
                         value = ContextHookRegistry.ApplyPawnHooks(cat.Value, p, raw);
                         return true;
                     }
@@ -246,7 +252,7 @@ public static class ScribanParser
             "race" => ModsConfig.BiotechActive && pawn.genes?.Xenotype != null
                 ? pawn.genes.XenotypeLabel
                 : pawn.def?.LabelCap.RawText ?? "",
-            "title" => pawn.story?.title ?? "",
+            "title" => pawn.GetTitle(),
             "faction" => pawn.Faction?.Name ?? "",
             "job" => pawn.GetActivity(),
             "role" => pawn.GetRole(),
@@ -281,6 +287,20 @@ public static class ScribanParser
             "weather" => map.weatherManager?.curWeather?.label ?? "",
             "temperature" => Mathf.RoundToInt(map.mapTemperature.OutdoorTemp).ToString(),
             _ => null
+        };
+    }
+
+    private static string NormalizePawnMember(string member)
+    {
+        if (string.IsNullOrEmpty(member)) return member;
+        return member.ToLowerInvariant() switch
+        {
+            "skilltracker" => "skills",
+            "healthtracker" => "health",
+            "equipmenttracker" => "equipment",
+            "genetracker" => "genes",
+            "surroundingstracker" => "surroundings",
+            _ => member
         };
     }
 
