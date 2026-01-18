@@ -2,6 +2,8 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using RimTalk.Source.Data;
+using RimTalk.Util;
 using Verse;
 
 namespace RimTalk.Data;
@@ -33,14 +35,34 @@ public static class TalkHistory
         return IgnoredCache.Contains(id);
     }
 
-    public static void AddMessageHistory(Pawn pawn, string request, string response)
+    public static void AddMessageHistory(Pawn pawn, TalkRequest talkRequest, List<TalkResponse> responses)
     {
         var messages = MessageHistory.GetOrAdd(pawn.thingIDNumber, _ => []);
 
         lock (messages)
         {
-            messages.Add((Role.User, request));
-            messages.Add((Role.AI, response));
+            if (talkRequest != null && talkRequest.TalkType.IsFromUser())
+            {
+                var userPrompt = CleanHistoryText(talkRequest.RawPrompt);
+                if (!string.IsNullOrWhiteSpace(userPrompt))
+                    messages.Add((Role.User, userPrompt));
+            }
+
+            var aiLines = responses?
+                .Where(r => r != null)
+                .Select(r =>
+                {
+                    var text = CleanHistoryText(r.Text);
+                    if (string.IsNullOrWhiteSpace(text)) return null;
+                    var name = CleanHistoryText(r.Name);
+                    return string.IsNullOrWhiteSpace(name) ? text : $"{name}: {text}";
+                })
+                .Where(line => !string.IsNullOrWhiteSpace(line))
+                .ToList();
+
+            if (aiLines != null && aiLines.Count > 0)
+                messages.Add((Role.AI, string.Join("\n", aiLines)));
+
             EnsureMessageLimit(messages);
         }
     }
@@ -58,13 +80,14 @@ public static class TalkHistory
 
     private static void EnsureMessageLimit(List<(Role role, string message)> messages)
     {
-        // First, ensure alternating pattern by removing consecutive duplicates from the end
+        // First, merge consecutive duplicates to keep role alternation without losing content
         for (int i = messages.Count - 1; i > 0; i--)
         {
             if (messages[i].role == messages[i - 1].role)
             {
-                // Remove the earlier message of the consecutive pair
-                messages.RemoveAt(i - 1);
+                var merged = $"{messages[i - 1].message}\n{messages[i].message}".Trim();
+                messages[i - 1] = (messages[i - 1].role, merged);
+                messages.RemoveAt(i);
             }
         }
 
@@ -74,6 +97,13 @@ public static class TalkHistory
         {
             messages.RemoveAt(0);
         }
+    }
+
+    private static string CleanHistoryText(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return "";
+        var cleaned = CommonUtil.StripFormattingTags(text);
+        return cleaned.Replace("\r\n", " ").Replace("\n", " ").Replace("\r", " ").Trim();
     }
 
     public static void Clear()
