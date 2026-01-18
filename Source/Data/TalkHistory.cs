@@ -35,15 +35,15 @@ public static class TalkHistory
         return IgnoredCache.Contains(id);
     }
 
-    public static void AddMessageHistory(Pawn pawn, TalkRequest talkRequest, List<TalkResponse> responses)
+    public static void AddMessageHistory(Pawn pawn, TalkRequest request, List<TalkResponse> responses)
     {
         var messages = MessageHistory.GetOrAdd(pawn.thingIDNumber, _ => []);
 
         lock (messages)
         {
-            if (talkRequest != null && talkRequest.TalkType.IsFromUser())
+            if (request != null && request.TalkType.IsFromUser())
             {
-                var userPrompt = CleanHistoryText(talkRequest.RawPrompt);
+                var userPrompt = CleanHistoryText(request.RawPrompt);
                 if (!string.IsNullOrWhiteSpace(userPrompt))
                     messages.Add((Role.User, userPrompt));
             }
