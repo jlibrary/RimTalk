@@ -95,6 +95,7 @@
     <RimTalk.Settings.PromptPreset.PresetName>预设名称：</RimTalk.Settings.PromptPreset.PresetName>
     <RimTalk.Settings.PromptPreset.EntryName>条目名称：</RimTalk.Settings.PromptPreset.EntryName>
     <RimTalk.Settings.PromptPreset.Role>角色：</RimTalk.Settings.PromptPreset.Role>
+    <RimTalk.Settings.PromptPreset.CustomRole>自定义角色：</RimTalk.Settings.PromptPreset.CustomRole>
     <RimTalk.Settings.PromptPreset.Position>位置：</RimTalk.Settings.PromptPreset.Position>
     <RimTalk.Settings.PromptPreset.PositionRelative>相对</RimTalk.Settings.PromptPreset.PositionRelative>
     <RimTalk.Settings.PromptPreset.PositionInChat>聊天内</RimTalk.Settings.PromptPreset.PositionInChat>
@@ -117,27 +118,24 @@
     <RimTalk.Settings.PromptPreset.PreviewError>生成预览时出错：{0}</RimTalk.Settings.PromptPreset.PreviewError>
     
     <!-- Simple/Advanced Mode -->
-    <RimTalk.Settings.SimpleModeTip>角色资料、聊天历史和上下文信息会自动包含。</RimTalk.Settings.SimpleModeTip>
+    <RimTalk.Settings.SimpleModeTip>简易模式仅编辑“基础指令”。其余内容会按顺序自动追加：{{json.format}}、{{context}}、{{chat.history}}、{{prompt}}。</RimTalk.Settings.SimpleModeTip>
     <RimTalk.Settings.AdvancedModeWarning>高级模式可以完全控制提示词条目、变量和消息顺序。您当前的指令将被保留。是否继续？</RimTalk.Settings.AdvancedModeWarning>
     <RimTalk.Settings.PromptHelp>帮助</RimTalk.Settings.PromptHelp>
     <RimTalk.Settings.AdvancedHelpContent>高级预设指南
 
-高级模式让您可以精确控制 AI 的思考方式和对世界的认知。每个预设由三个主要部分组成：
+高级模式按“条目列表”组装提示词，列表顺序就是消息顺序（除非使用 InChat）。
 
-1. 系统 (规则)
-这些是 AI 始终牢记在心的背景指令。使用它来定义一般个性或格式规则。
-提示：如果遇到 JSON 反序列化错误，您可以手动使用您自己的特定 JSON 架构指令覆盖 {{json.format}} 变量，以更严格地引导 AI。
-
-2. 历史 (流)
-这管理了之前的消息在提示词中的出现位置。
-- 位置: 聊天内 (InChat): 直接将数据注入对话日志。
-- 深度 (Depth): 控制注入发生的位置。
-    - 深度 0: 在最新消息之后。
-    - 深度 5: 回溯到过去的 5 条消息。
-- 位置: 相对 (Relative): 将条目严格放置在历史区块之前或之后。
-
-3. 提示 (触发器)
-拼图的最后一块。这通常是触发 AI 立即生成响应的具体指令或问题。
+关键概念：
+1. 顺序：条目按列表顺序发送，不再固定 system-user-assistant 结构。
+2. 角色：每个条目可设为 System / User / Assistant。
+3. 位置：
+- 相对 (Relative)：遵循列表顺序。
+- 聊天内 (InChat)：插入到历史中。
+    - 深度 0：在最新消息之后。
+    - 深度 5：回溯到过去的 5 条消息。
+4. 历史标记：被标记为主历史的条目会在该位置插入 {{chat.history}}。
+5. 建议保留：{{json.format}}、{{context}}、{{prompt}}。
+6. 自定义角色：填写后，该条目会以 User 发送，并在内容前加上 [role: 自定义角色]。
 
 Scriban 魔法 (动态内容)
 使用双大括号 {{ ... }} 插入实时游戏数据。
@@ -148,7 +146,7 @@ Scriban 魔法 (动态内容)
 - 所有参与者：{{ for p in pawns }}{{ p.LabelShort }}, {{ end }}
 
 高级示例：
-- 获取所有殖민者：
+- 获取所有殖民者：
   {{ for p in PawnsFinder.AllMaps_FreeColonists }} * {{ p.LabelShort }} 是 {{ p.job }}{{ end }}
 
 - 获取最近 3 个任务：

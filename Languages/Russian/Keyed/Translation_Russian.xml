@@ -95,6 +95,7 @@
     <RimTalk.Settings.PromptPreset.PresetName>Название пресета:</RimTalk.Settings.PromptPreset.PresetName>
     <RimTalk.Settings.PromptPreset.EntryName>Название записи:</RimTalk.Settings.PromptPreset.EntryName>
     <RimTalk.Settings.PromptPreset.Role>Роль:</RimTalk.Settings.PromptPreset.Role>
+    <RimTalk.Settings.PromptPreset.CustomRole>Пользовательская роль:</RimTalk.Settings.PromptPreset.CustomRole>
     <RimTalk.Settings.PromptPreset.Position>Позиция:</RimTalk.Settings.PromptPreset.Position>
     <RimTalk.Settings.PromptPreset.PositionRelative>Относительно</RimTalk.Settings.PromptPreset.PositionRelative>
     <RimTalk.Settings.PromptPreset.PositionInChat>В чате (InChat)</RimTalk.Settings.PromptPreset.PositionInChat>
