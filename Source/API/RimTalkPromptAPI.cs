@@ -16,11 +16,11 @@ public static class RimTalkPromptAPI
     // ===== Custom Variable Registration API =====
     
     /// <summary>
-    /// Registers a new pawn property variable (e.g., "bloodtype" for {{pawn1.bloodtype}}, {{pawn2.bloodtype}}, etc.).
-    /// These are independent variables that mods can use in templates.
+    /// Registers a new pawn property variable (e.g., "bloodtype" for {{pawn.bloodtype}}).
+    /// These are pawn-scoped variables that mods can use in templates.
     /// </summary>
     /// <param name="modId">The mod's package ID</param>
-    /// <param name="variableName">Variable name (e.g., "bloodtype" for {{pawn1.bloodtype}})</param>
+    /// <param name="variableName">Variable name (e.g., "bloodtype" for {{pawn.bloodtype}})</param>
     /// <param name="provider">Function that takes a Pawn and returns the variable value</param>
     /// <param name="description">Description for UI display (optional)</param>
     /// <param name="priority">Priority for ordering (lower = first, default 100)</param>
@@ -31,7 +31,7 @@ public static class RimTalkPromptAPI
     ///     pawn => GetBloodType(pawn),
     ///     "Blood type of the pawn"
     /// );
-    /// // Usage: {{pawn1.bloodtype}}, {{pawn2.bloodtype}}, etc.
+    /// // Usage: {{pawn.bloodtype}}
     /// </example>
     public static void RegisterPawnVariable(
         string modId,
@@ -47,7 +47,7 @@ public static class RimTalkPromptAPI
         }
         
         ContextHookRegistry.RegisterPawnVariable(variableName, SanitizeModId(modId), provider, description, priority);
-        Logger.Debug($"Mod '{modId}' registered pawn variable: {{{{pawnN.{variableName}}}}}");
+        Logger.Debug($"Mod '{modId}' registered pawn variable: {{{{pawn.{variableName}}}}}");
     }
     
     /// <summary>
