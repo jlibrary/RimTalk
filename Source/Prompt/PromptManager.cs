@@ -40,10 +40,6 @@ public class PromptManager : IExposable
     /// <summary>Global variable store (for setvar/getvar)</summary>
     public VariableStore VariableStore = new();
 
-    /// <summary>Cached preset for Simple Mode to avoid recreation on every call</summary>
-    private PromptPreset _simplePresetCache;
-    private string _simplePresetCacheKey = "";
-
     /// <summary>Gets the currently active preset</summary>
     public PromptPreset GetActivePreset()
     {
@@ -370,22 +366,8 @@ public class PromptManager : IExposable
         context.DialoguePrompt = talkRequest.Prompt;
         LastContext = context;
 
-        // 3. Select Preset (Active for Advanced, Cached for Simple)
-        PromptPreset preset;
-        if (settings.UseAdvancedPromptMode)
-        {
-            preset = GetActivePreset();
-        }
-        else
-        {
-            var cacheKey = settings.CustomInstruction ?? "";
-            if (_simplePresetCache == null || _simplePresetCacheKey != cacheKey)
-            {
-                _simplePresetCache = CreateDefaultPreset();
-                _simplePresetCacheKey = cacheKey;
-            }
-            preset = _simplePresetCache;
-        }
+        // 3. Select Preset (Active for Advanced, Default for Simple)
+        var preset = (settings.UseAdvancedPromptMode) ? GetActivePreset() : CreateDefaultPreset();
         if (preset == null) preset = CreateDefaultPreset();
 
         // 4. Build and return
