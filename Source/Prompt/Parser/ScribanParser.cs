@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using RimTalk.API;
@@ -18,6 +19,26 @@ namespace RimTalk.Prompt;
 
 public static class ScribanParser
 {
+
+    private static Dictionary<string, object> _sessionVariables = new();
+
+    public static void ResetSessionVariables()
+    {
+        _sessionVariables.Clear();
+    }
+
+    public static void SetSessionVar(string key, object value)
+    {
+        if (string.IsNullOrEmpty(key)) return;
+        _sessionVariables[key.ToLowerInvariant()] = value;
+    }
+
+    public static object GetSessionVar(string key)
+    {
+        if (string.IsNullOrEmpty(key)) return "";
+        return _sessionVariables.TryGetValue(key.ToLowerInvariant(), out var value) ? value : "";
+    }
+
     public static string Render(string templateText, PromptContext context, bool logErrors = true)
     {
         if (string.IsNullOrWhiteSpace(templateText)) return "";
@@ -47,6 +68,10 @@ public static class ScribanParser
             // We force PascalCase to match the UI list and TemplateContext settings
             scriptObject.Import(typeof(PawnUtil), renamer: m => m.Name, filter: m => !(m is MethodInfo mi && mi.ReturnType == typeof(void)));
             scriptObject.Import(typeof(CommonUtil), renamer: m => m.Name, filter: m => !(m is MethodInfo mi && mi.ReturnType == typeof(void)));
+            
+            // 2.1 Session variable functions (cross-entry variables)
+            scriptObject.Import("setvar", new Action<string, object>(SetSessionVar));
+            scriptObject.Import("getvar", new Func<string, object>(GetSessionVar));
             
             // 2.5 USEFUL STATIC CLASSES
             scriptObject.Add("PawnsFinder", typeof(PawnsFinder));
