@@ -308,6 +308,7 @@ public static class ScribanParser
         return member.ToLowerInvariant() switch {
             "weather" => map.weatherManager?.curWeather?.label ?? "",
             "temperature" => Mathf.RoundToInt(map.mapTemperature.OutdoorTemp).ToString(),
+            "wealth" => Describer.Wealth(map.wealthWatcher?.WealthTotal ?? 0f),
             _ => null
         };
     }
