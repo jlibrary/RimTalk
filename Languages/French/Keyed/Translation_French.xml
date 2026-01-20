@@ -119,7 +119,7 @@
     
     <!-- Simple/Advanced Mode -->
     <RimTalk.Settings.SimpleModeTip>Les profils de personnages, l'historique de chat et le contexte sont automatiquement inclus.</RimTalk.Settings.SimpleModeTip>
-    <RimTalk.Settings.AdvancedModeWarning>Le mode avancé offre un contrôle total sur les entrées de prompt, les variables et l'ordre des messages. Votre instruction actuelle sera préservée. Continuer ?</RimTalk.Settings.AdvancedModeWarning>
+    <RimTalk.Settings.AdvancedModeWarning>Le mode avancé permet un contrôle total des entrées de prompt, des variables et de l’ordre des messages. Votre instruction actuelle sera conservée.\nCette fonctionnalité est encore en phase de test et peut présenter un comportement inattendu. Voulez-vous continuer ?</RimTalk.Settings.AdvancedModeWarning>
     <RimTalk.Settings.PromptHelp>Aide</RimTalk.Settings.PromptHelp>
     <RimTalk.Settings.AdvancedHelpContent>Guide du Préréglage Avancé
 
@@ -210,7 +210,8 @@ Conseils Cruciaux :
     <RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>Les dialogues peuvent affecter l'humeur et les relations des colons en fonction du ton de la conversation.</RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>
 
     <RimTalk.Settings.PlayerDialogueMode.Manual>Réponses manuelles</RimTalk.Settings.PlayerDialogueMode.Manual>
-    <RimTalk.Settings.PlayerDialogueMode.AIDriven>Réponses auto-générées</RimTalk.Settings.PlayerDialogueMode.AIDriven>
+    <RimTalk.Settings.PlayerDialogueMode.AIDriven>Auto-Gén. Pion + Joueur</RimTalk.Settings.PlayerDialogueMode.AIDriven>
+    <RimTalk.Settings.PlayerDialogueMode.AIDrivenPawnOnly>Auto-Gén. Pion</RimTalk.Settings.PlayerDialogueMode.AIDrivenPawnOnly>
     <RimTalk.Settings.PlayerToNpc>Joueur à PNJ :</RimTalk.Settings.PlayerToNpc>
     <RimTalk.Settings.PlayerName>Nom du joueur</RimTalk.Settings.PlayerName>
     <RimTalk.Settings.PlayerNameTooltip>Le nom utilisé par les PNJ pour s’adresser au joueur.</RimTalk.Settings.PlayerNameTooltip>

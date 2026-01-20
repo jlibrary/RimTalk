@@ -118,7 +118,7 @@
     
     <!-- Simple/Advanced Mode -->
     <RimTalk.Settings.SimpleModeTip>Character profiles, chat history, and context are automatically included.</RimTalk.Settings.SimpleModeTip>
-    <RimTalk.Settings.AdvancedModeWarning>Advanced mode provides full control over prompt entries, variables, and message ordering. Your current instruction will be preserved. Continue?</RimTalk.Settings.AdvancedModeWarning>
+    <RimTalk.Settings.AdvancedModeWarning>Advanced mode gives full control over prompt entries, variables, and message ordering. Your current instruction will be preserved.\nThis feature is still in testing, so you may experience unexpected behavior. Do you want to continue?</RimTalk.Settings.AdvancedModeWarning>
     <RimTalk.Settings.PromptHelp>Help</RimTalk.Settings.PromptHelp>
     <RimTalk.Settings.AdvancedHelpContent>Advanced Preset Guide
 
@@ -209,7 +209,8 @@ Crucial Tips:
     <RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>Dialogue can affect pawns’ mood and relationships based on conversation sentiment.</RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>
 
     <RimTalk.Settings.PlayerDialogueMode.Manual>Manual Replies</RimTalk.Settings.PlayerDialogueMode.Manual>
-    <RimTalk.Settings.PlayerDialogueMode.AIDriven>Auto-Gen Replies</RimTalk.Settings.PlayerDialogueMode.AIDriven>
+    <RimTalk.Settings.PlayerDialogueMode.AIDriven>Auto-Gen Pawn + Player</RimTalk.Settings.PlayerDialogueMode.AIDriven>
+    <RimTalk.Settings.PlayerDialogueMode.AIDrivenPawnOnly>Auto-Gen Pawn</RimTalk.Settings.PlayerDialogueMode.AIDrivenPawnOnly>
     <RimTalk.Settings.PlayerToNpc>Player-to-NPC:</RimTalk.Settings.PlayerToNpc>
     <RimTalk.Settings.PlayerName>Player prompt</RimTalk.Settings.PlayerName>
     <RimTalk.Settings.PlayerNameTooltip>What NPCs call the player in conversations.</RimTalk.Settings.PlayerNameTooltip>

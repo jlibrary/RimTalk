@@ -35,6 +35,7 @@ public partial class Settings : Mod
     {
         Disabled,
         Manual,
+        AIDrivenPawnOnly,
         AIDriven
     }
 

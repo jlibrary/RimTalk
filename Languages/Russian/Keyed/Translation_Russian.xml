@@ -118,7 +118,7 @@
     
     <!-- Simple/Advanced Mode -->
     <RimTalk.Settings.SimpleModeTip>Профили персонажей, история чата и контекст включаются автоматически.</RimTalk.Settings.SimpleModeTip>
-    <RimTalk.Settings.AdvancedModeWarning>Расширенный режим предоставляет полный контроль над записями промптов, переменными и порядком сообщений. Ваши текущие инструкции будут сохранены. Продолжить?</RimTalk.Settings.AdvancedModeWarning>
+    <RimTalk.Settings.AdvancedModeWarning>Режим «Расширенный» позволяет полностью контролировать записи подсказок, переменные и порядок сообщений. Ваши текущие инструкции будут сохранены.\nЭта функция все еще находится на стадии тестирования, поэтому возможны непредвиденные действия. Продолжить?</RimTalk.Settings.AdvancedModeWarning>
     <RimTalk.Settings.PromptHelp>Помощь</RimTalk.Settings.PromptHelp>
     <RimTalk.Settings.AdvancedHelpContent>Руководство по расширенным пресетам
 
@@ -209,7 +209,8 @@
     <RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>Диалоги могут влиять на настроение и отношения колонистов в зависимости от тона разговора.</RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>
 
     <RimTalk.Settings.PlayerDialogueMode.Manual>Ручные ответы</RimTalk.Settings.PlayerDialogueMode.Manual>
-    <RimTalk.Settings.PlayerDialogueMode.AIDriven>Автогенерируемые ответы</RimTalk.Settings.PlayerDialogueMode.AIDriven>
+    <RimTalk.Settings.PlayerDialogueMode.AIDriven>Автоген.: пешка + игрок</RimTalk.Settings.PlayerDialogueMode.AIDriven>
+    <RimTalk.Settings.PlayerDialogueMode.AIDrivenPawnOnly>Автоген.: только пешка</RimTalk.Settings.PlayerDialogueMode.AIDrivenPawnOnly>
     <RimTalk.Settings.PlayerToNpc>Игрок–НПС:</RimTalk.Settings.PlayerToNpc>
     <RimTalk.Settings.PlayerName>Имя игрока</RimTalk.Settings.PlayerName>
     <RimTalk.Settings.PlayerNameTooltip>Имя, которым НПС называют игрока в диалогах.</RimTalk.Settings.PlayerNameTooltip>

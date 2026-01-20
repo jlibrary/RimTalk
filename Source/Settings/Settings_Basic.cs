@@ -35,6 +35,8 @@ public partial class Settings
                 return "RimTalk.Settings.PlayerDialogueMode.Manual".Translate().ToString();
             case PlayerDialogueMode.AIDriven:
                 return "RimTalk.Settings.PlayerDialogueMode.AIDriven".Translate().ToString();
+            case PlayerDialogueMode.AIDrivenPawnOnly:
+                return "RimTalk.Settings.PlayerDialogueMode.AIDrivenPawnOnly".Translate().ToString();
             default:
                 return mode.ToString();
         }

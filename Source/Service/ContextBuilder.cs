@@ -273,15 +273,12 @@ public static class ContextBuilder
         {
             sb.Append($"{pawns[1].LabelShort}({pawns[1].GetRole()}) said to {shortName}: '{talkRequest.Prompt}'. ");
 
-            bool isManualPlayerDialogue = pawns[1].IsPlayer() &&
-                                          Settings.Get().PlayerDialogueMode == Settings.PlayerDialogueMode.Manual;
+            var mode = Settings.Get().PlayerDialogueMode;
+            bool multiTurn = mode == Settings.PlayerDialogueMode.AIDriven || (!pawns[1].IsPlayer() && mode != Settings.PlayerDialogueMode.Manual);
 
-            if (isManualPlayerDialogue)
-                sb.Append(
-                    $"Generate dialogue starting after this. Do not generate any further lines for {pawns[1].LabelShort}");
-            else
-                sb.Append(
-                    $"Generate multi turn dialogues starting after this (do not repeat initial dialogue), beginning with {shortName}");
+            sb.Append(multiTurn
+                ? $"Generate multi turn dialogues starting after this (do not repeat initial dialogue), beginning with {shortName}"
+                : $"Generate dialogue starting after this. Do not generate any further lines for {pawns[1].LabelShort}");
         }
         else
         {

@@ -119,7 +119,7 @@
     
     <!-- Simple/Advanced Mode -->
     <RimTalk.Settings.SimpleModeTip>캐릭터 프로필, 채팅 기록, 컨텍스트가 자동으로 포함됩니다.</RimTalk.Settings.SimpleModeTip>
-    <RimTalk.Settings.AdvancedModeWarning>고급 모드에서는 프롬프트 항목, 변수 및 메시지 순서를 완벽하게 제어할 수 있습니다. 현재 지침은 유지됩니다. 계속하시겠습니까?</RimTalk.Settings.AdvancedModeWarning>
+    <RimTalk.Settings.AdvancedModeWarning>고급 모드에서는 프롬프트 항목, 변수 및 메시지 순서를 완전히 제어할 수 있습니다. 현재 지침은 유지됩니다.\n이 기능은 아직 테스트 중이며, 예상치 못한 동작이 발생할 수 있습니다. 계속하시겠습니까?</RimTalk.Settings.AdvancedModeWarning>
     <RimTalk.Settings.PromptHelp>도움말</RimTalk.Settings.PromptHelp>
     <RimTalk.Settings.AdvancedHelpContent>고급 프리셋 가이드
 
@@ -210,7 +210,8 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>대화 내용에 따라 주민의 기분과 관계에 영향을 줍니다.</RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>
 
     <RimTalk.Settings.PlayerDialogueMode.Manual>수동 답변</RimTalk.Settings.PlayerDialogueMode.Manual>
-    <RimTalk.Settings.PlayerDialogueMode.AIDriven>자동 생성 답변</RimTalk.Settings.PlayerDialogueMode.AIDriven>
+    <RimTalk.Settings.PlayerDialogueMode.AIDriven>자동 생성: 폰+플레이어</RimTalk.Settings.PlayerDialogueMode.AIDriven>
+    <RimTalk.Settings.PlayerDialogueMode.AIDrivenPawnOnly>자동 생성: 폰 전용</RimTalk.Settings.PlayerDialogueMode.AIDrivenPawnOnly>
     <RimTalk.Settings.PlayerToNpc>플레이어 ↔ NPC:</RimTalk.Settings.PlayerToNpc>
     <RimTalk.Settings.PlayerName>플레이어 이름</RimTalk.Settings.PlayerName>
     <RimTalk.Settings.PlayerNameTooltip>NPC가 대화에서 플레이어를 부를 때 사용하는 이름입니다.</RimTalk.Settings.PlayerNameTooltip>

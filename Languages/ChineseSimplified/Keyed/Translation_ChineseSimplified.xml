@@ -118,7 +118,7 @@
     
     <!-- Simple/Advanced Mode -->
     <RimTalk.Settings.SimpleModeTip>角色资料、聊天历史和上下文信息会自动包含。</RimTalk.Settings.SimpleModeTip>
-    <RimTalk.Settings.AdvancedModeWarning>高级模式可以完全控制提示词条目、变量和消息顺序。您当前的指令将被保留。是否继续？</RimTalk.Settings.AdvancedModeWarning>
+    <RimTalk.Settings.AdvancedModeWarning>高级模式允许您完全控制提示条目、变量和消息顺序。您当前的指令将被保留。\n此功能仍在测试中，可能会出现意外行为。您要继续吗？</RimTalk.Settings.AdvancedModeWarning>
     <RimTalk.Settings.PromptHelp>帮助</RimTalk.Settings.PromptHelp>
     <RimTalk.Settings.AdvancedHelpContent>高级预设指南
 
@@ -209,7 +209,8 @@ Scriban 魔法 (动态内容)
     <RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>对话会根据内容影响殖民者的心情和关系。</RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>
 
     <RimTalk.Settings.PlayerDialogueMode.Manual>手动回复</RimTalk.Settings.PlayerDialogueMode.Manual>
-    <RimTalk.Settings.PlayerDialogueMode.AIDriven>自动生成回复</RimTalk.Settings.PlayerDialogueMode.AIDriven>
+    <RimTalk.Settings.PlayerDialogueMode.AIDriven>自动生成：角色+玩家</RimTalk.Settings.PlayerDialogueMode.AIDriven>
+    <RimTalk.Settings.PlayerDialogueMode.AIDrivenPawnOnly>自动生成：仅角色</RimTalk.Settings.PlayerDialogueMode.AIDrivenPawnOnly>
     <RimTalk.Settings.PlayerToNpc>玩家 与 NPC：</RimTalk.Settings.PlayerToNpc>
     <RimTalk.Settings.PlayerName>玩家称呼</RimTalk.Settings.PlayerName>
     <RimTalk.Settings.PlayerNameTooltip>NPC 在对话中称呼玩家的名字。</RimTalk.Settings.PlayerNameTooltip>

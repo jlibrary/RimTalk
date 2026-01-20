@@ -119,7 +119,7 @@
     
     <!-- Simple/Advanced Mode -->
     <RimTalk.Settings.SimpleModeTip>キャラクターのプロフィール、チャット履歴、コンテキストが自動的に含まれます。</RimTalk.Settings.SimpleModeTip>
-    <RimTalk.Settings.AdvancedModeWarning>詳細モードでは、プロンプトエントリ、変数、メッセージの順序を完全に制御できます。現在の指示は保持されます。続行しますか？</RimTalk.Settings.AdvancedModeWarning>
+    <RimTalk.Settings.AdvancedModeWarning>高度モードでは、プロンプトの項目、変数、メッセージの順序を完全に制御できます。現在の指示は保持されます。\nこの機能はまだテスト中で、予期しない動作が発生する可能性があります。続行しますか？</RimTalk.Settings.AdvancedModeWarning>
     <RimTalk.Settings.PromptHelp>ヘルプ</RimTalk.Settings.PromptHelp>
     <RimTalk.Settings.AdvancedHelpContent>詳細プリセットガイド
 
@@ -210,7 +210,8 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>会話に応じて入植者のムードや関係性に影響を与えることがあります。</RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>
 
     <RimTalk.Settings.PlayerDialogueMode.Manual>手動返信</RimTalk.Settings.PlayerDialogueMode.Manual>
-    <RimTalk.Settings.PlayerDialogueMode.AIDriven>自動生成返信</RimTalk.Settings.PlayerDialogueMode.AIDriven>
+    <RimTalk.Settings.PlayerDialogueMode.AIDriven>自動生成：ポーン＋プレイヤー</RimTalk.Settings.PlayerDialogueMode.AIDriven>
+    <RimTalk.Settings.PlayerDialogueMode.AIDrivenPawnOnly>自動生成：ポーンのみ</RimTalk.Settings.PlayerDialogueMode.AIDrivenPawnOnly>
     <RimTalk.Settings.PlayerToNpc>プレイヤー 対 NPC：</RimTalk.Settings.PlayerToNpc>
     <RimTalk.Settings.PlayerName>プレイヤー名</RimTalk.Settings.PlayerName>
     <RimTalk.Settings.PlayerNameTooltip>NPC が会話でプレイヤーを呼ぶ際の名前です。</RimTalk.Settings.PlayerNameTooltip>
