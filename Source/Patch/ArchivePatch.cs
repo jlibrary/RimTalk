@@ -15,15 +15,7 @@ public static class ArchivePatch
 {
     public static void Prefix(IArchivable archivable)
     {
-        var settings = Settings.Get();
-        string typeName = archivable.GetType().FullName;
-
-        // Check if this type should be processed
-        bool shouldProcess = settings.EnabledArchivableTypes.ContainsKey(typeName)
-            ? settings.EnabledArchivableTypes[typeName]
-            : false;
-
-        if (!shouldProcess)
+        if (!ShouldProcessArchivable(archivable))
         {
             return;
         }
@@ -41,6 +33,42 @@ public static class ArchivePatch
         }
         else
             TalkRequestPool.Add(prompt, mapId: eventMap?.uniqueID ?? 0);
+    }
+
+    private static bool ShouldProcessArchivable(IArchivable archivable)
+    {
+        var settings = Settings.Get();
+        var enabledTypes = settings.EnabledArchivableTypes;
+
+        // 1. Check against the C# type (e.g., "Verse.Letter_Standard")
+        string typeName = archivable.GetType().FullName;
+        if (enabledTypes.TryGetValue(typeName, out var isTypeEnabled) && !isTypeEnabled)
+        {
+            return false; // The C# type itself is disabled, so we stop here.
+        }
+
+        // 2. If it's a Letter or Message, also check against its defName
+        string defName = null;
+        if (archivable is Letter letter)
+        {
+            defName = letter.def.defName;
+        }
+        else if (archivable is Message message)
+        {
+            defName = message.def.defName;
+        }
+
+        if (defName != null)
+        {
+            if (enabledTypes.TryGetValue(defName, out var isDefEnabled) && !isDefEnabled)
+            {
+                return false; // The specific defName is disabled.
+            }
+        }
+        
+        // If reached this point, it means neither the C# type nor the defName (if applicable) was explicitly disabled.
+        // The archivable should be processed.
+        return true;
     }
 
     private static (string prompt, TalkType talkType) GeneratePrompt(IArchivable archivable)
