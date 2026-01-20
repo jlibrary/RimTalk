@@ -19,6 +19,7 @@ public class TalkRequest(string prompt, Pawn initiator, Pawn recipient = null, T
     public TalkType TalkType { get; set; } = talkType;
     public string Context { get; set; }
     public string Prompt { get; set; } = prompt;
+    public string RawPrompt { get; set; } = prompt;
     public Pawn Initiator { get; set; } = initiator;
     public Pawn Recipient { get; set; } = recipient;
     public int MapId { get; set; }

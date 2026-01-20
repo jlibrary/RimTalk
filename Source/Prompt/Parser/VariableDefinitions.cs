@@ -79,6 +79,12 @@ public static class VariableDefinitions
             ("ctx.PawnContext", "Formatted string describing the pawn"),
             ("ctx.UserPrompt", "The raw prompt from the user (if any)"),
             ("ctx.IsMonologue", "True if this is a monologue"),
+            ("ctx.prompt", "Alias of ctx.DialoguePrompt"),
+            ("ctx.context", "Alias of ctx.PawnContext"),
+            ("ctx.history", "Alias of chat.history"),
+            ("ctx.talk_type", "Alias of ctx.TalkType"),
+            ("ctx.pawn_count", "Count of ctx.AllPawns"),
+            ("ctx.map_id", "Map uniqueID")
         };
         
         // 3.5 Game Static Classes

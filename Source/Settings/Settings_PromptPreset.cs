@@ -45,17 +45,6 @@ public partial class Settings
     private string _depthBuffer = "";
     private string _depthBufferEntryId = "";
 
-    private enum PresetSection { System, History, Prompt }
-
-    private PresetSection GetSection(PromptEntry entry)
-    {
-        if (entry.IsMainChatHistory || entry.Position == PromptPosition.InChat)
-            return PresetSection.History;
-        if (entry.Role == PromptRole.System && entry.Position == PromptPosition.Relative)
-            return PresetSection.System;
-        return PresetSection.Prompt;
-    }
-
     public void DrawPromptPresetSettings(Listing_Standard listingStandard, Rect inRect)
     {
         RimTalkSettings settings = Get();
@@ -240,139 +229,67 @@ public partial class Settings
         if (sel != null)
         {
             float ey = 0f;
-            var sections = new[] { PresetSection.System, PresetSection.History, PresetSection.Prompt };
-            var sectionNames = new Dictionary<PresetSection, string>
+            const float entryHeaderHeight = 22f;
+            GUI.color = AddGreen;
+            Rect addRect = new Rect(rect.x + headerButtonX, y, buttonSize, buttonSize);
+            if (Widgets.ButtonText(addRect, "+"))
             {
-                { PresetSection.System, "RimTalk.Settings.PromptPreset.SectionSystem".Translate() },
-                { PresetSection.History, "RimTalk.Settings.PromptPreset.SectionHistory".Translate() },
-                { PresetSection.Prompt, "RimTalk.Settings.PromptPreset.SectionPrompt".Translate() }
-            };
+                var newEntry = new PromptEntry("RimTalk.Settings.PromptPreset.NewEntryName".Translate(), "",
+                    PromptRole.User)
+                {
+                    Position = PromptPosition.Relative
+                };
 
-            // Calculate total height for ScrollView
-            float totalHeight = 0;
-            foreach (var section in sections)
-            {
-                totalHeight += 22f; // Header
-                totalHeight += sel.Entries.Count(en => GetSection(en) == section) * 25f;
+                int insertIndex = sel.Entries.Count;
+                if (!string.IsNullOrEmpty(_selectedEntryId))
+                {
+                    int currentIndex = sel.Entries.FindIndex(en => en.Id == _selectedEntryId);
+                    if (currentIndex >= 0) insertIndex = currentIndex + 1;
+                }
+
+                sel.Entries.Insert(insertIndex, newEntry);
+                _selectedEntryId = newEntry.Id;
             }
 
+            GUI.color = Color.white;
+            TooltipHandler.TipRegion(addRect, "RimTalk.Settings.PromptPreset.NewEntry".Translate());
+
             Text.Font = GameFont.Small;
-            Rect eListRect = new Rect(rect.x + listPaddingX, y, listWidth, rect.yMax - y - 35f);
-            Rect eViewRect = new Rect(0f, 0f, viewWidth, totalHeight);
+            float listTop = y + entryHeaderHeight;
+            Rect eListRect = new Rect(rect.x + listPaddingX, listTop, listWidth, rect.yMax - listTop - 35f);
+            Rect eViewRect = new Rect(0f, 0f, viewWidth, sel.Entries.Count * 25f);
             Widgets.BeginScrollView(eListRect, ref _entryListScrollPos, eViewRect);
 
-            foreach (var section in sections)
+            for (int i = 0; i < sel.Entries.Count; i++)
             {
-                // Section Header
-                Rect headerRect = new Rect(0f, ey, eViewRect.width, 20f);
-                Text.Font = GameFont.Tiny;
-                GUI.color = Color.gray;
-                Widgets.Label(new Rect(5f, ey, eViewRect.width - 30f, 20f), sectionNames[section]);
-                GUI.color = Color.white;
+                var entry = sel.Entries[i];
+                Rect erow = new Rect(0f, ey, eViewRect.width, 24f);
+                if (_selectedEntryId == entry.Id) Widgets.DrawHighlight(erow);
 
-                // Section Add Button
-                GUI.color = AddGreen;
-                Rect addRect = new Rect(rowButtonX, ey, buttonSize, buttonSize);
-                if (Widgets.ButtonText(addRect, "+"))
+                bool isHistoryMarker = entry.IsMainChatHistory;
+
+                bool en = entry.Enabled;
+                Widgets.Checkbox(new Vector2(4f, ey + 4f), ref en, 16f);
+                entry.Enabled = en;
+
+                if (Widgets.ButtonText(new Rect(24f, ey, eViewRect.width - 48f, 24f), entry.Name, false))
+                    _selectedEntryId = entry.Id;
+
+                if (!isHistoryMarker)
                 {
-                    PromptEntry newEntry = null;
-                    switch (section)
+                    Rect edel = new Rect(rowButtonX, ey + 2f, buttonSize, buttonSize);
+                    GUI.color = DeleteRed;
+                    if (Widgets.ButtonText(edel, "×"))
                     {
-                        case PresetSection.System:
-                            newEntry = new PromptEntry("RimTalk.Settings.PromptPreset.NewEntryName".Translate(), "",
-                                PromptRole.System);
-                            newEntry.Position = PromptPosition.Relative;
-                            break;
-                        case PresetSection.History:
-                            // If no history marker, add it. Otherwise add InChat entry.
-                            if (!sel.Entries.Any(en => en.IsMainChatHistory))
-                            {
-                                newEntry = new PromptEntry("Chat History", "{{chat.history}}", PromptRole.User);
-                                newEntry.Position = PromptPosition.Relative;
-                                newEntry.IsMainChatHistory = true;
-                            }
-                            else
-                            {
-                                newEntry = new PromptEntry("RimTalk.Settings.PromptPreset.NewEntryName".Translate(),
-                                    "", PromptRole.User);
-                                newEntry.Position = PromptPosition.InChat;
-                                newEntry.InChatDepth = 1; // Default depth
-                            }
-
-                            break;
-                        case PresetSection.Prompt:
-                            newEntry = new PromptEntry("RimTalk.Settings.PromptPreset.NewEntryName".Translate(), "",
-                                PromptRole.User);
-                            newEntry.Position = PromptPosition.Relative;
-                            break;
+                        sel.RemoveEntry(entry.Id);
+                        if (_selectedEntryId == entry.Id) _selectedEntryId = sel.Entries.FirstOrDefault()?.Id;
                     }
 
-                    if (newEntry != null)
-                    {
-                        // Insert at the end of the section
-                        int lastIndex = -1;
-                        for (int i = 0; i < sel.Entries.Count; i++)
-                        {
-                            if (GetSection(sel.Entries[i]) == section) lastIndex = i;
-                        }
-
-                        if (lastIndex == -1)
-                        {
-                            // If section is empty, find where to insert
-                            if (section == PresetSection.System) sel.Entries.Insert(0, newEntry);
-                            else if (section == PresetSection.History)
-                            {
-                                int sysEnd = sel.Entries.FindLastIndex(en => GetSection(en) == PresetSection.System);
-                                sel.Entries.Insert(sysEnd + 1, newEntry);
-                            }
-                            else sel.Entries.Add(newEntry);
-                        }
-                        else
-                        {
-                            sel.Entries.Insert(lastIndex + 1, newEntry);
-                        }
-
-                        _selectedEntryId = newEntry.Id;
-                    }
+                    GUI.color = Color.white;
+                    TooltipHandler.TipRegion(edel, "RimTalk.Settings.PromptPreset.Delete".Translate());
                 }
 
-                GUI.color = Color.white;
-
-                ey += 22f;
-                Text.Font = GameFont.Small;
-
-                var sectionEntries = sel.Entries.Where(en => GetSection(en) == section).ToList();
-                for (int i = 0; i < sectionEntries.Count; i++)
-                {
-                    var entry = sectionEntries[i];
-                    Rect erow = new Rect(0f, ey, eViewRect.width, 24f);
-                    if (_selectedEntryId == entry.Id) Widgets.DrawHighlight(erow);
-
-                    bool isHistoryMarker = entry.IsMainChatHistory;
-
-                    bool en = entry.Enabled;
-                    Widgets.Checkbox(new Vector2(4f, ey + 4f), ref en, 16f);
-                    entry.Enabled = en;
-
-                    if (Widgets.ButtonText(new Rect(24f, ey, eViewRect.width - 48f, 24f), entry.Name, false))
-                        _selectedEntryId = entry.Id;
-
-                    if (!isHistoryMarker)
-                    {
-                        Rect edel = new Rect(rowButtonX, ey + 2f, buttonSize, buttonSize);
-                        GUI.color = DeleteRed;
-                        if (Widgets.ButtonText(edel, "×"))
-                        {
-                            sel.RemoveEntry(entry.Id);
-                            if (_selectedEntryId == entry.Id) _selectedEntryId = sel.Entries.FirstOrDefault()?.Id;
-                        }
-
-                        GUI.color = Color.white;
-                        TooltipHandler.TipRegion(edel, "RimTalk.Settings.PromptPreset.Delete".Translate());
-                    }
-
-                    ey += 25f;
-                }
+                ey += 25f;
             }
 
             Widgets.EndScrollView();
@@ -382,27 +299,17 @@ public partial class Settings
                 var selectedEntry = sel.GetEntry(_selectedEntryId);
                 if (selectedEntry != null)
                 {
-                    var section = GetSection(selectedEntry);
-                    var sectionEntries = sel.Entries.Where(en => GetSection(en) == section).ToList();
-                    int indexInSection = sectionEntries.IndexOf(selectedEntry);
+                    int index = sel.Entries.IndexOf(selectedEntry);
 
                     float sw = (rect.width - 15f) / 2f;
                     
                     // Up button
-                    bool canMoveUp = indexInSection > 0;
-                    if (canMoveUp && section == PresetSection.History)
-                    {
-                        var prevEntry = sectionEntries[indexInSection - 1];
-                        if (prevEntry.IsMainChatHistory) canMoveUp = false;
-                    }
-
-                    if (canMoveUp)
+                    if (index > 0)
                     {
                         if (Widgets.ButtonText(new Rect(rect.x + 5f, rect.yMax - 32f, sw, 24f), "▲"))
                         {
-                            int actualIndex = sel.Entries.IndexOf(selectedEntry);
-                            sel.Entries.RemoveAt(actualIndex);
-                            sel.Entries.Insert(actualIndex - 1, selectedEntry);
+                            sel.Entries.RemoveAt(index);
+                            sel.Entries.Insert(index - 1, selectedEntry);
                         }
                     }
                     else
@@ -413,13 +320,12 @@ public partial class Settings
                     }
 
                     // Down button
-                    if (indexInSection < sectionEntries.Count - 1)
+                    if (index < sel.Entries.Count - 1)
                     {
                         if (Widgets.ButtonText(new Rect(rect.x + 10f + sw, rect.yMax - 32f, sw, 24f), "▼"))
                         {
-                            int actualIndex = sel.Entries.IndexOf(selectedEntry);
-                            sel.Entries.RemoveAt(actualIndex);
-                            sel.Entries.Insert(actualIndex + 1, selectedEntry);
+                            sel.Entries.RemoveAt(index);
+                            sel.Entries.Insert(index + 1, selectedEntry);
                         }
                     }
                     else
@@ -462,7 +368,11 @@ public partial class Settings
 
         if (Widgets.ButtonText(new Rect(topButtonX, y, topButtonWidth, 24f),
                 "RimTalk.Settings.SwitchToSimpleSettings".Translate()))
+        {
             settings.UseAdvancedPromptMode = false;
+            _textAreaInitialized = false;
+            _aiInstructionPresetId = "";
+        }
 
         y += 28f;
 
@@ -492,7 +402,6 @@ public partial class Settings
 
         // -- Row 2 (Left Side): Entry Name --
         bool isHistoryMarker = e.IsMainChatHistory;
-        var section = GetSection(e);
 
         Widgets.Label(new Rect(labelX, y, 100f, 24f), "RimTalk.Settings.PromptPreset.EntryName".Translate());
         if (isHistoryMarker)
@@ -510,35 +419,63 @@ public partial class Settings
 
         // -- Row 3: Role --
         Widgets.Label(new Rect(labelX, y, 80f, 24f), "RimTalk.Settings.PromptPreset.Role".Translate());
+        bool hasCustomRole = !string.IsNullOrWhiteSpace(e.CustomRole);
+        if (hasCustomRole && e.Role != PromptRole.User) e.Role = PromptRole.User;
 
-        if (section == PresetSection.System)
+        if (isHistoryMarker)
         {
             Widgets.Label(new Rect(inputX, y, dropdownWidth, 24f), e.Role.ToString());
         }
-        else if (isHistoryMarker)
+        else if (hasCustomRole)
         {
-            Widgets.Label(new Rect(inputX, y, dropdownWidth, 24f), "User/Assistant");
+            Widgets.Label(new Rect(inputX, y, dropdownWidth, 24f), PromptRole.User.ToString());
         }
-        else // History (InChat entries) and Prompt Section
+        else if (Widgets.ButtonText(new Rect(inputX, y, dropdownWidth, 24f), e.Role.ToString()))
         {
-            if (Widgets.ButtonText(new Rect(inputX, y, dropdownWidth, 24f), e.Role.ToString()))
+            var opts = new List<FloatMenuOption>
             {
-                var opts = new List<FloatMenuOption>
-                {
-                    new("User", () => e.Role = PromptRole.User),
-                    new("Assistant", () => e.Role = PromptRole.Assistant)
-                };
-                Find.WindowStack.Add(new FloatMenu(opts));
-            }
+                new("System", () => e.Role = PromptRole.System),
+                new("User", () => e.Role = PromptRole.User),
+                new("Assistant", () => e.Role = PromptRole.Assistant)
+            };
+            Find.WindowStack.Add(new FloatMenu(opts));
         }
 
         y += 28f;
 
-        // -- Row 4: Position --
+        // -- Row 4: Custom Role --
+        Widgets.Label(new Rect(labelX, y, 100f, 24f), "RimTalk.Settings.PromptPreset.CustomRole".Translate());
+        if (isHistoryMarker)
+        {
+            Widgets.Label(new Rect(inputX, y, inputWidth, 24f), e.CustomRole ?? "");
+        }
+        else
+        {
+            string customRole = Widgets.TextField(new Rect(inputX, y, inputWidth, 24f), e.CustomRole ?? "");
+            if (customRole != e.CustomRole) e.CustomRole = customRole;
+        }
+
+        y += 28f;
+
+        // -- Row 5: Position --
         float tabRowY = y;
         Widgets.Label(new Rect(labelX, tabRowY, 80f, 24f), "RimTalk.Settings.PromptPreset.Position".Translate());
 
-        Widgets.Label(new Rect(inputX, tabRowY, dropdownWidth, 24f), e.Position.ToString());
+        if (isHistoryMarker)
+        {
+            Widgets.Label(new Rect(inputX, tabRowY, dropdownWidth, 24f), e.Position.ToString());
+        }
+        else if (Widgets.ButtonText(new Rect(inputX, tabRowY, dropdownWidth, 24f), e.Position.ToString()))
+        {
+            var options = new List<FloatMenuOption>
+            {
+                new("RimTalk.Settings.PromptPreset.PositionRelative".Translate(),
+                    () => e.Position = PromptPosition.Relative),
+                new("RimTalk.Settings.PromptPreset.PositionInChat".Translate(),
+                    () => e.Position = PromptPosition.InChat)
+            };
+            Find.WindowStack.Add(new FloatMenu(options));
+        }
 
         if (e.Position == PromptPosition.InChat)
         {

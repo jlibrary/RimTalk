@@ -13,6 +13,7 @@ public partial class Settings : Mod
     private Vector2 _promptContentScrollPos = Vector2.zero;
     private string _textAreaBuffer = "";
     private bool _textAreaInitialized;
+    private string _aiInstructionPresetId = "";
     private int _lastTextAreaCursorPos = -1;
     private int _lastPromptEditorCursorPos = -1;
     private int _apiSettingsHash = 0;
@@ -97,7 +98,6 @@ public partial class Settings : Mod
             sb.AppendLine(settings.LocalConfig.CustomModelName);
         }
 
-        sb.AppendLine(settings.CustomInstruction);
         sb.AppendLine(settings.AllowSimultaneousConversations.ToString());
         sb.AppendLine(settings.AllowSlavesToTalk.ToString());
         sb.AppendLine(settings.AllowPrisonersToTalk.ToString());

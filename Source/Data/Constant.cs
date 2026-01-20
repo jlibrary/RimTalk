@@ -1,3 +1,6 @@
+using System;
+using System.Linq;
+using RimTalk.Prompt;
 using Verse;
 
 namespace RimTalk.Data;
@@ -46,12 +49,23 @@ public static class Constant
         get
         {
             var settings = Settings.Get();
-            var baseInstruction = string.IsNullOrWhiteSpace(settings.CustomInstruction)
-                ? DefaultInstruction
-                : settings.CustomInstruction;
+            var baseInstruction = GetBaseInstruction();
         
             return baseInstruction + "\n" + JsonInstruction + (settings.ApplyMoodAndSocialEffects ? "\n" + SocialInstruction : "");
         }
+    }
+
+    private static string GetBaseInstruction()
+    {
+        var preset = PromptManager.Instance?.GetActivePreset();
+        if (preset == null) return DefaultInstruction;
+
+        var entry = preset.Entries.FirstOrDefault(e =>
+            string.Equals(e.Name, "Base Instruction", StringComparison.OrdinalIgnoreCase))
+                    ?? preset.Entries.FirstOrDefault(e =>
+                        e.Role == PromptRole.System && e.Position == PromptPosition.Relative);
+
+        return string.IsNullOrWhiteSpace(entry?.Content) ? DefaultInstruction : entry.Content;
     }
     
     // JSON instruction for use by PromptManager
