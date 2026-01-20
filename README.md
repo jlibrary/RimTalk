@@ -23,7 +23,7 @@
     </h3>
 </html>
 
-> Latest Update: 01/16/2026
+> Latest Update: 01/20/2026
 
 ## 1. Overview
 
@@ -133,6 +133,8 @@ Example JSON prompt template:
   "user_prompt": "{{prompt}}"
 }
 ```
+
+Please check more presets in [PreSetList](preset.md)
 
 ## 6. Providers & Models
 
