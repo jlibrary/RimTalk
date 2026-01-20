@@ -35,6 +35,7 @@ public static class VariableDefinitions
         RootTypeMap["lang"] = typeof(string);
         RootTypeMap["prompt"] = typeof(string);
         RootTypeMap["context"] = typeof(string);
+        RootTypeMap["settings"] = typeof(RimTalkSettings);
         RootTypeMap["json"] = typeof(ScriptObject);
         RootTypeMap["chat"] = typeof(ScriptObject);
 
@@ -67,7 +68,8 @@ public static class VariableDefinitions
             ("recipient", "The character being spoken to (if any)"),
             ("pawns", "List of all pawns in the dialogue"),
             ("map", "The current map object"),
-            ("ctx", "The full prompt context object")
+            ("ctx", "The full prompt context object"),
+            ("settings", "RimTalk mod settings")
         };
 
         dict["RimTalk.ScribanVar.Category.Context".Translate()] = new()

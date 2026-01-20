@@ -356,14 +356,14 @@ public partial class Settings
 
         // --- Layout Constants ---
         float labelX = rect.x + 10f;
-        float inputX = rect.x + 115f;
+        float inputX = rect.x + 130f;
         float inputWidth = 200f;
         float topButtonWidth = 200f;
         float topButtonX = rect.x + rect.width - topButtonWidth - 10f;
         float dropdownWidth = 120f;
 
         // -- Row 1: Preset Name & Simple Mode --
-        Widgets.Label(new Rect(labelX, y, 100f, 24f), "RimTalk.Settings.PromptPreset.PresetName".Translate());
+        Widgets.Label(new Rect(labelX, y, inputX - 10, 24f), "RimTalk.Settings.PromptPreset.PresetName".Translate());
         p.Name = Widgets.TextField(new Rect(inputX, y, inputWidth, 24f), p.Name);
 
         if (Widgets.ButtonText(new Rect(topButtonX, y, topButtonWidth, 24f),
@@ -403,7 +403,7 @@ public partial class Settings
         // -- Row 2 (Left Side): Entry Name --
         bool isHistoryMarker = e.IsMainChatHistory;
 
-        Widgets.Label(new Rect(labelX, y, 100f, 24f), "RimTalk.Settings.PromptPreset.EntryName".Translate());
+        Widgets.Label(new Rect(labelX, y, inputX - 10, 24f), "RimTalk.Settings.PromptPreset.EntryName".Translate());
         if (isHistoryMarker)
         {
             GUI.enabled = false;
@@ -418,7 +418,7 @@ public partial class Settings
         y += 28f;
 
         // -- Row 3: Role --
-        Widgets.Label(new Rect(labelX, y, 80f, 24f), "RimTalk.Settings.PromptPreset.Role".Translate());
+        Widgets.Label(new Rect(labelX, y, inputX - 10, 24f), "RimTalk.Settings.PromptPreset.Role".Translate());
         bool hasCustomRole = !string.IsNullOrWhiteSpace(e.CustomRole);
         if (hasCustomRole && e.Role != PromptRole.User) e.Role = PromptRole.User;
 
@@ -444,7 +444,7 @@ public partial class Settings
         y += 28f;
 
         // -- Row 4: Custom Role --
-        Widgets.Label(new Rect(labelX, y, 100f, 24f), "RimTalk.Settings.PromptPreset.CustomRole".Translate());
+        Widgets.Label(new Rect(labelX, y, inputX - 10, 24f), "RimTalk.Settings.PromptPreset.CustomRole".Translate());
         if (isHistoryMarker)
         {
             Widgets.Label(new Rect(inputX, y, inputWidth, 24f), e.CustomRole ?? "");
@@ -459,7 +459,7 @@ public partial class Settings
 
         // -- Row 5: Position --
         float tabRowY = y;
-        Widgets.Label(new Rect(labelX, tabRowY, 80f, 24f), "RimTalk.Settings.PromptPreset.Position".Translate());
+        Widgets.Label(new Rect(labelX, tabRowY, inputX - 10, 24f), "RimTalk.Settings.PromptPreset.Position".Translate());
 
         if (isHistoryMarker)
         {
