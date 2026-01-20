@@ -1,13 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using HarmonyLib;
-using RimTalk.Prompt;
 using RimWorld;
 using UnityEngine;
 using Verse;
-using Logger = RimTalk.Util.Logger;
 
 namespace RimTalk;
 
@@ -20,8 +15,6 @@ public partial class Settings : Mod
     private bool _textAreaInitialized;
     private int _lastTextAreaCursorPos = -1;
     private int _lastPromptEditorCursorPos = -1;
-    private List<string> _discoveredArchivableTypes = [];
-    private bool _archivableTypesScanned;
     private int _apiSettingsHash = 0;
 
     // Tab system
@@ -64,62 +57,6 @@ public partial class Settings : Mod
 
     public override string SettingsCategory() =>
         Content?.Name ?? GetType().Assembly.GetName().Name;
-
-    private void ScanForArchivableTypes()
-    {
-        if (_archivableTypesScanned) return;
-
-        var archivableTypes = new HashSet<string>();
-
-        foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-        {
-            try
-            {
-                var types = assembly.GetTypes()
-                    .Where(t => typeof(IArchivable).IsAssignableFrom(t) &&
-                                !t.IsInterface &&
-                                !t.IsAbstract)
-                    .Select(t => t.FullName)
-                    .ToList();
-
-                foreach (var type in types)
-                    archivableTypes.Add(type);
-            }
-            catch (Exception ex)
-            {
-                Logger.Warning($"Error scanning assembly {assembly.FullName}: {ex.Message}");
-            }
-        }
-
-        if (Current.Game != null && Find.Archive != null)
-        {
-            foreach (var archivable in Find.Archive.ArchivablesListForReading)
-            {
-                archivableTypes.Add(archivable.GetType().FullName);
-            }
-        }
-
-        // Add Defs from XML
-        var letterDefNames = DefDatabase<LetterDef>.AllDefs.Select(def => def.defName);
-        var messageTypeDefNames = DefDatabase<MessageTypeDef>.AllDefs.Select(def => def.defName);
-        foreach (var def in letterDefNames) archivableTypes.Add(def);
-        foreach (var def in messageTypeDefNames) archivableTypes.Add(def);
-
-        _discoveredArchivableTypes = archivableTypes.OrderBy(x => x).ToList();
-        _archivableTypesScanned = true;
-
-        RimTalkSettings settings = Get();
-        foreach (var typeName in _discoveredArchivableTypes)
-        {
-            if (!settings.EnabledArchivableTypes.ContainsKey(typeName))
-            {
-                bool defaultEnabled = !typeName.Equals("Verse.Message", StringComparison.OrdinalIgnoreCase);
-                settings.EnabledArchivableTypes[typeName] = defaultEnabled;
-            }
-        }
-
-        Log.Message($"[RimTalk] Discovered {_discoveredArchivableTypes.Count} archivable types");
-    }
 
     public override void WriteSettings()
     {
