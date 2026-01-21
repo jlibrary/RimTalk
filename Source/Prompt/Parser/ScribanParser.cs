@@ -92,8 +92,8 @@ public static class ScribanParser
             // 5. GLOBALVARIABLES
             if (context.VariableStore != null)
                 foreach (var kvp in context.VariableStore.GetAllVariables())
-                    if (!scriptObject.ContainsKey(kvp.Key))
-                        scriptObject.Add(kvp.Key, kvp.Value);
+                    // Allow overwriting existing variables (fix conflict with auto-injected pawn/map)
+                    scriptObject[kvp.Key] = kvp.Value;
 
             var templateContext = new TemplateContext { 
                 MemberRenamer = m => m.Name,
