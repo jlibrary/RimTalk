@@ -46,9 +46,6 @@ public class PromptContext
     public TalkType TalkType => TalkRequest?.TalkType ?? TalkType.Other;
     public string UserPrompt => TalkType == TalkType.User ? TalkRequest?.Prompt : null;
     
-    // Compatibility property - Pawns alias
-    public List<Pawn> Pawns => AllPawns;
-    
     /// <summary>Current pawn index in section iteration (for {{index}} variable)</summary>
     public int ScopedPawnIndex { get; set; }
 
