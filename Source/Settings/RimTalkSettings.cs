@@ -253,6 +253,32 @@ public class RimTalkSettings : ModSettings
         
         // Set the singleton instance
         PromptManager.SetInstance(PromptSystem);
+
+        if (Scribe.mode == LoadSaveMode.PostLoadInit && LanguageDatabase.activeLanguage != null)
+        {
+            bool changed = false;
+            if (PromptSystem.Presets == null || PromptSystem.Presets.Count == 0)
+            {
+                PromptSystem.InitializeDefaults();
+                changed = true;
+            }
+
+            foreach (var preset in PromptSystem.Presets)
+            {
+                int beforeCount = preset.Entries.Count;
+                var baseEntry = GetOrCreateBaseInstructionEntry(preset);
+                if (preset.Entries.Count != beforeCount)
+                    changed = true;
+                if (baseEntry != null && string.IsNullOrWhiteSpace(baseEntry.Content))
+                {
+                    baseEntry.Content = Constant.DefaultInstruction;
+                    changed = true;
+                }
+            }
+
+            if (changed)
+                Write();
+        }
             
         // One-time migration from legacy customInstruction into Base Instruction
         if (Scribe.mode == LoadSaveMode.PostLoadInit && !string.IsNullOrWhiteSpace(_legacyCustomInstruction))
