@@ -111,24 +111,38 @@
 
     <Target Name="MergeDlls" AfterTargets="Build">
         <Message Text="Starting ILRepack merging..." Importance="high" />
+
         <PropertyGroup>
-            <ILRepackExe>$(PkgILRepack)\tools\ILRepack.exe</ILRepackExe>
             <WorkingDir>$(OutputPath)</WorkingDir>
         </PropertyGroup>
-        
+
+        <!-- Configuration for Windows -->
+        <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
+            <ILRepackExe>$(PkgILRepack)\tools\ILRepack.exe</ILRepackExe>
+            <RepackCmd>"$(ILRepackExe)"</RepackCmd>
+        </PropertyGroup>
+
+        <!-- Configuration for macOS / Linux -->
+        <PropertyGroup Condition=" '$(OS)' != 'Windows_NT' ">
+            <ILRepackExe>$(PkgILRepack)/tools/ILRepack.exe</ILRepackExe>
+            <RepackCmd>mono "$(ILRepackExe)"</RepackCmd>
+        </PropertyGroup>
+
         <ItemGroup>
             <RefAssemblies Include="@(ReferencePath)" />
             <RefDirs Include="@(RefAssemblies->'%(RootDir)%(Directory)')" />
         </ItemGroup>
+
         <RemoveDuplicates Inputs="@(RefDirs)">
             <Output TaskParameter="Filtered" ItemName="UniqueRefDirs" />
         </RemoveDuplicates>
+
         <PropertyGroup>
             <LibArgs>@(UniqueRefDirs->'/lib:"%(Identity)."', ' ')</LibArgs>
         </PropertyGroup>
 
-        <Exec Command='"$(ILRepackExe)" /parallel /internalize /out:"$(AssemblyName).dll" $(LibArgs) "$(AssemblyName).dll" "Scriban.dll"' WorkingDirectory="$(WorkingDir)" />
-        <Delete Files="$(WorkingDir)\0Harmony.dll" />
+        <Exec Command='$(RepackCmd) /parallel /internalize /out:"$(AssemblyName).dll" $(LibArgs) "$(AssemblyName).dll" "Scriban.dll"' WorkingDirectory="$(WorkingDir)" />
+        <Delete Files="$(WorkingDir)/0Harmony.dll" />
         <Message Text="Finished ILRepack merging." Importance="high" />
     </Target>
 
