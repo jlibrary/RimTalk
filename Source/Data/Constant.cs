@@ -31,12 +31,12 @@ public static class Constant
          Monologue = 1 turn. Conversation = 4-8 short turns
          """;
 
-    private const string JsonInstruction = """
+    public const string JsonInstruction = """
                                            Output JSONL.
                                            Required keys: "name", "text".
                                            """;
     
-    private const string SocialInstruction = """
+    public const string SocialInstruction = """
                                            Optional keys (Include only if social interaction occurs):
                                            "act": Insult, Slight, Chat, Kind
                                            "target": targetName

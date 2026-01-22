@@ -235,7 +235,7 @@ public class PromptManager : IExposable
                     Name = "JSON Format",
                     Role = PromptRole.System,
                     Position = PromptPosition.Relative,
-                    Content = "{{json.format}}"
+                    Content = Constant.JsonInstruction + "\n{{ if settings.ApplyMoodAndSocialEffects }}\n" + Constant.SocialInstruction + "\n{{ end }}"
                 },
                 new()
                 {
