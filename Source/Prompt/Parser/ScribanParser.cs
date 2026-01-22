@@ -35,14 +35,12 @@ public static class ScribanParser
             
             // 1. IMPORT Objects & Context
             scriptObject.Import(context, filter: m => !(m is MethodInfo mi && mi.ReturnType == typeof(void)));
-            
-            // Use indexer assignment to avoid "Key already added" exceptions if Import brought in conflicting names
-            scriptObject["ctx"] = context;
-            scriptObject["pawn"] = context.CurrentPawn;
-            scriptObject["recipient"] = context.TalkRequest?.Recipient;
-            scriptObject["pawns"] = context.AllPawns;
-            scriptObject["map"] = context.Map;
-            scriptObject["settings"] = Settings.Get();
+            scriptObject.Add("ctx", context);
+            scriptObject.Add("pawn", context.CurrentPawn);
+            scriptObject.Add("recipient", context.TalkRequest?.Recipient);
+            scriptObject.Add("pawns", context.AllPawns);
+            scriptObject.Add("map", context.Map);
+            scriptObject.Add("settings", Settings.Get());
             
             // 2. IMPORT UTILITIES (Extension Methods support)
             // This allows: {{ pawn | IsTalkEligible }} or {{ GetRole pawn }}
