@@ -121,7 +121,7 @@ public static class TalkService
             );
 
             // Once the stream is complete, save the full conversation to history.
-            AddResponsesToHistory(receivedResponses, talkRequest);
+            AddResponsesToHistory(receivedResponses, talkRequest.Prompt);
         }
         catch (Exception ex)
         {
@@ -136,9 +136,10 @@ public static class TalkService
     /// <summary>
     /// Serializes the generated responses and adds them to the message history for all involved pawns.
     /// </summary>
-    private static void AddResponsesToHistory(List<TalkResponse> responses, TalkRequest talkRequest)
+    private static void AddResponsesToHistory(List<TalkResponse> responses, string prompt)
     {
         if (!responses.Any()) return;
+        string serializedResponses = JsonUtil.SerializeToJson(responses);
         var uniquePawns = responses
             .Select(r => Cache.GetByName(r.Name)?.Pawn)
             .Where(p => p != null)
@@ -146,8 +147,7 @@ public static class TalkService
 
         foreach (var pawn in uniquePawns)
         {
-            var serializedResponses = JsonUtil.SerializeToJson(responses);
-            TalkHistory.AddMessageHistory(pawn, talkRequest, serializedResponses);
+            TalkHistory.AddMessageHistory(pawn, prompt, serializedResponses);
         }
     }
 

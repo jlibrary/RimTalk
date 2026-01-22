@@ -157,28 +157,56 @@ public class GeminiClient : IAIClient
 
     private string BuildRequestJson(List<(Role role, string message)> prefixMessages, List<(Role role, string message)> messages)
     {
-        var allMessages = (prefixMessages ?? new List<(Role role, string message)>()).Concat(messages ?? new List<(Role role, string message)>()).ToList();
+        var allMessages = (prefixMessages ?? new List<(Role role, string message)>())
+            .Concat(messages ?? new List<(Role role, string message)>())
+            .ToList();
         
         SystemInstruction systemInstruction = null;
         var contents = new List<Content>();
 
-        // Handle System Instruction (if first message)
-        if (allMessages.Count > 0 && allMessages[0].role == Role.System)
+        // 1. Handle System Instructions
+        var systemMessages = allMessages.Where(m => m.role == Role.System).ToList();
+        var conversationMessages = allMessages.Where(m => m.role != Role.System).ToList();
+
+        if (systemMessages.Any())
         {
-            var instruction = allMessages[0].message;
+            var systemText = string.Join("\n\n", systemMessages.Select(m => m.message));
+            
             if (CurrentModel.Contains("gemma"))
             {
-                contents.Add(new Content { Role = "user", Parts = new List<Part> { new Part { Text = $"{_random.Next()} {instruction}" } } });
+                // Gemma specific: Instruction becomes a separate USER turn with random seed
+                contents.Add(new Content 
+                { 
+                    Role = "user", 
+                    Parts = new List<Part> { new Part { Text = $"{_random.Next()} {systemText}" } } 
+                });
             }
             else
             {
-                systemInstruction = new SystemInstruction { Parts = new List<Part> { new Part { Text = instruction } } };
+                systemInstruction = new SystemInstruction 
+                { 
+                    Parts = new List<Part> { new Part { Text = systemText } } 
+                };
             }
-            allMessages.RemoveAt(0);
         }
 
-        // Add remaining messages as separate turns
-        contents.AddRange(allMessages.Select(m => new Content
+        // 2. Merge consecutive roles in conversation to ensure alternating turns (Gemini requirement)
+        var mergedConversation = new List<(Role role, string message)>();
+        foreach (var m in conversationMessages)
+        {
+            if (mergedConversation.Count > 0 && mergedConversation.Last().role == m.role)
+            {
+                var lastIndex = mergedConversation.Count - 1;
+                mergedConversation[lastIndex] = (m.role, mergedConversation[lastIndex].message + "\n\n" + m.message);
+            }
+            else
+            {
+                mergedConversation.Add(m);
+            }
+        }
+
+        // 3. Add conversation turns
+        contents.AddRange(mergedConversation.Select(m => new Content
         {
             Role = m.role == Role.User ? "user" : "model",
             Parts = new List<Part> { new Part { Text = m.message } }

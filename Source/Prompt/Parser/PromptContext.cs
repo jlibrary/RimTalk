@@ -41,6 +41,12 @@ public class PromptContext
     /// <summary>Chat history (Role, Message) - for inserting history in entries</summary>
     public List<(Role role, string message)> ChatHistory { get; set; } = new();
 
+    public List<(Role role, string message)> GetChatHistory(bool simplified)
+    {
+        if (CurrentPawn == null) return [];
+        return TalkHistory.GetMessageHistory(CurrentPawn, simplified);
+    }
+
     // Convenience properties - obtained from TalkRequest
     public bool IsMonologue => TalkRequest?.IsMonologue ?? false;
     public TalkType TalkType => TalkRequest?.TalkType ?? TalkType.Other;
@@ -54,20 +60,20 @@ public class PromptContext
 
     public PromptContext()
     {
-        AllPawns = new List<Pawn>();
+        AllPawns = [];
     }
 
     public PromptContext(Pawn pawn, VariableStore variableStore = null)
     {
         CurrentPawn = pawn;
-        AllPawns = pawn != null ? new List<Pawn> { pawn } : new List<Pawn>();
+        AllPawns = pawn != null ? [pawn] : [];
         Map = pawn?.Map;
         VariableStore = variableStore ?? PromptManager.Instance?.VariableStore ?? new VariableStore();
     }
 
     public PromptContext(List<Pawn> pawns, VariableStore variableStore = null)
     {
-        AllPawns = pawns ?? new List<Pawn>();
+        AllPawns = pawns ?? [];
         CurrentPawn = AllPawns.Count > 0 ? AllPawns[0] : null;
         Map = CurrentPawn?.Map;
         VariableStore = variableStore ?? PromptManager.Instance?.VariableStore ?? new VariableStore();
@@ -95,7 +101,7 @@ public class PromptContext
             // to avoid pollution from DecoratePrompt which fills request.Prompt with full context
             ChatHistory = request?.Initiator != null
                 ? TalkHistory.GetMessageHistory(request.Initiator)
-                : new List<(Role role, string message)>()
+                : []
         };
     }
 }

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using RimTalk.Source.Data;
 using RimTalk.Util;
 using Verse;
 
@@ -35,66 +34,60 @@ public static class TalkHistory
         return IgnoredCache.Contains(id);
     }
 
-    public static void AddMessageHistory(Pawn pawn, TalkRequest request, string response)
+    public static void AddMessageHistory(Pawn pawn, string request, string response)
     {
         var messages = MessageHistory.GetOrAdd(pawn.thingIDNumber, _ => []);
 
         lock (messages)
         {
-            if (request != null && request.TalkType.IsFromUser())
-            {
-                var userPrompt = CleanHistoryText(request.RawPrompt);
-                if (!string.IsNullOrWhiteSpace(userPrompt))
-                    messages.Add((Role.User, userPrompt));
-            }
-
-            var aiText = BuildAssistantHistoryText(response);
-            if (!string.IsNullOrWhiteSpace(aiText))
-                messages.Add((Role.AI, aiText));
-
+            messages.Add((Role.User, request));
+            messages.Add((Role.AI, response));
             EnsureMessageLimit(messages);
         }
     }
 
-    public static List<(Role role, string message)> GetMessageHistory(Pawn pawn)
+    public static List<(Role role, string message)> GetMessageHistory(Pawn pawn, bool simplified = false)
     {
         if (!MessageHistory.TryGetValue(pawn.thingIDNumber, out var history))
             return [];
             
         lock (history)
         {
-            int maxAiResponses = Settings.Get().Context.ConversationHistoryCount;
-            int aiCount = history.Count(m => m.role == Role.AI);
-            
-            if (aiCount <= maxAiResponses)
-                return [..history];
-            
             var result = new List<(Role role, string message)>();
-            int skippedAi = 0;
-            int toSkip = aiCount - maxAiResponses;
-            
             foreach (var msg in history)
             {
-                if (msg.role == Role.AI && skippedAi < toSkip)
+                var content = msg.message;
+                if (simplified)
                 {
-                    skippedAi++;
-                    continue;
+                    if (msg.role == Role.AI)
+                        content = BuildAssistantHistoryText(content);
+                    
+                    content = CleanHistoryText(content);
                 }
-                result.Add(msg);
+                
+                if (!string.IsNullOrWhiteSpace(content))
+                    result.Add((msg.role, content));
             }
-            
             return result;
         }
     }
 
     private static void EnsureMessageLimit(List<(Role role, string message)> messages)
     {
-        int maxAiResponses = Settings.Get().Context.ConversationHistoryCount;
-        
-        int aiCount = messages.Count(m => m.role == Role.AI);
-        while (aiCount > maxAiResponses && messages.Count > 0)
+        // First, ensure alternating pattern by removing consecutive duplicates from the end
+        for (int i = messages.Count - 1; i > 0; i--)
         {
-            if (messages[0].role == Role.AI) aiCount--;
+            if (messages[i].role == messages[i - 1].role)
+            {
+                // Remove the earlier message of the consecutive pair
+                messages.RemoveAt(i - 1);
+            }
+        }
+
+        // Then, enforce the maximum message limit by removing the oldest messages
+        int maxMessages = Settings.Get().Context.ConversationHistoryCount;
+        while (messages.Count > maxMessages * 2)
+        {
             messages.RemoveAt(0);
         }
     }
@@ -122,9 +115,9 @@ public static class TalkHistory
                     foreach (var r in parsed)
                     {
                         if (r == null) continue;
-                        var text = CleanHistoryText(r.Text);
+                        var text = r.Text;
                         if (string.IsNullOrWhiteSpace(text)) continue;
-                        var name = CleanHistoryText(r.Name);
+                        var name = r.Name;
                         lines.Add(string.IsNullOrWhiteSpace(name) ? text : $"{name}: {text}");
                     }
                 }
@@ -137,9 +130,7 @@ public static class TalkHistory
 
         if (lines.Count == 0)
         {
-            var cleaned = CleanHistoryText(response);
-            if (!string.IsNullOrWhiteSpace(cleaned))
-                lines.Add(cleaned);
+            lines.Add(response);
         }
 
         return string.Join("\n", lines);

@@ -600,16 +600,7 @@ public partial class Settings
         Widgets.BeginScrollView(editorRect, ref _promptContentScrollPos, editorViewRect);
         GUI.SetNextControlName(editorControlName);
         
-        string newContent;
-        if (isHistoryMarker)
-        {
-            Widgets.TextArea(new Rect(0f, 0f, editorInnerWidth, editorContentHeight), e.Content, readOnly: true);
-            newContent = e.Content;
-        }
-        else
-        {
-            newContent = Widgets.TextArea(new Rect(0f, 0f, editorInnerWidth, editorContentHeight), e.Content);
-        }
+        string newContent = Widgets.TextArea(new Rect(0f, 0f, editorInnerWidth, editorContentHeight), e.Content);
         
         // Auto-scroll logic: only scroll if the cursor position changed
         if (GUI.GetNameOfFocusedControl() == editorControlName)
