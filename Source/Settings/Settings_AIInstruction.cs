@@ -13,18 +13,40 @@ public partial class Settings
     private void DrawAIInstructionSettings(Listing_Standard listingStandard, bool showAdvancedSwitch = false)
     {
         RimTalkSettings settings = Get();
-        var manager = PromptManager.Instance;
-        manager.EnsureInitialized();
-        var activePreset = manager.GetActivePreset();
-        var baseEntry = GetOrCreateBaseInstructionEntry(activePreset);
+        
+        bool isSimpleMode = !settings.UseAdvancedPromptMode;
+        
+        PromptEntry baseEntry = null;
+        string currentContent;
 
-        if (!_textAreaInitialized || _aiInstructionPresetId != activePreset?.Id)
+        if (isSimpleMode)
         {
-            _textAreaBuffer = string.IsNullOrWhiteSpace(baseEntry?.Content)
-                ? Constant.DefaultInstruction
-                : baseEntry.Content;
+            currentContent = settings.SimpleModeInstruction;
+            if (string.IsNullOrWhiteSpace(currentContent))
+            {
+                currentContent = Constant.DefaultInstruction;
+                settings.SimpleModeInstruction = currentContent;
+            }
+        }
+        else
+        {
+            var manager = PromptManager.Instance;
+            manager.EnsureInitialized();
+            var activePreset = manager.GetActivePreset();
+            baseEntry = GetOrCreateBaseInstructionEntry(activePreset);
+            currentContent = baseEntry?.Content ?? Constant.DefaultInstruction;
+            
+            if (_aiInstructionPresetId != (activePreset?.Id ?? ""))
+            {
+                _textAreaInitialized = false;
+                _aiInstructionPresetId = activePreset?.Id ?? "";
+            }
+        }
+
+        if (!_textAreaInitialized)
+        {
+            _textAreaBuffer = currentContent;
             _textAreaInitialized = true;
-            _aiInstructionPresetId = activePreset?.Id ?? "";
         }
 
         var activeConfig = settings.GetActiveConfig();
@@ -131,8 +153,16 @@ public partial class Settings
         if (newInstruction != _textAreaBuffer)
         {
             _textAreaBuffer = newInstruction;
-            if (baseEntry != null)
+            
+            // Write back to correct target
+            if (isSimpleMode)
+            {
+                settings.SimpleModeInstruction = newInstruction;
+            }
+            else if (baseEntry != null)
+            {
                 baseEntry.Content = newInstruction;
+            }
         }
 
         listingStandard.Gap(6f);
@@ -141,8 +171,15 @@ public partial class Settings
         if (Widgets.ButtonText(resetButtonRect, "RimTalk.Settings.ResetToDefault".Translate()))
         {
             _textAreaBuffer = Constant.DefaultInstruction;
-            if (baseEntry != null)
+            
+            if (isSimpleMode)
+            {
+                settings.SimpleModeInstruction = Constant.DefaultInstruction;
+            }
+            else if (baseEntry != null)
+            {
                 baseEntry.Content = Constant.DefaultInstruction;
+            }
         }
 
         listingStandard.Gap(10f);

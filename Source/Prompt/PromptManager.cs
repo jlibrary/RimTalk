@@ -338,9 +338,30 @@ public class PromptManager : IExposable
         context.DialoguePrompt = talkRequest.Prompt;
         LastContext = context;
 
-        // 3. Select Preset (Active for Advanced, Cached for Simple)
-        PromptPreset preset = GetActivePreset();
-        if (preset == null) preset = CreateDefaultPreset();
+        // 3. Select Preset
+        PromptPreset preset;
+        var settings = Settings.Get();
+        
+        if (!settings.UseAdvancedPromptMode)
+        {
+            // Simple Mode: Use default structure with custom Simple instruction
+            preset = CreateDefaultPreset();
+            var baseEntry = preset.Entries.FirstOrDefault(e =>
+                string.Equals(e.Name, "Base Instruction", StringComparison.OrdinalIgnoreCase));
+            
+            if (baseEntry != null)
+            {
+                baseEntry.Content = string.IsNullOrWhiteSpace(settings.SimpleModeInstruction) 
+                    ? Constant.DefaultInstruction 
+                    : settings.SimpleModeInstruction;
+            }
+        }
+        else
+        {
+            // Advanced Mode: Use active preset
+            preset = GetActivePreset();
+            if (preset == null) preset = CreateDefaultPreset();
+        }
 
         // 4. Build and return
         var segments = new List<PromptMessageSegment>();
