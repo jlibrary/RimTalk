@@ -157,7 +157,7 @@ public class Player2Client : IAIClient
         webRequest.downloadHandler = downloadHandler;
         webRequest.SetRequestHeader("Content-Type", "application/json");
         webRequest.SetRequestHeader("Authorization", $"Bearer {_apiKey}");
-        webRequest.SetRequestHeader("X-Game-Client-Id", GameClientId);
+        webRequest.SetRequestHeader("player2-game-key", GameClientId);
 
         var asyncOp = webRequest.SendWebRequest();
 
@@ -338,7 +338,7 @@ public class Player2Client : IAIClient
             using var webRequest = new UnityWebRequest($"{RemoteUrl}/v1/health", "GET");
             webRequest.downloadHandler = new DownloadHandlerBuffer();
             webRequest.SetRequestHeader("Authorization", $"Bearer {_apiKey}");
-            webRequest.SetRequestHeader("X-Game-Client-Id", GameClientId);
+            webRequest.SetRequestHeader("player2-game-key", GameClientId);
 
             var asyncOp = webRequest.SendWebRequest();
             while (!asyncOp.isDone)
