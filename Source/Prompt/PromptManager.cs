@@ -363,7 +363,8 @@ public class PromptManager : IExposable
             if (preset == null) preset = CreateDefaultPreset();
         }
 
-        // 4. Build and return
+        // 4. Reset session variables and build
+        ScribanParser.ResetSessionVariables();
         var segments = new List<PromptMessageSegment>();
         var messages = BuildMessagesFromPreset(preset, context, segments);
         
