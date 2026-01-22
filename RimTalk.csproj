@@ -30,10 +30,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Lib.Harmony" Version="2.*" />
+        <PackageReference Include="Lib.Harmony.Ref" Version="2.*" PrivateAssets="All"/>
         <PackageReference Include="IndexRange" Version="1.0.3" />
-        <PackageReference Include="Scriban" Version="6.5.2" />
-        <PackageReference Include="ILRepack" Version="2.0.34" GeneratePathProperty="true" />
     </ItemGroup>
 
     <!-- Use reference assemblies by default (for other users and CI) -->
@@ -69,10 +67,14 @@
             <HintPath>Libs/Bubbles.dll</HintPath>
             <Private>false</Private>
         </Reference>
+        <Reference Include="Scriban">
+            <HintPath>Libs/Scriban.dll</HintPath>
+            <Private>true</Private>
+        </Reference>
     </ItemGroup>
 
     <!-- Deploy to RimWorld client -->
-    <Target Name="DeployToModsFolder" AfterTargets="MergeDlls" Condition=" '$(BuildingWithScript)' != 'true' AND '$(RimWorldDir)' != '' ">
+    <Target Name="DeployToModsFolder" AfterTargets="Build" Condition=" '$(BuildingWithScript)' != 'true' AND '$(RimWorldDir)' != '' ">
         <CallTarget Targets="WinDeploy" Condition=" '$(OS)' == 'Windows_NT' "/>
         <CallTarget Targets="MacDeploy" Condition=" '$(OS)' != 'Windows_NT' "/>
     </Target>
@@ -88,6 +90,7 @@
         <Exec Command='rsync -a --delete --checksum "$(ProjectDir)Languages/" "$(DeployPath)Languages/"'/>
         <Exec Command='rsync -a --delete --checksum "$(ProjectDir)Textures/"  "$(DeployPath)Textures/"'/>
         <Exec Command='rsync -a --delete --checksum "$(ProjectDir)$(GameVersion)/"       "$(DeployPath)$(GameVersion)/"'/>
+        <Copy SourceFiles="$(ProjectDir)Libs/Scriban.dll" DestinationFolder="$(DeployPath)$(GameVersion)/Assemblies/" />
         <Message Text="--- macOS deployment finished successfully ---" Importance="high"/>
     </Target>
 
@@ -106,44 +109,8 @@
         <Exec Command='robocopy "$(ProjectDir)Languages" "$(WinModPath)Languages" /MIR' IgnoreExitCode="true"/>
         <Exec Command='robocopy "$(ProjectDir)Textures"  "$(WinModPath)Textures" /MIR' IgnoreExitCode="true"/>
         <Exec Command='robocopy "$(ProjectDir)$(GameVersion)"       "$(WinModPath)$(GameVersion)" /MIR' IgnoreExitCode="true"/>
+        <Copy SourceFiles="$(ProjectDir)Libs/Scriban.dll" DestinationFolder="$(WinModPath)$(GameVersion)\Assemblies\" />
         <Message Text="--- Windows deployment finished successfully ---" Importance="high"/>
-    </Target>
-
-    <Target Name="MergeDlls" AfterTargets="Build">
-        <Message Text="Starting ILRepack merging..." Importance="high" />
-
-        <PropertyGroup>
-            <WorkingDir>$(OutputPath)</WorkingDir>
-        </PropertyGroup>
-
-        <!-- Configuration for Windows -->
-        <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
-            <ILRepackExe>$(PkgILRepack)\tools\ILRepack.exe</ILRepackExe>
-            <RepackCmd>"$(ILRepackExe)"</RepackCmd>
-        </PropertyGroup>
-
-        <!-- Configuration for macOS / Linux -->
-        <PropertyGroup Condition=" '$(OS)' != 'Windows_NT' ">
-            <ILRepackExe>$(PkgILRepack)/tools/ILRepack.exe</ILRepackExe>
-            <RepackCmd>mono "$(ILRepackExe)"</RepackCmd>
-        </PropertyGroup>
-
-        <ItemGroup>
-            <RefAssemblies Include="@(ReferencePath)" />
-            <RefDirs Include="@(RefAssemblies->'%(RootDir)%(Directory)')" />
-        </ItemGroup>
-
-        <RemoveDuplicates Inputs="@(RefDirs)">
-            <Output TaskParameter="Filtered" ItemName="UniqueRefDirs" />
-        </RemoveDuplicates>
-
-        <PropertyGroup>
-            <LibArgs>@(UniqueRefDirs->'/lib:"%(Identity)."', ' ')</LibArgs>
-        </PropertyGroup>
-
-        <Exec Command='$(RepackCmd) /parallel /internalize /out:"$(AssemblyName).dll" $(LibArgs) "$(AssemblyName).dll" "Scriban.dll"' WorkingDirectory="$(WorkingDir)" />
-        <Delete Files="$(WorkingDir)/0Harmony.dll" />
-        <Message Text="Finished ILRepack merging." Importance="high" />
     </Target>
 
 </Project>
