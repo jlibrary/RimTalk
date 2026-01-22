@@ -95,7 +95,7 @@ public static class PawnUtil
 
     public static bool IsVisitor(this Pawn pawn)
     {
-        return pawn?.Faction != null && pawn.Faction != Faction.OfPlayer && !pawn.HostileTo(Faction.OfPlayer) && !pawn.IsPrisoner;
+        return pawn?.Faction != null && Faction.OfPlayer != null && pawn.Faction != Faction.OfPlayer && !pawn.HostileTo(Faction.OfPlayer) && !pawn.IsPrisoner;
     }
 
     public static string GetTitle(this Pawn pawn)
@@ -119,7 +119,7 @@ public static class PawnUtil
                 titleFaction = titleDef != null ? Faction.OfEmpire : null;
             }
 
-            if (titleDef == null && pawn.Faction != null)
+            if (titleDef == null && Faction.OfPlayer != null && pawn.Faction != null)
             {
                 titleDef = pawn.royalty.GetCurrentTitle(pawn.Faction);
                 titleFaction = titleDef != null ? pawn.Faction : null;
@@ -137,7 +137,7 @@ public static class PawnUtil
 
     public static bool IsEnemy(this Pawn pawn)
     {
-        return pawn != null && pawn.HostileTo(Faction.OfPlayer) && !pawn.IsPrisoner;
+        return pawn != null && Faction.OfPlayer != null && pawn.HostileTo(Faction.OfPlayer) && !pawn.IsPrisoner;
     }
 
     public static bool IsBaby(this Pawn pawn)
@@ -412,6 +412,9 @@ public static class PawnUtil
 
     private static bool IsValidThreat(Pawn observer, Pawn threat)
     {
+        if (Faction.OfPlayer == null)
+            return true;
+
         // Filter out prisoners/slaves as threats to colonists
         if (threat.IsPrisoner && threat.HostFaction == Faction.OfPlayer)
             return false;
@@ -537,8 +540,11 @@ public static class PawnUtil
         Map map = pawn.Map;
         Faction mapFaction = map.ParentFaction;
 
-        if (mapFaction == pawn.Faction || (map.IsPlayerHome && pawn.Faction == Faction.OfPlayer))
+        if (mapFaction == pawn.Faction || (map.IsPlayerHome && Faction.OfPlayer != null && pawn.Faction == Faction.OfPlayer))
             return MapRole.Defending;
+
+        if (pawn.Faction == null || mapFaction == null)
+            return MapRole.Visiting;
 
         if (pawn.Faction.HostileTo(mapFaction))
             return MapRole.Invading;
