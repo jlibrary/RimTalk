@@ -341,32 +341,36 @@ public class PromptManager : IExposable
         LastContext = context;
 
         // 3. Select Preset
-        PromptPreset preset;
+        PromptPreset preset = GetActivePreset();
+        if (preset == null) preset = CreateDefaultPreset();
+
+        string originalBaseContent = null;
+        PromptEntry baseEntry = null;
+
         if (!settings.UseAdvancedPromptMode)
         {
-            // Simple Mode: Use default structure with custom Simple instruction
-            preset = CreateDefaultPreset();
-            var baseEntry = preset.Entries.FirstOrDefault(e =>
+            // Simple Mode: Use active preset but temporarily override Base Instruction
+            baseEntry = preset.Entries.FirstOrDefault(e =>
                 string.Equals(e.Name, "Base Instruction", StringComparison.OrdinalIgnoreCase));
             
             if (baseEntry != null)
             {
+                originalBaseContent = baseEntry.Content;
                 baseEntry.Content = string.IsNullOrWhiteSpace(settings.SimpleModeInstruction) 
                     ? Constant.DefaultInstruction 
                     : settings.SimpleModeInstruction;
             }
-        }
-        else
-        {
-            // Advanced Mode: Use active preset
-            preset = GetActivePreset();
-            if (preset == null) preset = CreateDefaultPreset();
         }
 
         // 4. Reset session variables and build
         ScribanParser.ResetSessionVariables();
         var segments = new List<PromptMessageSegment>();
         var messages = BuildMessagesFromPreset(preset, context, segments);
+        
+        if (baseEntry != null && originalBaseContent != null)
+        {
+            baseEntry.Content = originalBaseContent;
+        }
         
         talkRequest.PromptMessageSegments = segments.Count > 0 ? segments : null;
         
