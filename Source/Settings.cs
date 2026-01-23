@@ -8,6 +8,8 @@ namespace RimTalk;
 
 public partial class Settings : Mod
 {
+    public const string Version = "1.0.1";
+
     private Vector2 _mainScrollPosition = Vector2.zero;
     private Vector2 _aiInstructionScrollPos = Vector2.zero;
     private Vector2 _promptContentScrollPos = Vector2.zero;
@@ -58,7 +60,7 @@ public partial class Settings : Mod
     }
 
     public override string SettingsCategory() =>
-        Content?.Name ?? GetType().Assembly.GetName().Name;
+        (Content?.Name ?? GetType().Assembly.GetName().Name) + $" v{Version}";
 
     public override void WriteSettings()
     {
