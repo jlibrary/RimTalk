@@ -145,6 +145,24 @@ public class PromptManager : IExposable
     }
 
     /// <summary>
+    /// Extracts the last user message content from the built messages.
+    /// Used for saving accurate history when using advanced templates.
+    /// </summary>
+    /// <param name="messages">The list of built messages to search</param>
+    /// <returns>The content of the last user message, or empty string if not found</returns>
+    public static string ExtractUserPrompt(List<(Role role, string content)> messages)
+    {
+        if (messages == null || messages.Count == 0)
+            return string.Empty;
+    
+        // Find the last user message
+        var lastUserMessage = messages
+            .LastOrDefault(m => m.role == Role.User);
+    
+        return lastUserMessage.content ?? string.Empty;
+    }
+
+    /// <summary>
     /// Merges consecutive messages with the same role into a single message.
     /// This improves compatibility with APIs that require strict role alternation (e.g., Gemini).
     /// </summary>
