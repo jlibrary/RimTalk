@@ -9,6 +9,7 @@ public enum AIProvider
     DeepSeek,
     Grok,
     GLM,
+    GLMCoding,
     AlibabaIntl,
     AlibabaCN,
     OpenRouter,
@@ -63,6 +64,14 @@ public static class AIProviderRegistry
             {
                 EndpointUrl = "https://api.z.ai/api/paas/v4/chat/completions",
                 ListModelsUrl = "https://api.z.ai/api/paas/v4/models"
+            }
+        },
+        {
+            AIProvider.GLMCoding, new ProviderDef
+            {
+                Label = "GLM (Coding)",
+                EndpointUrl = "https://api.z.ai/api/coding/paas/v4/chat/completions",
+                ListModelsUrl = "https://api.z.ai/api/coding/paas/v4/models"
             }
         },
         {
