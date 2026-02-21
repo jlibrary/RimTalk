@@ -106,9 +106,8 @@ public class PawnState(Pawn pawn)
     public bool CanGenerateTalk()
     {
         if (Pawn.IsPlayer()) return true;
-        var talkInterval = Settings.Get().TalkInterval;
         return !IsGeneratingTalk && CanDisplayTalk() && Pawn.Awake() && TalkResponses.Empty() 
-               && CommonUtil.HasPassed(LastTalkTick, talkInterval);
+               && CommonUtil.HasPassed(LastTalkTick, RimTalkSettings.ReplyInterval);
     }
     
     public void IgnoreTalkResponse()
