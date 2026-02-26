@@ -164,6 +164,10 @@ public static class TalkService
     public static void DisplayTalk()
     {
         var settings = Settings.Get();
+        
+        // Keep menu-blocking and pause behavior consistent across all call paths.
+        if (Find.TickManager.Paused && !settings.SpeakWhilePaused) return;
+        if (settings.StopSpeakingInMenus && IsSpeakingBlockedByMenu(settings.AdvancedMenuAvoidance)) return;
 
         foreach (Pawn pawn in Cache.Keys)
         {
@@ -194,27 +198,19 @@ public static class TalkService
                 pawnState.IgnoreAllTalkResponses([TalkType.Urgent, TalkType.User]);
             }
 
-            bool parentIgnored = TalkHistory.IsTalkIgnored(talk.ParentTalkId);
-            bool forceSpeakIgnored = false;
-            if (parentIgnored)
+            int parentTalkTick = TalkHistory.GetSpokenTick(talk.ParentTalkId);
+            bool isWaiting = parentTalkTick == -1 ||
+                             !CommonUtil.HasPassed(parentTalkTick, replyInterval, settings.AlignTimingToNormalSpeed);
+            if (isWaiting)
             {
                 if (!HasWaitedLongEnough(apiLog, settings.IgnoreWaitSeconds)) continue;
-                
-                if (settings.ForceSpeakIgnored)
-                {
-                    forceSpeakIgnored = true;
-                }
-                else
+
+                if (!settings.ForceSpeakIgnored)
                 {
                     pawnState.IgnoreTalkResponse();
                     continue;
                 }
             }
-
-            // Enforce a delay for replies to make conversations feel more natural.
-            int parentTalkTick = TalkHistory.GetSpokenTick(talk.ParentTalkId);
-            if (!forceSpeakIgnored && (parentTalkTick == -1 || !CommonUtil.HasPassed(parentTalkTick, replyInterval, settings.AlignTimingToNormalSpeed)))
-                continue;
 
             CreateInteraction(pawn, talk);
             MarkAsSpokenForScheduling(talk, apiLog);
@@ -301,8 +297,8 @@ public static class TalkService
 
     private static bool ShouldDropUndisplayable(ApiLog apiLog, int waitSeconds)
     {
-        // Keep waiting longer than parent-ignore wait, then drop stale lines that can never display.
-        int dropAfterSeconds = Math.Max(waitSeconds * 2, 20);
+        // Drop stale lines for non-displayable pawns using a tighter cap derived from ignore-wait.
+        int dropAfterSeconds = Math.Min(waitSeconds * 2, 20);
         return apiLog != null && (DateTime.Now - apiLog.Timestamp).TotalSeconds >= dropAfterSeconds;
     }
 
@@ -327,6 +323,19 @@ public static class TalkService
             }
         }
         return ignoredCount;
+    }
+    
+    public static int ClearAllPendingTalksForce()
+    {
+        int clearedCount = 0;
+        foreach (var pawnState in Cache.GetAll())
+        {
+            if (pawnState == null) continue;
+            clearedCount += pawnState.TalkResponses.Count;
+            pawnState.TalkResponses.Clear();
+        }
+        Overlay.NotifyLogUpdated();
+        return clearedCount;
     }
 
     public static bool IsSpeakingBlockedByMenu(bool advancedMenuAvoidance)

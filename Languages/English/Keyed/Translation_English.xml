@@ -186,16 +186,18 @@ Crucial Tips:
     <RimTalk.Settings.ForceSpeakIgnored>Force speak ignored dialogue after wait</RimTalk.Settings.ForceSpeakIgnored>
     <RimTalk.Settings.ForceSpeakIgnoredTooltip>If enabled, lines blocked by ignored parent lines will be forced to speak after the wait time.</RimTalk.Settings.ForceSpeakIgnoredTooltip>
     <RimTalk.Settings.SpeakWhilePaused>Allow speaking while paused</RimTalk.Settings.SpeakWhilePaused>
-    <RimTalk.Settings.StopSpeakingInMenus>Pause speaking while settings/debug/dialog windows are open</RimTalk.Settings.StopSpeakingInMenus>
-    <RimTalk.Settings.AdvancedMenuAvoidance>Advanced menu avoidance (main tabs, planners, research, etc.)</RimTalk.Settings.AdvancedMenuAvoidance>
-    <RimTalk.Settings.AlignTimingToNormalSpeed>Apply the same timing as 1x speed at all game speeds</RimTalk.Settings.AlignTimingToNormalSpeed>
-    <RimTalk.Settings.IgnorePendingHotkeyEnabled>Enable hotkey to ignore all pending dialogue (Home)</RimTalk.Settings.IgnorePendingHotkeyEnabled>
+    <RimTalk.Settings.StopSpeakingInMenus>Pause speaking while non-RimTalk settings/debug/dialog windows are open</RimTalk.Settings.StopSpeakingInMenus>
+    <RimTalk.Settings.AdvancedMenuAvoidance>Pause speaking in advanced windows (main tabs, planners, research, etc.)</RimTalk.Settings.AdvancedMenuAvoidance>
+    <RimTalk.Settings.AlignTimingToNormalSpeed>Schedule dialogue at fixed 60 tick/s (1x baseline)</RimTalk.Settings.AlignTimingToNormalSpeed>
+    <RimTalk.Settings.IgnorePendingHotkeyEnabled>Enable hotkey to skip all pending dialogue</RimTalk.Settings.IgnorePendingHotkeyEnabled>
+    <RimTalk.Settings.IgnorePendingHotkey>Keybind to skip all pending dialogue:</RimTalk.Settings.IgnorePendingHotkey>
     <RimTalk.Settings.ProcessUserTalkRequestImmediately>Process manually inserted user TalkRequests immediately</RimTalk.Settings.ProcessUserTalkRequestImmediately>
     <RimTalk.Settings.ProcessUserTalkRequestImmediatelyTooltip>When enabled, user TalkRequests are pushed to the top of the user queue and checked every tick.</RimTalk.Settings.ProcessUserTalkRequestImmediatelyTooltip>
     <RimTalk.Settings.DisplayUserTalkRequestImmediately>Display manually inserted user TalkRequests immediately</RimTalk.Settings.DisplayUserTalkRequestImmediately>
     <RimTalk.Settings.DisplayUserTalkRequestImmediatelyTooltip>When enabled, all pending dialogue lines are forcibly ignored before displaying user-inserted dialogue.</RimTalk.Settings.DisplayUserTalkRequestImmediatelyTooltip>
     <RimTalk.Settings.IgnoreAllPendingNow>Ignore all pending dialogue now</RimTalk.Settings.IgnoreAllPendingNow>
     <RimTalk.Settings.IgnorePendingResult>RimTalk: Ignored {0} pending dialogue lines.</RimTalk.Settings.IgnorePendingResult>
+    <RimTalk.Settings.SkipPendingResult>RimTalk: Skipped {0} queued dialogue lines.</RimTalk.Settings.SkipPendingResult>
     <RimTalk.Settings.OverrideInteractions>Override All Interactions with AI Dialogue</RimTalk.Settings.OverrideInteractions>
     <RimTalk.Settings.OverrideInteractionsTooltip>Enable this to allow AI to override and regenerate dialogue for all interactions (including vanilla RimWorld and other mods). Note: AI dialogue has a cooldown period set above. To generate dialogue more frequently, lower the cooldown.</RimTalk.Settings.OverrideInteractionsTooltip>
     <RimTalk.Settings.AllowSimultaneousConversations>Allow Simultaneous Conversations</RimTalk.Settings.AllowSimultaneousConversations>

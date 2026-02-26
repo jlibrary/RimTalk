@@ -190,16 +190,18 @@ Conseils Cruciaux :
     <RimTalk.Settings.ForceSpeakIgnored>Forcer l'affichage des dialogues ignorés après l'attente</RimTalk.Settings.ForceSpeakIgnored>
     <RimTalk.Settings.ForceSpeakIgnoredTooltip>Si activé, les répliques bloquées par une ligne parente ignorée seront forcées à s'afficher après le délai d'attente.</RimTalk.Settings.ForceSpeakIgnoredTooltip>
     <RimTalk.Settings.SpeakWhilePaused>Autoriser les dialogues en pause</RimTalk.Settings.SpeakWhilePaused>
-    <RimTalk.Settings.StopSpeakingInMenus>Mettre les dialogues en pause quand les fenêtres paramètres/debug/dialogue sont ouvertes</RimTalk.Settings.StopSpeakingInMenus>
-    <RimTalk.Settings.AdvancedMenuAvoidance>Évitement avancé des menus (onglets, planification, recherche, etc.)</RimTalk.Settings.AdvancedMenuAvoidance>
-    <RimTalk.Settings.AlignTimingToNormalSpeed>Appliquer le même timing que la vitesse x1 à toutes les vitesses</RimTalk.Settings.AlignTimingToNormalSpeed>
-    <RimTalk.Settings.IgnorePendingHotkeyEnabled>Activer le raccourci pour ignorer tous les dialogues en attente (Home)</RimTalk.Settings.IgnorePendingHotkeyEnabled>
+    <RimTalk.Settings.StopSpeakingInMenus>Mettre les dialogues en pause quand des fenêtres paramètres/debug/dialogue non-RimTalk sont ouvertes</RimTalk.Settings.StopSpeakingInMenus>
+    <RimTalk.Settings.AdvancedMenuAvoidance>Mettre les dialogues en pause dans les fenêtres avancées (onglets principaux, planification, recherche, etc.)</RimTalk.Settings.AdvancedMenuAvoidance>
+    <RimTalk.Settings.AlignTimingToNormalSpeed>Planifier les dialogues à 60 tick/s fixes (base x1)</RimTalk.Settings.AlignTimingToNormalSpeed>
+    <RimTalk.Settings.IgnorePendingHotkeyEnabled>Activer le raccourci pour passer tous les dialogues en attente</RimTalk.Settings.IgnorePendingHotkeyEnabled>
+    <RimTalk.Settings.IgnorePendingHotkey>Raccourci pour passer tous les dialogues en attente :</RimTalk.Settings.IgnorePendingHotkey>
     <RimTalk.Settings.ProcessUserTalkRequestImmediately>Traiter immédiatement les TalkRequests utilisateur insérés manuellement</RimTalk.Settings.ProcessUserTalkRequestImmediately>
     <RimTalk.Settings.ProcessUserTalkRequestImmediatelyTooltip>Si activé, les TalkRequests utilisateur sont placés en tête de la file utilisateur et vérifiés à chaque tick.</RimTalk.Settings.ProcessUserTalkRequestImmediatelyTooltip>
     <RimTalk.Settings.DisplayUserTalkRequestImmediately>Afficher immédiatement les TalkRequests utilisateur insérés manuellement</RimTalk.Settings.DisplayUserTalkRequestImmediately>
     <RimTalk.Settings.DisplayUserTalkRequestImmediatelyTooltip>Si activé, toutes les lignes de dialogue en attente sont ignorées de force avant d'afficher un dialogue inséré par l'utilisateur.</RimTalk.Settings.DisplayUserTalkRequestImmediatelyTooltip>
     <RimTalk.Settings.IgnoreAllPendingNow>Ignorer tous les dialogues en attente maintenant</RimTalk.Settings.IgnoreAllPendingNow>
     <RimTalk.Settings.IgnorePendingResult>RimTalk : {0} lignes de dialogue en attente ont été ignorées.</RimTalk.Settings.IgnorePendingResult>
+    <RimTalk.Settings.SkipPendingResult>RimTalk : {0} lignes de dialogue en file ont été passées.</RimTalk.Settings.SkipPendingResult>
     <RimTalk.Settings.OverrideInteractions>Remplacer toutes les interactions par des dialogues de l'IA</RimTalk.Settings.OverrideInteractions>
     <RimTalk.Settings.OverrideInteractionsTooltip>Activez ceci pour permettre à l'IA de remplacer et de régénérer les dialogues pour toutes les interactions (y compris RimWorld vanilla et autres mods). Remarque : les dialogues de l'IA ont une période de recharge définie ci-dessus. Pour générer des dialogues plus fréquemment, diminuez le temps de recharge.</RimTalk.Settings.OverrideInteractionsTooltip>
     <RimTalk.Settings.AllowSimultaneousConversations>Autoriser les conversations simultanées</RimTalk.Settings.AllowSimultaneousConversations>

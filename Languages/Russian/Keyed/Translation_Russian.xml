@@ -189,16 +189,18 @@
     <RimTalk.Settings.ForceSpeakIgnored>Принудительно показывать игнорируемые реплики после ожидания</RimTalk.Settings.ForceSpeakIgnored>
     <RimTalk.Settings.ForceSpeakIgnoredTooltip>Если включено, реплики, заблокированные из-за игнорируемой родительской строки, будут принудительно показаны после времени ожидания.</RimTalk.Settings.ForceSpeakIgnoredTooltip>
     <RimTalk.Settings.SpeakWhilePaused>Разрешить разговоры на паузе</RimTalk.Settings.SpeakWhilePaused>
-    <RimTalk.Settings.StopSpeakingInMenus>Приостанавливать разговоры при открытых окнах настроек/отладки/диалогов</RimTalk.Settings.StopSpeakingInMenus>
-    <RimTalk.Settings.AdvancedMenuAvoidance>Расширенное избегание меню (главные вкладки, планировщик, исследования и т.д.)</RimTalk.Settings.AdvancedMenuAvoidance>
-    <RimTalk.Settings.AlignTimingToNormalSpeed>Применять одинаковый тайминг как на скорости x1 для всех скоростей</RimTalk.Settings.AlignTimingToNormalSpeed>
-    <RimTalk.Settings.IgnorePendingHotkeyEnabled>Включить горячую клавишу игнорирования всех ожидающих диалогов (Home)</RimTalk.Settings.IgnorePendingHotkeyEnabled>
+    <RimTalk.Settings.StopSpeakingInMenus>Приостанавливать разговоры при открытых окнах настроек/отладки/диалогов не из RimTalk</RimTalk.Settings.StopSpeakingInMenus>
+    <RimTalk.Settings.AdvancedMenuAvoidance>Приостанавливать разговоры в расширенных окнах (главные вкладки, планировщик, исследования и т.д.)</RimTalk.Settings.AdvancedMenuAvoidance>
+    <RimTalk.Settings.AlignTimingToNormalSpeed>Планировать диалоги с фиксированной частотой 60 tick/s (база x1)</RimTalk.Settings.AlignTimingToNormalSpeed>
+    <RimTalk.Settings.IgnorePendingHotkeyEnabled>Включить горячую клавишу пропуска всех ожидающих диалогов</RimTalk.Settings.IgnorePendingHotkeyEnabled>
+    <RimTalk.Settings.IgnorePendingHotkey>Клавиша пропуска всех ожидающих диалогов:</RimTalk.Settings.IgnorePendingHotkey>
     <RimTalk.Settings.ProcessUserTalkRequestImmediately>Немедленно обрабатывать вручную вставленные пользовательские TalkRequest</RimTalk.Settings.ProcessUserTalkRequestImmediately>
     <RimTalk.Settings.ProcessUserTalkRequestImmediatelyTooltip>Если включено, пользовательские TalkRequest ставятся в начало пользовательской очереди и проверяются каждый тик.</RimTalk.Settings.ProcessUserTalkRequestImmediatelyTooltip>
     <RimTalk.Settings.DisplayUserTalkRequestImmediately>Немедленно отображать вручную вставленные пользовательские TalkRequest</RimTalk.Settings.DisplayUserTalkRequestImmediately>
     <RimTalk.Settings.DisplayUserTalkRequestImmediatelyTooltip>Если включено, перед показом пользовательского диалога все ожидающие реплики принудительно игнорируются.</RimTalk.Settings.DisplayUserTalkRequestImmediatelyTooltip>
     <RimTalk.Settings.IgnoreAllPendingNow>Игнорировать все ожидающие диалоги сейчас</RimTalk.Settings.IgnoreAllPendingNow>
     <RimTalk.Settings.IgnorePendingResult>RimTalk: Игнорировано ожидающих реплик: {0}.</RimTalk.Settings.IgnorePendingResult>
+    <RimTalk.Settings.SkipPendingResult>RimTalk: Пропущено реплик в очереди: {0}.</RimTalk.Settings.SkipPendingResult>
     <RimTalk.Settings.OverrideInteractions>Переопределять все взаимодействия диалогами ИИ</RimTalk.Settings.OverrideInteractions>
     <RimTalk.Settings.OverrideInteractionsTooltip>Включите, чтобы позволить ИИ переопределять и регенерировать диалоги для всех взаимодействий (включая ванильный RimWorld и другие моды). Примечание: диалоги ИИ имеют период восстановления, установленный выше. Чтобы генерировать диалоги чаще, уменьшите время восстановления.</RimTalk.Settings.OverrideInteractionsTooltip>
     <RimTalk.Settings.AllowSimultaneousConversations>Разрешить одновременные разговоры</RimTalk.Settings.AllowSimultaneousConversations>

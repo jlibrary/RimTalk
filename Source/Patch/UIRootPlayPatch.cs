@@ -19,12 +19,11 @@ internal static class UIRootPlayPatch
 
         if (settings.IgnorePendingHotkeyEnabled && Input.GetKeyDown(settings.IgnorePendingHotkey))
         {
-            int ignored = TalkService.IgnoreAllPendingTalks();
-            Messages.Message("RimTalk.Settings.IgnorePendingResult".Translate(ignored), MessageTypeDefOf.CautionInput, false);
+            int cleared = TalkService.ClearAllPendingTalksForce();
+            Messages.Message("RimTalk.Settings.SkipPendingResult".Translate(cleared), MessageTypeDefOf.CautionInput, false);
         }
 
         if (!Find.TickManager.Paused || !settings.SpeakWhilePaused) return;
-        if (settings.StopSpeakingInMenus && TalkService.IsSpeakingBlockedByMenu(settings.AdvancedMenuAvoidance)) return;
 
         float now = Time.realtimeSinceStartup;
         if (now - _lastPausedDisplayTime < settings.DisplayTalkInterval) return;

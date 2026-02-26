@@ -123,6 +123,22 @@ public partial class Settings
             "RimTalk.Settings.IgnorePendingHotkeyEnabled".Translate().ToString(),
             ref settings.IgnorePendingHotkeyEnabled
         );
+        if (settings.IgnorePendingHotkeyEnabled)
+        {
+            Rect hotkeyRect = listingStandard.GetRect(Text.LineHeight);
+            Widgets.Label(hotkeyRect.LeftPart(0.6f), "RimTalk.Settings.IgnorePendingHotkey".Translate().ToString());
+            if (Widgets.ButtonText(hotkeyRect.RightPart(0.4f), settings.IgnorePendingHotkey.ToString()))
+            {
+                var options = new List<FloatMenuOption>();
+                KeyCode[] hotkeys = { KeyCode.Delete, KeyCode.End, KeyCode.Backspace, KeyCode.Home };
+                foreach (KeyCode key in hotkeys)
+                {
+                    KeyCode captured = key;
+                    options.Add(new FloatMenuOption(captured.ToString(), () => settings.IgnorePendingHotkey = captured));
+                }
+                Find.WindowStack.Add(new FloatMenu(options));
+            }
+        }
         listingStandard.Gap(4f);
         listingStandard.CheckboxLabeled(
             "RimTalk.Settings.ProcessUserTalkRequestImmediately".Translate().ToString(),
@@ -138,8 +154,8 @@ public partial class Settings
 
         if (listingStandard.ButtonText("RimTalk.Settings.IgnoreAllPendingNow".Translate().ToString()))
         {
-            int ignored = TalkService.IgnoreAllPendingTalks();
-            Messages.Message("RimTalk.Settings.IgnorePendingResult".Translate(ignored), MessageTypeDefOf.CautionInput, false);
+            int cleared = TalkService.ClearAllPendingTalksForce();
+            Messages.Message("RimTalk.Settings.SkipPendingResult".Translate(cleared), MessageTypeDefOf.CautionInput, false);
         }
 
         listingStandard.Gap(6f);
