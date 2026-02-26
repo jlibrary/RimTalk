@@ -20,6 +20,7 @@ public static class TalkRequestPool
             Status = RequestStatus.Pending
         };
         Requests.Add(request);
+        TrimRequestQueueIfNeeded();
     }
 
     public static TalkRequest GetRequestFromPool(Pawn pawn)
@@ -84,4 +85,17 @@ public static class TalkRequestPool
 
     public static int Count => Requests.Count;
     public static bool IsEmpty => Requests.Count == 0;
+
+    private static void TrimRequestQueueIfNeeded()
+    {
+        int maxQueueSize = Settings.Get().MaxTalkRequestQueueSize;
+        if (maxQueueSize < 1) maxQueueSize = 1;
+
+        while (Requests.Count > maxQueueSize)
+        {
+            var oldest = Requests[0];
+            AddToHistory(oldest, RequestStatus.Expired);
+            Requests.RemoveAt(0);
+        }
+    }
 }

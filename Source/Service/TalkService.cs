@@ -163,6 +163,8 @@ public static class TalkService
     /// </summary>
     public static void DisplayTalk()
     {
+        var settings = Settings.Get();
+
         foreach (Pawn pawn in Cache.Keys)
         {
             PawnState pawnState = Cache.Get(pawn);
@@ -175,25 +177,47 @@ public static class TalkService
                 continue;
             }
 
-            // Skip this talk if its parent was ignored or the pawn is currently unable to speak.
-            if (TalkHistory.IsTalkIgnored(talk.ParentTalkId) || !pawnState.CanDisplayTalk())
+            var apiLog = ApiHistory.GetApiLog(talk.Id);
+
+            // Temporary display blocking (drafted/sleeping/off-map) should not immediately delete queued speech.
+            if (!pawnState.CanDisplayTalk())
             {
-                pawnState.IgnoreTalkResponse();
+                if (ShouldDropUndisplayable(apiLog, settings.IgnoreWaitSeconds))
+                    pawnState.IgnoreTalkResponse();
                 continue;
             }
 
-            int replyInterval = RimTalkSettings.ReplyInterval;
+            double replyInterval = settings.DisplayTalkInterval;
             if (pawn.IsInDanger())
             {
-                replyInterval = 2;
+                replyInterval = Math.Min(replyInterval, 2);
                 pawnState.IgnoreAllTalkResponses([TalkType.Urgent, TalkType.User]);
+            }
+
+            bool parentIgnored = TalkHistory.IsTalkIgnored(talk.ParentTalkId);
+            bool forceSpeakIgnored = false;
+            if (parentIgnored)
+            {
+                if (!HasWaitedLongEnough(apiLog, settings.IgnoreWaitSeconds)) continue;
+                
+                if (settings.ForceSpeakIgnored)
+                {
+                    forceSpeakIgnored = true;
+                }
+                else
+                {
+                    pawnState.IgnoreTalkResponse();
+                    continue;
+                }
             }
 
             // Enforce a delay for replies to make conversations feel more natural.
             int parentTalkTick = TalkHistory.GetSpokenTick(talk.ParentTalkId);
-            if (parentTalkTick == -1 || !CommonUtil.HasPassed(parentTalkTick, replyInterval)) continue;
+            if (!forceSpeakIgnored && (parentTalkTick == -1 || !CommonUtil.HasPassed(parentTalkTick, replyInterval, settings.AlignTimingToNormalSpeed)))
+                continue;
 
             CreateInteraction(pawn, talk);
+            MarkAsSpokenForScheduling(talk, apiLog);
             
             break; // Display only one talk per tick to prevent overwhelming the screen.
         }
@@ -268,5 +292,63 @@ public static class TalkService
     private static bool AnyPawnHasPendingResponses()
     {
         return Cache.GetAll().Any(pawnState => pawnState.TalkResponses.Count > 0);
+    }
+
+    private static bool HasWaitedLongEnough(ApiLog apiLog, int waitSeconds)
+    {
+        return apiLog != null && (DateTime.Now - apiLog.Timestamp).TotalSeconds >= waitSeconds;
+    }
+
+    private static bool ShouldDropUndisplayable(ApiLog apiLog, int waitSeconds)
+    {
+        // Keep waiting longer than parent-ignore wait, then drop stale lines that can never display.
+        int dropAfterSeconds = Math.Max(waitSeconds * 2, 20);
+        return apiLog != null && (DateTime.Now - apiLog.Timestamp).TotalSeconds >= dropAfterSeconds;
+    }
+
+    private static void MarkAsSpokenForScheduling(TalkResponse talk, ApiLog apiLog)
+    {
+        TalkHistory.AddSpoken(talk.Id);
+        if (apiLog != null)
+            apiLog.SpokenTick = GenTicks.TicksGame;
+        Overlay.NotifyLogUpdated();
+    }
+
+    public static int IgnoreAllPendingTalks()
+    {
+        int ignoredCount = 0;
+        foreach (var pawnState in Cache.GetAll())
+        {
+            if (pawnState == null) continue;
+            while (pawnState.TalkResponses.Count > 0)
+            {
+                pawnState.IgnoreTalkResponse();
+                ignoredCount++;
+            }
+        }
+        return ignoredCount;
+    }
+
+    public static bool IsSpeakingBlockedByMenu(bool advancedMenuAvoidance)
+    {
+        WindowStack windowStack = Find.WindowStack;
+        if (windowStack == null) return false;
+
+        foreach (Window window in windowStack.Windows)
+        {
+            if (window.layer == WindowLayer.Dialog)
+            {
+                Type type = window.GetType();
+                string ns = type.Namespace;
+                string name = type.Name;
+                if (ns == null || !ns.StartsWith("RimTalk") || (advancedMenuAvoidance && name == "CustomDialogueWindow"))
+                    return true;
+            }
+            else if (advancedMenuAvoidance && !(window is MainTabWindow_Inspect) && window is MainTabWindow)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

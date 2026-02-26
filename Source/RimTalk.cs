@@ -36,6 +36,7 @@ public class RimTalk : GameComponent
 
         AIErrorHandler.ResetQuotaWarning();
         TickManagerPatch.Reset();
+        UIRootPlayPatch.Reset();
         AIClientFactory.Clear();
         AIService.Clear();
         TalkHistory.Clear();

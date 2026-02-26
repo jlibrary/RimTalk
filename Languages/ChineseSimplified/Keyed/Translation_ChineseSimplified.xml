@@ -178,6 +178,24 @@ Scriban 魔法 (动态内容)
     <RimTalk.Settings.ApiKey>云端 API 密钥</RimTalk.Settings.ApiKey>
     <RimTalk.Settings.GetFreeApiKey>获取免费 API 密钥</RimTalk.Settings.GetFreeApiKey>
     <RimTalk.Settings.AICooldown>AI 冷却时间（秒）：{0}</RimTalk.Settings.AICooldown>
+    <RimTalk.Settings.LLMProcessInterval>LLM 处理 TalkRequest 间隔（秒）：{0}</RimTalk.Settings.LLMProcessInterval>
+    <RimTalk.Settings.AutoTalkRequestInterval>自动创建 TalkRequest 间隔（秒）：{0}</RimTalk.Settings.AutoTalkRequestInterval>
+    <RimTalk.Settings.TalkRequestQueueMax>TalkRequest 队列最大数量：{0}</RimTalk.Settings.TalkRequestQueueMax>
+    <RimTalk.Settings.DisplayTalkInterval>对话显示间隔（秒）：{0}</RimTalk.Settings.DisplayTalkInterval>
+    <RimTalk.Settings.IgnoreWaitSeconds>对话忽略等待时间（秒）：{0}</RimTalk.Settings.IgnoreWaitSeconds>
+    <RimTalk.Settings.ForceSpeakIgnored>等待后强制输出被忽略对话</RimTalk.Settings.ForceSpeakIgnored>
+    <RimTalk.Settings.ForceSpeakIgnoredTooltip>启用后，被父级忽略链阻塞的对话会在等待时间后强制显示。</RimTalk.Settings.ForceSpeakIgnoredTooltip>
+    <RimTalk.Settings.SpeakWhilePaused>允许游戏暂停时说话</RimTalk.Settings.SpeakWhilePaused>
+    <RimTalk.Settings.StopSpeakingInMenus>在设置/调试/对话窗口打开时暂停说话</RimTalk.Settings.StopSpeakingInMenus>
+    <RimTalk.Settings.AdvancedMenuAvoidance>高级窗口规避（主标签、规划、研究等）</RimTalk.Settings.AdvancedMenuAvoidance>
+    <RimTalk.Settings.AlignTimingToNormalSpeed>所有游戏速度应用 1x 相同时序</RimTalk.Settings.AlignTimingToNormalSpeed>
+    <RimTalk.Settings.IgnorePendingHotkeyEnabled>启用忽略所有等待对话热键（Home）</RimTalk.Settings.IgnorePendingHotkeyEnabled>
+    <RimTalk.Settings.ProcessUserTalkRequestImmediately>立刻处理玩家手动插入的 TalkRequest</RimTalk.Settings.ProcessUserTalkRequestImmediately>
+    <RimTalk.Settings.ProcessUserTalkRequestImmediatelyTooltip>启用后，User 类型 TalkRequest 会插入用户队列对顶，并在每个 Tick 进行处理检查。</RimTalk.Settings.ProcessUserTalkRequestImmediatelyTooltip>
+    <RimTalk.Settings.DisplayUserTalkRequestImmediately>立刻显示玩家手动插入的 TalkRequest</RimTalk.Settings.DisplayUserTalkRequestImmediately>
+    <RimTalk.Settings.DisplayUserTalkRequestImmediatelyTooltip>启用后，显示玩家手动对话前会强制忽略所有等待中的对话输出。</RimTalk.Settings.DisplayUserTalkRequestImmediatelyTooltip>
+    <RimTalk.Settings.IgnoreAllPendingNow>立即忽略所有等待中的对话</RimTalk.Settings.IgnoreAllPendingNow>
+    <RimTalk.Settings.IgnorePendingResult>RimTalk：已忽略 {0} 条等待中的对话。</RimTalk.Settings.IgnorePendingResult>
     <RimTalk.Settings.OverrideInteractions>使用 AI 对话覆盖所有互动</RimTalk.Settings.OverrideInteractions>
     <RimTalk.Settings.OverrideInteractionsTooltip>启用此项以允许 AI 覆盖并为所有互动（包括原版 RimWorld 和其他模组）重新生成对话。注意：AI 对话有上述设置的冷却时间。要更频繁地生成对话，请降低冷却时间。</RimTalk.Settings.OverrideInteractionsTooltip>
     <RimTalk.Settings.AllowSimultaneousConversations>允许多组同时对话</RimTalk.Settings.AllowSimultaneousConversations>
@@ -283,7 +301,7 @@ Scriban 魔法 (动态内容)
     <RimTalk.Settings.Preset.Custom>自定义</RimTalk.Settings.Preset.Custom>
     <RimTalk.Settings.Preset.Custom.Desc>用户自定义配置</RimTalk.Settings.Preset.Custom.Desc>
 
-    <RimTalk.Settings.ContextOptions>上下文选项</RimTalk.Settings.ContextOptions>
+    <RimTalk.Settings.ContextOptions>自动生成上下文选项</RimTalk.Settings.ContextOptions>
     <RimTalk.Settings.EnableContextOptimization>启用上下文优化</RimTalk.Settings.EnableContextOptimization>
     <RimTalk.Settings.EnableContextOptimization.Tooltip>优化上下文以减少 Token 使用，同时保留重要信息。\n注意：这可能会降低生成对话的质量。</RimTalk.Settings.EnableContextOptimization.Tooltip>
     <RimTalk.Settings.ConversationHistoryCount>包含的历史对话会话数量</RimTalk.Settings.ConversationHistoryCount>

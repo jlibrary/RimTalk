@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using RimTalk.Service;
+using RimWorld;
 using UnityEngine;
 using Verse;
 
@@ -58,11 +60,87 @@ public partial class Settings
 
         listingStandard.Gap(30f);
 
-        // AI Cooldown
-        var cooldownLabel = "RimTalk.Settings.AICooldown".Translate(settings.TalkInterval).ToString();
+        // LLM processing interval (replaces old AI cooldown semantics)
+        var cooldownLabel = "RimTalk.Settings.LLMProcessInterval".Translate(settings.TalkInterval).ToString();
         var cooldownLabelRect = listingStandard.GetRect(Text.CalcHeight(cooldownLabel, listingStandard.ColumnWidth));
         Widgets.Label(cooldownLabelRect, cooldownLabel);
         settings.TalkInterval = (int)listingStandard.Slider(settings.TalkInterval, 1, 60);
+
+        // Auto TalkRequest creation interval (non-event fallback generation)
+        string autoCreateLabel = "RimTalk.Settings.AutoTalkRequestInterval".Translate(settings.AutoTalkRequestInterval).ToString();
+        var autoCreateRect = listingStandard.GetRect(Text.CalcHeight(autoCreateLabel, listingStandard.ColumnWidth));
+        Widgets.Label(autoCreateRect, autoCreateLabel);
+        settings.AutoTalkRequestInterval = (int)listingStandard.Slider(settings.AutoTalkRequestInterval, 1, 60);
+
+        // Max TalkRequest queue size
+        string queueLabel = "RimTalk.Settings.TalkRequestQueueMax".Translate(settings.MaxTalkRequestQueueSize).ToString();
+        var queueRect = listingStandard.GetRect(Text.CalcHeight(queueLabel, listingStandard.ColumnWidth));
+        Widgets.Label(queueRect, queueLabel);
+        settings.MaxTalkRequestQueueSize = (int)listingStandard.Slider(settings.MaxTalkRequestQueueSize, 1, 100);
+
+        // Dialogue display interval
+        string displayLabel = "RimTalk.Settings.DisplayTalkInterval".Translate(settings.DisplayTalkInterval.ToString("F1")).ToString();
+        var displayRect = listingStandard.GetRect(Text.CalcHeight(displayLabel, listingStandard.ColumnWidth));
+        Widgets.Label(displayRect, displayLabel);
+        settings.DisplayTalkInterval = (float)Math.Round(listingStandard.Slider(settings.DisplayTalkInterval, 0.1f, 10f) * 10f) / 10f;
+
+        // Ignore wait time for parent-chain break protection
+        string ignoreWaitLabel = "RimTalk.Settings.IgnoreWaitSeconds".Translate(settings.IgnoreWaitSeconds).ToString();
+        var ignoreWaitRect = listingStandard.GetRect(Text.CalcHeight(ignoreWaitLabel, listingStandard.ColumnWidth));
+        Widgets.Label(ignoreWaitRect, ignoreWaitLabel);
+        settings.IgnoreWaitSeconds = (int)listingStandard.Slider(settings.IgnoreWaitSeconds, 1, 30);
+
+        listingStandard.CheckboxLabeled(
+            "RimTalk.Settings.ForceSpeakIgnored".Translate().ToString(),
+            ref settings.ForceSpeakIgnored,
+            "RimTalk.Settings.ForceSpeakIgnoredTooltip".Translate().ToString()
+        );
+        listingStandard.Gap(4f);
+        listingStandard.CheckboxLabeled(
+            "RimTalk.Settings.SpeakWhilePaused".Translate().ToString(),
+            ref settings.SpeakWhilePaused
+        );
+        listingStandard.Gap(4f);
+        listingStandard.CheckboxLabeled(
+            "RimTalk.Settings.StopSpeakingInMenus".Translate().ToString(),
+            ref settings.StopSpeakingInMenus
+        );
+        if (settings.StopSpeakingInMenus)
+        {
+            listingStandard.Gap(2f);
+            listingStandard.CheckboxLabeled(
+                "RimTalk.Settings.AdvancedMenuAvoidance".Translate().ToString(),
+                ref settings.AdvancedMenuAvoidance
+            );
+        }
+        listingStandard.Gap(4f);
+        listingStandard.CheckboxLabeled(
+            "RimTalk.Settings.AlignTimingToNormalSpeed".Translate().ToString(),
+            ref settings.AlignTimingToNormalSpeed
+        );
+        listingStandard.Gap(4f);
+        listingStandard.CheckboxLabeled(
+            "RimTalk.Settings.IgnorePendingHotkeyEnabled".Translate().ToString(),
+            ref settings.IgnorePendingHotkeyEnabled
+        );
+        listingStandard.Gap(4f);
+        listingStandard.CheckboxLabeled(
+            "RimTalk.Settings.ProcessUserTalkRequestImmediately".Translate().ToString(),
+            ref settings.ProcessUserTalkRequestImmediately,
+            "RimTalk.Settings.ProcessUserTalkRequestImmediatelyTooltip".Translate().ToString()
+        );
+        listingStandard.Gap(4f);
+        listingStandard.CheckboxLabeled(
+            "RimTalk.Settings.DisplayUserTalkRequestImmediately".Translate().ToString(),
+            ref settings.DisplayUserTalkRequestImmediately,
+            "RimTalk.Settings.DisplayUserTalkRequestImmediatelyTooltip".Translate().ToString()
+        );
+
+        if (listingStandard.ButtonText("RimTalk.Settings.IgnoreAllPendingNow".Translate().ToString()))
+        {
+            int ignored = TalkService.IgnoreAllPendingTalks();
+            Messages.Message("RimTalk.Settings.IgnorePendingResult".Translate(ignored), MessageTypeDefOf.CautionInput, false);
+        }
 
         listingStandard.Gap(6f);
 
@@ -229,6 +307,19 @@ public partial class Settings
         if (listingStandard.ButtonText("RimTalk.Settings.ResetToDefault".Translate().ToString()))
         {
             settings.TalkInterval = 7;
+            settings.AutoTalkRequestInterval = 7;
+            settings.MaxTalkRequestQueueSize = 20;
+            settings.DisplayTalkInterval = 0.5f;
+            settings.IgnoreWaitSeconds = 6;
+            settings.ForceSpeakIgnored = false;
+            settings.IgnorePendingHotkeyEnabled = true;
+            settings.IgnorePendingHotkey = KeyCode.Home;
+            settings.ProcessUserTalkRequestImmediately = false;
+            settings.DisplayUserTalkRequestImmediately = true;
+            settings.SpeakWhilePaused = false;
+            settings.StopSpeakingInMenus = false;
+            settings.AdvancedMenuAvoidance = false;
+            settings.AlignTimingToNormalSpeed = false;
             settings.ProcessNonRimTalkInteractions = true;
             settings.AllowSimultaneousConversations = false;
             settings.DisplayTalkWhenDrafted = true;

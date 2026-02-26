@@ -182,6 +182,24 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.Settings.ApiKey>클라우드 API 키</RimTalk.Settings.ApiKey>
     <RimTalk.Settings.GetFreeApiKey>무료 API 키 받기</RimTalk.Settings.GetFreeApiKey>
     <RimTalk.Settings.AICooldown>AI 재사용 대기시간 (초): {0}</RimTalk.Settings.AICooldown>
+    <RimTalk.Settings.LLMProcessInterval>LLM TalkRequest 처리 간격 (초): {0}</RimTalk.Settings.LLMProcessInterval>
+    <RimTalk.Settings.AutoTalkRequestInterval>TalkRequest 자동 생성 간격 (초): {0}</RimTalk.Settings.AutoTalkRequestInterval>
+    <RimTalk.Settings.TalkRequestQueueMax>TalkRequest 큐 최대 개수: {0}</RimTalk.Settings.TalkRequestQueueMax>
+    <RimTalk.Settings.DisplayTalkInterval>대화 표시 간격 (초): {0}</RimTalk.Settings.DisplayTalkInterval>
+    <RimTalk.Settings.IgnoreWaitSeconds>무시 체인 대기 시간 (초): {0}</RimTalk.Settings.IgnoreWaitSeconds>
+    <RimTalk.Settings.ForceSpeakIgnored>대기 후 무시된 대화 강제 출력</RimTalk.Settings.ForceSpeakIgnored>
+    <RimTalk.Settings.ForceSpeakIgnoredTooltip>활성화하면 상위 대사가 무시되어 막힌 대화도 대기 시간 이후 강제로 출력됩니다.</RimTalk.Settings.ForceSpeakIgnoredTooltip>
+    <RimTalk.Settings.SpeakWhilePaused>일시정지 중에도 말하기 허용</RimTalk.Settings.SpeakWhilePaused>
+    <RimTalk.Settings.StopSpeakingInMenus>설정/디버그/대화 창이 열려 있으면 말하기 일시정지</RimTalk.Settings.StopSpeakingInMenus>
+    <RimTalk.Settings.AdvancedMenuAvoidance>고급 메뉴 회피 (메인 탭, 계획, 연구 등)</RimTalk.Settings.AdvancedMenuAvoidance>
+    <RimTalk.Settings.AlignTimingToNormalSpeed>모든 게임 속도에 1배속과 동일한 타이밍 적용</RimTalk.Settings.AlignTimingToNormalSpeed>
+    <RimTalk.Settings.IgnorePendingHotkeyEnabled>대기 중인 모든 대화 무시 단축키 활성화 (Home)</RimTalk.Settings.IgnorePendingHotkeyEnabled>
+    <RimTalk.Settings.ProcessUserTalkRequestImmediately>플레이어가 수동 삽입한 TalkRequest 즉시 처리</RimTalk.Settings.ProcessUserTalkRequestImmediately>
+    <RimTalk.Settings.ProcessUserTalkRequestImmediatelyTooltip>활성화하면 User TalkRequest를 사용자 큐 맨 앞으로 넣고 매 틱마다 처리 여부를 확인합니다.</RimTalk.Settings.ProcessUserTalkRequestImmediatelyTooltip>
+    <RimTalk.Settings.DisplayUserTalkRequestImmediately>플레이어가 수동 삽입한 TalkRequest 즉시 표시</RimTalk.Settings.DisplayUserTalkRequestImmediately>
+    <RimTalk.Settings.DisplayUserTalkRequestImmediatelyTooltip>활성화하면 사용자 삽입 대화를 표시하기 전에 대기 중인 모든 대화를 강제로 무시합니다.</RimTalk.Settings.DisplayUserTalkRequestImmediatelyTooltip>
+    <RimTalk.Settings.IgnoreAllPendingNow>대기 중인 모든 대화 즉시 무시</RimTalk.Settings.IgnoreAllPendingNow>
+    <RimTalk.Settings.IgnorePendingResult>RimTalk: 대기 중인 대화 {0}개를 무시했습니다.</RimTalk.Settings.IgnorePendingResult>
     <RimTalk.Settings.OverrideInteractions>모든 상호작용을 AI 대화로 덮어쓰기</RimTalk.Settings.OverrideInteractions>
     <RimTalk.Settings.OverrideInteractionsTooltip>이 옵션을 활성화하면 AI가 모든 상호작용(바닐라 림월드 및 다른 모드 포함)의 대화를 덮어쓰고 다시 생성할 수 있습니다. 참고: AI 대화에는 위에 설정된 재사용 대기시간이 있습니다. 대화를 더 자주 생성하려면 재사용 대기시간을 줄이세요.</RimTalk.Settings.OverrideInteractionsTooltip>
     <RimTalk.Settings.AllowSimultaneousConversations>동시다발적 대화 허용</RimTalk.Settings.AllowSimultaneousConversations>
