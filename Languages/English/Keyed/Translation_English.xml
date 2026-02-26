@@ -177,7 +177,6 @@ Crucial Tips:
     <RimTalk.Settings.EventFilter>Event Filter</RimTalk.Settings.EventFilter>
     <RimTalk.Settings.ApiKey>Cloud API Key</RimTalk.Settings.ApiKey>
     <RimTalk.Settings.GetFreeApiKey>Get a free API key</RimTalk.Settings.GetFreeApiKey>
-    <RimTalk.Settings.AICooldown>AI Cooldown (Seconds): {0}</RimTalk.Settings.AICooldown>
     <RimTalk.Settings.LLMProcessInterval>LLM Process TalkRequest Interval (Seconds): {0}</RimTalk.Settings.LLMProcessInterval>
     <RimTalk.Settings.AutoTalkRequestInterval>Auto-create TalkRequest Interval (Seconds): {0}</RimTalk.Settings.AutoTalkRequestInterval>
     <RimTalk.Settings.TalkRequestQueueMax>TalkRequest Queue Max Size: {0}</RimTalk.Settings.TalkRequestQueueMax>

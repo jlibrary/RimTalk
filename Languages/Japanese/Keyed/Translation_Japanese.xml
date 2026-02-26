@@ -181,7 +181,6 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Settings.EventFilter>イベントフィルター</RimTalk.Settings.EventFilter>
     <RimTalk.Settings.ApiKey>クラウドAPIキー</RimTalk.Settings.ApiKey>
     <RimTalk.Settings.GetFreeApiKey>無料APIキーを取得</RimTalk.Settings.GetFreeApiKey>
-    <RimTalk.Settings.AICooldown>AIクールダウン（秒）：{0}</RimTalk.Settings.AICooldown>
     <RimTalk.Settings.LLMProcessInterval>LLM の TalkRequest 処理間隔（秒）：{0}</RimTalk.Settings.LLMProcessInterval>
     <RimTalk.Settings.AutoTalkRequestInterval>TalkRequest 自動作成間隔（秒）：{0}</RimTalk.Settings.AutoTalkRequestInterval>
     <RimTalk.Settings.TalkRequestQueueMax>TalkRequest キュー最大数：{0}</RimTalk.Settings.TalkRequestQueueMax>

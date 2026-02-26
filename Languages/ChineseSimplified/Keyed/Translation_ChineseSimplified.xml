@@ -177,7 +177,6 @@ Scriban 魔法 (动态内容)
     <RimTalk.Settings.EventFilter>事件过滤器</RimTalk.Settings.EventFilter>
     <RimTalk.Settings.ApiKey>云端 API 密钥</RimTalk.Settings.ApiKey>
     <RimTalk.Settings.GetFreeApiKey>获取免费 API 密钥</RimTalk.Settings.GetFreeApiKey>
-    <RimTalk.Settings.AICooldown>AI 冷却时间（秒）：{0}</RimTalk.Settings.AICooldown>
     <RimTalk.Settings.LLMProcessInterval>LLM 处理 TalkRequest 间隔（秒）：{0}</RimTalk.Settings.LLMProcessInterval>
     <RimTalk.Settings.AutoTalkRequestInterval>自动创建 TalkRequest 间隔（秒）：{0}</RimTalk.Settings.AutoTalkRequestInterval>
     <RimTalk.Settings.TalkRequestQueueMax>TalkRequest 队列最大数量：{0}</RimTalk.Settings.TalkRequestQueueMax>

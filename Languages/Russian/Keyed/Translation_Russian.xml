@@ -180,7 +180,6 @@
     <RimTalk.Settings.EventFilter>Фильтр событий</RimTalk.Settings.EventFilter>
     <RimTalk.Settings.ApiKey>Ключ API облака</RimTalk.Settings.ApiKey>
     <RimTalk.Settings.GetFreeApiKey>Получить бесплатный ключ API</RimTalk.Settings.GetFreeApiKey>
-    <RimTalk.Settings.AICooldown>Время восстановления ИИ (секунды): {0}</RimTalk.Settings.AICooldown>
     <RimTalk.Settings.LLMProcessInterval>Интервал обработки TalkRequest LLM (секунды): {0}</RimTalk.Settings.LLMProcessInterval>
     <RimTalk.Settings.AutoTalkRequestInterval>Интервал авто-создания TalkRequest (секунды): {0}</RimTalk.Settings.AutoTalkRequestInterval>
     <RimTalk.Settings.TalkRequestQueueMax>Максимальный размер очереди TalkRequest: {0}</RimTalk.Settings.TalkRequestQueueMax>

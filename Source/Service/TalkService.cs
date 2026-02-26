@@ -331,7 +331,13 @@ public static class TalkService
         foreach (var pawnState in Cache.GetAll())
         {
             if (pawnState == null) continue;
-            clearedCount += pawnState.TalkResponses.Count;
+            foreach (var response in pawnState.TalkResponses)
+            {
+                TalkHistory.AddIgnored(response.Id);
+                var log = ApiHistory.GetApiLog(response.Id);
+                if (log != null) log.SpokenTick = -1;
+                clearedCount++;
+            }
             pawnState.TalkResponses.Clear();
         }
         Overlay.NotifyLogUpdated();

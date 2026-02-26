@@ -181,7 +181,6 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.Settings.EventFilter>이벤트 필터</RimTalk.Settings.EventFilter>
     <RimTalk.Settings.ApiKey>클라우드 API 키</RimTalk.Settings.ApiKey>
     <RimTalk.Settings.GetFreeApiKey>무료 API 키 받기</RimTalk.Settings.GetFreeApiKey>
-    <RimTalk.Settings.AICooldown>AI 재사용 대기시간 (초): {0}</RimTalk.Settings.AICooldown>
     <RimTalk.Settings.LLMProcessInterval>LLM TalkRequest 처리 간격 (초): {0}</RimTalk.Settings.LLMProcessInterval>
     <RimTalk.Settings.AutoTalkRequestInterval>TalkRequest 자동 생성 간격 (초): {0}</RimTalk.Settings.AutoTalkRequestInterval>
     <RimTalk.Settings.TalkRequestQueueMax>TalkRequest 큐 최대 개수: {0}</RimTalk.Settings.TalkRequestQueueMax>

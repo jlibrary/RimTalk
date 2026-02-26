@@ -181,7 +181,6 @@ Conseils Cruciaux :
     <RimTalk.Settings.EventFilter>Filtre d'événements</RimTalk.Settings.EventFilter>
     <RimTalk.Settings.ApiKey>Clé API Cloud</RimTalk.Settings.ApiKey>
     <RimTalk.Settings.GetFreeApiKey>Obtenir une clé API gratuite</RimTalk.Settings.GetFreeApiKey>
-    <RimTalk.Settings.AICooldown>Temps de recharge de l'IA (Secondes) : {0}</RimTalk.Settings.AICooldown>
     <RimTalk.Settings.LLMProcessInterval>Intervalle de traitement des TalkRequest par le LLM (secondes) : {0}</RimTalk.Settings.LLMProcessInterval>
     <RimTalk.Settings.AutoTalkRequestInterval>Intervalle de création automatique des TalkRequest (secondes) : {0}</RimTalk.Settings.AutoTalkRequestInterval>
     <RimTalk.Settings.TalkRequestQueueMax>Taille max de la file TalkRequest : {0}</RimTalk.Settings.TalkRequestQueueMax>
