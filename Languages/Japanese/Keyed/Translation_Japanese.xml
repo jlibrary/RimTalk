@@ -181,7 +181,26 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Settings.EventFilter>イベントフィルター</RimTalk.Settings.EventFilter>
     <RimTalk.Settings.ApiKey>クラウドAPIキー</RimTalk.Settings.ApiKey>
     <RimTalk.Settings.GetFreeApiKey>無料APIキーを取得</RimTalk.Settings.GetFreeApiKey>
-    <RimTalk.Settings.AICooldown>AIクールダウン（秒）：{0}</RimTalk.Settings.AICooldown>
+    <RimTalk.Settings.LLMProcessInterval>LLM の TalkRequest 処理間隔（秒）：{0}</RimTalk.Settings.LLMProcessInterval>
+    <RimTalk.Settings.AutoTalkRequestInterval>TalkRequest 自動作成間隔（秒）：{0}</RimTalk.Settings.AutoTalkRequestInterval>
+    <RimTalk.Settings.TalkRequestQueueMax>TalkRequest キュー最大数：{0}</RimTalk.Settings.TalkRequestQueueMax>
+    <RimTalk.Settings.DisplayTalkInterval>対話表示間隔（秒）：{0}</RimTalk.Settings.DisplayTalkInterval>
+    <RimTalk.Settings.IgnoreWaitSeconds>無視チェーン待機時間（秒）：{0}</RimTalk.Settings.IgnoreWaitSeconds>
+    <RimTalk.Settings.ForceSpeakIgnored>待機後に無視された対話を強制表示</RimTalk.Settings.ForceSpeakIgnored>
+    <RimTalk.Settings.ForceSpeakIgnoredTooltip>有効にすると、親行の無視によってブロックされた行は待機時間後に強制的に表示されます。</RimTalk.Settings.ForceSpeakIgnoredTooltip>
+    <RimTalk.Settings.SpeakWhilePaused>一時停止中も発話を許可</RimTalk.Settings.SpeakWhilePaused>
+    <RimTalk.Settings.StopSpeakingInMenus>非 RimTalk の設定/デバッグ/対話ウィンドウ表示中は発話を停止</RimTalk.Settings.StopSpeakingInMenus>
+    <RimTalk.Settings.AdvancedMenuAvoidance>高度なウィンドウでは発話を停止（メインタブ、計画、研究など）</RimTalk.Settings.AdvancedMenuAvoidance>
+    <RimTalk.Settings.AlignTimingToNormalSpeed>対話を固定 60 tick/s（1x基準）で調度</RimTalk.Settings.AlignTimingToNormalSpeed>
+    <RimTalk.Settings.IgnorePendingHotkeyEnabled>保留中の対話をすべてスキップするホットキーを有効化</RimTalk.Settings.IgnorePendingHotkeyEnabled>
+    <RimTalk.Settings.IgnorePendingHotkey>保留中の対話を一括スキップするキー：</RimTalk.Settings.IgnorePendingHotkey>
+    <RimTalk.Settings.ProcessUserTalkRequestImmediately>手動挿入したユーザー TalkRequest を即時処理</RimTalk.Settings.ProcessUserTalkRequestImmediately>
+    <RimTalk.Settings.ProcessUserTalkRequestImmediatelyTooltip>有効にすると、ユーザー TalkRequest はユーザーキュー先頭に入り、毎tick処理判定されます。</RimTalk.Settings.ProcessUserTalkRequestImmediatelyTooltip>
+    <RimTalk.Settings.DisplayUserTalkRequestImmediately>手動挿入したユーザー TalkRequest を即時表示</RimTalk.Settings.DisplayUserTalkRequestImmediately>
+    <RimTalk.Settings.DisplayUserTalkRequestImmediatelyTooltip>有効にすると、ユーザー挿入の対話を表示する前に保留中の対話をすべて強制無視します。</RimTalk.Settings.DisplayUserTalkRequestImmediatelyTooltip>
+    <RimTalk.Settings.IgnoreAllPendingNow>保留中の対話を今すぐすべて無視</RimTalk.Settings.IgnoreAllPendingNow>
+    <RimTalk.Settings.IgnorePendingResult>RimTalk：保留中の対話 {0} 件を無視しました。</RimTalk.Settings.IgnorePendingResult>
+    <RimTalk.Settings.SkipPendingResult>RimTalk：キュー中の対話 {0} 件をスキップしました。</RimTalk.Settings.SkipPendingResult>
     <RimTalk.Settings.OverrideInteractions>すべてのインタラクションをAIの対話で上書きする</RimTalk.Settings.OverrideInteractions>
     <RimTalk.Settings.OverrideInteractionsTooltip>これを有効にすると、AIがすべてのインタラクション（バニラのRimWorldや他のMODを含む）の対話を上書きして再生成できるようになります。注意：AIの対話には上記で設定されたクールダウン期間があります。より頻繁に対話を生成するには、クールダウンを短くしてください。</RimTalk.Settings.OverrideInteractionsTooltip>
     <RimTalk.Settings.AllowSimultaneousConversations>複数の同時会話を許可</RimTalk.Settings.AllowSimultaneousConversations>

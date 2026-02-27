@@ -18,7 +18,21 @@ public class RimTalkSettings : ModSettings
     public string SimpleApiKey = "";
     public bool IsUsingFallbackModel = false;
     public bool IsEnabled = true;
+    // Legacy "AI cooldown" field: now interpreted as LLM processing interval
     public int TalkInterval = 7;
+    public int AutoTalkRequestInterval = 7;
+    public int MaxTalkRequestQueueSize = 20;
+    public float DisplayTalkInterval = 0.5f;
+    public int IgnoreWaitSeconds = 6;
+    public bool ForceSpeakIgnored = false;
+    public bool IgnorePendingHotkeyEnabled = true;
+    public KeyCode IgnorePendingHotkey = KeyCode.Home;
+    public bool ProcessUserTalkRequestImmediately = false;
+    public bool DisplayUserTalkRequestImmediately = true;
+    public bool SpeakWhilePaused = false;
+    public bool StopSpeakingInMenus = false;
+    public bool AdvancedMenuAvoidance = false;
+    public bool AlignTimingToNormalSpeed = false;
     public const int ReplyInterval = 4;
     public bool ProcessNonRimTalkInteractions = true;
     public bool AllowSimultaneousConversations = false;
@@ -166,6 +180,19 @@ public class RimTalkSettings : ModSettings
         Scribe_Values.Look(ref SimpleApiKey, "simpleApiKey", "");
         Scribe_Values.Look(ref IsEnabled, "isEnabled", true);
         Scribe_Values.Look(ref TalkInterval, "talkInterval", 7);
+        Scribe_Values.Look(ref AutoTalkRequestInterval, "autoTalkRequestInterval", 7);
+        Scribe_Values.Look(ref MaxTalkRequestQueueSize, "maxTalkRequestQueueSize", 20);
+        Scribe_Values.Look(ref DisplayTalkInterval, "displayTalkInterval", 0.5f);
+        Scribe_Values.Look(ref IgnoreWaitSeconds, "ignoreWaitSeconds", 6);
+        Scribe_Values.Look(ref ForceSpeakIgnored, "forceSpeakIgnored", false);
+        Scribe_Values.Look(ref IgnorePendingHotkeyEnabled, "ignorePendingHotkeyEnabled", true);
+        Scribe_Values.Look(ref IgnorePendingHotkey, "ignorePendingHotkey", KeyCode.Home);
+        Scribe_Values.Look(ref ProcessUserTalkRequestImmediately, "processUserTalkRequestImmediately", false);
+        Scribe_Values.Look(ref DisplayUserTalkRequestImmediately, "displayUserTalkRequestImmediately", true);
+        Scribe_Values.Look(ref SpeakWhilePaused, "speakWhilePaused", false);
+        Scribe_Values.Look(ref StopSpeakingInMenus, "stopSpeakingInMenus", false);
+        Scribe_Values.Look(ref AdvancedMenuAvoidance, "advancedMenuAvoidance", false);
+        Scribe_Values.Look(ref AlignTimingToNormalSpeed, "alignTimingToNormalSpeed", false);
         Scribe_Values.Look(ref ProcessNonRimTalkInteractions, "processNonRimTalkInteractions", true);
         Scribe_Values.Look(ref AllowSimultaneousConversations, "allowSimultaneousConversations", false);
         Scribe_Values.Look(ref DisplayTalkWhenDrafted, "displayTalkWhenDrafted", true);
@@ -305,6 +332,13 @@ public class RimTalkSettings : ModSettings
         {
             CloudConfigs.Add(new ApiConfig());
         }
+
+        // Clamp runtime scheduling values to safe bounds.
+        TalkInterval = Mathf.Clamp(TalkInterval, 1, 120);
+        AutoTalkRequestInterval = Mathf.Clamp(AutoTalkRequestInterval, 1, 120);
+        MaxTalkRequestQueueSize = Mathf.Clamp(MaxTalkRequestQueueSize, 1, 200);
+        DisplayTalkInterval = Mathf.Clamp(DisplayTalkInterval, 0.1f, 10f);
+        IgnoreWaitSeconds = Mathf.Clamp(IgnoreWaitSeconds, 1, 120);
     }
 
     private static PromptEntry GetOrCreateBaseInstructionEntry(PromptPreset preset)
