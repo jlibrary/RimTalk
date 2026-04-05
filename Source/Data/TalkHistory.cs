@@ -36,13 +36,34 @@ public static class TalkHistory
 
     public static void AddMessageHistory(Pawn pawn, string request, string response)
     {
-        var messages = MessageHistory.GetOrAdd(pawn.thingIDNumber, _ => []);
+        AddMessageHistory(pawn, [(Role.User, request), (Role.AI, response)]);
+    }
 
-        lock (messages)
+    public static void AddConversationHistory(TalkRequest request, List<TalkResponse> responses)
+    {
+        if (responses == null || responses.Count == 0) return;
+
+        var historyPawns = new List<Pawn>();
+
+        void AddPawn(Pawn pawn)
         {
-            messages.Add((Role.User, request));
-            messages.Add((Role.AI, response));
-            EnsureMessageLimit(messages);
+            if (pawn != null && !historyPawns.Contains(pawn))
+                historyPawns.Add(pawn);
+        }
+
+        AddPawn(request?.Initiator);
+        AddPawn(request?.Recipient);
+
+        foreach (var response in responses)
+        {
+            AddPawn(Cache.GetByName(response?.Name)?.Pawn);
+            AddPawn(Cache.GetByName(response?.TargetName)?.Pawn);
+        }
+
+        foreach (var pawn in historyPawns)
+        {
+            var conversationSlice = BuildConversationSliceForPawn(pawn, request, responses);
+            AddMessageHistory(pawn, conversationSlice);
         }
     }
 
@@ -74,12 +95,12 @@ public static class TalkHistory
 
     private static void EnsureMessageLimit(List<(Role role, string message)> messages)
     {
-        // First, ensure alternating pattern by removing consecutive duplicates from the end
+        // First, ensure alternating pattern by merging consecutive entries with the same role
         for (int i = messages.Count - 1; i > 0; i--)
         {
             if (messages[i].role == messages[i - 1].role)
             {
-                // Remove the earlier message of the consecutive pair
+                messages[i] = (messages[i].role, $"{messages[i - 1].message}\n{messages[i].message}");
                 messages.RemoveAt(i - 1);
             }
         }
@@ -134,6 +155,150 @@ public static class TalkHistory
         }
 
         return string.Join("\n", lines);
+    }
+
+    private static void AddMessageHistory(Pawn pawn, IEnumerable<(Role role, string message)> messagesToAdd)
+    {
+        if (pawn == null || messagesToAdd == null) return;
+
+        var normalizedMessages = NormalizeMessages(messagesToAdd).ToList();
+        if (normalizedMessages.Count == 0) return;
+
+        var messages = MessageHistory.GetOrAdd(pawn.thingIDNumber, _ => []);
+
+        lock (messages)
+        {
+            messages.AddRange(normalizedMessages);
+            EnsureMessageLimit(messages);
+        }
+    }
+
+    private static IEnumerable<(Role role, string message)> BuildConversationSliceForPawn(
+        Pawn pawn,
+        TalkRequest request,
+        List<TalkResponse> responses)
+    {
+        if (pawn == null || responses == null || responses.Count == 0)
+            yield break;
+
+        var likelyPartners = GetLikelyPartnerNames(pawn, request, responses);
+
+        foreach (var response in responses)
+        {
+            if (response == null) continue;
+
+            bool spokenByPawn = MatchesPawnName(response.Name, pawn);
+            bool addressedToPawn = MatchesPawnName(response.TargetName, pawn);
+            bool fromLikelyPartner = !spokenByPawn &&
+                                     !string.IsNullOrWhiteSpace(response.Name) &&
+                                     likelyPartners.Contains(response.Name);
+
+            if (!spokenByPawn && !addressedToPawn && !fromLikelyPartner)
+                continue;
+
+            string content = FormatConversationMessageForPawn(pawn, response, spokenByPawn);
+            if (string.IsNullOrWhiteSpace(content))
+                continue;
+
+            yield return (spokenByPawn ? Role.User : Role.AI, content);
+        }
+    }
+
+    private static IEnumerable<(Role role, string message)> NormalizeMessages(IEnumerable<(Role role, string message)> messages)
+    {
+        Role? lastRole = null;
+        string lastMessage = null;
+
+        foreach (var (role, message) in messages)
+        {
+            string cleaned = CleanHistoryText(message);
+            if (string.IsNullOrWhiteSpace(cleaned))
+                continue;
+
+            if (lastRole == role)
+            {
+                lastMessage += "\n" + cleaned;
+                continue;
+            }
+
+            if (lastRole.HasValue && !string.IsNullOrWhiteSpace(lastMessage))
+                yield return (lastRole.Value, lastMessage);
+
+            lastRole = role;
+            lastMessage = cleaned;
+        }
+
+        if (lastRole.HasValue && !string.IsNullOrWhiteSpace(lastMessage))
+            yield return (lastRole.Value, lastMessage);
+    }
+
+    private static HashSet<string> GetLikelyPartnerNames(Pawn pawn, TalkRequest request, List<TalkResponse> responses)
+    {
+        var partners = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        void AddPartner(Pawn otherPawn)
+        {
+            if (otherPawn != null && otherPawn != pawn)
+                partners.Add(otherPawn.LabelShort);
+        }
+
+        if (pawn == request?.Initiator)
+            AddPartner(request.Recipient);
+
+        if (pawn == request?.Recipient)
+            AddPartner(request.Initiator);
+
+        foreach (var response in responses)
+        {
+            if (response == null) continue;
+
+            if (MatchesPawnName(response.TargetName, pawn) && !string.IsNullOrWhiteSpace(response.Name))
+                partners.Add(response.Name);
+
+            if (MatchesPawnName(response.Name, pawn) && !string.IsNullOrWhiteSpace(response.TargetName))
+                partners.Add(response.TargetName);
+        }
+
+        if (partners.Count == 0)
+        {
+            var otherSpeakers = responses
+                .Select(r => r?.Name)
+                .Where(name => !string.IsNullOrWhiteSpace(name) && !MatchesPawnName(name, pawn))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            if (otherSpeakers.Count == 1)
+                partners.Add(otherSpeakers[0]);
+        }
+
+        return partners;
+    }
+
+    private static string FormatConversationMessageForPawn(Pawn pawn, TalkResponse response, bool spokenByPawn)
+    {
+        string text = CleanHistoryText(response.Text);
+        if (string.IsNullOrWhiteSpace(text))
+            return "";
+
+        if (spokenByPawn)
+        {
+            if (!string.IsNullOrWhiteSpace(response.TargetName) && !MatchesPawnName(response.TargetName, pawn))
+                return $"To {response.TargetName}: {text}";
+
+            return text;
+        }
+
+        return string.IsNullOrWhiteSpace(response.Name) ? text : $"{response.Name}: {text}";
+    }
+
+    private static bool MatchesPawnName(string name, Pawn pawn)
+    {
+        if (pawn == null || string.IsNullOrWhiteSpace(name))
+            return false;
+
+        return string.Equals(name, pawn.LabelShort, StringComparison.OrdinalIgnoreCase) ||
+               string.Equals(name, pawn.Name?.ToStringShort, StringComparison.OrdinalIgnoreCase) ||
+               string.Equals(name, pawn.Name?.ToStringFull, StringComparison.OrdinalIgnoreCase);
     }
 
     public static void Clear()

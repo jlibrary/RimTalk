@@ -110,8 +110,8 @@ public static class ScribanParser
             scriptObject.Add("json", json);
 
             var chat = new ScriptObject();
-            string historyText = GetChatHistoryText(context);
-            chat.Add("history", historyText);
+            chat.Add("history", GetChatHistoryText(context));
+            chat.Add("history_simplified", GetChatHistoryText(context, simplified: true));
             scriptObject.Add("chat", chat);
             
             // 4. SHORTHANDS
@@ -364,21 +364,45 @@ public static class ScribanParser
             "user_prompt" or "userprompt" => context.UserPrompt ?? "",
             "is_monologue" or "ismonologue" => context.IsMonologue,
             "talk_type" or "talktype" => context.TalkType,
-            "history" or "chat_history" or "chathistory" => GetChatHistoryText(context),
+            "history" or "chat_history" or "chathistory" => GetContextHistoryText(context),
+            "history_simplified" or "chat_history_simplified" or "chathistorysimplified" => GetChatHistoryText(context, simplified: true),
             "pawn_count" or "pawncount" => context.AllPawns?.Count ?? 0,
             "map_id" or "mapid" => context.Map?.uniqueID ?? 0,
             _ => null
         };
     }
 
-    private static string GetChatHistoryText(PromptContext context)
+    private static string GetChatHistoryText(PromptContext context, bool simplified = false)
     {
-        if (context.ChatHistory != null && context.ChatHistory.Count > 0)
+        var history = simplified ? context.GetChatHistory(simplified: true) : context.ChatHistory;
+
+        if (history != null && history.Count > 0)
         {
-            var lines = context.ChatHistory.Select((h, i) =>
+            var lines = history.Select(h =>
             {
-                var text = (h.message ?? "").Replace("\r\n", " ").Replace("\n", " ").Replace("\r", " ");
-                return $"- {i + 1} | role={h.role} | text={text}";
+                var role = h.role == Role.User ? "User" : "Assistant";
+                var text = (h.message ?? "").Replace("\r\n", " ").Replace("\n", " ").Replace("\r", " ").Trim();
+                return $"{role}: {text}";
+            });
+            return string.Join("\n", lines);
+        }
+
+        if (context.IsPreview)
+            return "User: Hello!\nAssistant: Greetings from RimTalk. This is a placeholder for chat history.";
+
+        return "";
+    }
+
+    private static string GetContextHistoryText(PromptContext context)
+    {
+        var history = context.ChatHistory;
+        if (history != null && history.Count > 0)
+        {
+            var lines = history.Select((h, i) =>
+            {
+                var role = h.role == Role.User ? "User" : "Assistant";
+                var text = (h.message ?? "").Trim();
+                return $"- {i + 1} | role={role} | text={text}";
             });
             return "Conversation history (reference only; do not repeat or continue):\n" + string.Join("\n", lines);
         }
@@ -386,7 +410,7 @@ public static class ScribanParser
         if (context.IsPreview)
             return "Conversation history (reference only; do not repeat or continue):\n" +
                    "- 1 | role=User | text=Hello!\n" +
-                   "- 2 | role=AI | text=Greetings from RimTalk. This is a placeholder for chat history.";
+                   "- 2 | role=Assistant | text=Greetings from RimTalk. This is a placeholder for chat history.";
 
         return "";
     }
