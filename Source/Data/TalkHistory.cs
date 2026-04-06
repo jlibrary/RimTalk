@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using RimTalk.Util;
 using Verse;
+using Logger = RimTalk.Util.Logger;
 
 namespace RimTalk.Data;
 
@@ -182,6 +183,7 @@ public static class TalkHistory
             yield break;
 
         var likelyPartners = GetLikelyPartnerNames(pawn, request, responses);
+        var strictSlice = new List<(Role role, string message)>();
 
         foreach (var response in responses)
         {
@@ -196,6 +198,42 @@ public static class TalkHistory
             if (!spokenByPawn && !addressedToPawn && !fromLikelyPartner)
                 continue;
 
+            string content = FormatConversationMessageForPawn(pawn, response, spokenByPawn);
+            if (string.IsNullOrWhiteSpace(content))
+                continue;
+
+            strictSlice.Add((spokenByPawn ? Role.User : Role.AI, content));
+        }
+
+        if (strictSlice.Count > 0)
+        {
+            foreach (var message in strictSlice)
+                yield return message;
+            yield break;
+        }
+
+        var fallbackSlice = BuildLooseConversationSliceForPawn(pawn, responses).ToList();
+        if (fallbackSlice.Count > 0)
+        {
+            Logger.Debug(
+                $"History strict match empty for {pawn.LabelShort}; " +
+                $"falling back to loose slice. Responses={responses.Count}, " +
+                $"speakers=[{string.Join(", ", responses.Select(r => r?.Name).Where(n => !string.IsNullOrWhiteSpace(n)).Distinct())}]");
+
+            foreach (var message in fallbackSlice)
+                yield return message;
+        }
+    }
+
+    private static IEnumerable<(Role role, string message)> BuildLooseConversationSliceForPawn(
+        Pawn pawn,
+        List<TalkResponse> responses)
+    {
+        foreach (var response in responses)
+        {
+            if (response == null) continue;
+
+            bool spokenByPawn = MatchesPawnName(response.Name, pawn);
             string content = FormatConversationMessageForPawn(pawn, response, spokenByPawn);
             if (string.IsNullOrWhiteSpace(content))
                 continue;
