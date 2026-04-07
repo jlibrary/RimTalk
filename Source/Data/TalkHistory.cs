@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using RimTalk.Source.Data;
 using RimTalk.Util;
 using Verse;
 using Logger = RimTalk.Util.Logger;
@@ -11,6 +12,7 @@ namespace RimTalk.Data;
 public static class TalkHistory
 {
     private static readonly ConcurrentDictionary<int, List<(Role role, string message)>> MessageHistory = new();
+    private static readonly ConcurrentDictionary<int, List<(Role role, string message)>> DialogueHistory = new();
     private static readonly ConcurrentDictionary<Guid, int> SpokenTickCache = new() { [Guid.Empty] = 0 };
     private static readonly ConcurrentBag<Guid> IgnoredCache = [];
     
@@ -37,7 +39,16 @@ public static class TalkHistory
 
     public static void AddMessageHistory(Pawn pawn, string request, string response)
     {
-        AddMessageHistory(pawn, [(Role.User, request), (Role.AI, response)]);
+        if (pawn == null) return;
+
+        var messages = MessageHistory.GetOrAdd(pawn.thingIDNumber, _ => []);
+
+        lock (messages)
+        {
+            messages.Add((Role.User, request ?? ""));
+            messages.Add((Role.AI, response ?? ""));
+            EnsureRawMessageLimit(messages);
+        }
     }
 
     public static void AddConversationHistory(TalkRequest request, List<TalkResponse> responses)
@@ -45,6 +56,8 @@ public static class TalkHistory
         if (responses == null || responses.Count == 0) return;
 
         var historyPawns = new List<Pawn>();
+        string prompt = request?.Prompt ?? "";
+        string serializedResponses = JsonUtil.SerializeToJson(responses);
 
         void AddPawn(Pawn pawn)
         {
@@ -63,8 +76,29 @@ public static class TalkHistory
 
         foreach (var pawn in historyPawns)
         {
+            AddMessageHistory(pawn, prompt, serializedResponses);
+
             var conversationSlice = BuildConversationSliceForPawn(pawn, request, responses);
-            AddMessageHistory(pawn, conversationSlice);
+            AddDialogueHistory(pawn, conversationSlice);
+        }
+
+        Logger.Debug(
+            $"History saved for {historyPawns.Count} pawns; " +
+            $"initiator={request?.Initiator?.LabelShort ?? "null"}, " +
+            $"recipient={request?.Recipient?.LabelShort ?? "null"}, " +
+            $"responses={responses.Count}");
+    }
+
+    public static List<(Role role, string message)> GetDialogueHistory(Pawn pawn)
+    {
+        if (pawn == null || !DialogueHistory.TryGetValue(pawn.thingIDNumber, out var history))
+            return [];
+
+        lock (history)
+        {
+            return history
+                .Where(msg => !string.IsNullOrWhiteSpace(msg.message))
+                .ToList();
         }
     }
 
@@ -94,7 +128,24 @@ public static class TalkHistory
         }
     }
 
-    private static void EnsureMessageLimit(List<(Role role, string message)> messages)
+    private static void EnsureRawMessageLimit(List<(Role role, string message)> messages)
+    {
+        for (int i = messages.Count - 1; i > 0; i--)
+        {
+            if (messages[i].role == messages[i - 1].role)
+            {
+                messages.RemoveAt(i - 1);
+            }
+        }
+
+        int maxMessages = Settings.Get().Context.ConversationHistoryCount;
+        while (messages.Count > maxMessages * 2)
+        {
+            messages.RemoveAt(0);
+        }
+    }
+
+    private static void EnsureDialogueMessageLimit(List<(Role role, string message)> messages)
     {
         // First, ensure alternating pattern by merging consecutive entries with the same role
         for (int i = messages.Count - 1; i > 0; i--)
@@ -158,19 +209,19 @@ public static class TalkHistory
         return string.Join("\n", lines);
     }
 
-    private static void AddMessageHistory(Pawn pawn, IEnumerable<(Role role, string message)> messagesToAdd)
+    private static void AddDialogueHistory(Pawn pawn, IEnumerable<(Role role, string message)> messagesToAdd)
     {
         if (pawn == null || messagesToAdd == null) return;
 
         var normalizedMessages = NormalizeMessages(messagesToAdd).ToList();
         if (normalizedMessages.Count == 0) return;
 
-        var messages = MessageHistory.GetOrAdd(pawn.thingIDNumber, _ => []);
+        var messages = DialogueHistory.GetOrAdd(pawn.thingIDNumber, _ => []);
 
         lock (messages)
         {
             messages.AddRange(normalizedMessages);
-            EnsureMessageLimit(messages);
+            EnsureDialogueMessageLimit(messages);
         }
     }
 
@@ -184,6 +235,10 @@ public static class TalkHistory
 
         var likelyPartners = GetLikelyPartnerNames(pawn, request, responses);
         var strictSlice = new List<(Role role, string message)>();
+
+        var userInputMessage = BuildUserInputHistoryMessage(pawn, request);
+        if (!string.IsNullOrWhiteSpace(userInputMessage))
+            strictSlice.Add((Role.AI, userInputMessage));
 
         foreach (var response in responses)
         {
@@ -223,6 +278,21 @@ public static class TalkHistory
             foreach (var message in fallbackSlice)
                 yield return message;
         }
+    }
+
+    private static string BuildUserInputHistoryMessage(Pawn pawn, TalkRequest request)
+    {
+        if (pawn == null || request == null || !request.TalkType.IsFromUser())
+            return "";
+
+        var text = CleanHistoryText(request.RawPrompt);
+        if (string.IsNullOrWhiteSpace(text))
+            return "";
+
+        var speakerName = request.Recipient?.LabelShort ??
+                          request.Recipient?.Name?.ToStringShort ??
+                          "Player";
+        return $"{speakerName}: {text}";
     }
 
     private static IEnumerable<(Role role, string message)> BuildLooseConversationSliceForPawn(
@@ -342,6 +412,7 @@ public static class TalkHistory
     public static void Clear()
     {
         MessageHistory.Clear();
+        DialogueHistory.Clear();
         // clearing spokenCache may block child talks waiting to display
     }
 }

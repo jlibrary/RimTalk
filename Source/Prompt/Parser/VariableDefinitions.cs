@@ -102,8 +102,8 @@ public static class VariableDefinitions
         {
             ("lang", "Active native language name"),
             ("json.format", "JSON output instructions"),
-            ("chat.history", "Clean alternating dialogue history"),
-            ("chat.history_simplified", "History with AI JSON parsed and tags removed")
+            ("chat.history", "Dialogue-only history derived from spoken lines"),
+            ("chat.history_simplified", "Dialogue-only history merged into a single user-style block")
         };
 
         // 5. Mod-added variables from the API
