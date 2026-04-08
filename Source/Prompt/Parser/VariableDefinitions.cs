@@ -83,7 +83,7 @@ public static class VariableDefinitions
             ("ctx.IsMonologue", "True if this is a monologue"),
             ("ctx.prompt", "Alias of ctx.DialoguePrompt"),
             ("ctx.context", "Alias of ctx.PawnContext"),
-            ("ctx.history", "Alias of chat.history"),
+            ("ctx.history", "Detailed context history for prompt construction"),
             ("ctx.talk_type", "Alias of ctx.TalkType"),
             ("ctx.pawn_count", "Count of ctx.AllPawns"),
             ("ctx.map_id", "Map uniqueID")
@@ -102,8 +102,8 @@ public static class VariableDefinitions
         {
             ("lang", "Active native language name"),
             ("json.format", "JSON output instructions"),
-            ("chat.history", "Full alternating history (Raw)"),
-            ("chat.history_simplified", "History with AI JSON parsed and tags removed")
+            ("chat.history", "Dialogue-only history derived from spoken lines"),
+            ("chat.history_simplified", "Dialogue-only history merged into a single user-style block")
         };
 
         // 5. Mod-added variables from the API

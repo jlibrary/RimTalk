@@ -266,7 +266,7 @@ public partial class Settings
                 Rect erow = new Rect(0f, ey, eViewRect.width, 24f);
                 if (_selectedEntryId == entry.Id) Widgets.DrawHighlight(erow);
 
-                bool isHistoryMarker = entry.IsMainChatHistory;
+                bool isHistoryMarker = false;
 
                 bool en = entry.Enabled;
                 Widgets.Checkbox(new Vector2(4f, ey + 4f), ref en, 16f);
@@ -401,7 +401,7 @@ public partial class Settings
         }
 
         // -- Row 2 (Left Side): Entry Name --
-        bool isHistoryMarker = e.IsMainChatHistory;
+        bool isHistoryMarker = false;
 
         Widgets.Label(new Rect(labelX, y, inputX - 10, 24f), "RimTalk.Settings.PromptPreset.EntryName".Translate());
         if (isHistoryMarker)
