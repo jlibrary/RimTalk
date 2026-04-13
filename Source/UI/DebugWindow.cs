@@ -1539,7 +1539,7 @@ public class DebugWindow : Window
             sb.Append("RimTalk.DebugWindow.FormatRole".Translate());
             sb.Append(": ");
             sb.AppendLine(roleLabel);
-            sb.AppendLine(string.IsNullOrWhiteSpace(segment.Content) ? "(empty)" : segment.Content);
+            sb.AppendLine(segment.Content ?? "");
             
             // Add blank line between messages (except after the last one)
             if (i < segments.Count - 1)

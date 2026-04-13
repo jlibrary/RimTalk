@@ -110,8 +110,8 @@ public static class ScribanParser
             scriptObject.Add("json", json);
 
             var chat = new ScriptObject();
-            chat.Add("history", GetChatHistoryText(context));
-            chat.Add("history_simplified", GetChatHistorySimplifiedText(context));
+            string historyText = GetChatHistoryText(context);
+            chat.Add("history", historyText);
             scriptObject.Add("chat", chat);
             
             // 4. SHORTHANDS
@@ -364,8 +364,7 @@ public static class ScribanParser
             "user_prompt" or "userprompt" => context.UserPrompt ?? "",
             "is_monologue" or "ismonologue" => context.IsMonologue,
             "talk_type" or "talktype" => context.TalkType,
-            "history" or "chat_history" or "chathistory" => GetContextHistoryText(context),
-            "history_simplified" or "chat_history_simplified" or "chathistorysimplified" => GetChatHistorySimplifiedText(context),
+            "history" or "chat_history" or "chathistory" => GetChatHistoryText(context),
             "pawn_count" or "pawncount" => context.AllPawns?.Count ?? 0,
             "map_id" or "mapid" => context.Map?.uniqueID ?? 0,
             _ => null
@@ -374,101 +373,12 @@ public static class ScribanParser
 
     private static string GetChatHistoryText(PromptContext context)
     {
-        var blocks = GetDialogueHistoryBlocks(context);
-
-        if (blocks.Count > 0)
+        if (context.ChatHistory != null && context.ChatHistory.Count > 0)
         {
-            var numberedBlocks = blocks.Select((block, i) => $"- {i + 1} | message=\n{block}");
-            return "Past dialogue record (reference only; avoid repeating verbatim):\n" + string.Join("\n\n", numberedBlocks);
-        }
-
-        if (context.IsPreview)
-            return "Past dialogue record (reference only; avoid repeating verbatim):\n" +
-                   "- 1 | message=\nPawnA: Hello!\n\n" +
-                   "- 2 | message=\nPawnB: Greetings from RimTalk. This is a placeholder for chat history.";
-
-        return "";
-    }
-
-    private static string GetChatHistorySimplifiedText(PromptContext context)
-    {
-        var blocks = GetDialogueHistoryBlocks(context);
-        if (blocks.Count > 0)
-        {
-            var labeledBlocks = blocks.Select((block, i) => $"[message {i + 1}]\n{block}");
-            return "[Talk History]\n" + string.Join("\n\n", labeledBlocks);
-        }
-
-        if (context.IsPreview)
-            return "[Talk History]\n[message 1]\n  [1] PawnA: Hello!\n\n[message 2]\n  [1] PawnB: Greetings from RimTalk. This is a placeholder for chat history.";
-
-        return "";
-    }
-
-    private static List<string> GetDialogueHistoryBlocks(PromptContext context)
-    {
-        var history = context.GetChatHistory(simplified: true);
-        if (history == null || history.Count == 0)
-            return [];
-
-        var blocks = new List<string>();
-        foreach (var entry in history)
-        {
-            var formatted = FormatDialogueHistoryBlock(context, entry);
-            if (string.IsNullOrWhiteSpace(formatted))
-                continue;
-
-            blocks.Add(formatted.Trim());
-        }
-
-        int maxMessages = Math.Max(0, Settings.Get().Context.ConversationHistoryCount);
-        if (maxMessages == 0 || blocks.Count <= maxMessages)
-            return blocks;
-
-        return blocks.Skip(blocks.Count - maxMessages).ToList();
-    }
-
-    private static string FormatDialogueHistoryBlock(PromptContext context, (Role role, string message) historyEntry)
-    {
-        var turns = (historyEntry.message ?? "")
-            .Replace("\r\n", "\n")
-            .Replace("\r", "\n")
-            .Split('\n')
-            .Select(line => FormatDialogueHistoryTurn(context, historyEntry.role, line))
-            .Where(line => !string.IsNullOrWhiteSpace(line))
-            .ToList();
-
-        if (turns.Count == 0)
-            return "";
-
-        return string.Join("\n", turns.Select((turn, i) => $"  [{i + 1}] {turn}"));
-    }
-
-    private static string FormatDialogueHistoryTurn(PromptContext context, Role role, string rawTurn)
-    {
-        var text = (rawTurn ?? "").Trim();
-        if (string.IsNullOrWhiteSpace(text))
-            return "";
-
-        if (role == Role.User)
-        {
-            var speaker = context?.CurrentPawn?.LabelShort ?? "User";
-            return text.Contains(":") ? text : $"{speaker}: {text}";
-        }
-
-        return text.Contains(":") ? text : $"Other: {text}";
-    }
-
-    private static string GetContextHistoryText(PromptContext context)
-    {
-        var history = context.ChatHistory;
-        if (history != null && history.Count > 0)
-        {
-            var lines = history.Select((h, i) =>
+            var lines = context.ChatHistory.Select((h, i) =>
             {
-                var role = h.role == Role.User ? "User" : "Assistant";
-                var text = (h.message ?? "").Trim();
-                return $"- {i + 1} | role={role} | text={text}";
+                var text = (h.message ?? "").Replace("\r\n", " ").Replace("\n", " ").Replace("\r", " ");
+                return $"- {i + 1} | role={h.role} | text={text}";
             });
             return "Conversation history (reference only; do not repeat or continue):\n" + string.Join("\n", lines);
         }
@@ -476,7 +386,7 @@ public static class ScribanParser
         if (context.IsPreview)
             return "Conversation history (reference only; do not repeat or continue):\n" +
                    "- 1 | role=User | text=Hello!\n" +
-                   "- 2 | role=Assistant | text=Greetings from RimTalk. This is a placeholder for chat history.";
+                   "- 2 | role=AI | text=Greetings from RimTalk. This is a placeholder for chat history.";
 
         return "";
     }

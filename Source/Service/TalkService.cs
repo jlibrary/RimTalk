@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using RimTalk.Data;
 using RimTalk.Prompt;
@@ -20,19 +19,6 @@ namespace RimTalk.Service;
 /// </summary>
 public static class TalkService
 {
-    private static int _activeGenerationPipelineCount;
-
-    private static bool IsGenerationPipelineBusy()
-    {
-        return Volatile.Read(ref _activeGenerationPipelineCount) > 0;
-    }
-
-    private static void StartGenerationPipeline(TalkRequest talkRequest)
-    {
-        Interlocked.Increment(ref _activeGenerationPipelineCount);
-        Task.Run(() => GenerateAndProcessTalkAsync(talkRequest));
-    }
-
     /// <summary>
     /// Initiates the process of generating a conversation. It performs initial checks and then
     /// starts a background task to handle the actual AI communication.
@@ -43,7 +29,7 @@ public static class TalkService
         var settings = Settings.Get();
         if (!settings.IsEnabled || !CommonUtil.ShouldAiBeActiveOnSpeed()) return false;
         if (settings.GetActiveConfig() == null) return false;
-        if (AIService.IsBusy() || IsGenerationPipelineBusy()) return false;
+        if (AIService.IsBusy()) return false;
 
         PawnState pawn1 = Cache.Get(talkRequest.Initiator);
         if (!talkRequest.TalkType.IsFromUser() && (pawn1 == null || !pawn1.CanGenerateTalk())) return false;
@@ -100,9 +86,8 @@ public static class TalkService
             talkRequest.Prompt = extracted;
         }
         
-        // Offload the AI request and post-processing to a background thread.
-        // The pipeline busy flag remains set until history has been written back.
-        StartGenerationPipeline(talkRequest);
+        // Offload the AI request and processing to a background thread to avoid blocking the game's main thread.
+        Task.Run(() => GenerateAndProcessTalkAsync(talkRequest));
 
         pawn1.MarkRequestSpoken(talkRequest);
         
@@ -143,7 +128,7 @@ public static class TalkService
             );
 
             // Once the stream is complete, save the full conversation to history.
-            AddResponsesToHistory(talkRequest, receivedResponses);
+            AddResponsesToHistory(receivedResponses, talkRequest.Prompt);
         }
         catch (Exception ex)
         {
@@ -152,18 +137,25 @@ public static class TalkService
         finally
         {
             Cache.Get(initiator).IsGeneratingTalk = false;
-            Interlocked.Decrement(ref _activeGenerationPipelineCount);
         }
     }
 
     /// <summary>
-    /// Saves the generated conversation to per-pawn history using the actual spoken lines.
+    /// Serializes the generated responses and adds them to the message history for all involved pawns.
     /// </summary>
-    private static void AddResponsesToHistory(TalkRequest talkRequest, List<TalkResponse> responses)
+    private static void AddResponsesToHistory(List<TalkResponse> responses, string prompt)
     {
         if (!responses.Any()) return;
+        string serializedResponses = JsonUtil.SerializeToJson(responses);
+        var uniquePawns = responses
+            .Select(r => Cache.GetByName(r.Name)?.Pawn)
+            .Where(p => p != null)
+            .Distinct();
 
-        TalkHistory.AddConversationHistory(talkRequest, responses);
+        foreach (var pawn in uniquePawns)
+        {
+            TalkHistory.AddMessageHistory(pawn, prompt, serializedResponses);
+        }
     }
 
     /// <summary>
@@ -226,7 +218,7 @@ public static class TalkService
     /// </summary>
     public static void GenerateTalkDebug(TalkRequest talkRequest)
     {
-        StartGenerationPipeline(talkRequest);
+        Task.Run(() => GenerateAndProcessTalkAsync(talkRequest));
     }
 
     /// <summary>
