@@ -41,12 +41,20 @@ public class PromptContext
     /// <summary>Chat history (Role, Message) - for inserting history in entries</summary>
     public List<(Role role, string message)> ChatHistory { get; set; } = new();
 
+    /// <summary>Raw chat history converted to readable text, preserving the original user/assistant structure.</summary>
+    public List<(Role role, string message)> SimplifiedChatHistory { get; set; } = new();
+
     /// <summary>Simplified dialogue-only history derived from actual spoken lines.</summary>
     public List<(Role role, string message)> DialogueHistory { get; set; } = new();
 
     public List<(Role role, string message)> GetChatHistory(bool simplified)
     {
-        return simplified ? DialogueHistory ?? [] : ChatHistory ?? [];
+        return simplified ? SimplifiedChatHistory ?? [] : ChatHistory ?? [];
+    }
+
+    public List<(Role role, string message)> GetDialogueHistory()
+    {
+        return DialogueHistory ?? [];
     }
 
     // Convenience properties - obtained from TalkRequest
@@ -106,6 +114,9 @@ public class PromptContext
             // to avoid pollution from DecoratePrompt which fills request.Prompt with full context
             ChatHistory = request?.Initiator != null
                 ? TalkHistory.GetMessageHistory(request.Initiator)
+                : [],
+            SimplifiedChatHistory = request?.Initiator != null
+                ? TalkHistory.GetMessageHistory(request.Initiator, simplified: true)
                 : [],
             DialogueHistory = request?.Initiator != null
                 ? TalkHistory.GetDialogueHistory(request.Initiator)
