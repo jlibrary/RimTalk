@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using RimTalk.Client.Gemini;
 using RimTalk.Client.OpenAI;
 using RimTalk.Client.Player2;
 
@@ -45,7 +44,6 @@ public static class AIClientFactory
         // 1. Handle Special/Dynamic cases
         switch (config.Provider)
         {
-            case AIProvider.Google:  return new GeminiClient();
             case AIProvider.Player2: return await Player2Client.CreateAsync(config.ApiKey);
             case AIProvider.Local:   return new OpenAIClient(config.BaseUrl, config.CustomModelName);
             case AIProvider.Custom:  return new OpenAIClient(config.BaseUrl, config.CustomModelName, config.ApiKey);

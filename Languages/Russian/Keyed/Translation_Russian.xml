@@ -249,7 +249,7 @@
 
     <!-- Settings_Api.cs -->
     <RimTalk.Settings.GoogleApiKeyLabel>Ключ API Google AI:</RimTalk.Settings.GoogleApiKeyLabel>
-    <RimTalk.Settings.GoogleApiKeyDesc>Использует бесплатную модель Gemma3 27B. Для других моделей или провайдеров используйте расширенные настройки.</RimTalk.Settings.GoogleApiKeyDesc>
+    <RimTalk.Settings.GoogleApiKeyDesc>Использует бесплатную модель Gemma-4-26b-a4b. Для других моделей или провайдеров используйте расширенные настройки.</RimTalk.Settings.GoogleApiKeyDesc>
     <RimTalk.Settings.GetFreeApiKeyButton>Получить бесплатный ключ API</RimTalk.Settings.GetFreeApiKeyButton>
     <RimTalk.Settings.SwitchToAdvancedSettings>Переключиться на расширенные настройки</RimTalk.Settings.SwitchToAdvancedSettings>
     <RimTalk.Settings.SwitchToSimpleSettings>Переключиться на простые настройки</RimTalk.Settings.SwitchToSimpleSettings>

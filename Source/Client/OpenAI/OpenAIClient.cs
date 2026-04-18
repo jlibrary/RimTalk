@@ -8,6 +8,7 @@ using RimTalk.Error;
 using RimTalk.Util;
 using UnityEngine.Networking;
 using Verse;
+using Enumerable = System.Linq.Enumerable;
 
 namespace RimTalk.Client.OpenAI;
 
@@ -20,6 +21,7 @@ public class OpenAIClient(
 {
     private const string DefaultPath = "/v1/chat/completions";
     private readonly string _endpointUrl = FormatEndpointUrl(baseUrl);
+    private readonly Random _random = new();
 
     private static string FormatEndpointUrl(string baseUrl)
     {
@@ -32,8 +34,8 @@ public class OpenAIClient(
             : trimmed;
     }
 
-    public async Task<Payload> GetChatCompletionAsync(List<(Role role, string message)> prefixMessages, 
-        List<(Role role, string message)> messages, 
+    public async Task<Payload> GetChatCompletionAsync(List<(Role role, string message)> prefixMessages,
+        List<(Role role, string message)> messages,
         Action<Payload> onRequestPrepared = null)
     {
         string jsonContent = BuildRequestJson(prefixMessages, messages, stream: false);
@@ -48,7 +50,7 @@ public class OpenAIClient(
     }
 
     public async Task<Payload> GetStreamingChatCompletionAsync<T>(List<(Role role, string message)> prefixMessages,
-        List<(Role role, string message)> messages, 
+        List<(Role role, string message)> messages,
         Action<T> onResponseParsed,
         Action<Payload> onRequestPrepared = null) where T : class
     {
@@ -68,13 +70,32 @@ public class OpenAIClient(
             streamHandler.GetTotalTokens());
     }
 
-    private string BuildRequestJson(List<(Role role, string message)> prefixMessages, List<(Role role, string message)> messages, bool stream)
+    private string BuildRequestJson(List<(Role role, string message)> prefixMessages,
+        List<(Role role, string message)> messages, bool stream)
     {
         var rawMessages = new List<(Role role, string message)>();
         if (prefixMessages != null) rawMessages.AddRange(prefixMessages);
         if (messages != null) rawMessages.AddRange(messages);
 
         var mergedMessages = new List<Message>();
+
+        bool isGemma3 = !string.IsNullOrEmpty(model) && model.Contains("gemma-3");
+        if (isGemma3)
+        {
+            var systemMessages = Enumerable.ToList(Enumerable.Where(rawMessages, m => m.role == Role.System));
+            if (systemMessages.Any())
+            {
+                var systemText = string.Join("\n\n", Enumerable.Select(systemMessages, m => m.message));
+
+                mergedMessages.Add(new Message
+                {
+                    Role = "user",
+                    Content = $"{_random.Next()} {systemText}"
+                });
+                rawMessages.RemoveAll(m => m.role == Role.System);
+            }
+        }
+
         foreach (var m in rawMessages)
         {
             var roleStr = RoleToString(m.role);
@@ -92,12 +113,15 @@ public class OpenAIClient(
             }
         }
 
+        bool isGoogleModel = !string.IsNullOrEmpty(model) && (model.Contains("gemini") || model.Contains("gemma-4"));
+
         var request = new OpenAIRequest
         {
             Model = model,
             Messages = mergedMessages,
             Stream = stream,
-            StreamOptions = stream ? new StreamOptions { IncludeUsage = true } : null
+            StreamOptions = stream ? new StreamOptions { IncludeUsage = true } : null,
+            ReasoningEffort = isGoogleModel ? "minimal" : null
         };
 
         return JsonUtil.SerializeToJson(request);
@@ -147,13 +171,13 @@ public class OpenAIClient(
         float inactivityTimer = 0f;
         ulong lastBytes = 0;
         float connectTimeout = isLocal ? 300f : 60f;
-        float readTimeout = 60f; 
+        float readTimeout = 60f;
 
         while (!asyncOp.isDone)
         {
             if (Current.Game == null) return null;
             await Task.Delay(100);
-            
+
             ulong currentBytes = webRequest.downloadedBytes;
             bool hasStartedReceiving = currentBytes > 0;
 

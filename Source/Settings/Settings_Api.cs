@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using RimTalk.Client.Gemini;
 using RimTalk.Client.OpenAI;
 using RimTalk.Client.Player2;
 using RimTalk.Data;
@@ -455,9 +454,7 @@ public partial class Settings
         }
         else
         {
-            Task<List<string>> fetchTask = config.Provider == AIProvider.Google
-                ? GeminiClient.FetchModelsAsync(config.ApiKey, url)
-                : OpenAIClient.FetchModelsAsync(config.ApiKey, url);
+            Task<List<string>> fetchTask = OpenAIClient.FetchModelsAsync(config.ApiKey, url);
 
             fetchTask.ContinueWith(task =>
             {

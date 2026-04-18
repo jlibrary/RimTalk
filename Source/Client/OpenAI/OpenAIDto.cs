@@ -42,6 +42,9 @@ public class OpenAIRequest
 
     [DataMember(Name = "stream_options", EmitDefaultValue = false)]
     public StreamOptions StreamOptions { get; set; }
+    
+    [DataMember(Name = "reasoning_effort", EmitDefaultValue = false)]
+    public string ReasoningEffort { get; set; } 
 }
 
 [DataContract]

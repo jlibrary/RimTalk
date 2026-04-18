@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using RimTalk.Prompt;
 using Verse;
 
@@ -7,8 +6,8 @@ namespace RimTalk.Data;
 
 public static class Constant
 {
-    public const string DefaultCloudModel = "gemma-3-27b-it";
-    public const string FallbackCloudModel = "gemma-3-12b-it";
+    public const string DefaultCloudModel = "gemma-4-26b-a4b";
+    public const string FallbackCloudModel = "gemma-4-31b";
     public const string ChooseModel = "(choose model)";
 
     public static string Lang => LanguageDatabase.activeLanguage?.info?.friendlyNameNative ?? "English";

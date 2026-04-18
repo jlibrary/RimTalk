@@ -34,8 +34,8 @@ public static class AIProviderRegistry
         {
             AIProvider.Google, new ProviderDef
             {
-                EndpointUrl = "https://generativelanguage.googleapis.com/v1beta",
-                ListModelsUrl = "https://generativelanguage.googleapis.com/v1beta/models"
+                EndpointUrl = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+                ListModelsUrl = "https://generativelanguage.googleapis.com/v1beta/openai/models"
             }
         },
         {

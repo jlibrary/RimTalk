@@ -144,7 +144,7 @@ Only the hard-coded provider endpoints are listed here. Custom providers (Anthro
 
 | Provider | Endpoint | Models | Notes |
 | --- | --- | --- | --- |
-| Google Gemini | `https://generativelanguage.googleapis.com/v1beta` | `https://generativelanguage.googleapis.com/v1beta/models` |  |
+| Google Gemini | `https://generativelanguage.googleapis.com/v1beta/openai/chat/completions` | `https://generativelanguage.googleapis.com/v1beta/openai/models` |  |
 | OpenAI | `https://api.openai.com/v1/chat/completions` | `https://api.openai.com/v1/models` |  |
 | DeepSeek | `https://api.deepseek.com/v1/chat/completions` | `https://api.deepseek.com/models` |  |
 | Grok (xAI) | `https://api.x.ai/v1/chat/completions` | `https://api.x.ai/v1/models` |  |
