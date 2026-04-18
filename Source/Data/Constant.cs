@@ -6,8 +6,8 @@ namespace RimTalk.Data;
 
 public static class Constant
 {
-    public const string DefaultCloudModel = "gemma-4-26b-a4b";
-    public const string FallbackCloudModel = "gemma-4-31b";
+    public const string DefaultCloudModel = "gemma-4-26b-a4b-it";
+    public const string FallbackCloudModel = "gemma-4-31b-it";
     public const string ChooseModel = "(choose model)";
 
     public static string Lang => LanguageDatabase.activeLanguage?.info?.friendlyNameNative ?? "English";
