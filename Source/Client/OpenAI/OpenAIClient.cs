@@ -112,8 +112,17 @@ public class OpenAIClient(
                 });
             }
         }
+        
+        string? reasoningEffort = null;
 
-        bool isGoogleModel = !string.IsNullOrEmpty(model) && (model.Contains("gemini") || model.Contains("gemma-4"));
+        if (!string.IsNullOrEmpty(model))
+        {
+            string m = model.ToLower();
+            if (m.Contains("gemini") && m.Contains("pro"))
+                reasoningEffort = "low";
+            else if ((m.Contains("gemini") && m.Contains("flash")) || m.Contains("gemma-4"))
+                reasoningEffort = "minimal";
+        }
 
         var request = new OpenAIRequest
         {
@@ -121,7 +130,7 @@ public class OpenAIClient(
             Messages = mergedMessages,
             Stream = stream,
             StreamOptions = stream ? new StreamOptions { IncludeUsage = true } : null,
-            ReasoningEffort = isGoogleModel ? "minimal" : null
+            ReasoningEffort = reasoningEffort
         };
 
         return JsonUtil.SerializeToJson(request);
@@ -207,11 +216,21 @@ public class OpenAIClient(
         string responseText = downloadHandler.text;
 
         // Recover text for streaming errors
-        if ((webRequest.responseCode >= 400 || webRequest.isNetworkError || webRequest.isHttpError) &&
-            downloadHandler is OpenAIStreamHandler sHandler)
+        if (downloadHandler is OpenAIStreamHandler sHandler)
         {
-            responseText = sHandler.GetAllReceivedText();
-            if (string.IsNullOrEmpty(responseText)) responseText = sHandler.GetRawJson();
+            if (!string.IsNullOrEmpty(sHandler.DetectedError))
+            {
+                string errorMsg = sHandler.DetectedError;
+                string allText = sHandler.GetAllReceivedText();
+                throw new AIRequestException(errorMsg,
+                    new Payload(_endpointUrl, model, jsonContent, allText, 0, errorMsg));
+            }
+
+            if (webRequest.responseCode >= 400 || webRequest.isNetworkError || webRequest.isHttpError)
+            {
+                responseText = sHandler.GetAllReceivedText();
+                if (string.IsNullOrEmpty(responseText)) responseText = sHandler.GetRawJson();
+            }
         }
 
         if (webRequest.responseCode == 429)

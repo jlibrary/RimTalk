@@ -25,21 +25,34 @@ public static class JsonUtil
 
     public static T DeserializeFromJson<T>(string json)
     {
+        if (!TryDeserializeFromJson<T>(json, out var result, out var ex))
+        {
+            Logger.Error($"Json deserialization failed for {typeof(T).Name}\n{json}\nException: {ex.Message}");
+            throw ex;
+        }
+        return result;
+    }
+
+    public static bool TryDeserializeFromJson<T>(string json, out T result, out Exception exception)
+    {
+        result = default;
+        exception = null;
+
+        if (string.IsNullOrWhiteSpace(json)) return false;
+
         string sanitizedJson = Sanitize(json, typeof(T));
-        
+
         try
         {
             using var stream = new MemoryStream(Encoding.UTF8.GetBytes(sanitizedJson));
-            // Create an instance of DataContractJsonSerializer
             var serializer = new DataContractJsonSerializer(typeof(T));
-
-            // Deserialize the JSON data
-            return (T)serializer.ReadObject(stream);
+            result = (T)serializer.ReadObject(stream);
+            return true;
         }
         catch (Exception ex)
         {
-            Logger.Error($"Json deserialization failed for {typeof(T).Name}\n{json}");
-            throw;
+            exception = ex;
+            return false;
         }
     }
 

@@ -20,6 +20,8 @@ public class OpenAIStreamHandler(Action<string> onContentReceived) : DownloadHan
     private string _finishReason;
     private Usage _usage;
 
+    public string DetectedError { get; private set; }
+
 
     protected override bool ReceiveData(byte[] data, int dataLength)
     {
@@ -52,7 +54,13 @@ public class OpenAIStreamHandler(Action<string> onContentReceived) : DownloadHan
             {
                 var openAIChunk = JsonUtil.DeserializeFromJson<OpenAIStreamChunk>(jsonData);
 
-                if (!string.IsNullOrEmpty(openAIChunk.Id))
+                if (openAIChunk?.Error != null)
+                {
+                    DetectedError = openAIChunk.Error.Message;
+                    continue;
+                }
+
+                if (!string.IsNullOrEmpty(openAIChunk?.Id))
                 {
                     _id = openAIChunk.Id;
                     _object = openAIChunk.Object;
