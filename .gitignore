@@ -10,6 +10,7 @@ PublishedFileId.txt
 Folder.DotSettings.user
 Directory.Build.props
 *.sh
+.vs
 
 ## Interaction bubble library
 Libs/Bubbles.dll

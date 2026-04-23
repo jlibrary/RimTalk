@@ -20,21 +20,8 @@ public static class CommonUtil
 
     private static int GetCurrentTickRate()
     {
-        switch (Find.TickManager.CurTimeSpeed)
-        {
-            case TimeSpeed.Paused:
-                return 0;
-            case TimeSpeed.Normal:
-                return 60;
-            case TimeSpeed.Fast:
-                return 180;
-            case TimeSpeed.Superfast:
-                return 360;
-            case TimeSpeed.Ultrafast:
-                return 1500;
-            default:
-                return 60; // Default to normal speed if unknown
-        }
+        TickManager tickManager = Find.TickManager;
+        return (int)(((tickManager != null) ? tickManager.TickRateMultiplier : 1f) * 60f);
     }
 
     // Struct containing all necessary in-game data
