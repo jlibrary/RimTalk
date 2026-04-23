@@ -8,13 +8,14 @@ namespace RimTalk.Util;
 
 public static class CommonUtil
 {
-    public static bool HasPassed(int pastTick, double seconds)
+    public static bool HasPassed(int pastTick, double seconds, bool alignToNormalSpeed = false)
     {
-        return GenTicks.TicksGame - pastTick >= GetTicksForDuration(seconds);
+        return GenTicks.TicksGame - pastTick >= GetTicksForDuration(seconds, alignToNormalSpeed);
     }
-    public static int GetTicksForDuration(double seconds)
+
+    public static int GetTicksForDuration(double seconds, bool alignToNormalSpeed = false)
     {
-        var tickRate = GetCurrentTickRate();
+        var tickRate = alignToNormalSpeed ? 60 : GetCurrentTickRate();
         return (int)(seconds * tickRate);
     }
 

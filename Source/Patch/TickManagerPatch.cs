@@ -11,14 +11,14 @@ namespace RimTalk.Patch;
 [HarmonyPatch(typeof(TickManager), nameof(TickManager.DoSingleTick))]
 internal static class TickManagerPatch
 {
-    private const double DisplayInterval = 0.5; // Display every half second
     private const double DebugStatUpdateInterval = 1;
     private const int UpdateCacheInterval = 5; // 5 seconds
-    private static double TalkInterval => Settings.Get().TalkInterval;
     private static bool _noApiKeyMessageShown;
     private static bool _initialCacheRefresh;
     private static bool _chatHistoryCleared;
     private static int _lastTalkEndTick;
+    private static int _lastDisplayTick;
+    private static int _lastAutoTalkCreateTick;
 
     public static void Postfix()
     {
@@ -29,7 +29,8 @@ internal static class TickManagerPatch
             Stats.Update();
         }
 
-        if (!Settings.Get().IsEnabled || Find.CurrentMap == null)
+        var settings = Settings.Get();
+        if (!settings.IsEnabled || Find.CurrentMap == null)
         {
             return;
         }
@@ -55,22 +56,23 @@ internal static class TickManagerPatch
             }
         }
 
-        if (!_noApiKeyMessageShown && Settings.Get().GetActiveConfig() == null)
+        if (!_noApiKeyMessageShown && settings.GetActiveConfig() == null)
         {
             Messages.Message("RimTalk.TickManager.ApiKeyMissing".Translate(), MessageTypeDefOf.NegativeEvent,
                 false);
             _noApiKeyMessageShown = true;
         }
 
-        if (IsNow(DisplayInterval))
+        if (ShouldRunDisplayTick())
         {
             CustomDialogueService.Tick();
             TalkService.DisplayTalk();
         }
 
-        if (IsNow(1))
+        bool shouldProcessUserRequestNow = settings.ProcessUserTalkRequestImmediately || IsNow(1);
+        if (shouldProcessUserRequestNow)
         {
-            // User-initiated talks are checked every second
+            // User-initiated talks: default is 1s cadence; optional immediate mode checks every tick.
             while (UserRequestPool.GetNextUserRequest() is { } pawn)
             {
                 var pawnState = Cache.Get(pawn);
@@ -87,7 +89,11 @@ internal static class TickManagerPatch
                     continue;
                 }
 
-                if (!request.TalkType.IsFromUser()) break;
+                if (!request.TalkType.IsFromUser())
+                {
+                    UserRequestPool.Remove(pawn);
+                    continue;
+                }
 
                 if (TalkService.GenerateTalk(request))
                     UserRequestPool.Remove(pawn);
@@ -101,7 +107,7 @@ internal static class TickManagerPatch
             return;
         }
 
-        int intervalTicks = CommonUtil.GetTicksForDuration(TalkInterval);
+        int intervalTicks = CommonUtil.GetTicksForDuration(settings.TalkInterval, settings.AlignTimingToNormalSpeed);
         if (intervalTicks > 0 && GenTicks.TicksGame - _lastTalkEndTick >= intervalTicks)
         {
             // Select a pawn based on the current iteration strategy
@@ -121,10 +127,12 @@ internal static class TickManagerPatch
                 }
 
                 // 3. Fallback: generate based on current context if nothing else worked
-                if (!talkGenerated)
+                if (!talkGenerated && CanCreateAutoTalkRequestNow())
                 {
                     TalkRequest talkRequest = new TalkRequest(null, selectedPawn);
-                    TalkService.GenerateTalk(talkRequest);
+                    talkGenerated = TalkService.GenerateTalk(talkRequest);
+                    if (talkGenerated)
+                        _lastAutoTalkCreateTick = GenTicks.TicksGame;
                 }
             }
             
@@ -147,10 +155,30 @@ internal static class TickManagerPatch
         return Counter.Tick % ticksForDuration == 0;
     }
 
+    private static bool ShouldRunDisplayTick()
+    {
+        var settings = Settings.Get();
+        int intervalTicks = CommonUtil.GetTicksForDuration(settings.DisplayTalkInterval, settings.AlignTimingToNormalSpeed);
+        if (intervalTicks <= 0) return false;
+        if (GenTicks.TicksGame - _lastDisplayTick < intervalTicks) return false;
+        _lastDisplayTick = GenTicks.TicksGame;
+        return true;
+    }
+
+    private static bool CanCreateAutoTalkRequestNow()
+    {
+        var settings = Settings.Get();
+        int intervalTicks = CommonUtil.GetTicksForDuration(settings.AutoTalkRequestInterval, settings.AlignTimingToNormalSpeed);
+        if (intervalTicks <= 0) return true;
+        return GenTicks.TicksGame - _lastAutoTalkCreateTick >= intervalTicks;
+    }
+
     public static void Reset()
     {
         _noApiKeyMessageShown = false;
         _initialCacheRefresh = false;
         _lastTalkEndTick = GenTicks.TicksGame;
+        _lastDisplayTick = GenTicks.TicksGame;
+        _lastAutoTalkCreateTick = GenTicks.TicksGame;
     }
 }

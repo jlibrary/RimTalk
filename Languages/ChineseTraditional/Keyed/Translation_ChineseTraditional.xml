@@ -181,7 +181,26 @@ Scriban 魔法 (動態內容)
     <RimTalk.Settings.EventFilter>事件過濾器</RimTalk.Settings.EventFilter>
     <RimTalk.Settings.ApiKey>雲端 API 金鑰</RimTalk.Settings.ApiKey>
     <RimTalk.Settings.GetFreeApiKey>獲取免費 API 金鑰</RimTalk.Settings.GetFreeApiKey>
-    <RimTalk.Settings.AICooldown>AI 冷卻時間（秒）：{0}</RimTalk.Settings.AICooldown>
+    <RimTalk.Settings.LLMProcessInterval>LLM 處理 TalkRequest 間隔（秒）：{0}</RimTalk.Settings.LLMProcessInterval>
+    <RimTalk.Settings.AutoTalkRequestInterval>自動建立 TalkRequest 間隔（秒）：{0}</RimTalk.Settings.AutoTalkRequestInterval>
+    <RimTalk.Settings.TalkRequestQueueMax>TalkRequest 佇列最大數量：{0}</RimTalk.Settings.TalkRequestQueueMax>
+    <RimTalk.Settings.DisplayTalkInterval>對話顯示間隔（秒）：{0}</RimTalk.Settings.DisplayTalkInterval>
+    <RimTalk.Settings.IgnoreWaitSeconds>對話忽略等待時間（秒）：{0}</RimTalk.Settings.IgnoreWaitSeconds>
+    <RimTalk.Settings.ForceSpeakIgnored>等待後強制輸出被忽略對話</RimTalk.Settings.ForceSpeakIgnored>
+    <RimTalk.Settings.ForceSpeakIgnoredTooltip>啟用後，被父級忽略鏈阻塞的對話會在等待時間後強制顯示。</RimTalk.Settings.ForceSpeakIgnoredTooltip>
+    <RimTalk.Settings.SpeakWhilePaused>允許遊戲暫停時說話</RimTalk.Settings.SpeakWhilePaused>
+    <RimTalk.Settings.StopSpeakingInMenus>在非 RimTalk 設定/除錯視窗開啟時暫停說話</RimTalk.Settings.StopSpeakingInMenus>
+    <RimTalk.Settings.AdvancedMenuAvoidance>在進階視窗暫停說話（主分頁、規劃、研究等）</RimTalk.Settings.AdvancedMenuAvoidance>
+    <RimTalk.Settings.AlignTimingToNormalSpeed>強制按 60 tick/s（1x）調度對話</RimTalk.Settings.AlignTimingToNormalSpeed>
+    <RimTalk.Settings.IgnorePendingHotkeyEnabled>啟用跳過所有積壓對話熱鍵</RimTalk.Settings.IgnorePendingHotkeyEnabled>
+    <RimTalk.Settings.IgnorePendingHotkey>一鍵跳過積壓對話按鍵：</RimTalk.Settings.IgnorePendingHotkey>
+    <RimTalk.Settings.ProcessUserTalkRequestImmediately>立刻處理玩家手動插入的 TalkRequest</RimTalk.Settings.ProcessUserTalkRequestImmediately>
+    <RimTalk.Settings.ProcessUserTalkRequestImmediatelyTooltip>啟用後，User 類型 TalkRequest 會插入使用者佇列最前，並在每個 Tick 檢查處理。</RimTalk.Settings.ProcessUserTalkRequestImmediatelyTooltip>
+    <RimTalk.Settings.DisplayUserTalkRequestImmediately>立刻顯示玩家手動插入的 TalkRequest</RimTalk.Settings.DisplayUserTalkRequestImmediately>
+    <RimTalk.Settings.DisplayUserTalkRequestImmediatelyTooltip>啟用後，在顯示玩家手動對話前會強制忽略所有等待中的對話輸出。</RimTalk.Settings.DisplayUserTalkRequestImmediatelyTooltip>
+    <RimTalk.Settings.IgnoreAllPendingNow>立即忽略所有等待中的對話</RimTalk.Settings.IgnoreAllPendingNow>
+    <RimTalk.Settings.IgnorePendingResult>RimTalk：已忽略 {0} 條等待中的對話。</RimTalk.Settings.IgnorePendingResult>
+    <RimTalk.Settings.SkipPendingResult>RimTalk：已跳過 {0} 條積壓對話。</RimTalk.Settings.SkipPendingResult>
     <RimTalk.Settings.OverrideInteractions>使用 AI 對話覆蓋所有互動</RimTalk.Settings.OverrideInteractions>
     <RimTalk.Settings.OverrideInteractionsTooltip>啟用此選項以允許 AI 覆蓋並重新生成所有互動的對話（包括 vanilla RimWorld 和其他模組）。注意：AI 對話具有上方設定的冷卻期。要更頻繁地生成對話，請降低冷卻時間。</RimTalk.Settings.OverrideInteractionsTooltip>
     <RimTalk.Settings.AllowSimultaneousConversations>允許同時進行多個對話</RimTalk.Settings.AllowSimultaneousConversations>
