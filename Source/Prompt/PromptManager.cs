@@ -165,20 +165,30 @@ public class PromptManager : IExposable
     /// <summary>
     /// Merges consecutive messages with the same role into a single message.
     /// This improves compatibility with APIs that require strict role alternation (e.g., Gemini).
+    /// Messages at or after <paramref name="mergeBoundary"/> are treated as a new group -
+    /// they will not be merged with messages before the boundary, even if roles match.
+    /// This prevents chat history messages from being merged with the current prompt.
     /// </summary>
     /// <param name="messages">Original message list</param>
+    /// <param name="mergeBoundary">Index at which to force a merge break (e.g. after chat history).
+    /// Messages before and after this index will never be merged together.</param>
     /// <returns>Merged message list</returns>
     private static List<(PromptRole role, string content)> MergeConsecutiveRoles(
-        List<(PromptRole role, string content)> messages)
+        List<(PromptRole role, string content)> messages,
+        int mergeBoundary = -1)
     {
         if (messages == null || messages.Count <= 1)
             return messages;
 
         var merged = new List<(PromptRole role, string content)>();
         
-        foreach (var (role, content) in messages)
+        for (int i = 0; i < messages.Count; i++)
         {
-            if (merged.Count > 0 && merged[^1].role == role)
+            var (role, content) = messages[i];
+            // Force a break at the merge boundary: don't merge across it
+            bool forceBreak = (mergeBoundary >= 0 && i == mergeBoundary && merged.Count > 0);
+            
+            if (!forceBreak && merged.Count > 0 && merged[^1].role == role)
             {
                 // Same role as previous - merge content
                 var last = merged[^1];
@@ -186,7 +196,7 @@ public class PromptManager : IExposable
             }
             else
             {
-                // Different role - add as new message
+                // Different role or forced break - add as new message
                 merged.Add((role, content));
             }
         }
@@ -484,6 +494,9 @@ public class PromptManager : IExposable
             }
         }
 
-        return MergeConsecutiveRoles(result);
+        // Pass lastHistoryIndex as merge boundary to prevent chat history messages
+        // from being merged with the current prompt (e.g. historical User + current User).
+        // lastHistoryIndex points to the end of chat history in the result list.
+        return MergeConsecutiveRoles(result, lastHistoryIndex);
     }
 }
