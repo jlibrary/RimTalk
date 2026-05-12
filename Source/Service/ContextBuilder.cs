@@ -238,8 +238,8 @@ public static class ContextBuilder
 
         // For Short level, only include latest 3 thoughts
         var thoughts = infoLevel == PromptService.InfoLevel.Short
-            ? allThoughts.Keys.Take(3).Select(t => CommonUtil.Sanitize(t.LabelCap))
-            : allThoughts.Keys.Select(t => CommonUtil.Sanitize(t.LabelCap));
+            ? allThoughts.Keys.Take(3).Select(t => CommonUtil.Sanitize(t.LabelCap ?? t.def?.defName ?? "UnknownThought"))
+            : allThoughts.Keys.Select(t => CommonUtil.Sanitize(t.LabelCap ?? t.def?.defName ?? "UnknownThought"));
 
         if (thoughts.Any())
             return $"Memory: {string.Join(", ", thoughts)}";
@@ -256,9 +256,9 @@ public static class ContextBuilder
             return null;
 
         var thoughts = allThoughts
-            .OrderBy(kvp => kvp.Key.LabelCap.ToString())
+            .OrderBy(kvp => kvp.Key.LabelCap)
             .Select(kvp =>
-                $"{CommonUtil.Sanitize(kvp.Key.LabelCap)}({kvp.Value.ToStringWithSign()})");
+                $"{CommonUtil.Sanitize(kvp.Key.LabelCap ?? kvp.Key.def?.defName ?? "UnknownThought")}({kvp.Value.ToStringWithSign()})");
 
         return $"Thoughts: {string.Join(", ", thoughts)}";
     }
