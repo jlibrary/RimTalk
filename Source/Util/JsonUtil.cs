@@ -107,6 +107,8 @@ public static class JsonUtil
             }
         }
 
+        sanitized = ProtectMalformedQuotes(sanitized);
+
         bool isEnumerable = typeof(IEnumerable).IsAssignableFrom(targetType) && targetType != typeof(string);
         if (isEnumerable && sanitized.StartsWith("{"))
         {
@@ -114,5 +116,107 @@ public static class JsonUtil
         }
 
         return sanitized;
+    }
+
+    internal static bool IsJsonQuote(char c)
+    {
+        return c == '"' || c == '“' || c == '”';
+    }
+
+    internal static bool IsLikelyStringTerminator(string text, int quoteIndex)
+    {
+        for (int i = quoteIndex + 1; i < text.Length; i++)
+        {
+            char c = text[i];
+            if (char.IsWhiteSpace(c))
+                continue;
+
+            return c == ',' || c == '}' || c == ']' || c == ':';
+        }
+
+        return true;
+    }
+
+    private static string ProtectMalformedQuotes(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            return text;
+
+        var sb = new StringBuilder(text.Length + 16);
+        bool inString = false;
+        bool escaped = false;
+        char activeQuote = '\0';
+
+        for (int i = 0; i < text.Length; i++)
+        {
+            char c = text[i];
+
+            if (!inString)
+            {
+                if (IsJsonQuote(c))
+                {
+                    inString = true;
+                    activeQuote = c;
+                    sb.Append('"');
+                }
+                else
+                {
+                    sb.Append(c);
+                }
+
+                continue;
+            }
+
+            if (escaped)
+            {
+                sb.Append(c);
+                escaped = false;
+                continue;
+            }
+
+            if (c == '\\')
+            {
+                sb.Append(c);
+                escaped = true;
+                continue;
+            }
+
+            if (IsClosingQuoteForActiveString(activeQuote, c))
+            {
+                if (IsLikelyStringTerminator(text, i))
+                {
+                    sb.Append('"');
+                    inString = false;
+                    activeQuote = '\0';
+                }
+                else
+                {
+                    sb.Append("\\\"");
+                }
+
+                continue;
+            }
+
+            sb.Append(c);
+        }
+
+        if (inString)
+            sb.Append('"');
+
+        return sb.ToString();
+    }
+
+    private static bool IsClosingQuoteForActiveString(char activeQuote, char current)
+    {
+        if (activeQuote == '"')
+            return current == '"';
+
+        if (activeQuote == '“')
+            return current == '”' || current == '“' || current == '"';
+
+        if (activeQuote == '”')
+            return current == '”' || current == '“' || current == '"';
+
+        return current == '"';
     }
 }

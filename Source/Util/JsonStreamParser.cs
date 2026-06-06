@@ -32,17 +32,12 @@ public class JsonStreamParser<T> where T : class
 
             string jsonObj = text.Substring(objStart, objEnd - objStart + 1);
 
-            try
+            if (JsonUtil.TryDeserializeFromJson<T>(jsonObj, out var parsedObject, out _))
             {
-                var parsedObject = JsonUtil.DeserializeFromJson<T>(jsonObj);
                 if (parsedObject != null)
                 {
                     newObjects.Add(parsedObject);
                 }
-            }
-            catch
-            {
-                // Not a valid object, continue searching
             }
 
             searchStart = objEnd + 1;
@@ -62,6 +57,7 @@ public class JsonStreamParser<T> where T : class
         int depth = 0;
         bool inString = false;
         bool escaped = false;
+        char activeQuote = '\0';
 
         for (int i = openIndex; i < text.Length; i++)
         {
@@ -75,13 +71,29 @@ public class JsonStreamParser<T> where T : class
 
             if (c == '\\')
             {
-                escaped = true;
+                if (inString)
+                    escaped = true;
                 continue;
             }
 
-            if (c == '"')
+            if (JsonUtil.IsJsonQuote(c))
             {
-                inString = !inString;
+                if (!inString)
+                {
+                    inString = true;
+                    activeQuote = c;
+                    continue;
+                }
+
+                if (IsClosingQuoteForActiveString(activeQuote, c))
+                {
+                    if (JsonUtil.IsLikelyStringTerminator(text, i))
+                    {
+                        inString = false;
+                        activeQuote = '\0';
+                    }
+                }
+
                 continue;
             }
 
@@ -99,5 +111,19 @@ public class JsonStreamParser<T> where T : class
         }
 
         return -1; // No matching brace found
+    }
+
+    private static bool IsClosingQuoteForActiveString(char activeQuote, char current)
+    {
+        if (activeQuote == '"')
+            return current == '"';
+
+        if (activeQuote == '“')
+            return current == '”' || current == '“' || current == '"';
+
+        if (activeQuote == '”')
+            return current == '”' || current == '“' || current == '"';
+
+        return current == '"';
     }
 }
