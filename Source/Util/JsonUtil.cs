@@ -123,18 +123,111 @@ public static class JsonUtil
         return c == '"' || c == '“' || c == '”';
     }
 
-    internal static bool IsLikelyStringTerminator(string text, int quoteIndex)
+    internal static bool IsLikelyStringTerminator(string text, int quoteIndex, bool inValue)
     {
+        // Find the first non-whitespace character after the quote
+        int nextCharIndex = -1;
+        char nextChar = '\0';
         for (int i = quoteIndex + 1; i < text.Length; i++)
         {
-            char c = text[i];
-            if (char.IsWhiteSpace(c))
-                continue;
-
-            return c == ',' || c == '}' || c == ']' || c == ':';
+            if (!char.IsWhiteSpace(text[i]))
+            {
+                nextCharIndex = i;
+                nextChar = text[i];
+                break;
+            }
         }
 
-        return true;
+        if (nextCharIndex == -1)
+            return true; // End of text is a terminator
+
+        if (nextChar == ':')
+        {
+            // Colon can only terminate a string if we are currently parsing a Key, not a Value
+            return !inValue;
+        }
+
+        if (nextChar == '}' || nextChar == ']')
+        {
+            // A quote followed by } or ] is always a valid string terminator
+            return true;
+        }
+
+        if (nextChar == ',')
+        {
+            // Comma separator
+            // Let's find the next non-whitespace character after ','
+            int postCommaIndex = -1;
+            for (int i = nextCharIndex + 1; i < text.Length; i++)
+            {
+                if (!char.IsWhiteSpace(text[i]))
+                {
+                    postCommaIndex = i;
+                    break;
+                }
+            }
+
+            if (postCommaIndex == -1)
+                return false; // Trailing comma with no following content is not a terminator context
+
+            char first = text[postCommaIndex];
+
+            // In an object context, a comma separator must be followed by a new key ("key":)
+            if (inValue)
+            {
+                if (IsJsonQuote(first))
+                {
+                    for (int i = postCommaIndex + 1; i < text.Length; i++)
+                    {
+                        if (IsJsonQuote(text[i]))
+                        {
+                            for (int j = i + 1; j < text.Length; j++)
+                            {
+                                char next = text[j];
+                                if (char.IsWhiteSpace(next))
+                                    continue;
+                                if (next == ':')
+                                    return true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                return false;
+            }
+            else
+            {
+                // In an array context, comma is followed by another array element (string, number, bool, null, object, array)
+                if (IsJsonQuote(first))
+                {
+                    for (int i = postCommaIndex + 1; i < text.Length; i++)
+                    {
+                        if (IsJsonQuote(text[i]))
+                        {
+                            for (int j = i + 1; j < text.Length; j++)
+                            {
+                                char next = text[j];
+                                if (char.IsWhiteSpace(next))
+                                    continue;
+                                if (next == ',' || next == ']')
+                                    return true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (char.IsDigit(first) || first == '-' || first == '{' || first == '[')
+                    return true;
+
+                string remaining = text.Substring(postCommaIndex);
+                if (remaining.StartsWith("true") || remaining.StartsWith("false") || remaining.StartsWith("null"))
+                    return true;
+            }
+
+            return false;
+        }
+
+        return false;
     }
 
     private static string ProtectMalformedQuotes(string text)
@@ -146,6 +239,7 @@ public static class JsonUtil
         bool inString = false;
         bool escaped = false;
         char activeQuote = '\0';
+        bool inValue = false; // State machine to track key vs value parsing
 
         for (int i = 0; i < text.Length; i++)
         {
@@ -161,6 +255,15 @@ public static class JsonUtil
                 }
                 else
                 {
+                    if (c == ':')
+                        inValue = true;
+                    else if (c == ',')
+                        inValue = false;
+                    else if (c == '{')
+                        inValue = false;
+                    else if (c == '[')
+                        inValue = true;
+
                     sb.Append(c);
                 }
 
@@ -183,7 +286,7 @@ public static class JsonUtil
 
             if (IsClosingQuoteForActiveString(activeQuote, c))
             {
-                if (IsLikelyStringTerminator(text, i))
+                if (IsLikelyStringTerminator(text, i, inValue))
                 {
                     sb.Append('"');
                     inString = false;
@@ -206,7 +309,7 @@ public static class JsonUtil
         return sb.ToString();
     }
 
-    private static bool IsClosingQuoteForActiveString(char activeQuote, char current)
+    internal static bool IsClosingQuoteForActiveString(char activeQuote, char current)
     {
         if (activeQuote == '"')
             return current == '"';

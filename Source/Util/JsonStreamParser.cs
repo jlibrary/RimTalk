@@ -58,6 +58,7 @@ public class JsonStreamParser<T> where T : class
         bool inString = false;
         bool escaped = false;
         char activeQuote = '\0';
+        bool inValue = false;
 
         for (int i = openIndex; i < text.Length; i++)
         {
@@ -85,9 +86,9 @@ public class JsonStreamParser<T> where T : class
                     continue;
                 }
 
-                if (IsClosingQuoteForActiveString(activeQuote, c))
+                if (JsonUtil.IsClosingQuoteForActiveString(activeQuote, c))
                 {
-                    if (JsonUtil.IsLikelyStringTerminator(text, i))
+                    if (JsonUtil.IsLikelyStringTerminator(text, i, inValue))
                     {
                         inString = false;
                         activeQuote = '\0';
@@ -97,7 +98,17 @@ public class JsonStreamParser<T> where T : class
                 continue;
             }
 
-            if (inString) continue;
+            if (inString)
+                continue;
+
+            if (c == ':')
+                inValue = true;
+            else if (c == ',')
+                inValue = false;
+            else if (c == '{')
+                inValue = false;
+            else if (c == '[')
+                inValue = true;
 
             if (c == '{')
             {
@@ -111,19 +122,5 @@ public class JsonStreamParser<T> where T : class
         }
 
         return -1; // No matching brace found
-    }
-
-    private static bool IsClosingQuoteForActiveString(char activeQuote, char current)
-    {
-        if (activeQuote == '"')
-            return current == '"';
-
-        if (activeQuote == '“')
-            return current == '”' || current == '“' || current == '"';
-
-        if (activeQuote == '”')
-            return current == '”' || current == '“' || current == '"';
-
-        return current == '"';
     }
 }
