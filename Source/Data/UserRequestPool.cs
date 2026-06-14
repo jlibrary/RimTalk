@@ -9,6 +9,11 @@ public class UserRequestPool
 
     public static void Add(Pawn pawn, bool priority = false)
     {
+        if (pawn == null) return;
+
+        // Keep one slot per pawn so "priority insert" always behaves deterministically.
+        UserRequests.Remove(pawn);
+
         if (priority)
             UserRequests.Insert(0, pawn);
         else

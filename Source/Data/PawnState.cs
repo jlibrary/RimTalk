@@ -25,6 +25,8 @@ public class PawnState(Pawn pawn)
 
     public void AddTalkRequest(string prompt, Pawn recipient = null, TalkType talkType = TalkType.Other)
     {
+        TrimTalkRequestQueueIfNeeded();
+
         // 1. If Urgent, clear out less important active requests
         if (talkType == TalkType.Urgent)
         {
@@ -49,10 +51,17 @@ public class PawnState(Pawn pawn)
 
         if (talkType.IsFromUser())
         {
+            var settings = Settings.Get();
             TalkRequests.AddFirst(newRequest);
-            IgnoreAllTalkResponses();
-            Cache.Get(recipient)?.IgnoreAllTalkResponses();
-            UserRequestPool.Add(Pawn);
+
+            // Optional "immediate display": clear all already-pending lines before user-inserted dialogue.
+            if (settings.DisplayUserTalkRequestImmediately)
+            {
+                foreach (var state in Cache.GetAll())
+                    state.IgnoreAllTalkResponses();
+            }
+
+            UserRequestPool.Add(Pawn, settings.ProcessUserTalkRequestImmediately);
         }
         else if (talkType is TalkType.Event or TalkType.QuestOffer)
         {
@@ -106,8 +115,9 @@ public class PawnState(Pawn pawn)
     public bool CanGenerateTalk()
     {
         if (Pawn.IsPlayer()) return true;
+        var settings = Settings.Get();
         return !IsGeneratingTalk && CanDisplayTalk() && Pawn.Awake() && TalkResponses.Empty() 
-               && CommonUtil.HasPassed(LastTalkTick, RimTalkSettings.ReplyInterval);
+               && CommonUtil.HasPassed(LastTalkTick, settings.TalkInterval, settings.AlignTimingToNormalSpeed);
     }
     
     public void IgnoreTalkResponse()
@@ -133,5 +143,32 @@ public class PawnState(Pawn pawn)
                 TalkHistory.AddIgnored(response.Id);
                 return true;
             });
+    }
+
+    private void TrimTalkRequestQueueIfNeeded()
+    {
+        int maxQueueSize = Settings.Get().MaxTalkRequestQueueSize;
+        if (maxQueueSize < 1) maxQueueSize = 1;
+
+        while (TalkRequests.Count >= maxQueueSize)
+        {
+            var removable = FindFirstNonUserRequestNode() ?? TalkRequests.Last;
+            if (removable == null) break;
+
+            TalkRequestPool.AddToHistory(removable.Value, RequestStatus.Expired);
+            TalkRequests.Remove(removable);
+        }
+    }
+
+    private LinkedListNode<TalkRequest> FindFirstNonUserRequestNode()
+    {
+        var node = TalkRequests.First;
+        while (node != null)
+        {
+            if (!node.Value.TalkType.IsFromUser())
+                return node;
+            node = node.Next;
+        }
+        return null;
     }
 }
