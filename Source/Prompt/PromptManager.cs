@@ -357,13 +357,15 @@ public class PromptManager : IExposable
         var settings = Settings.Get();
         
         // 1. Prepare shared context data
-        string dialogueType = PromptContextProvider.GetDialogueTypeString(talkRequest, pawns);
+        var (dialogueType, intent, topic) = PromptContextProvider.GetDialogueTypeData(talkRequest, pawns);
         talkRequest.Context = PromptService.BuildContext(pawns);
         PromptService.DecoratePrompt(talkRequest, pawns, status);
 
         // 2. Build Context Object
         var context = PromptContext.FromTalkRequest(talkRequest, pawns);
         context.DialogueType = dialogueType;
+        context.Intent = intent;
+        context.ConversationTopic = topic;
         context.DialogueStatus = status;
         context.DialoguePrompt = talkRequest.Prompt;
         LastContext = context;

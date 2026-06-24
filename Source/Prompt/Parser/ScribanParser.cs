@@ -358,6 +358,8 @@ public static class ScribanParser
     private static object GetMagicContextValue(PromptContext context, string member) {
         return member.ToLowerInvariant() switch {
             "dialogue_type" or "dialoguetype" => context.DialogueType ?? "",
+            "intent" => context.Intent ?? "",
+            "conversation_topic" or "conversationtopic" => context.ConversationTopic ?? "",
             "dialogue_status" or "dialoguestatus" => context.DialogueStatus ?? "",
             "prompt" or "dialogue_prompt" or "dialogueprompt" => context.DialoguePrompt ?? "",
             "context" or "pawn_context" or "pawncontext" => context.PawnContext ?? "",

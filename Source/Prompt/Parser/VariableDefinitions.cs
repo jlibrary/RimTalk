@@ -76,7 +76,9 @@ public static class VariableDefinitions
         {
             ("prompt", "Full decorated prompt including time, weather, and location"),
             ("context", "Raw formatted string describing the initiator's details"),
-            ("ctx.DialogueType", "Type of dialogue (monologue, conversation, etc.)"),
+            ("ctx.DialogueType", "Combined string containing both the dialogue intent and the conversation topic"),
+            ("ctx.Intent", "The structural intent of the dialogue (e.g. 'short monologue' or 'starts conversation')"),
+            ("ctx.ConversationTopic", "The core subject or trigger of the interaction (e.g. mental break, downed in pain, or specific interaction text)"),
             ("ctx.DialogueStatus", "Current status of the dialogue"),
             ("ctx.PawnContext", "Formatted string describing the pawn"),
             ("ctx.UserPrompt", "The raw prompt from the user (if any)"),
