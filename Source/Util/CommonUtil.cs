@@ -196,4 +196,23 @@ public static class CommonUtil
     
         return text;
     }
+
+    public static string[] SplitByLine(string text)
+    {
+        if (string.IsNullOrEmpty(text))
+            return Array.Empty<string>();
+            
+        return text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+    }
+    
+    public static string[] SplitByString(string text, string separator)
+    {
+        if (string.IsNullOrEmpty(text))
+            return Array.Empty<string>();
+            
+        if (string.IsNullOrEmpty(separator))
+            return new[] { text };
+            
+        return text.Split(new[] { separator }, StringSplitOptions.None);
+    }
 }

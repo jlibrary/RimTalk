@@ -120,7 +120,34 @@ public class PromptEntry : IExposable
     {
         Scribe_Values.Look(ref _id, "id", Guid.NewGuid().ToString());
         Scribe_Values.Look(ref _name, "name", "New Prompt");
-        Scribe_Values.Look(ref Content, "content", "");
+
+        // Preserve exact whitespace and newlines which XML Scribe normally destroys
+        string savedContent = Content;
+        if (Scribe.mode == LoadSaveMode.Saving && !string.IsNullOrEmpty(Content))
+        {
+            savedContent = "B64:" + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(Content));
+        }
+        
+        Scribe_Values.Look(ref savedContent, "content", "");
+        
+        if (Scribe.mode == LoadSaveMode.LoadingVars)
+        {
+            if (!string.IsNullOrEmpty(savedContent) && savedContent.StartsWith("B64:"))
+            {
+                try
+                {
+                    Content = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(savedContent.Substring(4)));
+                }
+                catch
+                {
+                    Content = savedContent;
+                }
+            }
+            else
+            {
+                Content = savedContent ?? "";
+            }
+        }
         Scribe_Values.Look(ref Role, "role", PromptRole.System);
         Scribe_Values.Look(ref CustomRole, "customRole", "");
         Scribe_Values.Look(ref Position, "position", PromptPosition.Relative);
