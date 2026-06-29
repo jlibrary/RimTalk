@@ -17,22 +17,22 @@ namespace RimTalk.Prompt;
 public static class PromptContextProvider
 {
     /// <summary>
-    /// Generates a description string of the dialogue type.
-    /// Used by {{dialogue.type}} variable.
+    /// Generates a description string of the dialogue type, intent, and topic.
+    /// Used by {{dialogue.type}}, {{intent}}, and {{conversation.topic}} variables.
     /// Delegates to ContextBuilder.BuildDialogueType() to avoid code duplication.
     /// </summary>
-    public static string GetDialogueTypeString(TalkRequest talkRequest, List<Pawn> pawns)
+    public static (string dialogueType, string intent, string topic) GetDialogueTypeData(TalkRequest talkRequest, List<Pawn> pawns)
     {
-        if (pawns == null || pawns.Count == 0) return "";
+        if (pawns == null || pawns.Count == 0) return ("", "", "");
         
         var mainPawn = pawns[0];
         var shortName = mainPawn.LabelShort;
         var sb = new StringBuilder();
         
         // Delegate to ContextBuilder to avoid duplicating dialogue type logic
-        ContextBuilder.BuildDialogueType(sb, talkRequest, pawns, shortName, mainPawn);
+        ContextBuilder.BuildDialogueType(sb, talkRequest, pawns, shortName, mainPawn, out string intent, out string topic);
         
-        return sb.ToString();
+        return (sb.ToString(), intent, topic);
     }
 
     /// <summary>

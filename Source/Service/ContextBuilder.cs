@@ -302,22 +302,32 @@ public static class ContextBuilder
 
     public static void BuildDialogueType(StringBuilder sb, TalkRequest talkRequest, List<Pawn> pawns, string shortName, Pawn mainPawn)
     {
+        BuildDialogueType(sb, talkRequest, pawns, shortName, mainPawn, out _, out _);
+    }
+
+    public static void BuildDialogueType(StringBuilder sb, TalkRequest talkRequest, List<Pawn> pawns, string shortName, Pawn mainPawn, out string intent, out string topic)
+    {
+        var intentSb = new StringBuilder();
+        var topicSb = new StringBuilder();
+
         if (talkRequest.TalkType.IsFromUser())
         {
-            sb.Append($"{pawns[1].LabelShort}({pawns[1].GetRole()}) said to {shortName}: '{talkRequest.Prompt}'. ");
+            topicSb.Append($"{pawns[1].LabelShort}({pawns[1].GetRole()}) said to {shortName}: '{talkRequest.Prompt}'. ");
 
             var mode = Settings.Get().PlayerDialogueMode;
             bool multiTurn = mode == Settings.PlayerDialogueMode.AIDriven || (!pawns[1].IsPlayer() && mode != Settings.PlayerDialogueMode.Manual);
 
-            sb.Append(multiTurn
+            intentSb.Append(multiTurn
                 ? $"Generate multi turn dialogues starting after this (do not repeat initial dialogue), beginning with {shortName}"
                 : $"Generate dialogue starting after this. Do not generate any further lines for {pawns[1].LabelShort}");
+
+            sb.Append(topicSb).Append(intentSb);
         }
         else
         {
             if (pawns.Count == 1)
             {
-                sb.Append($"{shortName} short monologue");
+                intentSb.Append($"{shortName} short monologue");
             }
             else if (mainPawn.IsInCombat() || mainPawn.GetMapRole() == MapRole.Invading)
             {
@@ -325,22 +335,29 @@ public static class ContextBuilder
                     talkRequest.Prompt = null;
 
                 talkRequest.TalkType = TalkType.Urgent;
-                sb.Append(mainPawn.IsSlave || mainPawn.IsPrisoner
+                intentSb.Append(mainPawn.IsSlave || mainPawn.IsPrisoner
                     ? $"{shortName} dialogue short (worry)"
                     : $"{shortName} dialogue short, urgent tone ({mainPawn.GetMapRole().ToString().ToLower()}/command)");
             }
             else
             {
-                sb.Append($"{shortName} starts conversation, taking turns");
+                intentSb.Append($"{shortName} starts conversation, taking turns");
             }
 
             if (mainPawn.InMentalState)
-                sb.Append("\nbe dramatic (mental break)");
+                topicSb.Append("be dramatic (mental break)");
             else if (mainPawn.Downed && !mainPawn.IsBaby())
-                sb.Append("\n(downed in pain. Short, strained dialogue)");
-            else
-                sb.Append($"\n{talkRequest.Prompt}");
+                topicSb.Append("(downed in pain. Short, strained dialogue)");
+            else if (talkRequest.Prompt != null)
+                topicSb.Append(talkRequest.Prompt);
+
+            sb.Append(intentSb);
+            if (topicSb.Length > 0)
+                sb.Append("\n").Append(topicSb);
         }
+
+        intent = intentSb.ToString();
+        topic = topicSb.ToString();
     }
 
     public static void BuildLocationContext(StringBuilder sb, ContextSettings contextSettings, Pawn mainPawn)

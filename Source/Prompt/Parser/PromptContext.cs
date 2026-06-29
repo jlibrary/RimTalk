@@ -32,6 +32,12 @@ public class PromptContext
     /// <summary>Dialogue type description (monologue/conversation/urgent, etc.)</summary>
     public string DialogueType { get; set; }
     
+    /// <summary>Intent description</summary>
+    public string Intent { get; set; }
+    
+    /// <summary>Topic description</summary>
+    public string ConversationTopic { get; set; }
+    
     /// <summary>Dialogue status description (initiator's current state)</summary>
     public string DialogueStatus { get; set; }
     
