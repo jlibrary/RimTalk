@@ -171,10 +171,8 @@ public static class RelationsService
         // Also filter out rimtalk history, as this is already handled by a different context
         var entries = Find.PlayLog.AllEntries
         .Where(entry =>
-            entry is PlayLogEntry_Interaction &&
             entry.Concerns(pawn) &&
             entry.GetType() != typeof(PlayLogEntry_RimTalkInteraction))
-        .Reverse()
         .Take(maxEntries);
         
         foreach (var entry in entries)
@@ -204,7 +202,7 @@ public static class RelationsService
 
         if (sb.Length > 0)
         {
-            return "Interaction Logs:\n" + sb.ToString().TrimEnd();
+            return "Interaction logs:\n" + sb.ToString().TrimEnd();
         }
 
         return "";
