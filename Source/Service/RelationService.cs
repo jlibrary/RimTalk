@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using RimTalk.Util;
 using RimWorld;
 using Verse;
@@ -155,6 +156,60 @@ public static class RelationsService
         {
             sb.Length -= 2;
             return "Relations: " + sb;
+        }
+
+        return "";
+    }
+
+    public static string GetAllInteractionString(Pawn pawn)
+    {
+        if (pawn == null || Find.PlayLog?.AllEntries == null) return "";
+
+        const int maxEntries = 5; // Todo make into a setting?
+
+        var sb = new StringBuilder();
+
+        // Also filter out rimtalk history, as this is already handled by a different context
+        var entries = Find.PlayLog.AllEntries
+        .Where(entry =>
+            entry is PlayLogEntry_Interaction &&
+            entry.Concerns(pawn) &&
+            entry.GetType() != typeof(PlayLogEntry_RimTalkInteraction))
+        .Reverse()
+        .Take(maxEntries);
+        
+        foreach (var entry in entries)
+        {
+            try
+            {
+                string text = entry.ToGameStringFromPOV(pawn, false).ToString();
+
+                // Remove string color codes
+                text = Regex.Replace(text, @"<.+?>", "");
+
+                // Also remove any newlines in the middle if they exist
+                text = text
+                .Replace("\r\n", " ")
+                .Replace("\n", " ")
+                .Replace("\r", " ")
+                .Trim();
+
+                Log.Message(entry.GetType().ToString());
+                Log.Message(text);
+
+                sb.Append("- ");
+                sb.AppendLine(text);
+
+            }
+            catch (Exception)
+            {   
+                // Skip if something's wrong with the entry (e.g., modded entry)
+            }
+        }
+
+        if (sb.Length > 0)
+        {
+            return "Interaction Logs:\n" + sb.ToString().TrimEnd();
         }
 
         return "";

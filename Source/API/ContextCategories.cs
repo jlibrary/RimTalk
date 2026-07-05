@@ -33,6 +33,7 @@ public static class ContextCategories
         public static readonly ContextCategory Social = new("social", ContextType.Pawn);
         public static readonly ContextCategory FullSocial = new("fullsocial", ContextType.Pawn);
         public static readonly ContextCategory FullRelation = new("fullrelation", ContextType.Pawn);
+        public static readonly ContextCategory FullInteraction = new("fullinteraction", ContextType.Pawn);
         public static readonly ContextCategory FullThought = new("fullthought", ContextType.Pawn);
         public static readonly ContextCategory Equipment = new("equipment", ContextType.Pawn);
         public static readonly ContextCategory Genes = new("genes", ContextType.Pawn);
