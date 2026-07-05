@@ -165,8 +165,7 @@ public static class RelationsService
     {
         if (pawn == null || Find.PlayLog?.AllEntries == null) return "";
 
-        const int maxEntries = 5; // Todo make into a setting?
-
+        const int maxEntries = 5;
         var sb = new StringBuilder();
 
         // Also filter out rimtalk history, as this is already handled by a different context
@@ -194,12 +193,8 @@ public static class RelationsService
                 .Replace("\r", " ")
                 .Trim();
 
-                Log.Message(entry.GetType().ToString());
-                Log.Message(text);
-
                 sb.Append("- ");
                 sb.AppendLine(text);
-
             }
             catch (Exception)
             {   
