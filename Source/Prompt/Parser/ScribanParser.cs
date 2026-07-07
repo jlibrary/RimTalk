@@ -324,6 +324,7 @@ public static class ScribanParser
             "social" => RelationsService.GetRelationsString(pawn),
             "fullsocial" => RelationsService.GetAllSocialString(pawn),
             "fullrelation" => RelationsService.GetAllRelationsString(pawn),
+            "fullinteraction" => RelationsService.GetAllInteractionString(pawn),
             "location" => PromptContextProvider.GetLocationString(pawn),
             "terrain" => pawn.Map != null ? pawn.Position.GetTerrain(pawn.Map)?.LabelCap ?? "" : "",
             "beauty" => PromptContextProvider.GetBeautyString(pawn),
