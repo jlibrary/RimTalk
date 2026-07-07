@@ -179,7 +179,10 @@ public static class RelationsService
         {
             try
             {
-                string text = entry.ToGameStringFromPOV(pawn, false).ToString();
+                string text = entry.ToGameStringFromPOV(pawn);
+                
+                if (text.Contains("error"))
+                    continue;
 
                 // Remove string color codes
                 text = Regex.Replace(text, @"<.+?>", "");
