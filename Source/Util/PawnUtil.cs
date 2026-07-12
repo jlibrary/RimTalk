@@ -579,6 +579,12 @@ public static class PawnUtil
         return lines.Any() ? string.Join("\n", lines) : null;
     }
 
+    public static bool IsPrisonBreaking(this Pawn pawn)
+    {
+        if (pawn == null || pawn.IsPlayer()) return false;
+        return PrisonBreakUtility.IsPrisonBreaking(pawn);
+    }
+
     public static bool IsPlayer(this Pawn pawn)
     {
         return pawn == Cache.GetPlayer();
