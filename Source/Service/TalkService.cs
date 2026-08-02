@@ -248,6 +248,9 @@ public static class TalkService
         var recipient = talk.GetTarget() ?? pawn;
         var playLogEntryInteraction = new PlayLogEntry_RimTalkInteraction(intDef, pawn, recipient, null);
 
+        if (playLogEntryInteraction.CachedString.NullOrEmpty())
+            return;
+        
         Find.PlayLog.Add(playLogEntryInteraction);
 
         if (Settings.Get().ApplyMoodAndSocialEffects && pawn != recipient)
