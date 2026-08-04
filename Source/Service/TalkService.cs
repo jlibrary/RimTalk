@@ -122,8 +122,8 @@ public static class TalkService
 
                     receivedResponses.Add(talkResponse);
 
-                    // Enqueue the received talk for the pawn to display later.
-                    pawnState.TalkResponses.Add(talkResponse);
+                    // Hand off to the main thread for display later; PawnState.TalkResponses itself must only ever be touched from the main thread.
+                    pawnState.QueueIncomingResponse(talkResponse);
                 }
             );
 
@@ -166,7 +166,11 @@ public static class TalkService
         foreach (Pawn pawn in Cache.Keys)
         {
             PawnState pawnState = Cache.Get(pawn);
-            if (pawnState == null || pawnState.TalkResponses.Empty()) continue;
+            if (pawnState == null) continue;
+
+            // Move any responses handed off from background generation threads before reading.
+            pawnState.DrainIncomingTalkResponses();
+            if (pawnState.TalkResponses.Empty()) continue;
 
             var talk = pawnState.TalkResponses.First();
             if (talk == null)

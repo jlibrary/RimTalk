@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using RimTalk.Source.Data;
 using RimTalk.Util;
@@ -15,6 +16,7 @@ public class PawnState(Pawn pawn)
     public string LastStatus { get; set; } = "";
     public int RejectCount { get; set; }
     public readonly List<TalkResponse> TalkResponses = [];
+    private readonly ConcurrentQueue<TalkResponse> _incomingTalkResponses = new();
     public bool IsGeneratingTalk { get; set; }
     public readonly LinkedList<TalkRequest> TalkRequests = [];
     
@@ -86,6 +88,26 @@ public class PawnState(Pawn pawn)
     {
         TalkRequestPool.AddToHistory(request, RequestStatus.Processed);
         TalkRequests.Remove(request);
+    }
+
+    /// <summary>
+    /// Thread-safe hand-off for background threads to submit a talk response. Call
+    /// <see cref="DrainIncomingTalkResponses"/> from the main thread before reading
+    /// <see cref="TalkResponses"/> to move queued entries in.
+    /// </summary>
+    public void QueueIncomingResponse(TalkResponse talkResponse)
+    {
+        _incomingTalkResponses.Enqueue(talkResponse);
+    }
+
+    /// <summary>
+    /// Moves any responses queued from background threads into <see cref="TalkResponses"/>.
+    /// Must only be called from the main thread.
+    /// </summary>
+    public void DrainIncomingTalkResponses()
+    {
+        while (_incomingTalkResponses.TryDequeue(out var talkResponse))
+            TalkResponses.Add(talkResponse);
     }
 
     public bool CanDisplayTalk()
