@@ -70,6 +70,7 @@ public static class ScribanParser
             // 2.1 Session variable functions (cross-entry variables)
 			scriptObject.Import("setvar", new Action<string, object>(SetSessionVar));
 			scriptObject.Import("getvar", new Func<string, object>(GetSessionVar));
+			scriptObject.Import("random", new Func<int, int, int>((min, max) => UnityEngine.Random.Range(min, max)));
 
             // 2. IMPORT UTILITIES (Extension Methods support)
             // This allows: {{ pawn | IsTalkEligible }} or {{ GetRole pawn }}
