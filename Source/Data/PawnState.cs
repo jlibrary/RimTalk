@@ -128,23 +128,25 @@ public class PawnState(Pawn pawn)
     public bool CanGenerateTalk()
     {
         if (Pawn.IsPlayer()) return true;
-        return !IsGeneratingTalk && CanDisplayTalk() && Pawn.Awake() && TalkResponses.Empty() 
+        DrainIncomingTalkResponses();
+        return !IsGeneratingTalk && CanDisplayTalk() && Pawn.Awake() && TalkResponses.Empty()
                && CommonUtil.HasPassed(LastTalkTick, RimTalkSettings.ReplyInterval);
     }
-    
+
     public void IgnoreTalkResponse()
     {
         if (TalkResponses.Count == 0) return;
         var talkResponse = TalkResponses[0];
         TalkHistory.AddIgnored(talkResponse.Id);
         TalkResponses.Remove(talkResponse);
-        
+
         var log = ApiHistory.GetApiLog(talkResponse.Id);
         if (log != null) log.SpokenTick = -1;
     }
 
     public void IgnoreAllTalkResponses(List<TalkType> keepTypes = null)
     {
+        DrainIncomingTalkResponses();
         if (keepTypes == null)
             while (TalkResponses.Count > 0)
                 IgnoreTalkResponse();
