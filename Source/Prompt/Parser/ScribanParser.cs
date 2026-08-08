@@ -86,25 +86,12 @@ public static class ScribanParser
             // 3. ROOT PROPERTIES & SYSTEM
             scriptObject.Add("lang", Constant.Lang);
             
-            // Time & Date shorthands
-            var ticks = Find.TickManager.TicksAbs;
-            if (context.Map != null)
-            {
-                var longLat = Find.WorldGrid.LongLatOf(context.Map.Tile);
-                scriptObject.Add("hour", GenDate.HourOfDay(ticks, longLat.x));
-                scriptObject.Add("day", GenDate.DayOfQuadrum(ticks, longLat.x) + 1);
-                scriptObject.Add("quadrum", GenDate.Quadrum(ticks, longLat.x).Label());
-                scriptObject.Add("year", GenDate.Year(ticks, longLat.x));
-                scriptObject.Add("season", GenLocalDate.Season(context.Map).Label());
-            }
-            else
-            {
-                scriptObject.Add("hour", GenDate.HourOfDay(ticks, 0));
-                scriptObject.Add("day", GenDate.DayOfQuadrum(ticks, 0) + 1);
-                scriptObject.Add("quadrum", GenDate.Quadrum(ticks, 0).Label());
-                scriptObject.Add("year", GenDate.Year(ticks, 0));
-                scriptObject.Add("season", Season.Undefined.Label());
-            }
+            // Structured game state plus convenient root aliases.
+            // Keep `date` under `game` because `date` is a Scriban builtin object.
+            var game = CreateGameState(context.Map);
+            scriptObject.Add("game", game);
+            foreach (var name in new[] { "time", "hour", "day", "quadrum", "year", "season", "weather", "temperature", "wealth" })
+                scriptObject.Add(name, game[name]);
             
             var json = new ScriptObject();
             json.Add("format", Constant.GetJsonInstruction(Settings.Get().ApplyMoodAndSocialEffects));
@@ -113,6 +100,7 @@ public static class ScribanParser
             var chat = new ScriptObject();
             string historyText = GetChatHistoryText(context);
             chat.Add("history", historyText);
+            chat.Add("history_simplified", GetChatHistoryText(context, simplified: true));
             scriptObject.Add("chat", chat);
             
             // 4. SHORTHANDS
@@ -335,10 +323,53 @@ public static class ScribanParser
         };
     }
 
+    private static ScriptObject CreateGameState(Map map)
+    {
+        var game = new ScriptObject();
+        var ticks = Find.TickManager?.TicksAbs ?? 0;
+        var longLat = map != null && Find.WorldGrid != null
+            ? Find.WorldGrid.LongLatOf(map.Tile)
+            : Vector2.zero;
+
+        game.Add("time", ApplyEnvironmentHook(map, ContextCategories.Environment.Time,
+            CommonUtil.GetInGameHour12HString(ticks, longLat)));
+        game.Add("hour", GenDate.HourOfDay(ticks, longLat.x));
+        game.Add("date", ApplyEnvironmentHook(map, ContextCategories.Environment.Date,
+            GenDate.DateFullStringAt(ticks, longLat)));
+        game.Add("day", GenDate.DayOfQuadrum(ticks, longLat.x) + 1);
+        game.Add("quadrum", GenDate.Quadrum(ticks, longLat.x).Label());
+        game.Add("year", GenDate.Year(ticks, longLat.x));
+        game.Add("season", ApplyEnvironmentHook(map, ContextCategories.Environment.Season,
+            map != null ? GenDate.Season(ticks, longLat).Label() : Season.Undefined.Label()));
+        game.Add("weather", ApplyEnvironmentHook(map, ContextCategories.Environment.Weather,
+            map?.weatherManager?.curWeather?.label ?? ""));
+        game.Add("temperature", ApplyEnvironmentHook(map, ContextCategories.Environment.Temperature,
+            map != null ? Mathf.RoundToInt(map.mapTemperature.OutdoorTemp).ToString() : ""));
+        game.Add("wealth", ApplyEnvironmentHook(map, ContextCategories.Environment.Wealth,
+            map?.wealthWatcher != null ? Describer.Wealth(map.wealthWatcher.WealthTotal) : ""));
+        return game;
+    }
+
+    private static string ApplyEnvironmentHook(Map map, ContextCategory category, string value)
+    {
+        return map != null
+            ? ContextHookRegistry.ApplyEnvironmentHooks(category, map, value ?? "")
+            : value ?? "";
+    }
+
     private static string GetMagicMapValue(Map map, string member) {
+        var ticks = Find.TickManager?.TicksAbs ?? 0;
+        var longLat = map != null && Find.WorldGrid != null
+            ? Find.WorldGrid.LongLatOf(map.Tile)
+            : Vector2.zero;
+
         return member.ToLowerInvariant() switch {
+            "time" => CommonUtil.GetInGameHour12HString(ticks, longLat),
+            "date" => GenDate.DateFullStringAt(ticks, longLat),
+            "season" => map != null ? GenDate.Season(ticks, longLat).Label() : Season.Undefined.Label(),
             "weather" => map.weatherManager?.curWeather?.label ?? "",
             "temperature" => Mathf.RoundToInt(map.mapTemperature.OutdoorTemp).ToString(),
+            "wealth" => map?.wealthWatcher != null ? Describer.Wealth(map.wealthWatcher.WealthTotal) : "",
             _ => null
         };
     }
@@ -375,11 +406,12 @@ public static class ScribanParser
         };
     }
 
-    private static string GetChatHistoryText(PromptContext context)
+    private static string GetChatHistoryText(PromptContext context, bool simplified = false)
     {
-        if (context.ChatHistory != null && context.ChatHistory.Count > 0)
+        var history = simplified ? context.GetChatHistory(true) : context.ChatHistory;
+        if (history != null && history.Count > 0)
         {
-            var lines = context.ChatHistory.Select((h, i) =>
+            var lines = history.Select((h, i) =>
             {
                 var text = (h.message ?? "").Replace("\r\n", " ").Replace("\n", " ").Replace("\r", " ");
                 return $"- {i + 1} | role={h.role} | text={text}";

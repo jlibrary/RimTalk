@@ -36,8 +36,18 @@ public static class VariableDefinitions
         RootTypeMap["prompt"] = typeof(string);
         RootTypeMap["context"] = typeof(string);
         RootTypeMap["settings"] = typeof(RimTalkSettings);
+        RootTypeMap["game"] = typeof(ScriptObject);
         RootTypeMap["json"] = typeof(ScriptObject);
         RootTypeMap["chat"] = typeof(ScriptObject);
+        RootTypeMap["time"] = typeof(string);
+        RootTypeMap["hour"] = typeof(int);
+        RootTypeMap["day"] = typeof(int);
+        RootTypeMap["quadrum"] = typeof(string);
+        RootTypeMap["year"] = typeof(int);
+        RootTypeMap["season"] = typeof(string);
+        RootTypeMap["weather"] = typeof(string);
+        RootTypeMap["temperature"] = typeof(string);
+        RootTypeMap["wealth"] = typeof(string);
 
         // 4. Auto-populate from PromptContext (imported properties)
         foreach (var prop in typeof(PromptContext).GetProperties(BindingFlags.Public | BindingFlags.Instance))
@@ -68,6 +78,7 @@ public static class VariableDefinitions
             ("recipient", "The character being spoken to (if any)"),
             ("pawns", "List of all pawns in the dialogue"),
             ("map", "The current map object"),
+            ("game", "Structured local game time and environment state"),
             ("ctx", "The full prompt context object"),
             ("settings", "RimTalk mod settings")
         };
@@ -88,7 +99,23 @@ public static class VariableDefinitions
             ("ctx.history", "Alias of chat.history"),
             ("ctx.talk_type", "Alias of ctx.TalkType"),
             ("ctx.pawn_count", "Count of ctx.AllPawns"),
-            ("ctx.map_id", "Map uniqueID")
+            ("ctx.map_id", "Map uniqueID"),
+            ("time", "Local in-game time, such as 3pm (alias of game.time)"),
+            ("hour", "Local hour as an integer from 0 to 23 (alias of game.hour)"),
+            ("game.date", "Full local in-game date; kept under game to preserve Scriban's date builtin"),
+            ("day", "Day of the current quadrum, from 1 to 15 (alias of game.day)"),
+            ("quadrum", "Current quadrum label (alias of game.quadrum)"),
+            ("year", "Current in-game year (alias of game.year)"),
+            ("season", "Current local season label (alias of game.season)"),
+            ("weather", "Current weather label (alias of game.weather)"),
+            ("temperature", "Current outdoor temperature in Celsius (alias of game.temperature)"),
+            ("wealth", "Current map wealth description (alias of game.wealth)"),
+            ("map.time", "Local in-game time with environment hooks applied"),
+            ("map.date", "Full local in-game date with environment hooks applied"),
+            ("map.season", "Local season with environment hooks applied"),
+            ("map.weather", "Current weather with environment hooks applied"),
+            ("map.temperature", "Current outdoor temperature with environment hooks applied"),
+            ("map.wealth", "Current map wealth description with environment hooks applied")
         };
         
         // 3.5 Game Static Classes
@@ -112,7 +139,11 @@ public static class VariableDefinitions
         var customVars = ContextHookRegistry.GetAllCustomVariables().ToList();
         if (customVars.Any())
         {
-            var modVarsList = customVars.Select(v => (v.Name, $"[{v.Type}] {v.Description} (from {v.ModId})")).ToList();
+            var modVarsList = customVars.Select(v =>
+            {
+                var name = v.Type == "Environment" ? $"map.{v.Name}" : v.Name;
+                return (name, $"[{v.Type}] {v.Description} (from {v.ModId})");
+            }).ToList();
             dict["RimTalk.Settings.PromptPreset.ModVariables".Translate()] = modVarsList;
         }
 
