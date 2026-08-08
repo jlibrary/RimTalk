@@ -495,7 +495,9 @@ public class DebugWindow : Window
 
         // 4. Prompt (Truncated)
         string prompt = req.Prompt ?? "";
+        Text.WordWrap = false;
         Widgets.Label(new Rect(currentX, rowY, promptWidth, RowHeight), prompt);
+        Text.WordWrap = true;
         currentX += promptWidth + ColumnPadding;
 
         // 5. Type
@@ -599,7 +601,9 @@ public class DebugWindow : Window
         }
 
         string resp = request.Response ?? _generating;
+        Text.WordWrap = false;
         Widgets.Label(new Rect(currentX, rowRect.y, responseColumnWidth, RowHeight), resp);
+        Text.WordWrap = true;
         currentX += responseColumnWidth + ColumnPadding;
 
         string interactionType = request.InteractionType ?? "-";
