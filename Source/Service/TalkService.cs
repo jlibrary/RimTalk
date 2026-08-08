@@ -65,6 +65,7 @@ public static class TalkService
             .Concat(nearbyPawns.Where(p =>
             {
                 var pawnState = Cache.Get(p);
+                pawnState.DrainIncomingTalkResponses();
                 return pawnState.CanDisplayTalk() && pawnState.TalkResponses.Empty();
             }))
             .Distinct()
@@ -122,8 +123,8 @@ public static class TalkService
 
                     receivedResponses.Add(talkResponse);
 
-                    // Enqueue the received talk for the pawn to display later.
-                    pawnState.TalkResponses.Add(talkResponse);
+                    // Hand off to the main thread for display later; PawnState.TalkResponses itself must only ever be touched from the main thread.
+                    pawnState.QueueIncomingResponse(talkResponse);
                 }
             );
 
@@ -163,10 +164,18 @@ public static class TalkService
     /// </summary>
     public static void DisplayTalk()
     {
+        // Drain all pawns upfront so every pawn has a consistent view of TalkResponses for this tick cycle.
+        foreach (Pawn pawn in Cache.Keys)
+        {
+            Cache.Get(pawn)?.DrainIncomingTalkResponses();
+        }
+
         foreach (Pawn pawn in Cache.Keys)
         {
             PawnState pawnState = Cache.Get(pawn);
-            if (pawnState == null || pawnState.TalkResponses.Empty()) continue;
+            if (pawnState == null) continue;
+
+            if (pawnState.TalkResponses.Empty()) continue;
 
             var talk = pawnState.TalkResponses.First();
             if (talk == null)
@@ -207,6 +216,7 @@ public static class TalkService
         PawnState pawnState = Cache.Get(pawn);
         if (pawnState == null) return null;
 
+        pawnState.DrainIncomingTalkResponses();
         TalkResponse talkResponse = ConsumeTalk(pawnState);
         pawnState.LastTalkTick = GenTicks.TicksGame;
 
@@ -270,6 +280,10 @@ public static class TalkService
 
     private static bool AnyPawnHasPendingResponses()
     {
-        return Cache.GetAll().Any(pawnState => pawnState.TalkResponses.Count > 0);
+        return Cache.GetAll().Any(pawnState =>
+        {
+            pawnState.DrainIncomingTalkResponses();
+            return pawnState.TalkResponses.Count > 0;
+        });
     }
 }
