@@ -267,6 +267,43 @@ Crucial Tips:
     <RimTalk.Settings.ModelLabel>Model:</RimTalk.Settings.ModelLabel>
     <RimTalk.Settings.EnterApiKey>(enter valid api key to fetch models)</RimTalk.Settings.EnterApiKey>
     <RimTalk_Settings_Api_BaseUrlInfo>If you provide only the base (e.g., http://localhost:1234), /v1/chat/completions will be added automatically. If you enter the full path, it will be used exactly as entered.</RimTalk_Settings_Api_BaseUrlInfo>
+    <RimTalk.Settings.CustomizeRequestTooltip>Customize request JSON (temperature, reasoning effort, etc.)</RimTalk.Settings.CustomizeRequestTooltip>
+    <RimTalk.Settings.CustomizeRequestTitle>Customize Request: {0} ({1})</RimTalk.Settings.CustomizeRequestTitle>
+    <RimTalk.Settings.CustomizeRequestDesc>Configure custom JSON request parameters for this LLM. These values are merged into outgoing API request payloads (e.g., temperature, reasoning_effort, max_tokens, thinking parameters).</RimTalk.Settings.CustomizeRequestDesc>
+    <RimTalk.Settings.ResetToDefault>Reset to Default</RimTalk.Settings.ResetToDefault>
+    <RimTalk.Settings.FormatJson>Format JSON</RimTalk.Settings.FormatJson>
+    <RimTalk.Settings.ClearOverride>Clear</RimTalk.Settings.ClearOverride>
+    <RimTalk.Settings.CustomJsonSave>Save</RimTalk.Settings.CustomJsonSave>
+    <RimTalk.Settings.CustomJsonCancel>Cancel</RimTalk.Settings.CustomJsonCancel>
+    <RimTalk.Settings.CustomJsonValid>✓ Valid JSON</RimTalk.Settings.CustomJsonValid>
+    <RimTalk.Settings.CustomJsonInvalid>⚠ Invalid JSON: {0}</RimTalk.Settings.CustomJsonInvalid>
+    <RimTalk.Settings.CustomJsonEmpty>Default request parameters will be used.</RimTalk.Settings.CustomJsonEmpty>
+    <RimTalk.Settings.CustomizeHelpButton>Help &amp; Samples</RimTalk.Settings.CustomizeHelpButton>
+    <RimTalk.Settings.CustomizeHelpTitle>API Request Customization Guide &amp; Samples</RimTalk.Settings.CustomizeHelpTitle>
+    <RimTalk.Settings.CustomizeHelpDisclaimerTitle>⚠️ Important Compatibility Notice</RimTalk.Settings.CustomizeHelpDisclaimerTitle>
+    <RimTalk.Settings.CustomizeHelpDisclaimerText>These templates are general starting points. Parameter names, supported values, and feature support vary significantly across different LLM providers and models.\nSending unsupported parameters (e.g. 'thinking' or 'response_format' to a model that does not accept them) may cause the API to reject requests with an error (such as HTTP 400 Bad Request).\nPlease consult your specific provider's API documentation for valid parameters.</RimTalk.Settings.CustomizeHelpDisclaimerText>
+    <RimTalk.Settings.SampleUseTemplate>Use Template</RimTalk.Settings.SampleUseTemplate>
+    <RimTalk.Settings.SampleMergeTemplate>Merge with Current</RimTalk.Settings.SampleMergeTemplate>
+    <RimTalk.Settings.SampleCopy>Copy</RimTalk.Settings.SampleCopy>
+    <RimTalk.Settings.SampleCopied>JSON template copied to clipboard.</RimTalk.Settings.SampleCopied>
+    <RimTalk.Settings.SampleBasicTitle>1. Basic Generation Tuning (Most Models)</RimTalk.Settings.SampleBasicTitle>
+    <RimTalk.Settings.SampleBasicDesc>Adjust randomness, response length limit, and repetition penalties.</RimTalk.Settings.SampleBasicDesc>
+    <RimTalk.Settings.SampleBasicNote>Note: Reasoning models (e.g. OpenAI o1/o3) may require temperature to be 1.0 or omitted.</RimTalk.Settings.SampleBasicNote>
+    <RimTalk.Settings.SampleReasoningEffortTitle>2. Reasoning Effort (Gemini / OpenAI)</RimTalk.Settings.SampleReasoningEffortTitle>
+    <RimTalk.Settings.SampleReasoningEffortDesc>Controls the thinking/reasoning intensity level ("minimal", "low", "medium", "high").</RimTalk.Settings.SampleReasoningEffortDesc>
+    <RimTalk.Settings.SampleReasoningEffortNote>Note: Supported on Gemini Flash/Pro and OpenAI o-series models.</RimTalk.Settings.SampleReasoningEffortNote>
+    <RimTalk.Settings.SampleDisableThinkingTitle>3. Disable Thinking Mode (DeepSeek / Anthropic)</RimTalk.Settings.SampleDisableThinkingTitle>
+    <RimTalk.Settings.SampleDisableThinkingDesc>Turns off thinking/reasoning for faster generation speed and lower token costs.</RimTalk.Settings.SampleDisableThinkingDesc>
+    <RimTalk.Settings.SampleDisableThinkingNote>Note: Supported on DeepSeek R1/V3 and Anthropic Claude models that support the thinking block.</RimTalk.Settings.SampleDisableThinkingNote>
+    <RimTalk.Settings.SampleEnableThinkingTitle>4. Enable Thinking with Token Budget</RimTalk.Settings.SampleEnableThinkingTitle>
+    <RimTalk.Settings.SampleEnableThinkingDesc>Enables thinking mode with a specific maximum reasoning token budget.</RimTalk.Settings.SampleEnableThinkingDesc>
+    <RimTalk.Settings.SampleEnableThinkingNote>Note: Check your provider's API for required budget ranges (e.g., Claude requires minimum 1024 tokens).</RimTalk.Settings.SampleEnableThinkingNote>
+    <RimTalk.Settings.SampleStructuredOutputTitle>5. Structured Output / JSON Schema</RimTalk.Settings.SampleStructuredOutputTitle>
+    <RimTalk.Settings.SampleStructuredOutputDesc>Enforces a strict JSON Schema output format for smaller or weaker models that struggle with standard formatting.</RimTalk.Settings.SampleStructuredOutputDesc>
+    <RimTalk.Settings.SampleStructuredOutputNote>Note: Requires provider support for OpenAI-compatible Structured Outputs (response_format.json_schema).</RimTalk.Settings.SampleStructuredOutputNote>
+    <RimTalk.Settings.SampleLocalTitle>6. Local LLMs (Ollama / LM Studio / vLLM)</RimTalk.Settings.SampleLocalTitle>
+    <RimTalk.Settings.SampleLocalDesc>Pass server-specific tuning parameters like top_k and num_predict to local inference servers.</RimTalk.Settings.SampleLocalDesc>
+    <RimTalk.Settings.SampleLocalNote>Note: Exact parameter names depend on your local backend software.</RimTalk.Settings.SampleLocalNote>
 
     <!-- Settings_Context.cs -->
     <RimTalk.Settings.ContextFilter>Context Filter</RimTalk.Settings.ContextFilter>

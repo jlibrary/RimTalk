@@ -39,20 +39,20 @@ public static class AIClientFactory
     /// </summary>
     private static async Task<IAIClient> CreateServiceInstanceAsync(ApiConfig config)
     {
-        var model = config.SelectedModel == "Custom" ? config.CustomModelName : config.SelectedModel;
+        var model = config.GetEffectiveModelName();
 
         // 1. Handle Special/Dynamic cases
         switch (config.Provider)
         {
-            case AIProvider.Player2: return await Player2Client.CreateAsync(config.ApiKey);
-            case AIProvider.Local:   return new OpenAIClient(config.BaseUrl, config.CustomModelName);
-            case AIProvider.Custom:  return new OpenAIClient(config.BaseUrl, config.CustomModelName, config.ApiKey);
+            case AIProvider.Player2: return await Player2Client.CreateAsync(config.ApiKey, config.CustomRequestJson);
+            case AIProvider.Local:   return new OpenAIClient(config.BaseUrl, config.CustomModelName, customRequestJson: config.CustomRequestJson);
+            case AIProvider.Custom:  return new OpenAIClient(config.BaseUrl, config.CustomModelName, config.ApiKey, customRequestJson: config.CustomRequestJson);
         }
 
         // 2. Handle Standard Clients via Registry
         if (AIProviderRegistry.Defs.TryGetValue(config.Provider, out var def))
         {
-            return new OpenAIClient(def.EndpointUrl, model, config.ApiKey, def.ExtraHeaders);
+            return new OpenAIClient(def.EndpointUrl, model, config.ApiKey, def.ExtraHeaders, customRequestJson: config.CustomRequestJson);
         }
 
         return null;

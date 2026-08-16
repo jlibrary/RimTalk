@@ -20,15 +20,17 @@ public class Player2Client : IAIClient
 
     private readonly string _apiKey;
     private readonly bool _isLocalConnection;
+    private readonly string _customRequestJson;
     private static DateTime _lastHealthCheck = DateTime.MinValue;
     private static bool _healthCheckActive;
 
     private string CurrentApiUrl => _isLocalConnection ? LocalUrl : RemoteUrl;
 
-    private Player2Client(string apiKey, bool isLocal)
+    private Player2Client(string apiKey, bool isLocal, string customRequestJson = null)
     {
         _apiKey = apiKey;
         _isLocalConnection = isLocal;
+        _customRequestJson = customRequestJson;
 
         if (!_healthCheckActive && !string.IsNullOrEmpty(apiKey) && !isLocal)
         {
@@ -37,7 +39,7 @@ public class Player2Client : IAIClient
         }
     }
 
-    public static async Task<Player2Client> CreateAsync(string fallbackApiKey = null)
+    public static async Task<Player2Client> CreateAsync(string fallbackApiKey = null, string customRequestJson = null)
     {
         try
         {
@@ -46,13 +48,13 @@ public class Player2Client : IAIClient
             {
                 Logger.Debug("Player2 local app detected.");
                 ShowNotification("RimTalk.Player2.LocalDetected", MessageTypeDefOf.PositiveEvent);
-                return new Player2Client(localKey, isLocal: true);
+                return new Player2Client(localKey, isLocal: true, customRequestJson: customRequestJson);
             }
 
             if (!string.IsNullOrEmpty(fallbackApiKey))
             {
                 Logger.Debug("Using manual Player2 API key.");
-                return new Player2Client(fallbackApiKey, isLocal: false);
+                return new Player2Client(fallbackApiKey, isLocal: false, customRequestJson: customRequestJson);
             }
 
             ShowNotification("RimTalk.Player2.LocalNotFound", MessageTypeDefOf.CautionInput);
@@ -130,11 +132,18 @@ public class Player2Client : IAIClient
             }
         }
 
-        return JsonUtil.SerializeToJson(new Player2Request
+        string baseJson = JsonUtil.SerializeToJson(new Player2Request
         {
             Messages = mergedMessages,
             Stream = stream
         });
+
+        if (!string.IsNullOrWhiteSpace(_customRequestJson))
+        {
+            return JsonUtil.MergeJson(baseJson, _customRequestJson);
+        }
+
+        return baseJson;
     }
 
     private static string RoleToString(Role role)

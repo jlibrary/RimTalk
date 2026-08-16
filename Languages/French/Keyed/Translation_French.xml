@@ -271,6 +271,43 @@ Conseils Cruciaux :
     <RimTalk.Settings.ModelLabel>Modèle :</RimTalk.Settings.ModelLabel>
     <RimTalk.Settings.EnterApiKey>(entrez une clé api valide pour récupérer les modèles)</RimTalk.Settings.EnterApiKey>
     <RimTalk_Settings_Api_BaseUrlInfo>Si vous ne fournissez que la base (par ex., http://localhost:1234), /v1/chat/completions sera ajouté automatiquement. Si vous entrez le chemin complet, il sera utilisé tel quel.</RimTalk_Settings_Api_BaseUrlInfo>
+    <RimTalk.Settings.CustomizeRequestTooltip>Personnaliser le JSON de la requête (température, réflexion, etc.)</RimTalk.Settings.CustomizeRequestTooltip>
+    <RimTalk.Settings.CustomizeRequestTitle>Personnaliser la requête : {0} ({1})</RimTalk.Settings.CustomizeRequestTitle>
+    <RimTalk.Settings.CustomizeRequestDesc>Configurez des paramètres JSON personnalisés pour ce LLM. Ces valeurs sont fusionnées dans la requête envoyée à l'API (ex. : temperature, reasoning_effort, max_tokens, paramètres thinking, etc.).</RimTalk.Settings.CustomizeRequestDesc>
+    <RimTalk.Settings.ResetToDefault>Réinitialiser</RimTalk.Settings.ResetToDefault>
+    <RimTalk.Settings.FormatJson>Formater JSON</RimTalk.Settings.FormatJson>
+    <RimTalk.Settings.ClearOverride>Effacer</RimTalk.Settings.ClearOverride>
+    <RimTalk.Settings.CustomJsonSave>Enregistrer</RimTalk.Settings.CustomJsonSave>
+    <RimTalk.Settings.CustomJsonCancel>Annuler</RimTalk.Settings.CustomJsonCancel>
+    <RimTalk.Settings.CustomJsonValid>✓ JSON valide</RimTalk.Settings.CustomJsonValid>
+    <RimTalk.Settings.CustomJsonInvalid>⚠ JSON invalide : {0}</RimTalk.Settings.CustomJsonInvalid>
+    <RimTalk.Settings.CustomJsonEmpty>Les paramètres de requête par défaut seront utilisés.</RimTalk.Settings.CustomJsonEmpty>
+    <RimTalk.Settings.CustomizeHelpButton>Aide &amp; Exemples</RimTalk.Settings.CustomizeHelpButton>
+    <RimTalk.Settings.CustomizeHelpTitle>Guide et Exemples de Personnalisation API</RimTalk.Settings.CustomizeHelpTitle>
+    <RimTalk.Settings.CustomizeHelpDisclaimerTitle>⚠️ Avis important de compatibilité</RimTalk.Settings.CustomizeHelpDisclaimerTitle>
+    <RimTalk.Settings.CustomizeHelpDisclaimerText>Ces modèles sont des points de départ indicatifs. Les noms de paramètres, les valeurs acceptées et les fonctionnalités prises en charge varient grandement selon les fournisseurs et modèles de LLM.\nL'envoi de paramètres non pris en charge (ex. : 'thinking' ou 'response_format' vers un modèle qui ne les accepte pas) peut provoquer des erreurs d'API (comme HTTP 400 Bad Request).\nVeuillez consulter la documentation officielle de l'API de votre fournisseur pour connaître les paramètres valides.</RimTalk.Settings.CustomizeHelpDisclaimerText>
+    <RimTalk.Settings.SampleUseTemplate>Utiliser le modèle</RimTalk.Settings.SampleUseTemplate>
+    <RimTalk.Settings.SampleMergeTemplate>Fusionner avec actuel</RimTalk.Settings.SampleMergeTemplate>
+    <RimTalk.Settings.SampleCopy>Copier</RimTalk.Settings.SampleCopy>
+    <RimTalk.Settings.SampleCopied>Modèle JSON copié dans le presse-papier.</RimTalk.Settings.SampleCopied>
+    <RimTalk.Settings.SampleBasicTitle>1. Réglages de génération de base (Plupart des modèles)</RimTalk.Settings.SampleBasicTitle>
+    <RimTalk.Settings.SampleBasicDesc>Ajuste l'aléatoire, la limite de longueur de réponse et les pénalités de répétition.</RimTalk.Settings.SampleBasicDesc>
+    <RimTalk.Settings.SampleBasicNote>Remarque : Les modèles de raisonnement (ex. : OpenAI o1/o3) peuvent exiger une température de 1.0 ou son omission.</RimTalk.Settings.SampleBasicNote>
+    <RimTalk.Settings.SampleReasoningEffortTitle>2. Effort de raisonnement (Gemini / OpenAI)</RimTalk.Settings.SampleReasoningEffortTitle>
+    <RimTalk.Settings.SampleReasoningEffortDesc>Contrôle l'intensité de réflexion/raisonnement ("minimal", "low", "medium", "high").</RimTalk.Settings.SampleReasoningEffortDesc>
+    <RimTalk.Settings.SampleReasoningEffortNote>Remarque : Pris en charge sur Gemini Flash/Pro et les modèles OpenAI série o.</RimTalk.Settings.SampleReasoningEffortNote>
+    <RimTalk.Settings.SampleDisableThinkingTitle>3. Désactiver le mode réflexion (DeepSeek / Anthropic)</RimTalk.Settings.SampleDisableThinkingTitle>
+    <RimTalk.Settings.SampleDisableThinkingDesc>Désactive la réflexion pour accélérer la génération et réduire les coûts en tokens.</RimTalk.Settings.SampleDisableThinkingDesc>
+    <RimTalk.Settings.SampleDisableThinkingNote>Remarque : Pris en charge sur DeepSeek R1/V3 et les modèles Anthropic Claude prenant en charge le bloc thinking.</RimTalk.Settings.SampleDisableThinkingNote>
+    <RimTalk.Settings.SampleEnableThinkingTitle>4. Activer la réflexion avec budget de tokens</RimTalk.Settings.SampleEnableThinkingTitle>
+    <RimTalk.Settings.SampleEnableThinkingDesc>Active la réflexion en fixant un budget maximal de tokens de raisonnement.</RimTalk.Settings.SampleEnableThinkingDesc>
+    <RimTalk.Settings.SampleEnableThinkingNote>Remarque : Vérifiez les contraintes de budget de votre API (ex. : Claude requiert un minimum de 1024 tokens).</RimTalk.Settings.SampleEnableThinkingNote>
+    <RimTalk.Settings.SampleStructuredOutputTitle>5. Sortie structurée / JSON Schema</RimTalk.Settings.SampleStructuredOutputTitle>
+    <RimTalk.Settings.SampleStructuredOutputDesc>Impose un format JSON Schema strict pour les modèles plus petits ou moins précis.</RimTalk.Settings.SampleStructuredOutputDesc>
+    <RimTalk.Settings.SampleStructuredOutputNote>Remarque : Nécessite la prise en charge des sorties structurées compatibles OpenAI (response_format.json_schema).</RimTalk.Settings.SampleStructuredOutputNote>
+    <RimTalk.Settings.SampleLocalTitle>6. LLMs locaux (Ollama / LM Studio / vLLM)</RimTalk.Settings.SampleLocalTitle>
+    <RimTalk.Settings.SampleLocalDesc>Transmet des paramètres d'inférence spécifiques au serveur local (comme top_k et num_predict).</RimTalk.Settings.SampleLocalDesc>
+    <RimTalk.Settings.SampleLocalNote>Remarque : Les noms exacts des paramètres dépendent de votre logiciel serveur local.</RimTalk.Settings.SampleLocalNote>
 
     <!-- Settings_Context.cs -->
     <RimTalk.Settings.ContextFilter>Filtre de contexte</RimTalk.Settings.ContextFilter>
