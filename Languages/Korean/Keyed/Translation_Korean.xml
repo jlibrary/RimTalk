@@ -271,6 +271,43 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.Settings.ModelLabel>모델:</RimTalk.Settings.ModelLabel>
     <RimTalk.Settings.EnterApiKey>(모델을 가져오려면 유효한 API 키를 입력하세요)</RimTalk.Settings.EnterApiKey>
     <RimTalk_Settings_Api_BaseUrlInfo>기본 URL만 제공하면(예: http://localhost:1234), /v1/chat/completions가 자동으로 추가됩니다. 전체 경로를 입력하면 입력한 그대로 사용됩니다.</RimTalk_Settings_Api_BaseUrlInfo>
+    <RimTalk.Settings.CustomizeRequestTooltip>요청 JSON 사용자 정의 (온도, 추론 수준 등)</RimTalk.Settings.CustomizeRequestTooltip>
+    <RimTalk.Settings.CustomizeRequestTitle>요청 사용자 정의: {0} ({1})</RimTalk.Settings.CustomizeRequestTitle>
+    <RimTalk.Settings.CustomizeRequestDesc>이 LLM에 대한 사용자 지정 JSON 요청 매개변수를 구성합니다. 설정된 값은 API로 전송되는 요청 페이로드에 병합됩니다(예: temperature, reasoning_effort, max_tokens, thinking 매개변수 등).</RimTalk.Settings.CustomizeRequestDesc>
+    <RimTalk.Settings.ResetToDefault>기본값으로 복원</RimTalk.Settings.ResetToDefault>
+    <RimTalk.Settings.FormatJson>JSON 정렬</RimTalk.Settings.FormatJson>
+    <RimTalk.Settings.ClearOverride>초기화</RimTalk.Settings.ClearOverride>
+    <RimTalk.Settings.CustomJsonSave>저장</RimTalk.Settings.CustomJsonSave>
+    <RimTalk.Settings.CustomJsonCancel>취소</RimTalk.Settings.CustomJsonCancel>
+    <RimTalk.Settings.CustomJsonValid>✓ 유효한 JSON</RimTalk.Settings.CustomJsonValid>
+    <RimTalk.Settings.CustomJsonInvalid>⚠ 잘못된 JSON: {0}</RimTalk.Settings.CustomJsonInvalid>
+    <RimTalk.Settings.CustomJsonEmpty>기본 요청 매개변수가 사용됩니다.</RimTalk.Settings.CustomJsonEmpty>
+    <RimTalk.Settings.CustomizeHelpButton>? 도움말 및 샘플</RimTalk.Settings.CustomizeHelpButton>
+    <RimTalk.Settings.CustomizeHelpTitle>API 요청 사용자 정의 가이드 및 샘플</RimTalk.Settings.CustomizeHelpTitle>
+    <RimTalk.Settings.CustomizeHelpDisclaimerTitle>⚠️ 중요 호환성 안내</RimTalk.Settings.CustomizeHelpDisclaimerTitle>
+    <RimTalk.Settings.CustomizeHelpDisclaimerText>아래 템플릿은 참고용 기본 예시입니다. 지원되는 매개변수 이름, 값 및 기능 지원 여부는 LLM 제공자 및 모델에 따라 크게 다릅니다.\n지원되지 않는 매개변수(예: 지원하지 않는 모델에 'thinking' 또는 'response_format' 전송)를 보내면 API 요청이 거부되어 오류(예: HTTP 400 Bad Request)가 발생할 수 있습니다.\n사용 중인 제공자의 공식 API 문서를 확인한 후 설정하세요.</RimTalk.Settings.CustomizeHelpDisclaimerText>
+    <RimTalk.Settings.SampleUseTemplate>템플릿 적용</RimTalk.Settings.SampleUseTemplate>
+    <RimTalk.Settings.SampleMergeTemplate>현재 설정과 병합</RimTalk.Settings.SampleMergeTemplate>
+    <RimTalk.Settings.SampleCopy>복사</RimTalk.Settings.SampleCopy>
+    <RimTalk.Settings.SampleCopied>JSON 템플릿이 클립보드에 복사되었습니다.</RimTalk.Settings.SampleCopied>
+    <RimTalk.Settings.SampleBasicTitle>1. 기본 생성 조정 (대부분의 모델)</RimTalk.Settings.SampleBasicTitle>
+    <RimTalk.Settings.SampleBasicDesc>무작위성, 최대 응답 길이 및 반복 페널티를 조정합니다.</RimTalk.Settings.SampleBasicDesc>
+    <RimTalk.Settings.SampleBasicNote>참고: 추론 모델(예: OpenAI o1/o3)은 temperature 값을 1.0으로 고정하거나 생략해야 할 수 있습니다.</RimTalk.Settings.SampleBasicNote>
+    <RimTalk.Settings.SampleReasoningEffortTitle>2. 추론 강도 Reasoning Effort (Gemini / OpenAI)</RimTalk.Settings.SampleReasoningEffortTitle>
+    <RimTalk.Settings.SampleReasoningEffortDesc>내부 사고/추론 강도 수준("minimal", "low", "medium", "high")을 제어합니다.</RimTalk.Settings.SampleReasoningEffortDesc>
+    <RimTalk.Settings.SampleReasoningEffortNote>참고: Gemini Flash/Pro 및 OpenAI o 시리즈 모델에서 지원됩니다.</RimTalk.Settings.SampleReasoningEffortNote>
+    <RimTalk.Settings.SampleDisableThinkingTitle>3. 사고 모드 비활성화 (DeepSeek / Anthropic)</RimTalk.Settings.SampleDisableThinkingTitle>
+    <RimTalk.Settings.SampleDisableThinkingDesc>추론/사고 과정을 꺼서 생성 속도를 높이고 토큰 소모를 줄입니다.</RimTalk.Settings.SampleDisableThinkingDesc>
+    <RimTalk.Settings.SampleDisableThinkingNote>참고: DeepSeek R1/V3 및 thinking 블록을 지원하는 Anthropic Claude 모델에서 사용 가능합니다.</RimTalk.Settings.SampleDisableThinkingNote>
+    <RimTalk.Settings.SampleEnableThinkingTitle>4. 사고 모드 활성화 (토큰 예산 지정)</RimTalk.Settings.SampleEnableThinkingTitle>
+    <RimTalk.Settings.SampleEnableThinkingDesc>사고 모드를 활성화하고 최대 추론 토큰 예산을 지정합니다.</RimTalk.Settings.SampleEnableThinkingDesc>
+    <RimTalk.Settings.SampleEnableThinkingNote>참고: 제공자 API의 예산 범위 요구사항을 확인하세요(예: Claude는 최소 1024 토큰 필요).</RimTalk.Settings.SampleEnableThinkingNote>
+    <RimTalk.Settings.SampleStructuredOutputTitle>5. 구조화된 출력 / JSON Schema</RimTalk.Settings.SampleStructuredOutputTitle>
+    <RimTalk.Settings.SampleStructuredOutputDesc>형식 준수 능력이 약한 소형 모델을 위해 엄격한 JSON Schema 출력 형식을 강제합니다.</RimTalk.Settings.SampleStructuredOutputDesc>
+    <RimTalk.Settings.SampleStructuredOutputNote>참고: OpenAI 호환 구조화된 출력(response_format.json_schema)을 지원하는 제공자가 필요합니다.</RimTalk.Settings.SampleStructuredOutputNote>
+    <RimTalk.Settings.SampleLocalTitle>6. 로컬 LLM (Ollama / LM Studio / vLLM)</RimTalk.Settings.SampleLocalTitle>
+    <RimTalk.Settings.SampleLocalDesc>로컬 추론 서버 전용 튜닝 매개변수(top_k, num_predict 등)를 전달합니다.</RimTalk.Settings.SampleLocalDesc>
+    <RimTalk.Settings.SampleLocalNote>참고: 정확한 매개변수 이름은 실행 중인 로컬 백엔드 소프트웨어에 따라 다릅니다.</RimTalk.Settings.SampleLocalNote>
 
     <!-- Settings_Context.cs -->
     <RimTalk.Settings.ContextFilter>컨텍스트 필터</RimTalk.Settings.ContextFilter>

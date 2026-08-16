@@ -271,6 +271,43 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Settings.ModelLabel>モデル：</RimTalk.Settings.ModelLabel>
     <RimTalk.Settings.EnterApiKey>（モデルを取得するには有効なAPIキーを入力してください）</RimTalk.Settings.EnterApiKey>
     <RimTalk_Settings_Api_BaseUrlInfo>ベースURLのみ（例：http://localhost:1234）を指定した場合、/v1/chat/completionsが自動的に追加されます。完全なパスを入力した場合は、入力された通りに使用されます。</RimTalk_Settings_Api_BaseUrlInfo>
+    <RimTalk.Settings.CustomizeRequestTooltip>リクエストJSONのカスタマイズ（温度、思考レベルなど）</RimTalk.Settings.CustomizeRequestTooltip>
+    <RimTalk.Settings.CustomizeRequestTitle>リクエストのカスタマイズ: {0} ({1})</RimTalk.Settings.CustomizeRequestTitle>
+    <RimTalk.Settings.CustomizeRequestDesc>このLLM用のカスタムJSONリクエストパラメータを設定します。設定された値はAPI送信リクエストペイロードにマージされます（例: temperature、reasoning_effort、max_tokens、thinkingパラメータなど）。</RimTalk.Settings.CustomizeRequestDesc>
+    <RimTalk.Settings.ResetToDefault>デフォルトに戻す</RimTalk.Settings.ResetToDefault>
+    <RimTalk.Settings.FormatJson>JSON整形</RimTalk.Settings.FormatJson>
+    <RimTalk.Settings.ClearOverride>クリア</RimTalk.Settings.ClearOverride>
+    <RimTalk.Settings.CustomJsonSave>保存</RimTalk.Settings.CustomJsonSave>
+    <RimTalk.Settings.CustomJsonCancel>キャンセル</RimTalk.Settings.CustomJsonCancel>
+    <RimTalk.Settings.CustomJsonValid>✓ 有効なJSON</RimTalk.Settings.CustomJsonValid>
+    <RimTalk.Settings.CustomJsonInvalid>⚠ 無効なJSON: {0}</RimTalk.Settings.CustomJsonInvalid>
+    <RimTalk.Settings.CustomJsonEmpty>デフォルトのリクエストパラメータが使用されます。</RimTalk.Settings.CustomJsonEmpty>
+    <RimTalk.Settings.CustomizeHelpButton>? ヘルプとサンプル</RimTalk.Settings.CustomizeHelpButton>
+    <RimTalk.Settings.CustomizeHelpTitle>APIリクエスト カスタマイズガイド＆サンプル</RimTalk.Settings.CustomizeHelpTitle>
+    <RimTalk.Settings.CustomizeHelpDisclaimerTitle>⚠️ 互換性に関する重要なお知らせ</RimTalk.Settings.CustomizeHelpDisclaimerTitle>
+    <RimTalk.Settings.CustomizeHelpDisclaimerText>以下のテンプレートは参考用サンプルです。パラメータ名、許容値、機能対応状況はLLMプロバイダーやモデルによって大きく異なります。\n非対応のパラメータ（例: 非対応モデルへの 'thinking' や 'response_format' の送信）を送信すると、APIエラー（HTTP 400 Bad Requestなど）が発生する可能性があります。\nご利用のプロバイダーの公式APIドキュメントをご確認の上、設定してください。</RimTalk.Settings.CustomizeHelpDisclaimerText>
+    <RimTalk.Settings.SampleUseTemplate>テンプレートを適用</RimTalk.Settings.SampleUseTemplate>
+    <RimTalk.Settings.SampleMergeTemplate>現在設定とマージ</RimTalk.Settings.SampleMergeTemplate>
+    <RimTalk.Settings.SampleCopy>コピー</RimTalk.Settings.SampleCopy>
+    <RimTalk.Settings.SampleCopied>JSONテンプレートをクリップボードにコピーしました。</RimTalk.Settings.SampleCopied>
+    <RimTalk.Settings.SampleBasicTitle>1. 基本生成パラメータ調整（多くのモデル共通）</RimTalk.Settings.SampleBasicTitle>
+    <RimTalk.Settings.SampleBasicDesc>ランダム性、最大応答長、重複ペナルティなどを調整します。</RimTalk.Settings.SampleBasicDesc>
+    <RimTalk.Settings.SampleBasicNote>注意: 推論モデル（OpenAI o1/o3など）はtemperatureの指定が1.0固定または省略を要求される場合があります。</RimTalk.Settings.SampleBasicNote>
+    <RimTalk.Settings.SampleReasoningEffortTitle>2. 推論強度 Reasoning Effort (Gemini / OpenAI)</RimTalk.Settings.SampleReasoningEffortTitle>
+    <RimTalk.Settings.SampleReasoningEffortDesc>思考・推論の強度レベル（"minimal"、"low"、"medium"、"high"）を設定します。</RimTalk.Settings.SampleReasoningEffortDesc>
+    <RimTalk.Settings.SampleReasoningEffortNote>注意: Gemini Flash/Pro および OpenAI oシリーズモデルで対応しています。</RimTalk.Settings.SampleReasoningEffortNote>
+    <RimTalk.Settings.SampleDisableThinkingTitle>3. 思考モードの無効化 (DeepSeek / Anthropic)</RimTalk.Settings.SampleDisableThinkingTitle>
+    <RimTalk.Settings.SampleDisableThinkingDesc>推論・思考を無効化して生成速度を向上させ、トークン消費を抑えます。</RimTalk.Settings.SampleDisableThinkingDesc>
+    <RimTalk.Settings.SampleDisableThinkingNote>注意: DeepSeek R1/V3 および thinkingブロックに対応したAnthropic Claudeモデルで使用可能です。</RimTalk.Settings.SampleDisableThinkingNote>
+    <RimTalk.Settings.SampleEnableThinkingTitle>4. 思考モードの有効化（トークン上限指定）</RimTalk.Settings.SampleEnableThinkingTitle>
+    <RimTalk.Settings.SampleEnableThinkingDesc>思考モードを有効化し、推論トークンの最大予算を指定します。</RimTalk.Settings.SampleEnableThinkingDesc>
+    <RimTalk.Settings.SampleEnableThinkingNote>注意: プロバイダーのAPI要件をご確認ください（例: Claudeは最低1024トークンが必要です）。</RimTalk.Settings.SampleEnableThinkingNote>
+    <RimTalk.Settings.SampleStructuredOutputTitle>5. 構造化出力 / JSON Schema</RimTalk.Settings.SampleStructuredOutputTitle>
+    <RimTalk.Settings.SampleStructuredOutputDesc>フォーマット指示の遵守が弱い小型モデル向けに、厳密なJSON Schema出力を強制します。</RimTalk.Settings.SampleStructuredOutputDesc>
+    <RimTalk.Settings.SampleStructuredOutputNote>注意: OpenAI互換の構造化出力（response_format.json_schema）に対応しているプロバイダーが必要です。</RimTalk.Settings.SampleStructuredOutputNote>
+    <RimTalk.Settings.SampleLocalTitle>6. ローカルLLM (Ollama / LM Studio / vLLM)</RimTalk.Settings.SampleLocalTitle>
+    <RimTalk.Settings.SampleLocalDesc>ローカル推論サーバー固有のパラメータ（top_k、num_predictなど）を渡します。</RimTalk.Settings.SampleLocalDesc>
+    <RimTalk.Settings.SampleLocalNote>注意: パラメータ名は実行中のローカル推論サーバーソフトに準拠します。</RimTalk.Settings.SampleLocalNote>
 
     <!-- Settings_Context.cs -->
     <RimTalk.Settings.ContextFilter>コンテキストフィルター</RimTalk.Settings.ContextFilter>

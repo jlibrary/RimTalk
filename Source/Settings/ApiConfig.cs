@@ -11,6 +11,7 @@ public class ApiConfig : IExposable
     public string SelectedModel = Constant.ChooseModel;
     public string CustomModelName = "";
     public string BaseUrl = "";
+    public string CustomRequestJson = "";
 
     public void ExposeData()
     {
@@ -20,6 +21,31 @@ public class ApiConfig : IExposable
         Scribe_Values.Look(ref SelectedModel, "selectedModel", Constant.DefaultCloudModel);
         Scribe_Values.Look(ref CustomModelName, "customModelName", "");
         Scribe_Values.Look(ref BaseUrl, "baseUrl", "");
+        Scribe_Values.Look(ref CustomRequestJson, "customRequestJson", "");
+    }
+
+    public string GetEffectiveModelName()
+    {
+        return SelectedModel == "Custom" ? CustomModelName : SelectedModel;
+    }
+
+    public string GetDefaultRequestJson()
+    {
+        var model = GetEffectiveModelName();
+        if (!string.IsNullOrEmpty(model))
+        {
+            string m = model.ToLower();
+            if (m.Contains("gemini") && (m.Contains("pro") || m.Contains("3.7-flash")))
+            {
+                return "{\n  \"reasoning_effort\": \"low\"\n}";
+            }
+            if ((m.Contains("gemini") && m.Contains("flash")) || m.Contains("gemma-4"))
+            {
+                return "{\n  \"reasoning_effort\": \"minimal\"\n}";
+            }
+        }
+
+        return "{}";
     }
 
     public bool IsValid()

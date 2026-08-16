@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using RimTalk.Client.OpenAI;
 using RimTalk.Client.Player2;
 using RimTalk.Data;
+using RimTalk.UI;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -161,7 +162,7 @@ public partial class Settings
 
         float providerWidth = 90f;
         float modelWidth = 190f; 
-        float controlsWidth = 100f; 
+        float controlsWidth = 125f; 
 
         Rect providerHeaderRect = new Rect(x, y, providerWidth, height);
         Widgets.Label(providerHeaderRect, "RimTalk.Settings.ProviderHeader".Translate());
@@ -203,7 +204,7 @@ public partial class Settings
 
         float providerWidth = 90f;
         float modelWidth = 190f;
-        float controlsWidth = 100f;
+        float controlsWidth = 125f;
         float gap = 5f;
 
         float middleZoneWidth = totalWidth - providerWidth - modelWidth - controlsWidth - (gap * 3);
@@ -252,15 +253,30 @@ public partial class Settings
         float deleteX = totalWidth - btnSize; 
         float downX = deleteX - btnGap - btnSize;
         float upX = downX - btnGap - btnSize;
+        float customX = upX - btnGap - btnSize;
 
         float controlsStartX = totalWidth - controlsWidth;
-        float checkboxSpaceWidth = upX - controlsStartX;
+        float checkboxSpaceWidth = customX - controlsStartX;
         
         float checkboxX = controlsStartX + (checkboxSpaceWidth - 24f) / 2f;
         
         Rect toggleRect = new Rect(checkboxX, y, 24f, height);
         Widgets.Checkbox(new Vector2(toggleRect.x, toggleRect.y), ref config.IsEnabled, 20f);
         if (Mouse.IsOver(toggleRect)) TooltipHandler.TipRegion(toggleRect, "Enable/Disable");
+
+        // Customize Button (OptionsGeneral Icon)
+        Rect customRect = new Rect(customX, y, btnSize, height);
+        var iconTexture = ContentFinder<Texture2D>.Get("UI/Icons/Options/OptionsGeneral");
+        bool hasCustom = !string.IsNullOrWhiteSpace(config.CustomRequestJson);
+        Color iconColor = hasCustom ? new Color(0.4f, 0.9f, 0.5f) : new Color(0.85f, 0.85f, 0.85f);
+        Color mouseoverColor = hasCustom ? new Color(0.6f, 1f, 0.7f) : GenUI.MouseoverColor;
+
+        if (Widgets.ButtonImage(customRect, iconTexture, iconColor, mouseoverColor))
+        {
+            SoundDefOf.Click.PlayOneShotOnCamera(null);
+            Find.WindowStack.Add(new Dialog_CustomizeRequest(config));
+        }
+        TooltipHandler.TipRegion(customRect, "RimTalk.Settings.CustomizeRequestTooltip".Translate());
 
         DrawReorderButtons(upX, y, height, index, configs);
 
@@ -514,5 +530,20 @@ public partial class Settings
 
         Rect modelRect = new Rect(x, y, 200f, height);
         config.CustomModelName = Widgets.TextField(modelRect, config.CustomModelName);
+        x += 205f;
+
+        // Customize Button (OptionsGeneral Icon)
+        Rect customRect = new Rect(x, y + 1f, 22f, 22f);
+        var iconTexture = ContentFinder<Texture2D>.Get("UI/Icons/Options/OptionsGeneral");
+        bool hasCustom = !string.IsNullOrWhiteSpace(config.CustomRequestJson);
+        Color iconColor = hasCustom ? new Color(0.4f, 0.9f, 0.5f) : new Color(0.85f, 0.85f, 0.85f);
+        Color mouseoverColor = hasCustom ? new Color(0.6f, 1f, 0.7f) : GenUI.MouseoverColor;
+
+        if (Widgets.ButtonImage(customRect, iconTexture, iconColor, mouseoverColor))
+        {
+            SoundDefOf.Click.PlayOneShotOnCamera(null);
+            Find.WindowStack.Add(new Dialog_CustomizeRequest(config));
+        }
+        TooltipHandler.TipRegion(customRect, "RimTalk.Settings.CustomizeRequestTooltip".Translate());
     }
 }

@@ -16,7 +16,8 @@ public class OpenAIClient(
     string baseUrl,
     string model,
     string apiKey = null,
-    Dictionary<string, string> extraHeaders = null)
+    Dictionary<string, string> extraHeaders = null,
+    string customRequestJson = null)
     : IAIClient
 {
     private const string DefaultPath = "/v1/chat/completions";
@@ -118,7 +119,7 @@ public class OpenAIClient(
         if (!string.IsNullOrEmpty(model))
         {
             string m = model.ToLower();
-            if (m.Contains("gemini") && m.Contains("pro"))
+            if (m.Contains("gemini") && (m.Contains("pro") || m.Contains("3.7-flash")))
                 reasoningEffort = "low";
             else if ((m.Contains("gemini") && m.Contains("flash")) || m.Contains("gemma-4"))
                 reasoningEffort = "minimal";
@@ -133,7 +134,13 @@ public class OpenAIClient(
             ReasoningEffort = reasoningEffort
         };
 
-        return JsonUtil.SerializeToJson(request);
+        string baseJson = JsonUtil.SerializeToJson(request);
+        if (!string.IsNullOrWhiteSpace(customRequestJson))
+        {
+            return JsonUtil.MergeJson(baseJson, customRequestJson);
+        }
+
+        return baseJson;
     }
 
     private static string RoleToString(Role role)

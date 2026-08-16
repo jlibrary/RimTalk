@@ -270,6 +270,43 @@ Scriban 魔法 (動態內容)
     <RimTalk.Settings.ModelLabel>模型：</RimTalk.Settings.ModelLabel>
     <RimTalk.Settings.EnterApiKey>（輸入有效的 API 金鑰以獲取模型）</RimTalk.Settings.EnterApiKey>
     <RimTalk_Settings_Api_BaseUrlInfo>如果您只提供基礎 URL（例如 http://localhost:1234），將自動新增 /v1/chat/completions。如果您輸入完整路徑，將完全按照輸入使用。</RimTalk_Settings_Api_BaseUrlInfo>
+    <RimTalk.Settings.CustomizeRequestTooltip>自訂請求 JSON（溫度、思考等級等）</RimTalk.Settings.CustomizeRequestTooltip>
+    <RimTalk.Settings.CustomizeRequestTitle>自訂請求：{0} ({1})</RimTalk.Settings.CustomizeRequestTitle>
+    <RimTalk.Settings.CustomizeRequestDesc>為此 LLM 設定自訂 JSON 請求參數。這些值將合併到發送給 API 的請求載荷中（例如：temperature、reasoning_effort、max_tokens、thinking 參數等）。</RimTalk.Settings.CustomizeRequestDesc>
+    <RimTalk.Settings.ResetToDefault>恢復預設</RimTalk.Settings.ResetToDefault>
+    <RimTalk.Settings.FormatJson>格式化 JSON</RimTalk.Settings.FormatJson>
+    <RimTalk.Settings.ClearOverride>清空</RimTalk.Settings.ClearOverride>
+    <RimTalk.Settings.CustomJsonSave>儲存</RimTalk.Settings.CustomJsonSave>
+    <RimTalk.Settings.CustomJsonCancel>取消</RimTalk.Settings.CustomJsonCancel>
+    <RimTalk.Settings.CustomJsonValid>✓ 有效的 JSON</RimTalk.Settings.CustomJsonValid>
+    <RimTalk.Settings.CustomJsonInvalid>⚠ 無效的 JSON：{0}</RimTalk.Settings.CustomJsonInvalid>
+    <RimTalk.Settings.CustomJsonEmpty>將使用預設請求參數。</RimTalk.Settings.CustomJsonEmpty>
+    <RimTalk.Settings.CustomizeHelpButton>? 說明與範例</RimTalk.Settings.CustomizeHelpButton>
+    <RimTalk.Settings.CustomizeHelpTitle>API 請求自訂指南與範例</RimTalk.Settings.CustomizeHelpTitle>
+    <RimTalk.Settings.CustomizeHelpDisclaimerTitle>⚠️ 重要相容性提示</RimTalk.Settings.CustomizeHelpDisclaimerTitle>
+    <RimTalk.Settings.CustomizeHelpDisclaimerText>以下範本僅作為參考起點。不同 LLM 提供商和模型的參數名稱、支援值及功能差異較大。\n發送不受支援的參數（例如向不支援的模型發送 'thinking' 或 'response_format'）可能導致 API 報錯拒絕請求（例如 HTTP 400 Bad Request）。\n請務必參考您所用服務商的官方 API 文件以取得支援的具體參數。</RimTalk.Settings.CustomizeHelpDisclaimerText>
+    <RimTalk.Settings.SampleUseTemplate>使用範本</RimTalk.Settings.SampleUseTemplate>
+    <RimTalk.Settings.SampleMergeTemplate>合併至目前</RimTalk.Settings.SampleMergeTemplate>
+    <RimTalk.Settings.SampleCopy>複製</RimTalk.Settings.SampleCopy>
+    <RimTalk.Settings.SampleCopied>JSON 範本已複製到剪貼簿。</RimTalk.Settings.SampleCopied>
+    <RimTalk.Settings.SampleBasicTitle>1. 基礎生成微調（大部分模型）</RimTalk.Settings.SampleBasicTitle>
+    <RimTalk.Settings.SampleBasicDesc>調整隨機性、回覆長度上限和重複懲罰。</RimTalk.Settings.SampleBasicDesc>
+    <RimTalk.Settings.SampleBasicNote>注意：推理模型（如 OpenAI o1/o3）可能要求 temperature 為 1.0 或省略。</RimTalk.Settings.SampleBasicNote>
+    <RimTalk.Settings.SampleReasoningEffortTitle>2. 推理強度 Reasoning Effort (Gemini / OpenAI)</RimTalk.Settings.SampleReasoningEffortTitle>
+    <RimTalk.Settings.SampleReasoningEffortDesc>控制思考/推理強度等級（"minimal"、"low"、"medium"、"high"）。</RimTalk.Settings.SampleReasoningEffortDesc>
+    <RimTalk.Settings.SampleReasoningEffortNote>注意：適用於 Gemini Flash/Pro 以及 OpenAI o 系列模型。</RimTalk.Settings.SampleReasoningEffortNote>
+    <RimTalk.Settings.SampleDisableThinkingTitle>3. 關閉思考模式 (DeepSeek / Anthropic)</RimTalk.Settings.SampleDisableThinkingTitle>
+    <RimTalk.Settings.SampleDisableThinkingDesc>關閉推理/思考以加快生成速度並降低 Token 消耗。</RimTalk.Settings.SampleDisableThinkingDesc>
+    <RimTalk.Settings.SampleDisableThinkingNote>注意：適用於 DeepSeek R1/V3 和支援 thinking 區塊的 Anthropic Claude 模型。</RimTalk.Settings.SampleDisableThinkingNote>
+    <RimTalk.Settings.SampleEnableThinkingTitle>4. 開啟思考並限制預算</RimTalk.Settings.SampleEnableThinkingTitle>
+    <RimTalk.Settings.SampleEnableThinkingDesc>開啟思考模式並指定最大推理 Token 預算。</RimTalk.Settings.SampleEnableThinkingDesc>
+    <RimTalk.Settings.SampleEnableThinkingNote>注意：請檢查服務商 API 的預算範圍要求（例如 Claude 要求最少 1024 tokens）。</RimTalk.Settings.SampleEnableThinkingNote>
+    <RimTalk.Settings.SampleStructuredOutputTitle>5. 結構化輸出 / JSON Schema</RimTalk.Settings.SampleStructuredOutputTitle>
+    <RimTalk.Settings.SampleStructuredOutputDesc>為格式遵從能力較弱的小型模型強制使用嚴格的 JSON Schema 輸出格式。</RimTalk.Settings.SampleStructuredOutputDesc>
+    <RimTalk.Settings.SampleStructuredOutputNote>注意：需要服務商支援 OpenAI 相容的結構化輸出 (response_format.json_schema)。</RimTalk.Settings.SampleStructuredOutputNote>
+    <RimTalk.Settings.SampleLocalTitle>6. 本地大模型 (Ollama / LM Studio / vLLM)</RimTalk.Settings.SampleLocalTitle>
+    <RimTalk.Settings.SampleLocalDesc>向本地推理服務傳遞專屬調優參數（如 top_k、num_predict 等）。</RimTalk.Settings.SampleLocalDesc>
+    <RimTalk.Settings.SampleLocalNote>注意：具體參數名稱取決於您運行的本地後端軟體。</RimTalk.Settings.SampleLocalNote>
 
     <!-- Settings_Context.cs -->
     <RimTalk.Settings.ContextFilter>上下文過濾器</RimTalk.Settings.ContextFilter>
