@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using RimTalk.Util;
 using RimWorld;
@@ -9,6 +10,22 @@ namespace RimTalk.Error;
 public static class AIErrorHandler
 {
     private static bool _quotaWarningShown;
+    private static readonly ConcurrentQueue<Action> PendingMessages = new();
+
+    public static void DrainPendingMessages()
+    {
+        while (PendingMessages.TryDequeue(out var action))
+        {
+            try
+            {
+                action();
+            }
+            catch (Exception ex) // Don't let one bad message stop the rest of the queue draining
+            {
+                Logger.Warning($"Failed to display queued message: {ex.Message}");
+            }
+        }
+    }
 
     public static async Task<T> HandleWithRetry<T>(Func<Task<T>> operation, Action<Exception> onFailure = null)
     {
@@ -85,23 +102,32 @@ public static class AIErrorHandler
         if (!_quotaWarningShown)
         {
             _quotaWarningShown = true;
-            string message = "RimTalk.TalkService.QuotaExceeded".Translate();
-            Messages.Message(message, MessageTypeDefOf.NeutralEvent, false);
             Logger.Warning(ex.Message);
+            PendingMessages.Enqueue(() =>
+            {
+                string message = "RimTalk.TalkService.QuotaExceeded".Translate();
+                Messages.Message(message, MessageTypeDefOf.NeutralEvent, false);
+            });
         }
     }
 
     private static void ShowGenerationWarning(Exception ex)
     {
         Logger.Warning(ex.StackTrace);
-        string message = $"{"RimTalk.TalkService.GenerationFailed".Translate()}: {ex.Message}";
-        Messages.Message(message, MessageTypeDefOf.NeutralEvent, false);
+        PendingMessages.Enqueue(() =>
+        {
+            string message = $"{"RimTalk.TalkService.GenerationFailed".Translate()}: {ex.Message}";
+            Messages.Message(message, MessageTypeDefOf.NeutralEvent, false);
+        });
     }
 
     private static void ShowRetryMessage(Exception ex, string nextModel)
     {
-        string messageKey = ex is QuotaExceededException ? "RimTalk.TalkService.QuotaReached" : "RimTalk.TalkService.APIError";
-        string message = $"{messageKey.Translate()}. {"RimTalk.TalkService.TryingNextAPI".Translate(nextModel)}";
-        Messages.Message(message, MessageTypeDefOf.NeutralEvent, false);
+        PendingMessages.Enqueue(() =>
+        {
+            string messageKey = ex is QuotaExceededException ? "RimTalk.TalkService.QuotaReached" : "RimTalk.TalkService.APIError";
+            string message = $"{messageKey.Translate()}. {"RimTalk.TalkService.TryingNextAPI".Translate(nextModel)}";
+            Messages.Message(message, MessageTypeDefOf.NeutralEvent, false);
+        });
     }
 }
