@@ -163,8 +163,11 @@ public partial class Settings
         rightListing.CheckboxLabeled("RimTalk.Settings.AllowNonHumanToTalk".Translate().ToString(),
             ref settings.AllowNonHumanToTalk, "RimTalk.Settings.AllowNonHumanToTalkTooltip".Translate().ToString());
         rightListing.Gap(6f);
-        rightListing.CheckboxLabeled("RimTalk.Settings.AllowAnnouncement".Translate().ToString(),
-            ref settings.AllowAnnouncement, "RimTalk.Settings.AllowAnnouncementTooltip".Translate().ToString());
+        bool customConvEnabled = settings.AllowCustomConversation;
+        Rect announceRect = rightListing.GetRect(24f);
+        Widgets.CheckboxLabeled(announceRect, "RimTalk.Settings.AllowAnnouncement".Translate().ToString(),
+            ref settings.AllowAnnouncement, disabled: !customConvEnabled);
+        TooltipHandler.TipRegion(announceRect, "RimTalk.Settings.AllowAnnouncementTooltip".Translate().ToString());
 
         rightListing.End();
 
