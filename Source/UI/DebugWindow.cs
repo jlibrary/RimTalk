@@ -706,15 +706,22 @@ public class DebugWindow : Window
         }
 
         // API Log Button
-        if (_selectedLog.GetState() != State.None)
+        if (_selectedLog.Channel != Channel.User && _selectedLog.GetState() != State.None)
         {
             btnX += btnW + 6f;
             Rect reportRect = new Rect(btnX, y, btnW, buttonsRowH);
+            var payload = ApiHistory.GetPayload(_selectedLog);
+            GUI.enabled = payload != null;
             if (Widgets.ButtonText(reportRect, "RimTalk.DebugWindow.ApiLog".Translate()))
             {
-                GUIUtility.systemCopyBuffer = _selectedLog.Payload?.ToString();
-                Messages.Message("RimTalk.DebugWindow.Copied".Translate(), MessageTypeDefOf.TaskCompletion, false);
+                string payloadText = payload?.ToString();
+                if (!string.IsNullOrEmpty(payloadText))
+                {
+                    GUIUtility.systemCopyBuffer = payloadText;
+                    Messages.Message("RimTalk.DebugWindow.Copied".Translate(), MessageTypeDefOf.TaskCompletion, false);
+                }
             }
+            GUI.enabled = true;
         }
 
         // Resend Button

@@ -32,6 +32,21 @@ public static class ApiHistory
         }
     }
 
+    public static Payload GetPayload(ApiLog log)
+    {
+        if (log == null) return null;
+        if (log.Payload != null) return log.Payload;
+        if (log.ConversationId >= 0)
+        {
+            foreach (var item in History.Values)
+            {
+                if (item.ConversationId == log.ConversationId && item.Payload != null)
+                    return item.Payload;
+            }
+        }
+        return null;
+    }
+
     public static ApiLog AddResponse(Guid id, string response, string name, string interactionType, Payload payload = null, int elapsedMs = 0)
     {
         if (!History.TryGetValue(id, out var originalLog)) return null;
@@ -42,7 +57,8 @@ public static class ApiHistory
             originalLog.Name = name ?? originalLog.Name;
             originalLog.Response = response;
             originalLog.InteractionType = interactionType;
-            originalLog.Payload = payload;
+            if (payload != null)
+                originalLog.Payload = payload;
             originalLog.ElapsedMs = (int)(DateTime.Now - originalLog.Timestamp).TotalMilliseconds;
             return originalLog;
         }
