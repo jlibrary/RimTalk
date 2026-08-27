@@ -51,15 +51,15 @@ public static class RelationsService
                     isOpinionFallback = true;
                     if (opinionValue >= FriendOpinionThreshold)
                     {
-                        label = "Friend".Translate();
+                        label = "Friend";
                     }
                     else if (opinionValue <= RivalOpinionThreshold)
                     {
-                        label = "Rival".Translate();
+                        label = "Rival";
                     }
                     else
                     {
-                        label = "Acquaintance".Translate();
+                        label = "Acquaintance";
                     }
                 }
 
@@ -221,17 +221,17 @@ public static class RelationsService
         // Master relationship
         if ((pawn.IsPrisoner || pawn.IsSlave) && otherPawn.IsFreeNonSlaveColonist)
         {
-            return "Master".Translate();
+            return "Master";
         }
 
         // Prisoner or slave labels
-        if (otherPawn.IsPrisoner) return "Prisoner".Translate();
-        if (otherPawn.IsSlave) return "Slave".Translate();
+        if (otherPawn.IsPrisoner) return "Prisoner";
+        if (otherPawn.IsSlave) return "Slave";
 
         // Hostile relationship
         if (pawn.Faction != null && otherPawn.Faction != null && pawn.Faction.HostileTo(otherPawn.Faction))
         {
-            return "Enemy".Translate();
+            return "Enemy";
         }
 
         // No special status found
@@ -270,15 +270,15 @@ public static class RelationsService
             isOpinionFallback = true;
             if (opinionValue >= FriendOpinionThreshold)
             {
-                label = "Friend".Translate();
+                label = "Friend";
             }
             else if (opinionValue <= RivalOpinionThreshold)
             {
-                label = "Rival".Translate();
+                label = "Rival";
             }
             else
             {
-                label = "Acquaintance".Translate();
+                label = "Acquaintance";
             }
         }
 

@@ -8,20 +8,22 @@ namespace RimTalk.Util;
 
 public static class Describer
 {
+    // These feed the LLM prompt, not the UI - kept in English regardless of active game language
+    // so they stay consistent with the rest of ContextBuilder's English scaffolding.
     public static string Wealth(float wealthTotal)
     {
         return wealthTotal switch
         {
-            < 50_000f => "RimTalk.Describer.Wealth.Impecunious".Translate(),
-            < 100_000f => "RimTalk.Describer.Wealth.Needy".Translate(),
-            < 200_000f => "RimTalk.Describer.Wealth.NoLongerStarving".Translate(),
-            < 300_000f => "RimTalk.Describer.Wealth.ModeratelyProsperous".Translate(),
-            < 400_000f => "RimTalk.Describer.Wealth.Rich".Translate(),
-            < 600_000f => "RimTalk.Describer.Wealth.Luxurious".Translate(),
-            < 1_000_000f => "RimTalk.Describer.Wealth.Extravagant".Translate(),
-            < 1_500_000f => "RimTalk.Describer.Wealth.TreasuresFillTheHome".Translate(),
-            < 2_000_000f => "RimTalk.Describer.Wealth.AsWealthyAsAGlitterworld".Translate(),
-            _ => "RimTalk.Describer.Wealth.RichestInTheGalaxy".Translate()
+            < 50_000f => "impecunious",
+            < 100_000f => "needy",
+            < 200_000f => "no longer starving",
+            < 300_000f => "moderately prosperous",
+            < 400_000f => "rich",
+            < 600_000f => "luxurious",
+            < 1_000_000f => "extravagant",
+            < 1_500_000f => "treasures fill the home",
+            < 2_000_000f => "as wealthy as a glitterworld",
+            _ => "richest in the galaxy"
         };
     }
 
@@ -47,27 +49,32 @@ public static class Describer
         };
 
         if (stageIndex == null)
-            return "RimTalk.Describer.Beauty.Neutral".Translate();
+            return "unremarkable";
 
         var stages = NeedBeautyThoughtDef?.stages;
-        return stages != null && stageIndex.Value < stages.Count ? stages[stageIndex.Value].label : null;
+        // untranslatedLabel is the stage's raw pre-DefInjection text, captured in ThoughtStage.PostLoad -
+        // stays English (or whatever a beauty-tweaking mod authored) regardless of active game language,
+        // while still tracking that mod's stage count/thresholds instead of a hardcoded ladder.
+        return stages != null && stageIndex.Value < stages.Count ? stages[stageIndex.Value].untranslatedLabel : null;
     }
 
     // Reuses vanilla's RoomStatDef score-stage labels instead of a mod-defined bucket ladder.
     public static string Cleanliness(float cleanliness)
     {
-        return RoomStatDefOf.Cleanliness.GetScoreStage(cleanliness)?.label;
+        // Same untranslatedLabel mechanism as Beauty() above - stays in English while still
+        // respecting a mod's custom RoomStatDef.scoreStages thresholds/count.
+        return RoomStatDefOf.Cleanliness.GetScoreStage(cleanliness)?.untranslatedLabel;
     }
 
     public static string Resistance(float value)
     {
         return value switch
         {
-            <= 0f => "RimTalk.Describer.Resistance.CompletelyBroken".Translate(),
-            < 2f => "RimTalk.Describer.Resistance.BarelyResisting".Translate(),
-            < 6f => "RimTalk.Describer.Resistance.Weakened".Translate(),
-            < 12f => "RimTalk.Describer.Resistance.StrongWilled".Translate(),
-            _ => "RimTalk.Describer.Resistance.ExtremelyDefiant".Translate()
+            <= 0f => "Completely broken, ready to join",
+            < 2f => "Barely resisting, close to giving in",
+            < 6f => "Weakened, but still cautious",
+            < 12f => "Strong-willed, requires effort",
+            _ => "Extremely defiant, will take a long time to break"
         };
     }
 
@@ -75,11 +82,11 @@ public static class Describer
     {
         return value switch
         {
-            <= 0f => "RimTalk.Describer.Will.NoWillLeft".Translate(),
-            < 2f => "RimTalk.Describer.Will.WeakWilled".Translate(),
-            < 6f => "RimTalk.Describer.Will.ModerateWill".Translate(),
-            < 12f => "RimTalk.Describer.Will.StrongWill".Translate(),
-            _ => "RimTalk.Describer.Will.Unyielding".Translate()
+            <= 0f => "No will left, ready for slavery",
+            < 2f => "Weak-willed, easy to enslave",
+            < 6f => "Moderate will, may resist a little",
+            < 12f => "Strong will, difficult to enslave",
+            _ => "Unyielding, very hard to enslave"
         };
     }
 
@@ -87,10 +94,10 @@ public static class Describer
     {
         return value switch
         {
-            < 20f => "RimTalk.Describer.Suppression.OpenlyRebellious".Translate(),
-            < 50f => "RimTalk.Describer.Suppression.Unstable".Translate(),
-            < 80f => "RimTalk.Describer.Suppression.GenerallyObedient".Translate(),
-            _ => "RimTalk.Describer.Suppression.CompletelyCowed".Translate()
+            < 20f => "Openly rebellious, likely to resist or escape",
+            < 50f => "Unstable, may push boundaries",
+            < 80f => "Generally obedient, but watchful",
+            _ => "Completely cowed, unlikely to resist"
         };
     }
 
@@ -99,13 +106,13 @@ public static class Describer
     {
         return value switch
         {
-            >= 80f => "RimTalk.Describer.Opinion.Adoring".Translate(),
-            >= 40f => "RimTalk.Describer.Opinion.Warm".Translate(),
-            >= 20f => "RimTalk.Describer.Opinion.Friendly".Translate(),
-            > -20f => "RimTalk.Describer.Opinion.Neutral".Translate(),
-            >= -40f => "RimTalk.Describer.Opinion.Cold".Translate(),
-            >= -80f => "RimTalk.Describer.Opinion.Hostile".Translate(),
-            _ => "RimTalk.Describer.Opinion.Loathing".Translate()
+            >= 80f => "adoring",
+            >= 40f => "warm",
+            >= 20f => "friendly",
+            > -20f => "neutral",
+            >= -40f => "cold",
+            >= -80f => "hostile",
+            _ => "loathing"
         };
     }
 
@@ -114,11 +121,11 @@ public static class Describer
     {
         return pctHitPoints switch
         {
-            >= 95f => "RimTalk.Describer.Condition.Pristine".Translate(),
-            >= 75f => "RimTalk.Describer.Condition.Scratched".Translate(),
-            >= 50f => "RimTalk.Describer.Condition.Damaged".Translate(),
-            >= 25f => "RimTalk.Describer.Condition.BadlyDamaged".Translate(),
-            _ => "RimTalk.Describer.Condition.Wrecked".Translate()
+            >= 95f => "pristine",
+            >= 75f => "scratched",
+            >= 50f => "damaged",
+            >= 25f => "badly damaged",
+            _ => "wrecked"
         };
     }
 
@@ -126,11 +133,11 @@ public static class Describer
     {
         return pct switch
         {
-            <= 0f => "RimTalk.Describer.Progress.NotStarted".Translate(),
-            < 25f => "RimTalk.Describer.Progress.JustStarted".Translate(),
-            < 75f => "RimTalk.Describer.Progress.Underway".Translate(),
-            < 100f => "RimTalk.Describer.Progress.NearlyDone".Translate(),
-            _ => "RimTalk.Describer.Progress.Complete".Translate()
+            <= 0f => "not started",
+            < 25f => "just started",
+            < 75f => "underway",
+            < 100f => "nearly done",
+            _ => "complete"
         };
     }
 
