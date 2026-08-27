@@ -326,14 +326,16 @@ public static class PawnUtil
         if (nearestHostile != null)
         {
             float distance = pawn.Position.DistanceTo(nearestHostile.Position);
+            string threatLabel = GetThreatLabel(nearestHostile);
+            StoryDanger danger = pawn.Map?.dangerWatcher?.DangerRating ?? StoryDanger.None;
+            string threatLevel = danger.ToString().ToLower();
 
             if (distance <= 10f)
-                lines.Add("Threat: Engaging in battle!");
+                lines.Add($"Threat ({threatLevel}): Engaging in battle with {threatLabel}!");
             else if (distance <= 20f)
-                lines.Add("Threat: Hostiles are dangerously close!");
+                lines.Add($"Threat ({threatLevel}): Hostiles{threatLabel} are dangerously close!");
             else
-                lines.Add("Alert: hostiles in the area");
-
+                lines.Add($"Alert ({threatLevel}): Hostiles{threatLabel} in the area");
             isInDanger = true;
         }
     }
@@ -442,8 +444,17 @@ public static class PawnUtil
         return true;
     }
 
-    private static readonly HashSet<string> ResearchJobDefNames = new()
+    private static string GetThreatLabel(Pawn threat)
     {
+        if (threat == null) return "unknown threat";
+
+        return threat.Faction is { IsPlayer: false }
+            ? $"{threat.KindLabel} ({threat.Faction.Name})"
+            : threat.KindLabel;
+    }
+
+    private static readonly HashSet<string> ResearchJobDefNames =
+    [
         "Research",
         "RR_Analyse",
         "RR_AnalyseInPlace",
@@ -451,9 +462,9 @@ public static class PawnUtil
         "RR_Research",
         "RR_InterrogatePrisoner",
         "RR_LearnRemotely"
-    };
+    ];
 
-    private static readonly string[] MovementJobPatterns = { "Goto", "Flee", "Wait", "Wander" };
+    private static readonly string[] MovementJobPatterns = ["Goto", "Flee", "Wait", "Wander"];
 
     internal static string GetActivity(this Pawn pawn)
     {
