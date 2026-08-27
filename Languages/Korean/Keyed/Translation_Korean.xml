@@ -181,7 +181,10 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.Settings.EventFilter>이벤트 필터</RimTalk.Settings.EventFilter>
     <RimTalk.Settings.ApiKey>클라우드 API 키</RimTalk.Settings.ApiKey>
     <RimTalk.Settings.GetFreeApiKey>무료 API 키 받기</RimTalk.Settings.GetFreeApiKey>
-    <RimTalk.Settings.AICooldown>AI 재사용 대기시간 (초): {0}</RimTalk.Settings.AICooldown>
+    <RimTalk.Settings.AICooldown>AI 재사용 대기시간 (초)</RimTalk.Settings.AICooldown>
+    <RimTalk.Settings.AICooldownTooltip>새로운 AI 대화 생성을 시도하기 전 대기하는 기본 시간(초)입니다.</RimTalk.Settings.AICooldownTooltip>
+    <RimTalk.Settings.ReplyInterval>답변 간격 (초)</RimTalk.Settings.ReplyInterval>
+    <RimTalk.Settings.ReplyIntervalTooltip>대화 중 이전 발언과 다음 답변 사이의 지연 시간(초)입니다.</RimTalk.Settings.ReplyIntervalTooltip>
     <RimTalk.Settings.OverrideInteractions>모든 상호작용을 AI 대화로 덮어쓰기</RimTalk.Settings.OverrideInteractions>
     <RimTalk.Settings.OverrideInteractionsTooltip>이 옵션을 활성화하면 AI가 모든 상호작용(바닐라 림월드 및 다른 모드 포함)의 대화를 덮어쓰고 다시 생성할 수 있습니다. 참고: AI 대화에는 위에 설정된 재사용 대기시간이 있습니다. 대화를 더 자주 생성하려면 재사용 대기시간을 줄이세요.</RimTalk.Settings.OverrideInteractionsTooltip>
     <RimTalk.Settings.AllowSimultaneousConversations>동시다발적 대화 허용</RimTalk.Settings.AllowSimultaneousConversations>
@@ -215,9 +218,19 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.Settings.PlayerDialogueMode.AIDrivenPawnOnly>자동 생성: 폰 전용</RimTalk.Settings.PlayerDialogueMode.AIDrivenPawnOnly>
     <RimTalk.Settings.PlayerToNpc>플레이어 ↔ NPC:</RimTalk.Settings.PlayerToNpc>
     <RimTalk.Settings.PlayerName>플레이어 이름</RimTalk.Settings.PlayerName>
-    <RimTalk.Settings.PlayerNameTooltip>NPC가 대화에서 플레이어를 부를 때 사용하는 이름입니다.</RimTalk.Settings.PlayerNameTooltip>
-    <RimTalk.Settings.PlayerDialogueModeTooltip>플레이어가 대화에 참여하는 방식을 선택하세요.\n\n비활성화: 플레이어는 대화에 참여하지 않습니다.\n수동 답변: 모든 플레이어 답변을 직접 입력합니다. 자동 생성 없음.\n자동 생성 답변: 대화 중 AI가 플레이어의 답변을 자동으로 생성합니다.</RimTalk.Settings.PlayerDialogueModeTooltip>
     <RimTalk.Settings.PlayerNameTooltip>당신이 대화에 참여할 때 표시되는 이름으로, 식민자들이 당신을 어떻게 인식하는지를 나타냅니다.</RimTalk.Settings.PlayerNameTooltip>
+    <RimTalk.Settings.PlayerPersona>플레이어 페르소나</RimTalk.Settings.PlayerPersona>
+    <RimTalk.Settings.PlayerPersonaTooltip>플레이어의 성격, 말투 및 행동 양식을 설정합니다. AI가 플레이어 대사를 생성하거나 대화할 때 반영됩니다.</RimTalk.Settings.PlayerPersonaTooltip>
+    <RimTalk.Settings.Configure>설정</RimTalk.Settings.Configure>
+    <RimTalk.PlayerSettings.Title>유저 지정 대화 설정</RimTalk.PlayerSettings.Title>
+    <RimTalk.PlayerSettings.Instruct>플레이어의 대화 참여 방식, 이름 및 페르소나를 설정합니다.</RimTalk.PlayerSettings.Instruct>
+    <RimTalk.PlayerSettings.ModeDesc>• 비활성화: 플레이어는 대화에 참여하지 않지만, 폰끼리의 대화는 직접 입력하여 시작할 수 있습니다.
+• 수동 답변: 사용자가 직접 첫 대사를 입력하며, 플레이어 대사는 자동 생성되지 않습니다.
+• 자동 생성: 폰 전용: 플레이어가 말을 시작한 후, 이어지는 대화는 폰들끼리만 진행합니다.
+• 자동 생성: 폰+플레이어: AI가 폰과 플레이어의 대사를 모두 자동 생성합니다. (플레이어 페르소나 적용)</RimTalk.PlayerSettings.ModeDesc>
+    <RimTalk.PlayerSettings.PersonaOnlyAIDriven>(자동 생성: 폰+플레이어 모드에서만 활성화됩니다)</RimTalk.PlayerSettings.PersonaOnlyAIDriven>
+    <RimTalk.PlayerSettings.Save>저장</RimTalk.PlayerSettings.Save>
+    <RimTalk.PlayerSettings.Saved>플레이어 대화 설정이 저장되었습니다.</RimTalk.PlayerSettings.Saved>
 
     <RimTalk.Settings.PauseAtSpeed>고속에서 AI 일시정지</RimTalk.Settings.PauseAtSpeed>
     <RimTalk.Settings.DisableAiAtSpeedTooltip>API 호출을 줄이기 위해 게임 속도가 이 수준 이상으로 설정되면 AI가 일시정지됩니다.</RimTalk.Settings.DisableAiAtSpeedTooltip>

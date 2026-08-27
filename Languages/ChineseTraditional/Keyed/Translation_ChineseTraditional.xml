@@ -181,7 +181,10 @@ Scriban 魔法 (動態內容)
     <RimTalk.Settings.EventFilter>事件過濾器</RimTalk.Settings.EventFilter>
     <RimTalk.Settings.ApiKey>雲端 API 金鑰</RimTalk.Settings.ApiKey>
     <RimTalk.Settings.GetFreeApiKey>獲取免費 API 金鑰</RimTalk.Settings.GetFreeApiKey>
-    <RimTalk.Settings.AICooldown>AI 冷卻時間（秒）：{0}</RimTalk.Settings.AICooldown>
+    <RimTalk.Settings.AICooldown>AI 冷卻時間（秒）</RimTalk.Settings.AICooldown>
+    <RimTalk.Settings.AICooldownTooltip>嘗試生成新 AI 對話前的基礎等待時間（秒）。</RimTalk.Settings.AICooldownTooltip>
+    <RimTalk.Settings.ReplyInterval>對話回覆間隔（秒）</RimTalk.Settings.ReplyInterval>
+    <RimTalk.Settings.ReplyIntervalTooltip>對話中上一句與下一句回覆之間的延遲時間（秒）。</RimTalk.Settings.ReplyIntervalTooltip>
     <RimTalk.Settings.OverrideInteractions>使用 AI 對話覆蓋所有互動</RimTalk.Settings.OverrideInteractions>
     <RimTalk.Settings.OverrideInteractionsTooltip>啟用此選項以允許 AI 覆蓋並重新生成所有互動的對話（包括 vanilla RimWorld 和其他模組）。注意：AI 對話具有上方設定的冷卻期。要更頻繁地生成對話，請降低冷卻時間。</RimTalk.Settings.OverrideInteractionsTooltip>
     <RimTalk.Settings.AllowSimultaneousConversations>允許同時進行多個對話</RimTalk.Settings.AllowSimultaneousConversations>
@@ -215,8 +218,19 @@ Scriban 魔法 (動態內容)
     <RimTalk.Settings.PlayerDialogueMode.AIDrivenPawnOnly>自動生成：僅角色</RimTalk.Settings.PlayerDialogueMode.AIDrivenPawnOnly>
     <RimTalk.Settings.PlayerToNpc>玩家對 NPC：</RimTalk.Settings.PlayerToNpc>
     <RimTalk.Settings.PlayerName>玩家名稱</RimTalk.Settings.PlayerName>
-    <RimTalk.Settings.PlayerNameTooltip>NPC 在對話中如何稱呼玩家。</RimTalk.Settings.PlayerNameTooltip>
-    <RimTalk.Settings.PlayerDialogueModeTooltip>選擇玩家在對話中的互動方式。\n\n已禁用：玩家不能參與對話。\n手動回覆：您自己輸入所有玩家回應；不會自動生成任何內容。\n自動生成回覆：AI 在對話中自動生成玩家回應。</RimTalk.Settings.PlayerDialogueModeTooltip>
+    <RimTalk.Settings.PlayerNameTooltip>當你參與對話時所顯示的名稱，代表殖民者對你的認知。</RimTalk.Settings.PlayerNameTooltip>
+    <RimTalk.Settings.PlayerPersona>玩家人設</RimTalk.Settings.PlayerPersona>
+    <RimTalk.Settings.PlayerPersonaTooltip>描述玩家的性格、語氣和說話風格。AI 生成玩家台詞或與玩家對話時會參考此項。</RimTalk.Settings.PlayerPersonaTooltip>
+    <RimTalk.Settings.Configure>設定</RimTalk.Settings.Configure>
+    <RimTalk.PlayerSettings.Title>自訂對話設定</RimTalk.PlayerSettings.Title>
+    <RimTalk.PlayerSettings.Instruct>設定玩家的對話參與方式、名稱和人設。</RimTalk.PlayerSettings.Instruct>
+    <RimTalk.PlayerSettings.ModeDesc>• 禁用：玩家不參與對話，但仍可直接輸入並讓角色之間進行對話。
+• 手動回覆：玩家手動輸入首句對話；不會自動生成玩家台詞。
+• 自動生成：僅角色：玩家發起對話後，後續對話僅由角色之間自動進行。
+• 自動生成：角色+玩家：AI 會自動生成角色和玩家雙方的台詞。（套用玩家人設）</RimTalk.PlayerSettings.ModeDesc>
+    <RimTalk.PlayerSettings.PersonaOnlyAIDriven>（僅在「自動生成：角色+玩家」模式下生效）</RimTalk.PlayerSettings.PersonaOnlyAIDriven>
+    <RimTalk.PlayerSettings.Save>儲存</RimTalk.PlayerSettings.Save>
+    <RimTalk.PlayerSettings.Saved>玩家對話設定已儲存。</RimTalk.PlayerSettings.Saved>
 
     <RimTalk.Settings.PauseAtSpeed>高速時暫停 AI</RimTalk.Settings.PauseAtSpeed>
     <RimTalk.Settings.DisableAiAtSpeedTooltip>為了減少 API 調用，當遊戲速度設定為此級別或更高時，AI 將暫停。</RimTalk.Settings.DisableAiAtSpeedTooltip>

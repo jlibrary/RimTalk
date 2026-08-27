@@ -10,11 +10,24 @@ public static class PersonaService
 {
     public static string GetPersonality(Pawn pawn)
     {
+        if (pawn != null && pawn.IsPlayer())
+        {
+            if (Settings.Get().PlayerDialogueMode == Settings.PlayerDialogueMode.AIDriven)
+            {
+                return Settings.Get().PlayerPersona;
+            }
+            return "";
+        }
         return Hediff_Persona.GetOrAddNew(pawn).Personality;
     }
 
     public static void SetPersonality(Pawn pawn, string personality)
     {
+        if (pawn != null && pawn.IsPlayer())
+        {
+            Settings.Get().PlayerPersona = personality;
+            return;
+        }
         Hediff_Persona.GetOrAddNew(pawn).Personality = personality;
     }
 

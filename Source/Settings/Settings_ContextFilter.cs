@@ -55,7 +55,7 @@ namespace RimTalk
             { ContextPreset.Standard, new ContextSettings {
                 EnableContextOptimization = false,
                 MaxPawnContextCount = 3,
-                ConversationHistoryCount = 1,
+                ConversationHistoryCount = 2,
                 
                 IncludeRace = true,
                 IncludeNotableGenes = true,
@@ -120,6 +120,8 @@ namespace RimTalk
             if (!_presetInitialized)
             {
                 DetermineCurrentPreset(context);
+                _maxPawnContextBuffer = context.MaxPawnContextCount.ToString();
+                _conversationHistoryBuffer = context.ConversationHistoryCount.ToString();
                 _presetInitialized = true;
             }
 
@@ -151,12 +153,10 @@ namespace RimTalk
                 "RimTalk.Settings.EnableContextOptimization.Tooltip".Translate());
             listing.Gap(6f);
 
-            DrawDropdown(listing, "RimTalk.Settings.MaxPawnContextCount", context.MaxPawnContextCount, 
-                val => { context.MaxPawnContextCount = val; _currentPreset = ContextPreset.Custom; }, 2, 7);
+            DrawNumericInput(listing, "RimTalk.Settings.MaxPawnContextCount", ref context.MaxPawnContextCount, ref _maxPawnContextBuffer, 1, 9999);
             listing.Gap(6f);
 
-            DrawDropdown(listing, "RimTalk.Settings.ConversationHistoryCount", context.ConversationHistoryCount, 
-                val => { context.ConversationHistoryCount = val; _currentPreset = ContextPreset.Custom; }, 0, 7);
+            DrawNumericInput(listing, "RimTalk.Settings.ConversationHistoryCount", ref context.ConversationHistoryCount, ref _conversationHistoryBuffer, 0, 9999);
             listing.Gap();
 
             DrawColumns(listing, context);
@@ -295,6 +295,8 @@ namespace RimTalk
             {
                 CopyFields(source, context);
                 _currentPreset = preset;
+                _maxPawnContextBuffer = context.MaxPawnContextCount.ToString();
+                _conversationHistoryBuffer = context.ConversationHistoryCount.ToString();
             }
         }
 
@@ -317,26 +319,21 @@ namespace RimTalk
             return true;
         }
 
-        private void DrawDropdown(Listing_Standard listing, string labelKey, int currentValue, Action<int> onSelect, int min, int max)
+        private void DrawNumericInput(Listing_Standard listing, string labelKey, ref int value, ref string buffer, int min, int max)
         {
-            const float dropdownWidth = 120f;
+            const float textFieldWidth = 60f;
             Rect rowRect = listing.GetRect(24f);
-            Rect labelRect = new Rect(rowRect.x, rowRect.y, rowRect.width - dropdownWidth - 10f, rowRect.height);
-            Rect dropdownRect = new Rect(rowRect.xMax - dropdownWidth, rowRect.y, dropdownWidth, rowRect.height);
+            Rect labelRect = new Rect(rowRect.x, rowRect.y, rowRect.width - textFieldWidth - 10f, rowRect.height);
+            Rect fieldRect = new Rect(rowRect.xMax - textFieldWidth, rowRect.y, textFieldWidth, rowRect.height);
 
+            TextAnchor originalAnchor = Text.Anchor;
+            Text.Anchor = TextAnchor.MiddleLeft;
             Widgets.Label(labelRect, labelKey.Translate());
+            Text.Anchor = originalAnchor;
+
             TooltipHandler.TipRegion(rowRect, (labelKey + ".Tooltip").Translate());
 
-            if (Widgets.ButtonText(dropdownRect, currentValue.ToString()))
-            {
-                List<FloatMenuOption> options = [];
-                for (int i = min; i <= max; i++)
-                {
-                    int count = i;
-                    options.Add(new FloatMenuOption(count.ToString(), () => onSelect(count)));
-                }
-                Find.WindowStack.Add(new FloatMenu(options));
-            }
+            Widgets.TextFieldNumeric(fieldRect, ref value, ref buffer, min, max);
         }
         
         private void DetermineCurrentPreset(ContextSettings current)

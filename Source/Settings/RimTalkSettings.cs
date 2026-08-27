@@ -19,7 +19,7 @@ public class RimTalkSettings : ModSettings
     public bool IsUsingFallbackModel = false;
     public bool IsEnabled = true;
     public int TalkInterval = 7;
-    public const int ReplyInterval = 4;
+    public int ReplyInterval = 4;
     public bool ProcessNonRimTalkInteractions = true;
     public bool AllowSimultaneousConversations = false;
     public string SimpleModeInstruction = Constant.DefaultInstruction;
@@ -38,6 +38,7 @@ public class RimTalkSettings : ModSettings
     public bool AllowCustomConversation = true;
     public Settings.PlayerDialogueMode PlayerDialogueMode = Settings.PlayerDialogueMode.Manual;
     public string PlayerName = "Player";
+    public string PlayerPersona = "";
     public bool ContinueDialogueWhileSleeping = false;
     public bool AllowBabiesToTalk = true;
     public bool AllowNonHumanToTalk = true;
@@ -166,6 +167,7 @@ public class RimTalkSettings : ModSettings
         Scribe_Values.Look(ref SimpleApiKey, "simpleApiKey", "");
         Scribe_Values.Look(ref IsEnabled, "isEnabled", true);
         Scribe_Values.Look(ref TalkInterval, "talkInterval", 7);
+        Scribe_Values.Look(ref ReplyInterval, "replyInterval", 4);
         Scribe_Values.Look(ref ProcessNonRimTalkInteractions, "processNonRimTalkInteractions", true);
         Scribe_Values.Look(ref AllowSimultaneousConversations, "allowSimultaneousConversations", false);
         Scribe_Values.Look(ref DisplayTalkWhenDrafted, "displayTalkWhenDrafted", true);
@@ -177,6 +179,7 @@ public class RimTalkSettings : ModSettings
         Scribe_Values.Look(ref AllowCustomConversation, "allowCustomConversation", true);
         Scribe_Values.Look(ref PlayerDialogueMode, "playerDialogueMode", Settings.PlayerDialogueMode.Manual);
         Scribe_Values.Look(ref PlayerName, "playerName", "Player");
+        Scribe_Values.Look(ref PlayerPersona, "playerPersona", "");
         
         Scribe_Values.Look(ref ContinueDialogueWhileSleeping, "continueDialogueWhileSleeping", false);
         Scribe_Values.Look(ref DisableAiAtSpeed, "DisableAiAtSpeed", 0);

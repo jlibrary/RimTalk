@@ -19,6 +19,10 @@ public partial class Settings : Mod
     private int _lastTextAreaCursorPos = -1;
     private int _lastPromptEditorCursorPos = -1;
     private int _apiSettingsHash = 0;
+    private string _talkIntervalBuffer;
+    private string _replyIntervalBuffer;
+    private string _maxPawnContextBuffer;
+    private string _conversationHistoryBuffer;
 
     // Tab system
     private enum SettingsTab
@@ -110,6 +114,7 @@ public partial class Settings : Mod
         sb.AppendLine(settings.ApplyMoodAndSocialEffects.ToString());
         sb.AppendLine(settings.PlayerDialogueMode.ToString());
         sb.AppendLine(settings.PlayerName);
+        sb.AppendLine(settings.PlayerPersona);
         
         return sb.ToString().GetHashCode();
     }

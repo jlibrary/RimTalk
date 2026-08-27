@@ -27,7 +27,21 @@ public static class PromptService
         for (int i = 0; i < pawns.Count; i++)
         {
             var pawn = pawns[i];
-            if (pawn.IsPlayer()) continue;
+            if (pawn.IsPlayer())
+            {
+                if (Settings.Get().PlayerDialogueMode == Settings.PlayerDialogueMode.AIDriven)
+                {
+                    var playerPersona = Settings.Get().PlayerPersona;
+                    if (!string.IsNullOrWhiteSpace(playerPersona))
+                    {
+                        string playerContext = $"{pawn.LabelShort} (Player)\nPersonality: {playerPersona.Trim()}";
+                        var playerState = Cache.Get(pawn);
+                        if (playerState != null) playerState.Context = playerContext;
+                        context.AppendLine($"[P{i + 1}]").AppendLine(playerContext);
+                    }
+                }
+                continue;
+            }
             InfoLevel infoLevel = Settings.Get().Context.EnableContextOptimization 
                                   || i != 0 ? InfoLevel.Short : InfoLevel.Normal;
             var pawnContext = CreatePawnContext(pawn, infoLevel);

@@ -181,7 +181,10 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Settings.EventFilter>イベントフィルター</RimTalk.Settings.EventFilter>
     <RimTalk.Settings.ApiKey>クラウドAPIキー</RimTalk.Settings.ApiKey>
     <RimTalk.Settings.GetFreeApiKey>無料APIキーを取得</RimTalk.Settings.GetFreeApiKey>
-    <RimTalk.Settings.AICooldown>AIクールダウン（秒）：{0}</RimTalk.Settings.AICooldown>
+    <RimTalk.Settings.AICooldown>AIクールダウン（秒）</RimTalk.Settings.AICooldown>
+    <RimTalk.Settings.AICooldownTooltip>新しいAI会話の生成を試みるまでの基本待機時間（秒）です。</RimTalk.Settings.AICooldownTooltip>
+    <RimTalk.Settings.ReplyInterval>返答間隔（秒）</RimTalk.Settings.ReplyInterval>
+    <RimTalk.Settings.ReplyIntervalTooltip>会話中の発言と次の返答の間の遅延時間（秒）です。</RimTalk.Settings.ReplyIntervalTooltip>
     <RimTalk.Settings.OverrideInteractions>すべてのインタラクションをAIの対話で上書きする</RimTalk.Settings.OverrideInteractions>
     <RimTalk.Settings.OverrideInteractionsTooltip>これを有効にすると、AIがすべてのインタラクション（バニラのRimWorldや他のMODを含む）の対話を上書きして再生成できるようになります。注意：AIの対話には上記で設定されたクールダウン期間があります。より頻繁に対話を生成するには、クールダウンを短くしてください。</RimTalk.Settings.OverrideInteractionsTooltip>
     <RimTalk.Settings.AllowSimultaneousConversations>複数の同時会話を許可</RimTalk.Settings.AllowSimultaneousConversations>
@@ -215,9 +218,19 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Settings.PlayerDialogueMode.AIDrivenPawnOnly>自動生成：ポーンのみ</RimTalk.Settings.PlayerDialogueMode.AIDrivenPawnOnly>
     <RimTalk.Settings.PlayerToNpc>プレイヤー 対 NPC：</RimTalk.Settings.PlayerToNpc>
     <RimTalk.Settings.PlayerName>プレイヤー名</RimTalk.Settings.PlayerName>
-    <RimTalk.Settings.PlayerNameTooltip>NPC が会話でプレイヤーを呼ぶ際の名前です。</RimTalk.Settings.PlayerNameTooltip>
-    <RimTalk.Settings.PlayerDialogueModeTooltip>プレイヤーが会話に参加する方法を選択します。\n\n無効：プレイヤーは会話に参加しません。\n手動返信：すべての返信を自分で入力します。自動生成はありません。\n自動生成返信：会話中、AI がプレイヤーの返信を自動的に生成します。</RimTalk.Settings.PlayerDialogueModeTooltip>
     <RimTalk.Settings.PlayerNameTooltip>会話に参加する際に表示される名前で、入植者があなたをどのように認識するかを表します。</RimTalk.Settings.PlayerNameTooltip>
+    <RimTalk.Settings.PlayerPersona>プレイヤーペルソナ</RimTalk.Settings.PlayerPersona>
+    <RimTalk.Settings.PlayerPersonaTooltip>プレイヤーの性格や口調、話し方を記述します。AIがプレイヤーのセリフを生成する際や対話時に反映されます。</RimTalk.Settings.PlayerPersonaTooltip>
+    <RimTalk.Settings.Configure>設定</RimTalk.Settings.Configure>
+    <RimTalk.PlayerSettings.Title>カスタム会話設定</RimTalk.PlayerSettings.Title>
+    <RimTalk.PlayerSettings.Instruct>プレイヤーの会話参加方式、名前、ペルソナを設定します。</RimTalk.PlayerSettings.Instruct>
+    <RimTalk.PlayerSettings.ModeDesc>• 無効：プレイヤーは会話に参加しませんが、ポーン同士の会話を直接入力して開始することは可能です。
+• 手動返信：プレイヤーが直接最初のセリフを入力します（プレイヤーのセリフは自動生成されません）。
+• 自動生成：ポーンのみ：プレイヤーが話しかけた後、続く会話はポーン同士でのみ進行します。
+• 自動生成：ポーン＋プレイヤー：AIがポーンとプレイヤー両方のセリフを自動生成します（プレイヤーペルソナ適用）。</RimTalk.PlayerSettings.ModeDesc>
+    <RimTalk.PlayerSettings.PersonaOnlyAIDriven>（「自動生成：ポーン＋プレイヤー」モードでのみ有効）</RimTalk.PlayerSettings.PersonaOnlyAIDriven>
+    <RimTalk.PlayerSettings.Save>保存</RimTalk.PlayerSettings.Save>
+    <RimTalk.PlayerSettings.Saved>プレイヤー会話設定が保存されました。</RimTalk.PlayerSettings.Saved>
 
     <RimTalk.Settings.PauseAtSpeed>高速時にAIを一時停止</RimTalk.Settings.PauseAtSpeed>
     <RimTalk.Settings.DisableAiAtSpeedTooltip>API呼び出しを減らすため、ゲーム速度がこのレベル以上に設定されるとAIは一時停止します。</RimTalk.Settings.DisableAiAtSpeedTooltip>

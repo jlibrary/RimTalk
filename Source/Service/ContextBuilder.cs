@@ -317,11 +317,25 @@ public static class ContextBuilder
             topicSb.Append($"{pawns[1].LabelShort}({pawns[1].GetRole()}) said to {shortName}: '{talkRequest.Prompt}'. ");
 
             var mode = Settings.Get().PlayerDialogueMode;
-            bool multiTurn = mode == Settings.PlayerDialogueMode.AIDriven || (!pawns[1].IsPlayer() && mode != Settings.PlayerDialogueMode.Manual);
 
-            intentSb.Append(multiTurn
-                ? $"Generate multi turn dialogues starting after this (do not repeat initial dialogue), beginning with {shortName}"
-                : $"Generate dialogue starting after this. Do not generate any further lines for {pawns[1].LabelShort}");
+            if (!pawns[1].IsPlayer())
+            {
+                // Pawn to Pawn
+                bool multiTurn = mode != Settings.PlayerDialogueMode.Manual;
+                intentSb.Append(multiTurn
+                    ? $"Generate multi turn dialogues starting after this (do not repeat initial dialogue), beginning with {shortName}"
+                    : $"Generate dialogue starting after this. Do not generate any further lines for {pawns[1].LabelShort}");
+            }
+            else
+            {
+                // Player to Pawn
+                if (mode == Settings.PlayerDialogueMode.AIDriven)
+                    intentSb.Append($"Generate multi turn dialogues starting after this (do not repeat initial dialogue), beginning with {shortName}");
+                else if (mode == Settings.PlayerDialogueMode.AIDrivenPawnOnly && pawns.Count > 2)
+                    intentSb.Append($"Generate multi turn dialogues starting after this (do not repeat initial dialogue), beginning with {shortName}. Do not generate any further lines for {pawns[1].LabelShort}");
+                else
+                    intentSb.Append($"Generate dialogue starting after this. Do not generate any further lines for {pawns[1].LabelShort}");
+            }
 
             sb.Append(topicSb).Append(intentSb);
         }

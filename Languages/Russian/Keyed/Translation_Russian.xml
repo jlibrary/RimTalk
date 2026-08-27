@@ -180,7 +180,10 @@
     <RimTalk.Settings.EventFilter>Фильтр событий</RimTalk.Settings.EventFilter>
     <RimTalk.Settings.ApiKey>Ключ API облака</RimTalk.Settings.ApiKey>
     <RimTalk.Settings.GetFreeApiKey>Получить бесплатный ключ API</RimTalk.Settings.GetFreeApiKey>
-    <RimTalk.Settings.AICooldown>Время восстановления ИИ (секунды): {0}</RimTalk.Settings.AICooldown>
+    <RimTalk.Settings.AICooldown>Кулдаун ИИ (сек)</RimTalk.Settings.AICooldown>
+    <RimTalk.Settings.AICooldownTooltip>Базовое время ожидания (в секундах) перед попыткой создания нового диалога ИИ.</RimTalk.Settings.AICooldownTooltip>
+    <RimTalk.Settings.ReplyInterval>Интервал ответов (сек)</RimTalk.Settings.ReplyInterval>
+    <RimTalk.Settings.ReplyIntervalTooltip>Задержка (в секундах) между репликами в диалоге.</RimTalk.Settings.ReplyIntervalTooltip>
     <RimTalk.Settings.OverrideInteractions>Переопределять все взаимодействия диалогами ИИ</RimTalk.Settings.OverrideInteractions>
     <RimTalk.Settings.OverrideInteractionsTooltip>Включите, чтобы позволить ИИ переопределять и регенерировать диалоги для всех взаимодействий (включая ванильный RimWorld и другие моды). Примечание: диалоги ИИ имеют период восстановления, установленный выше. Чтобы генерировать диалоги чаще, уменьшите время восстановления.</RimTalk.Settings.OverrideInteractionsTooltip>
     <RimTalk.Settings.AllowSimultaneousConversations>Разрешить одновременные разговоры</RimTalk.Settings.AllowSimultaneousConversations>
@@ -214,9 +217,19 @@
     <RimTalk.Settings.PlayerDialogueMode.AIDrivenPawnOnly>Автоген.: только пешка</RimTalk.Settings.PlayerDialogueMode.AIDrivenPawnOnly>
     <RimTalk.Settings.PlayerToNpc>Игрок–НПС:</RimTalk.Settings.PlayerToNpc>
     <RimTalk.Settings.PlayerName>Имя игрока</RimTalk.Settings.PlayerName>
-    <RimTalk.Settings.PlayerNameTooltip>Имя, которым НПС называют игрока в диалогах.</RimTalk.Settings.PlayerNameTooltip>
-    <RimTalk.Settings.PlayerDialogueModeTooltip>Выберите способ участия игрока в диалогах.\n\nОтключено: Игрок не участвует в разговорах.\nРучные ответы: Вы вводите все ответы вручную; авто-генерации нет.\nАвтогенерируемые ответы: ИИ автоматически создаёт ответы игрока во время диалогов.</RimTalk.Settings.PlayerDialogueModeTooltip>
     <RimTalk.Settings.PlayerNameTooltip>Имя, отображаемое при участии игрока в диалогах, отражающее восприятие поселенцев.</RimTalk.Settings.PlayerNameTooltip>
+    <RimTalk.Settings.PlayerPersona>Персона игрока</RimTalk.Settings.PlayerPersona>
+    <RimTalk.Settings.PlayerPersonaTooltip>Опишите характер, тон и манеру речи игрока. Используется при генерации реплик игрока и в диалогах.</RimTalk.Settings.PlayerPersonaTooltip>
+    <RimTalk.Settings.Configure>Настройки</RimTalk.Settings.Configure>
+    <RimTalk.PlayerSettings.Title>Настройки пользовательского диалога</RimTalk.PlayerSettings.Title>
+    <RimTalk.PlayerSettings.Instruct>Настройте режим диалога, имя и персону игрока.</RimTalk.PlayerSettings.Instruct>
+    <RimTalk.PlayerSettings.ModeDesc>• Отключено: Игрок не участвует в диалогах, но вы можете вручную инициировать диалоги между пешками.
+• Ручные ответы: Вы вводите первую реплику вручную; реплики игрока не создаются автоматически.
+• Автоген.: только пешка: После обращения игрока пешки продолжают разговор между собой.
+• Автоген.: пешка + игрок: ИИ генерирует реплики и пешек, и игрока. (Применяется персона игрока)</RimTalk.PlayerSettings.ModeDesc>
+    <RimTalk.PlayerSettings.PersonaOnlyAIDriven>(Активно только в режиме «Автоген.: пешка + игрок»)</RimTalk.PlayerSettings.PersonaOnlyAIDriven>
+    <RimTalk.PlayerSettings.Save>Сохранить</RimTalk.PlayerSettings.Save>
+    <RimTalk.PlayerSettings.Saved>Настройки диалога игрока сохранены.</RimTalk.PlayerSettings.Saved>
 
     <RimTalk.Settings.PauseAtSpeed>Приостанавливать ИИ на высокой скорости</RimTalk.Settings.PauseAtSpeed>
     <RimTalk.Settings.DisableAiAtSpeedTooltip>Чтобы уменьшить количество вызовов API, ИИ будет приостановлен, когда скорость игры установлена на этот уровень или выше.</RimTalk.Settings.DisableAiAtSpeedTooltip>

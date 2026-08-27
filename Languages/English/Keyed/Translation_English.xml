@@ -177,7 +177,10 @@ Crucial Tips:
     <RimTalk.Settings.EventFilter>Event Filter</RimTalk.Settings.EventFilter>
     <RimTalk.Settings.ApiKey>Cloud API Key</RimTalk.Settings.ApiKey>
     <RimTalk.Settings.GetFreeApiKey>Get a free API key</RimTalk.Settings.GetFreeApiKey>
-    <RimTalk.Settings.AICooldown>AI Cooldown (Seconds): {0}</RimTalk.Settings.AICooldown>
+    <RimTalk.Settings.AICooldown>AI Cooldown (Seconds)</RimTalk.Settings.AICooldown>
+    <RimTalk.Settings.AICooldownTooltip>The base cooldown time (in seconds) before attempting to generate a new AI dialogue.</RimTalk.Settings.AICooldownTooltip>
+    <RimTalk.Settings.ReplyInterval>Reply Interval (Seconds)</RimTalk.Settings.ReplyInterval>
+    <RimTalk.Settings.ReplyIntervalTooltip>The delay (in seconds) between consecutive replies within a conversation.</RimTalk.Settings.ReplyIntervalTooltip>
     <RimTalk.Settings.OverrideInteractions>Override All Interactions with AI Dialogue</RimTalk.Settings.OverrideInteractions>
     <RimTalk.Settings.OverrideInteractionsTooltip>Enable this to allow AI to override and regenerate dialogue for all interactions (including vanilla RimWorld and other mods). Note: AI dialogue has a cooldown period set above. To generate dialogue more frequently, lower the cooldown.</RimTalk.Settings.OverrideInteractionsTooltip>
     <RimTalk.Settings.AllowSimultaneousConversations>Allow Simultaneous Conversations</RimTalk.Settings.AllowSimultaneousConversations>
@@ -210,10 +213,20 @@ Crucial Tips:
     <RimTalk.Settings.PlayerDialogueMode.AIDriven>Auto-Gen Pawn + Player</RimTalk.Settings.PlayerDialogueMode.AIDriven>
     <RimTalk.Settings.PlayerDialogueMode.AIDrivenPawnOnly>Auto-Gen Pawn</RimTalk.Settings.PlayerDialogueMode.AIDrivenPawnOnly>
     <RimTalk.Settings.PlayerToNpc>Player-to-NPC:</RimTalk.Settings.PlayerToNpc>
-    <RimTalk.Settings.PlayerName>Player prompt</RimTalk.Settings.PlayerName>
-    <RimTalk.Settings.PlayerNameTooltip>What NPCs call the player in conversations.</RimTalk.Settings.PlayerNameTooltip>
-    <RimTalk.Settings.PlayerDialogueModeTooltip>Choose how the player can interact in conversations.\n\nDisabled: Player cannot participate in conversations.\nManual Replies: You type all player responses yourself; nothing is auto-generated.\nAuto-Gen Replies: The AI generates player responses automatically during conversations.</RimTalk.Settings.PlayerDialogueModeTooltip>
+    <RimTalk.Settings.PlayerName>Player Name</RimTalk.Settings.PlayerName>
     <RimTalk.Settings.PlayerNameTooltip>The name that will appear when you participate in conversations. This represents how pawns will perceive your presence.</RimTalk.Settings.PlayerNameTooltip>
+    <RimTalk.Settings.PlayerPersona>Player Persona</RimTalk.Settings.PlayerPersona>
+    <RimTalk.Settings.PlayerPersonaTooltip>Describe the player's personality, tone, and speaking style. Applied when AI generates lines for the player or talks with the player.</RimTalk.Settings.PlayerPersonaTooltip>
+    <RimTalk.Settings.Configure>Settings</RimTalk.Settings.Configure>
+    <RimTalk.PlayerSettings.Title>Custom Conversation Settings</RimTalk.PlayerSettings.Title>
+    <RimTalk.PlayerSettings.Instruct>Configure player dialogue mode, name, and persona.</RimTalk.PlayerSettings.Instruct>
+    <RimTalk.PlayerSettings.ModeDesc>• Disabled: Player cannot participate in conversations, but you can still direct dialogues between pawns.
+• Manual Replies: You write the initial dialogue; player lines are not auto-generated.
+• Auto-Gen Pawn: After the player starts a dialogue, pawns continue talking amongst themselves.
+• Auto-Gen Pawn + Player: AI generates dialogues for both pawns and player. (Player Persona applied)</RimTalk.PlayerSettings.ModeDesc>
+    <RimTalk.PlayerSettings.PersonaOnlyAIDriven>(Active only in 'Auto-Gen Pawn + Player' mode)</RimTalk.PlayerSettings.PersonaOnlyAIDriven>
+    <RimTalk.PlayerSettings.Save>Save</RimTalk.PlayerSettings.Save>
+    <RimTalk.PlayerSettings.Saved>Player conversation settings saved.</RimTalk.PlayerSettings.Saved>
 
     <RimTalk.Settings.PauseAtSpeed>Pause AI on High Speed</RimTalk.Settings.PauseAtSpeed>
     <RimTalk.Settings.DisableAiAtSpeedTooltip>To reduce API calls, the AI will be paused when game speed is set to this level or higher.</RimTalk.Settings.DisableAiAtSpeedTooltip>

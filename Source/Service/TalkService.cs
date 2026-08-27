@@ -191,10 +191,10 @@ public static class TalkService
                 continue;
             }
 
-            int replyInterval = RimTalkSettings.ReplyInterval;
+            int replyInterval = Settings.Get().ReplyInterval;
             if (pawn.IsInDanger())
             {
-                replyInterval = 2;
+                replyInterval = Math.Min(replyInterval, 2);
                 pawnState.IgnoreAllTalkResponses([TalkType.Urgent, TalkType.User]);
             }
 

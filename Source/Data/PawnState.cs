@@ -130,7 +130,7 @@ public class PawnState(Pawn pawn)
         if (Pawn.IsPlayer()) return true;
         DrainIncomingTalkResponses();
         return !IsGeneratingTalk && CanDisplayTalk() && Pawn.Awake() && TalkResponses.Empty()
-               && CommonUtil.HasPassed(LastTalkTick, RimTalkSettings.ReplyInterval);
+               && CommonUtil.HasPassed(LastTalkTick, Settings.Get().ReplyInterval);
     }
 
     public void IgnoreTalkResponse()

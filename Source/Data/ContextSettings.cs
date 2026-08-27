@@ -6,7 +6,7 @@ namespace RimTalk.Data
     {
         public bool EnableContextOptimization = false;
         public int MaxPawnContextCount = 3;
-        public int ConversationHistoryCount = 1;
+        public int ConversationHistoryCount = 2;
         
         // Pawn Info
         public bool IncludeRace = true;
@@ -38,7 +38,7 @@ namespace RimTalk.Data
         {
             Scribe_Values.Look(ref EnableContextOptimization, "EnableContextOptimization", false);
             Scribe_Values.Look(ref MaxPawnContextCount, "MaxPawnContextCount", 3);
-            Scribe_Values.Look(ref ConversationHistoryCount, "ConversationHistoryCount", 1);
+            Scribe_Values.Look(ref ConversationHistoryCount, "ConversationHistoryCount", 2);
             Scribe_Values.Look(ref IncludeRace, "IncludeRace", true);
             Scribe_Values.Look(ref IncludeNotableGenes, "IncludeNotableGenes", true);
             Scribe_Values.Look(ref IncludeIdeology, "IncludeIdeology", true);

@@ -181,7 +181,10 @@ Conseils Cruciaux :
     <RimTalk.Settings.EventFilter>Filtre d'événements</RimTalk.Settings.EventFilter>
     <RimTalk.Settings.ApiKey>Clé API Cloud</RimTalk.Settings.ApiKey>
     <RimTalk.Settings.GetFreeApiKey>Obtenir une clé API gratuite</RimTalk.Settings.GetFreeApiKey>
-    <RimTalk.Settings.AICooldown>Temps de recharge de l'IA (Secondes) : {0}</RimTalk.Settings.AICooldown>
+    <RimTalk.Settings.AICooldown>Temps de recharge de l'IA (s)</RimTalk.Settings.AICooldown>
+    <RimTalk.Settings.AICooldownTooltip>Temps de pause de base (en secondes) avant de générer un nouveau dialogue IA.</RimTalk.Settings.AICooldownTooltip>
+    <RimTalk.Settings.ReplyInterval>Intervalle de réponse (s)</RimTalk.Settings.ReplyInterval>
+    <RimTalk.Settings.ReplyIntervalTooltip>Délai (en secondes) entre les répliques consécutives d'une conversation.</RimTalk.Settings.ReplyIntervalTooltip>
     <RimTalk.Settings.OverrideInteractions>Remplacer toutes les interactions par des dialogues de l'IA</RimTalk.Settings.OverrideInteractions>
     <RimTalk.Settings.OverrideInteractionsTooltip>Activez ceci pour permettre à l'IA de remplacer et de régénérer les dialogues pour toutes les interactions (y compris RimWorld vanilla et autres mods). Remarque : les dialogues de l'IA ont une période de recharge définie ci-dessus. Pour générer des dialogues plus fréquemment, diminuez le temps de recharge.</RimTalk.Settings.OverrideInteractionsTooltip>
     <RimTalk.Settings.AllowSimultaneousConversations>Autoriser les conversations simultanées</RimTalk.Settings.AllowSimultaneousConversations>
@@ -215,9 +218,19 @@ Conseils Cruciaux :
     <RimTalk.Settings.PlayerDialogueMode.AIDrivenPawnOnly>Auto-Gén. Pion</RimTalk.Settings.PlayerDialogueMode.AIDrivenPawnOnly>
     <RimTalk.Settings.PlayerToNpc>Joueur à PNJ :</RimTalk.Settings.PlayerToNpc>
     <RimTalk.Settings.PlayerName>Nom du joueur</RimTalk.Settings.PlayerName>
-    <RimTalk.Settings.PlayerNameTooltip>Le nom utilisé par les PNJ pour s’adresser au joueur.</RimTalk.Settings.PlayerNameTooltip>
-    <RimTalk.Settings.PlayerDialogueModeTooltip>Choisissez comment le joueur participe aux conversations.\n\nDésactivé : Le joueur ne participe pas.\nRéponses manuelles : Vous saisissez toutes les réponses du joueur ; aucune réponse n’est générée automatiquement.\nRéponses auto-générées : L’IA génère automatiquement les réponses du joueur lors des conversations.</RimTalk.Settings.PlayerDialogueModeTooltip>
     <RimTalk.Settings.PlayerNameTooltip>Le nom affiché lorsque vous participez aux conversations, représentant la manière dont les colons vous perçoivent.</RimTalk.Settings.PlayerNameTooltip>
+    <RimTalk.Settings.PlayerPersona>Persona du joueur</RimTalk.Settings.PlayerPersona>
+    <RimTalk.Settings.PlayerPersonaTooltip>Décrivez la personnalité et le style d'élocution du joueur. Utilisé lors de la génération de dialogues avec le joueur.</RimTalk.Settings.PlayerPersonaTooltip>
+    <RimTalk.Settings.Configure>Paramètres</RimTalk.Settings.Configure>
+    <RimTalk.PlayerSettings.Title>Paramètres de conversation personnalisée</RimTalk.PlayerSettings.Title>
+    <RimTalk.PlayerSettings.Instruct>Configurez le mode de dialogue, le nom et la persona du joueur.</RimTalk.PlayerSettings.Instruct>
+    <RimTalk.PlayerSettings.ModeDesc>• Désactivé : Le joueur ne participe pas aux conversations, mais peut initier directement des dialogues entre pions.
+• Réponses manuelles : Vous saisissez le premier message ; les répliques du joueur ne sont pas générées automatiquement.
+• Auto-Gén. Pion : Après l'intervention du joueur, les pions continuent de discuter entre eux.
+• Auto-Gén. Pion + Joueur : L'IA génère les dialogues du pion et du joueur. (Persona du joueur appliquée)</RimTalk.PlayerSettings.ModeDesc>
+    <RimTalk.PlayerSettings.PersonaOnlyAIDriven>(Actif uniquement en mode 'Auto-Gén. Pion + Joueur')</RimTalk.PlayerSettings.PersonaOnlyAIDriven>
+    <RimTalk.PlayerSettings.Save>Enregistrer</RimTalk.PlayerSettings.Save>
+    <RimTalk.PlayerSettings.Saved>Paramètres de conversation du joueur enregistrés.</RimTalk.PlayerSettings.Saved>
 
     <RimTalk.Settings.PauseAtSpeed>Mettre l'IA en pause à haute vitesse</RimTalk.Settings.PauseAtSpeed>
     <RimTalk.Settings.DisableAiAtSpeedTooltip>Pour réduire les appels à l'API, l'IA sera mise en pause lorsque la vitesse du jeu est réglée sur ce niveau ou plus.</RimTalk.Settings.DisableAiAtSpeedTooltip>
