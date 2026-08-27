@@ -55,7 +55,7 @@ public class RimTalkSettings : ModSettings
     public bool DebugSortAscending = true;
 
     // Overlay settings
-    public bool OverlayEnabled = false;
+    public bool OverlayEnabled = true;
     public float OverlayOpacity = 0.5f;
     public float OverlayFontSize = 15f;
     public bool OverlayDrawAboveUI = true;
@@ -203,7 +203,7 @@ public class RimTalkSettings : ModSettings
         Scribe_Values.Look(ref DebugSortAscending, "debugSortAscending", true);
         
         // Overlay settings
-        Scribe_Values.Look(ref OverlayEnabled, "overlayEnabled", false);
+        Scribe_Values.Look(ref OverlayEnabled, "overlayEnabled", true);
         Scribe_Values.Look(ref OverlayOpacity, "overlayOpacity", 0.5f);
         Scribe_Values.Look(ref OverlayFontSize, "overlayFontSize", 15f);
         Scribe_Values.Look(ref OverlayDrawAboveUI, "overlayDrawAboveUI", true);

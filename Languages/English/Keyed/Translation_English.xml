@@ -451,6 +451,8 @@ Crucial Tips:
     <RimTalk.Overlay.DrawAboveUI>Draw Above UI</RimTalk.Overlay.DrawAboveUI>
     <RimTalk.Overlay.Opacity>Opacity</RimTalk.Overlay.Opacity>
     <RimTalk.Overlay.FontSize>Font Size</RimTalk.Overlay.FontSize>
+    <RimTalk.Overlay.TurnOff>Turn Off Overlay</RimTalk.Overlay.TurnOff>
+    <RimTalk.Overlay.TurnOffTooltip>Turn off overlay.\nYou can toggle it by clicking the bottom right icon or tab depending on setting.</RimTalk.Overlay.TurnOffTooltip>
 
     <!-- FloatMenuMakerMapGetOptionsPatch.cs -->
     <RimTalk.FloatMenu.ChatWith>Chat with {0}</RimTalk.FloatMenu.ChatWith>

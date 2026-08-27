@@ -452,6 +452,8 @@ Scriban 魔法 (动态内容)
     <RimTalk.Overlay.DrawAboveUI>在 UI 之上绘制</RimTalk.Overlay.DrawAboveUI>
     <RimTalk.Overlay.Opacity>不透明度</RimTalk.Overlay.Opacity>
     <RimTalk.Overlay.FontSize>字体大小</RimTalk.Overlay.FontSize>
+    <RimTalk.Overlay.TurnOff>关闭悬浮窗</RimTalk.Overlay.TurnOff>
+    <RimTalk.Overlay.TurnOffTooltip>关闭悬浮窗。\n你可以根据设置点击右下角图标或底部标签重新开启。</RimTalk.Overlay.TurnOffTooltip>
 
     <!-- FloatMenuMakerMapGetOptionsPatch.cs -->
     <RimTalk.FloatMenu.ChatWith>与 {0} 聊天</RimTalk.FloatMenu.ChatWith>

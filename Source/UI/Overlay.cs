@@ -47,7 +47,7 @@ public class Overlay : MapComponent
     private const float OptionsBarHeight = 30f;
     private const float ResizeHandleSize = 24f;
     private const float DropdownWidth = 200f;
-    private const float DropdownHeight = 220f;
+    private const float DropdownHeight = 255f;
     private const int MaxMessagesInLog = 10;
     private const float TextPadding = 5f; 
 
@@ -373,11 +373,11 @@ public class Overlay : MapComponent
             settings.OverlayFontSize = newFontSize;
         }
 
-        listing.Gap(12);
+        listing.Gap(10);
 
-        Rect buttonRowRect = listing.GetRect(30f);
+        Rect buttonRowRect = listing.GetRect(28f);
         const float buttonGap = 4f;
-        float buttonWidth = (buttonRowRect.width - (buttonGap * 2)) / 2f;
+        float buttonWidth = (buttonRowRect.width - buttonGap) / 2f;
 
         var debugRect = new Rect(buttonRowRect.x, buttonRowRect.y, buttonWidth, buttonRowRect.height);
         var settingsButtonRect = new Rect(debugRect.xMax + buttonGap, buttonRowRect.y, buttonWidth, buttonRowRect.height);
@@ -396,6 +396,17 @@ public class Overlay : MapComponent
             Find.WindowStack.Add(new Dialog_ModSettings(LoadedModManager.GetMod<Settings>()));
             _showSettingsDropdown = false;
         }
+
+        listing.Gap(6);
+
+        Rect turnOffRect = listing.GetRect(28f);
+        if (Widgets.ButtonText(turnOffRect, "RimTalk.Overlay.TurnOff".Translate()))
+        {
+            settings.OverlayEnabled = false;
+            settings.Write();
+            _showSettingsDropdown = false;
+        }
+        TooltipHandler.TipRegion(turnOffRect, "RimTalk.Overlay.TurnOffTooltip".Translate());
 
         listing.End();
     }

@@ -455,6 +455,8 @@ Conseils Cruciaux :
     <RimTalk.Overlay.DrawAboveUI>Afficher au-dessus de l’UI</RimTalk.Overlay.DrawAboveUI>
     <RimTalk.Overlay.Opacity>Opacité</RimTalk.Overlay.Opacity>
     <RimTalk.Overlay.FontSize>Taille de la police</RimTalk.Overlay.FontSize>
+    <RimTalk.Overlay.TurnOff>Désactiver la superposition</RimTalk.Overlay.TurnOff>
+    <RimTalk.Overlay.TurnOffTooltip>Désactive la superposition.\nVous pouvez la basculer en cliquant sur l'icône en bas à droite ou sur l'onglet selon vos paramètres.</RimTalk.Overlay.TurnOffTooltip>
 
     <!-- FloatMenuMakerMapGetOptionsPatch.cs -->
     <RimTalk.FloatMenu.ChatWith>Discuter avec {0}</RimTalk.FloatMenu.ChatWith>

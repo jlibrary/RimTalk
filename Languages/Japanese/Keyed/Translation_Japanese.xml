@@ -455,6 +455,8 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Overlay.DrawAboveUI>UI の上に表示</RimTalk.Overlay.DrawAboveUI>
     <RimTalk.Overlay.Opacity>不透明度</RimTalk.Overlay.Opacity>
     <RimTalk.Overlay.FontSize>フォントサイズ</RimTalk.Overlay.FontSize>
+    <RimTalk.Overlay.TurnOff>オーバーレイを非表示</RimTalk.Overlay.TurnOff>
+    <RimTalk.Overlay.TurnOffTooltip>オーバーレイを非表示にします。\n設定に応じて右下のアイコンまたはタブをクリックして切り替えることができます。</RimTalk.Overlay.TurnOffTooltip>
 
     <!-- FloatMenuMakerMapGetOptionsPatch.cs -->
     <RimTalk.FloatMenu.ChatWith> {0} とチャット</RimTalk.FloatMenu.ChatWith>

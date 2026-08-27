@@ -454,6 +454,8 @@
     <RimTalk.Overlay.DrawAboveUI>Отображать поверх UI</RimTalk.Overlay.DrawAboveUI>
     <RimTalk.Overlay.Opacity>Прозрачность</RimTalk.Overlay.Opacity>
     <RimTalk.Overlay.FontSize>Размер шрифта</RimTalk.Overlay.FontSize>
+    <RimTalk.Overlay.TurnOff>Отключить оверлей</RimTalk.Overlay.TurnOff>
+    <RimTalk.Overlay.TurnOffTooltip>Отключить оверлей.\nВы можете переключать его, нажимая на значок в правом нижнем углу или на вкладку, в зависимости от настроек.</RimTalk.Overlay.TurnOffTooltip>
 
     <!-- FloatMenuMakerMapGetOptionsPatch.cs -->
     <RimTalk.FloatMenu.ChatWith>Общаться с {0}</RimTalk.FloatMenu.ChatWith>
