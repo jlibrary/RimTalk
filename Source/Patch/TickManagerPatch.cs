@@ -1,5 +1,6 @@
 using HarmonyLib;
 using RimTalk.Data;
+using RimTalk.Error;
 using RimTalk.Service;
 using RimTalk.Source.Data;
 using RimTalk.Util;
@@ -23,6 +24,8 @@ internal static class TickManagerPatch
     public static void Postfix()
     {
         Counter.Tick++;
+
+        AIErrorHandler.DrainPendingMessages();
 
         if (IsNow(DebugStatUpdateInterval))
         {
