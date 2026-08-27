@@ -84,9 +84,9 @@ public static class PromptService
         var sb = new StringBuilder();
         var name = pawn.LabelShort;
         var pawnTitle = pawn.GetTitle();
-        var title = string.IsNullOrWhiteSpace(pawnTitle) ? "" : $"({pawnTitle})";
+        var title = string.IsNullOrWhiteSpace(pawnTitle) ? "" : $" ({pawnTitle})";
         var genderAndAge = Regex.Replace(pawn.MainDesc(false), @"\(\d+\)", "").Trim();
-        sb.AppendLine($"{name} {title} ({genderAndAge})");
+        sb.AppendLine($"{name}{title} ({genderAndAge})");
 
         var role = pawn.GetRole(true);
         if (role != null)

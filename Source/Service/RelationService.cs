@@ -45,8 +45,10 @@ public static class RelationsService
                 }
 
                 // --- Step 3: If no other label found, fall back to opinion-based relationship ---
+                bool isOpinionFallback = false;
                 if (string.IsNullOrEmpty(label) && !pawn.IsVisitor() && !pawn.IsEnemy())
                 {
+                    isOpinionFallback = true;
                     if (opinionValue >= FriendOpinionThreshold)
                     {
                         label = "Friend".Translate();
@@ -65,8 +67,10 @@ public static class RelationsService
                 if (!string.IsNullOrEmpty(label))
                 {
                     string pawnName = otherPawn.LabelShort;
-                    string opinion = opinionValue.ToStringWithSign();
-                    relationsSb.Append($"{pawnName}({label}) {opinion}, ");
+                    // Fallback label is derived from opinionValue; skip the opinion word to avoid "(Friend) friendly".
+                    relationsSb.Append(isOpinionFallback
+                        ? $"{pawnName}({label}), "
+                        : $"{pawnName}({label}) {Describer.Opinion(opinionValue)}, ");
                 }
             }
             catch (Exception)
@@ -115,11 +119,12 @@ public static class RelationsService
             if ((!otherPawn.RaceProps.Humanlike && !otherPawn.HasVocalLink()) || otherPawn.Dead ||
                 otherPawn.relations is { hidePawnRelations: true }) continue;
 
-            if (TryGetSocialLabel(pawn, otherPawn, out var label, out var opinionValue))
+            if (TryGetSocialLabel(pawn, otherPawn, out var label, out var opinionValue, out var isOpinionFallback))
             {
                 string pawnName = otherPawn.LabelShort;
-                string opinion = opinionValue.ToStringWithSign();
-                relationsSb.Append($"{pawnName}({label}) {opinion}, ");
+                relationsSb.Append(isOpinionFallback
+                    ? $"{pawnName}({label}), "
+                    : $"{pawnName}({label}) {Describer.Opinion(opinionValue)}, ");
             }
         }
 
@@ -233,10 +238,12 @@ public static class RelationsService
         return null;
     }
 
-    private static bool TryGetSocialLabel(Pawn pawn, Pawn otherPawn, out string label, out float opinionValue)
+    private static bool TryGetSocialLabel(Pawn pawn, Pawn otherPawn, out string label, out float opinionValue,
+        out bool isOpinionFallback)
     {
         label = null;
         opinionValue = 0f;
+        isOpinionFallback = false;
 
         try
         {
@@ -260,6 +267,7 @@ public static class RelationsService
 
         if (string.IsNullOrEmpty(label) && !pawn.IsVisitor() && !pawn.IsEnemy())
         {
+            isOpinionFallback = true;
             if (opinionValue >= FriendOpinionThreshold)
             {
                 label = "Friend".Translate();
