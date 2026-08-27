@@ -28,7 +28,7 @@ public static class CustomDialogueService
 
             if (!CanTalk(initiator, dialogue.Recipient)) continue;
 
-            ExecuteDialogue(initiator, dialogue.Recipient, dialogue.Message);
+            ExecuteDialogue(initiator, dialogue.Recipient, dialogue.Message, dialogue.IsAnnouncement);
             toRemove.Add(initiator);
         }
 
@@ -55,17 +55,36 @@ public static class CustomDialogueService
         return distance <= TalkDistance && InSameRoom(initiator, recipient);
     }
 
-    public static void ExecuteDialogue(Pawn initiator, Pawn recipient, string message)
+    public static void ExecuteDialogue(Pawn initiator, Pawn recipient, string message, bool isAnnouncement = false)
     {
         PawnState initiatorState = Cache.Get(initiator);
         if (initiatorState == null || !initiatorState.CanDisplayTalk())
             return;
 
-        PawnState recipientState = Cache.Get(recipient);
-        if (recipientState != null && recipientState.CanDisplayTalk())
-            recipientState.AddTalkRequest(message, initiator, TalkType.User);
+        TalkType talkType = isAnnouncement ? TalkType.Announcement : TalkType.User;
 
-        ApiLog apiLog = ApiHistory.AddUserHistory(initiator, recipient, message);
+        if (isAnnouncement)
+        {
+            Pawn primaryPawn = initiator.IsPlayer() ? recipient : initiator;
+            Pawn otherPawn = initiator.IsPlayer() ? initiator : recipient;
+
+            PawnState primaryState = Cache.Get(primaryPawn);
+            if (primaryState != null && primaryState.CanDisplayTalk())
+            {
+                var request = new TalkRequest(message, primaryPawn, otherPawn, talkType);
+                primaryState.TalkRequests.AddFirst(request);
+                primaryState.IgnoreAllTalkResponses();
+                UserRequestPool.Add(primaryPawn);
+            }
+        }
+        else
+        {
+            PawnState recipientState = Cache.Get(recipient);
+            if (recipientState != null && recipientState.CanDisplayTalk())
+                recipientState.AddTalkRequest(message, initiator, talkType);
+        }
+
+        ApiLog apiLog = ApiHistory.AddUserHistory(initiator, recipient, message, talkType);
         
         if (initiator.IsPlayer())
         {
@@ -74,7 +93,7 @@ public static class CustomDialogueService
         }
         else
         {
-            TalkResponse talkResponse = new(TalkType.User, initiator.LabelShort, message)
+            TalkResponse talkResponse = new(talkType, initiator.LabelShort, message)
             {
                 Id = apiLog.Id
             };
@@ -82,9 +101,10 @@ public static class CustomDialogueService
         }
     }
 
-    public class PendingDialogue(Pawn recipient, string message)
+    public class PendingDialogue(Pawn recipient, string message, bool isAnnouncement = false)
     {
         public readonly Pawn Recipient = recipient;
         public readonly string Message = message;
+        public readonly bool IsAnnouncement = isAnnouncement;
     }
 }

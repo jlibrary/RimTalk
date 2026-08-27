@@ -206,6 +206,8 @@ Scriban 魔法 (动态内容)
     <RimTalk.Settings.AllowBabiesToTalkTooltip>启用此项以允许婴幼儿进行 AI 生成的对话。</RimTalk.Settings.AllowBabiesToTalkTooltip>
     <RimTalk.Settings.AllowNonHumanToTalk>允许非人类说话</RimTalk.Settings.AllowNonHumanToTalk>
     <RimTalk.Settings.AllowNonHumanToTalkTooltip>启用非人类生物（动物、机械人或自定义种族）在获得商人提供的Vocal Link Catalyst后说话。</RimTalk.Settings.AllowNonHumanToTalkTooltip>
+    <RimTalk.Settings.AllowAnnouncement>允许通告功能</RimTalk.Settings.AllowAnnouncement>
+    <RimTalk.Settings.AllowAnnouncementTooltip>允许殖民者和角色向附近的成员广播通告。</RimTalk.Settings.AllowAnnouncementTooltip>
     <RimTalk.Settings.ApplyMoodAndSocialEffects>影响心情与社交</RimTalk.Settings.ApplyMoodAndSocialEffects>
     <RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>对话会根据内容影响殖民者的心情和关系。</RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>
 
@@ -455,8 +457,14 @@ Scriban 魔法 (动态内容)
     <RimTalk.FloatMenu.ChatWith>与 {0} 聊天</RimTalk.FloatMenu.ChatWith>
     <RimTalk.Gizmo.ChatWithTarget>与 {0} 聊天</RimTalk.Gizmo.ChatWithTarget>
     <RimTalk.Gizmo.ChatWithTargetDesc>发起与 {0} 的对话。</RimTalk.Gizmo.ChatWithTargetDesc>
+    <RimTalk.Gizmo.Announce>发布通告</RimTalk.Gizmo.Announce>
+    <RimTalk.Gizmo.AnnounceDesc>让 {0} 向周围的所有角色大声通报。</RimTalk.Gizmo.AnnounceDesc>
     <RimTalk.FloatMenu.WhatToSayToSelf>你想对 {0} 说什么？</RimTalk.FloatMenu.WhatToSayToSelf>
     <RimTalk.FloatMenu.WhatToSayToOther>你想让 {0} 对 {1} 说什么？</RimTalk.FloatMenu.WhatToSayToOther>
+    <RimTalk.FloatMenu.WhatToAnnounceToSelf>你想向 {0} 及周围通报什么？</RimTalk.FloatMenu.WhatToAnnounceToSelf>
+    <RimTalk.FloatMenu.WhatToAnnounceToOther>你想让 {0} 向周围通报什么？</RimTalk.FloatMenu.WhatToAnnounceToOther>
+    <RimTalk.FloatMenu.DirectModeTooltip>常规对话 (按Tab键切换)</RimTalk.FloatMenu.DirectModeTooltip>
+    <RimTalk.FloatMenu.AnnounceModeTooltip>向周围广播通报 (按Tab键切换)</RimTalk.FloatMenu.AnnounceModeTooltip>
     <RimTalk.FloatMenu.Send>发送</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>取消</RimTalk.FloatMenu.Cancel>
 

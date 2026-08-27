@@ -210,6 +210,8 @@ Scriban 魔法 (動態內容)
     <RimTalk.Settings.AllowBabiesToTalkTooltip>啟用此選項以允許嬰兒和幼兒參與由 AI 生成的對話。</RimTalk.Settings.AllowBabiesToTalkTooltip>
     <RimTalk.Settings.AllowNonHumanToTalk>允許非人類說話</RimTalk.Settings.AllowNonHumanToTalk>
     <RimTalk.Settings.AllowNonHumanToTalkTooltip>如果非人類生物（動物、機械族或自訂種族）被賦予了語音鏈接催化劑（可從商人處獲得），則允許它們說話。</RimTalk.Settings.AllowNonHumanToTalkTooltip>
+    <RimTalk.Settings.AllowAnnouncement>允許通告功能</RimTalk.Settings.AllowAnnouncement>
+    <RimTalk.Settings.AllowAnnouncementTooltip>允許殖民者和角色向附近的成員廣播通告。</RimTalk.Settings.AllowAnnouncementTooltip>
     <RimTalk.Settings.ApplyMoodAndSocialEffects>應用心情和社交影響</RimTalk.Settings.ApplyMoodAndSocialEffects>
     <RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>對話可以根據對話的情緒影響 Pawn 的心情和人際關係。</RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>
 
@@ -459,8 +461,14 @@ Scriban 魔法 (動態內容)
     <RimTalk.FloatMenu.ChatWith>與 {0} 聊天</RimTalk.FloatMenu.ChatWith>
     <RimTalk.Gizmo.ChatWithTarget>與 {0} 聊天</RimTalk.Gizmo.ChatWithTarget>
     <RimTalk.Gizmo.ChatWithTargetDesc>發起與 {0} 的對話。</RimTalk.Gizmo.ChatWithTargetDesc>
+    <RimTalk.Gizmo.Announce>發布通告</RimTalk.Gizmo.Announce>
+    <RimTalk.Gizmo.AnnounceDesc>讓 {0} 向周圍的所有角色大聲通告。</RimTalk.Gizmo.AnnounceDesc>
     <RimTalk.FloatMenu.WhatToSayToSelf>你想對 {0} 說什麼？</RimTalk.FloatMenu.WhatToSayToSelf>
     <RimTalk.FloatMenu.WhatToSayToOther>你想讓 {0} 對 {1} 說什麼？</RimTalk.FloatMenu.WhatToSayToOther>
+    <RimTalk.FloatMenu.WhatToAnnounceToSelf>你想向 {0} 及周圍通報什麼？</RimTalk.FloatMenu.WhatToAnnounceToSelf>
+    <RimTalk.FloatMenu.WhatToAnnounceToOther>你想讓 {0} 向周圍通報什麼？</RimTalk.FloatMenu.WhatToAnnounceToOther>
+    <RimTalk.FloatMenu.DirectModeTooltip>常規對話 (按Tab鍵切換)</RimTalk.FloatMenu.DirectModeTooltip>
+    <RimTalk.FloatMenu.AnnounceModeTooltip>向周圍廣播通報 (按Tab鍵切換)</RimTalk.FloatMenu.AnnounceModeTooltip>
     <RimTalk.FloatMenu.Send>發送</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>取消</RimTalk.FloatMenu.Cancel>
 

@@ -358,7 +358,7 @@ public class PromptManager : IExposable
         
         // 1. Prepare shared context data
         var (dialogueType, intent, topic) = PromptContextProvider.GetDialogueTypeData(talkRequest, pawns);
-        talkRequest.Context = PromptService.BuildContext(pawns);
+        talkRequest.Context = PromptService.BuildContext(pawns, talkRequest.IsAnnouncement);
         PromptService.DecoratePrompt(talkRequest, pawns, status);
 
         // 2. Build Context Object

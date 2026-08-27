@@ -56,7 +56,7 @@ public class PromptContext
     // Convenience properties - obtained from TalkRequest
     public bool IsMonologue => TalkRequest?.IsMonologue ?? false;
     public TalkType TalkType => TalkRequest?.TalkType ?? TalkType.Other;
-    public string UserPrompt => TalkType == TalkType.User ? TalkRequest?.RawPrompt : null;
+    public string UserPrompt => TalkType.IsFromUser() ? TalkRequest?.RawPrompt : null;
 
     // Compatibility property - Pawns alias
     public List<Pawn> Pawns => AllPawns;

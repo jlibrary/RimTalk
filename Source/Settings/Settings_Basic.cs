@@ -162,6 +162,9 @@ public partial class Settings
         rightListing.Gap(6f);
         rightListing.CheckboxLabeled("RimTalk.Settings.AllowNonHumanToTalk".Translate().ToString(),
             ref settings.AllowNonHumanToTalk, "RimTalk.Settings.AllowNonHumanToTalkTooltip".Translate().ToString());
+        rightListing.Gap(6f);
+        rightListing.CheckboxLabeled("RimTalk.Settings.AllowAnnouncement".Translate().ToString(),
+            ref settings.AllowAnnouncement, "RimTalk.Settings.AllowAnnouncementTooltip".Translate().ToString());
 
         rightListing.End();
 
@@ -259,6 +262,7 @@ public partial class Settings
             settings.AllowEnemiesToTalk = false;
             settings.AllowBabiesToTalk = true;
             settings.AllowNonHumanToTalk = true;
+            settings.AllowAnnouncement = true;
             settings.AllowCustomConversation = true;
             settings.PlayerDialogueMode = PlayerDialogueMode.Manual;
             settings.ContinueDialogueWhileSleeping = false;

@@ -312,7 +312,23 @@ public static class ContextBuilder
         var intentSb = new StringBuilder();
         var topicSb = new StringBuilder();
 
-        if (talkRequest.TalkType.IsFromUser())
+        if (talkRequest.IsAnnouncement)
+        {
+            var speaker = talkRequest.Recipient != null && talkRequest.Recipient.IsPlayer() 
+                ? talkRequest.Recipient 
+                : talkRequest.Initiator;
+            var speakerName = speaker.LabelShort;
+            var listeners = pawns.Where(p => p != speaker && !p.IsPlayer()).ToList();
+            var listenerNames = string.Join(", ", listeners.Select(p => p.LabelShort));
+
+            topicSb.Append($"{speakerName} announced to everyone nearby: '{talkRequest.Prompt}'. ");
+            intentSb.Append(listeners.Count > 0
+                ? $"Generate brief reactions from listeners ({listenerNames}). Each person who heard should speak at least once. Do not repeat the initial announcement."
+                : "Generate brief reactions from nearby listeners. Do not repeat the initial announcement.");
+
+            sb.Append(topicSb).Append(intentSb);
+        }
+        else if (talkRequest.TalkType.IsFromUser())
         {
             topicSb.Append($"{pawns[1].LabelShort}({pawns[1].GetRole()}) said to {shortName}: '{talkRequest.Prompt}'. ");
 

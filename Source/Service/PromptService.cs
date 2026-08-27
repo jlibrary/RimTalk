@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using RimTalk.API;
@@ -20,7 +21,7 @@ public static class PromptService
 {
     public enum InfoLevel { Short, Normal, Full }
 
-    public static string BuildContext(List<Pawn> pawns)
+    public static string BuildContext(List<Pawn> pawns, bool isAnnouncement = false)
     {
         var context = new StringBuilder();
     
@@ -42,6 +43,16 @@ public static class PromptService
                 }
                 continue;
             }
+
+            if (isAnnouncement && i > 0)
+            {
+                var minimalContext = CreateMinimalListenerContext(pawn);
+                var pawnState = Cache.Get(pawn);
+                if (pawnState != null) pawnState.Context = minimalContext;
+                context.AppendLine($"[P{i + 1}]").AppendLine(minimalContext);
+                continue;
+            }
+
             InfoLevel infoLevel = Settings.Get().Context.EnableContextOptimization 
                                   || i != 0 ? InfoLevel.Short : InfoLevel.Normal;
             var pawnContext = CreatePawnContext(pawn, infoLevel);
@@ -52,6 +63,19 @@ public static class PromptService
         }
 
         return context.ToString().TrimEnd();
+    }
+
+    /// <summary>Creates a token-efficient 1-line profile for announcement listeners using native Traits, Role, and Mood.</summary>
+    public static string CreateMinimalListenerContext(Pawn pawn)
+    {
+        var role = pawn.GetRole(false) ?? "Colonist";
+        var traits = pawn.story?.traits?.TraitsSorted?
+            .Select(t => t.LabelCap.ToString())
+            .Where(l => !string.IsNullOrEmpty(l));
+        var traitsStr = traits != null && traits.Any() ? $", Traits: {string.Join(", ", traits)}" : "";
+        var mood = pawn.needs?.mood?.MoodString;
+        var moodStr = !string.IsNullOrEmpty(mood) ? $" | Mood: {mood}" : "";
+        return $"{pawn.LabelShort} ({role}{traitsStr}){moodStr}";
     }
 
     /// <summary>Creates the basic pawn backstory section.</summary>

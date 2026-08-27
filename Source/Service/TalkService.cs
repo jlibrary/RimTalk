@@ -43,7 +43,7 @@ public static class TalkService
             talkRequest.Recipient = null;
         }
 
-        List<Pawn> nearbyPawns = PawnSelector.GetAllNearByPawns(talkRequest.Initiator);
+        List<Pawn> nearbyPawns = PawnSelector.GetAllNearByPawns(talkRequest.Initiator, isAnnouncement: talkRequest.IsAnnouncement);
         if (talkRequest.Recipient.IsPlayer()) nearbyPawns.Insert(0, talkRequest.Recipient);
         var (status, isInDanger) = talkRequest.Initiator.GetPawnStatusFull(nearbyPawns);
         
@@ -69,7 +69,7 @@ public static class TalkService
                 return pawnState.CanDisplayTalk() && pawnState.TalkResponses.Empty();
             }))
             .Distinct()
-            .Take(settings.Context.MaxPawnContextCount)
+            .Take(talkRequest.IsAnnouncement ? Math.Max(settings.Context.MaxPawnContextCount, 8) : settings.Context.MaxPawnContextCount)
             .ToList();
         
         if (pawns.Count == 1) talkRequest.IsMonologue = true;
@@ -195,7 +195,7 @@ public static class TalkService
             if (pawn.IsInDanger())
             {
                 replyInterval = Math.Min(replyInterval, 2);
-                pawnState.IgnoreAllTalkResponses([TalkType.Urgent, TalkType.User]);
+                pawnState.IgnoreAllTalkResponses([TalkType.Urgent, TalkType.User, TalkType.Announcement]);
             }
 
             // Enforce a delay for replies to make conversations feel more natural.

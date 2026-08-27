@@ -210,6 +210,8 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Settings.AllowBabiesToTalkTooltip>これを有効にすると、乳児や幼児がAI生成の会話を行えるようになります。</RimTalk.Settings.AllowBabiesToTalkTooltip>
     <RimTalk.Settings.AllowNonHumanToTalk>非人間が話すことを許可</RimTalk.Settings.AllowNonHumanToTalk>
     <RimTalk.Settings.AllowNonHumanToTalkTooltip>動物、メカノイド、カスタム種族が、商人から聲音鏈接催化劑を入手した場合に話すことを許可します。</RimTalk.Settings.AllowNonHumanToTalkTooltip>
+    <RimTalk.Settings.AllowAnnouncement>アナウンス機能を許可</RimTalk.Settings.AllowAnnouncement>
+    <RimTalk.Settings.AllowAnnouncementTooltip>入植者やポーンが近くのポーンに向けてアナウンス（呼びかけ）できるようにします。</RimTalk.Settings.AllowAnnouncementTooltip>
     <RimTalk.Settings.ApplyMoodAndSocialEffects>ムードと社会的影響を適用</RimTalk.Settings.ApplyMoodAndSocialEffects>
     <RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>会話に応じて入植者のムードや関係性に影響を与えることがあります。</RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>
 
@@ -458,8 +460,14 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.FloatMenu.ChatWith> {0} とチャット</RimTalk.FloatMenu.ChatWith>
     <RimTalk.Gizmo.ChatWithTarget> {0} とチャット</RimTalk.Gizmo.ChatWithTarget>
     <RimTalk.Gizmo.ChatWithTargetDesc> {0} との会話を開始します。</RimTalk.Gizmo.ChatWithTargetDesc>
+    <RimTalk.Gizmo.Announce>アナウンス</RimTalk.Gizmo.Announce>
+    <RimTalk.Gizmo.AnnounceDesc>{0} が周囲のポーン全員に向けて大声でアナウンス（呼びかけ）します。</RimTalk.Gizmo.AnnounceDesc>
     <RimTalk.FloatMenu.WhatToSayToSelf> {0} に何を言いたいですか？</RimTalk.FloatMenu.WhatToSayToSelf>
     <RimTalk.FloatMenu.WhatToSayToOther> {0} に {1} に何を言わせたいですか？</RimTalk.FloatMenu.WhatToSayToOther>
+    <RimTalk.FloatMenu.WhatToAnnounceToSelf>{0} と周囲に何をアナウンスしますか？</RimTalk.FloatMenu.WhatToAnnounceToSelf>
+    <RimTalk.FloatMenu.WhatToAnnounceToOther>{0} に周囲へ何をアナウンスさせますか？</RimTalk.FloatMenu.WhatToAnnounceToOther>
+    <RimTalk.FloatMenu.DirectModeTooltip>通常の会話 (Tabキーで切り替え)</RimTalk.FloatMenu.DirectModeTooltip>
+    <RimTalk.FloatMenu.AnnounceModeTooltip>周囲のポーンへアナウンス (Tabキーで切り替え)</RimTalk.FloatMenu.AnnounceModeTooltip>
     <RimTalk.FloatMenu.Send>送信</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>キャンセル</RimTalk.FloatMenu.Cancel>
 

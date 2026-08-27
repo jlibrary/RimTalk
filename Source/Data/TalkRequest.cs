@@ -28,6 +28,7 @@ public class TalkRequest(string prompt, Pawn initiator, Pawn recipient = null, T
     public int FinishedTick { get; set; } = -1; 
     public RequestStatus Status { get; set; } = RequestStatus.Pending;
     public bool IsMonologue;
+    public bool IsAnnouncement => TalkType == TalkType.Announcement;
     
     /// <summary>
     /// All pawns participating in the dialogue (filled in sync layer)

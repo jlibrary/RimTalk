@@ -11,6 +11,7 @@ namespace RimTalk.Service;
 public class PawnSelector
 {
     private const float HearingRange = 10f;
+    private const float AnnouncementHearingRange = 30f;
     private const float ViewingRange = 20f;
 
     public enum DetectionType
@@ -20,9 +21,11 @@ public class PawnSelector
     }
 
     private static List<Pawn> GetNearbyPawnsInternal(Pawn pawn1, Pawn pawn2 = null,
-        DetectionType detectionType = DetectionType.Hearing, bool onlyTalkable = false, int maxResults = 10)
+        DetectionType detectionType = DetectionType.Hearing, bool onlyTalkable = false, int maxResults = 10, bool isAnnouncement = false)
     {
-        float baseRange = detectionType == DetectionType.Hearing ? HearingRange : ViewingRange;
+        float baseRange = detectionType == DetectionType.Hearing 
+            ? (isAnnouncement ? AnnouncementHearingRange : HearingRange) 
+            : ViewingRange;
         PawnCapacityDef capacityDef = detectionType == DetectionType.Hearing
             ? PawnCapacityDefOf.Hearing
             : PawnCapacityDefOf.Sight;
@@ -61,9 +64,9 @@ public class PawnSelector
         return GetNearbyPawnsInternal(pawn1, pawn2, detectionType, onlyTalkable: true);
     }
 
-    public static List<Pawn> GetAllNearByPawns(Pawn pawn1, Pawn pawn2 = null)
+    public static List<Pawn> GetAllNearByPawns(Pawn pawn1, Pawn pawn2 = null, bool isAnnouncement = false)
     {
-        return GetNearbyPawnsInternal(pawn1, pawn2, DetectionType.Hearing, onlyTalkable: false);
+        return GetNearbyPawnsInternal(pawn1, pawn2, DetectionType.Hearing, onlyTalkable: false, isAnnouncement: isAnnouncement);
     }
 
     public static Pawn SelectNextAvailablePawn()
@@ -80,7 +83,7 @@ public class PawnSelector
             var pawnState = Cache.Get(pawn);
 
             var minTick = pawnState.TalkRequests
-                .Where(req => req.TalkType == TalkType.User)
+                .Where(req => req.TalkType.IsFromUser())
                 .Select(req => req.CreatedTick)
                 .DefaultIfEmpty(int.MaxValue)
                 .Min();

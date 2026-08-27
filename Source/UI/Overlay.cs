@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using RimTalk.Data;
+using RimTalk.Source.Data;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -25,6 +26,8 @@ public class Overlay : MapComponent
         public float NameWidth;
         public float LineHeight;
         public Pawn PawnInstance;
+        public TalkType TalkType;
+        public bool IsUserEntered;
     }
 
     private bool _isDragging;
@@ -47,6 +50,12 @@ public class Overlay : MapComponent
     private const float DropdownHeight = 220f;
     private const int MaxMessagesInLog = 10;
     private const float TextPadding = 5f; 
+
+    private static readonly Color AnnounceBgColor = new(0.8f, 0.5f, 0.0f, 0.18f);
+    private static readonly Color AnnounceNameColor = new(1.0f, 0.78f, 0.2f);
+    private static readonly Color AnnounceTextColor = new(1.0f, 0.92f, 0.65f);
+    private static readonly Color UserNameColor = new(1.0f, 0.85f, 0.40f);
+    private static readonly Color UserTextColor = new(0.98f, 0.93f, 0.78f);
 
     public Overlay(Map map) : base(map)
     {
@@ -125,6 +134,8 @@ public class Overlay : MapComponent
                     NameWidth = nameWidth,
                     LineHeight = lineHeight,
                     PawnInstance = foundPawn,
+                    TalkType = message.TalkRequest?.TalkType ?? TalkType.Other,
+                    IsUserEntered = message.Channel == Channel.User,
                 });
             }
 
@@ -397,7 +408,7 @@ public class Overlay : MapComponent
         }
 
         var contentRect = inRect.ContractedBy(5f);
-        if (_cachedMessagesForLog == null || !_cachedMessagesForLog.Any()) return;
+        if (_cachedMessagesForLog == null || _cachedMessagesForLog.Count == 0) return;
 
         var settings = Settings.Get();
         var originalFont = Text.Font;
@@ -413,8 +424,9 @@ public class Overlay : MapComponent
 
             float currentY = contentRect.yMax;
 
-            foreach (var message in _cachedMessagesForLog)
+            for (int i = 0; i < _cachedMessagesForLog.Count; i++)
             {
+                var message = _cachedMessagesForLog[i];
                 currentY -= message.LineHeight;
                 if (currentY < contentRect.y) break;
 
@@ -423,8 +435,29 @@ public class Overlay : MapComponent
                 float totalDialogueSpace = Mathf.Max(0f, rowRect.width - message.NameWidth);
                 var dialogueRect = new Rect(nameRect.xMax + TextPadding, rowRect.y, totalDialogueSpace - TextPadding, rowRect.height);
 
-                UIUtil.DrawClickablePawnName(nameRect, message.PawnName, message.PawnInstance);
-                Widgets.Label(dialogueRect, message.Dialogue);
+                // Only the text that user enters gets highlighted
+                if (message.IsUserEntered && message.TalkType == TalkType.Announcement)
+                {
+                    Widgets.DrawBoxSolid(rowRect, AnnounceBgColor);
+                    GUI.color = AnnounceNameColor;
+                    UIUtil.DrawClickablePawnName(nameRect, message.PawnName, message.PawnInstance);
+                    GUI.color = AnnounceTextColor;
+                    Widgets.Label(dialogueRect, message.Dialogue);
+                    GUI.color = Color.white;
+                }
+                else if (message.IsUserEntered && message.TalkType == TalkType.User)
+                {
+                    GUI.color = UserNameColor;
+                    UIUtil.DrawClickablePawnName(nameRect, message.PawnName, message.PawnInstance);
+                    GUI.color = UserTextColor;
+                    Widgets.Label(dialogueRect, message.Dialogue);
+                    GUI.color = Color.white;
+                }
+                else
+                {
+                    UIUtil.DrawClickablePawnName(nameRect, message.PawnName, message.PawnInstance);
+                    Widgets.Label(dialogueRect, message.Dialogue);
+                }
             }
         }
         finally

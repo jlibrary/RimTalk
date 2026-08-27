@@ -11,6 +11,7 @@ public enum TalkType
     QuestEnd,
     Thought,
     User,
+    Announcement,
     Other
 }
 
@@ -18,6 +19,6 @@ public static class TalkTypeExtensions
 {
     public static bool IsFromUser(this TalkType talkType)
     {
-        return talkType is TalkType.User;
+        return talkType is TalkType.User or TalkType.Announcement;
     }
 }
