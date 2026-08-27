@@ -155,5 +155,6 @@ internal static class TickManagerPatch
         _noApiKeyMessageShown = false;
         _initialCacheRefresh = false;
         _lastTalkEndTick = GenTicks.TicksGame;
+        TopicService.Reset();
     }
 }

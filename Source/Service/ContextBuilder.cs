@@ -292,8 +292,9 @@ public static class ContextBuilder
             equipment.Add($"Weapon: {pawn.equipment.Primary.LabelCap}");
 
         var apparelLabels = pawn.apparel?.WornApparel?.Select(a => a.LabelCap);
-        if (apparelLabels?.Any() == true)
-            equipment.Add($"Apparel: {string.Join(", ", apparelLabels)}");
+        var enumerable = apparelLabels as string[] ?? apparelLabels.ToArray();
+        if (enumerable.Any())
+            equipment.Add($"Apparel: {string.Join(", ", enumerable)}");
 
         if (equipment.Any())
             return $"Equipment: {string.Join(", ", equipment)}";
@@ -304,6 +305,7 @@ public static class ContextBuilder
     {
         BuildDialogueType(sb, talkRequest, pawns, shortName, mainPawn, out _, out _);
     }
+
 
     public static void BuildDialogueType(StringBuilder sb, TalkRequest talkRequest, List<Pawn> pawns, string shortName, Pawn mainPawn, out string intent, out string topic)
     {
@@ -350,6 +352,13 @@ public static class ContextBuilder
                 topicSb.Append("(downed in pain. Short, strained dialogue)");
             else if (talkRequest.Prompt != null)
                 topicSb.Append(talkRequest.Prompt);
+            else if (talkRequest.TalkType != TalkType.Urgent)
+            {
+                // 50% probability: randomly select a non-repeating topic from TopicService deck
+                string topicKeywords = TopicService.TryGetTopic(isSolo: pawns.Count == 1);
+                if (topicKeywords != null)
+                    topicSb.Append($"Topic keywords: {topicKeywords}.");
+            }
 
             sb.Append(intentSb);
             if (topicSb.Length > 0)

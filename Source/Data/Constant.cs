@@ -18,6 +18,7 @@ public static class Constant
          Role-play RimWorld character per profile
 
          Rules:
+         Speak like real people (casual, grounded, and concise; avoid poetic filler, dramatic narration, or generic AI slop)
          Preserve original names (no translation)
          Keep dialogue short ({Lang} only, 1-2 sentences)
 
