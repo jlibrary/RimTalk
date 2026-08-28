@@ -180,9 +180,15 @@ public static class ContextBuilder
         if (records == null || records.Count == 0)
             return null;
 
+        var activeSkills = records
+            .Where(s => !s.TotallyDisabled && (s.Level > 0 || s.passion != Passion.None))
+            .ToList();
+
+        var skillsToGroup = activeSkills.Count > 0 ? activeSkills : records;
+
         // Group by proficiency tier so a small model reads "who's good at what" at a glance
         // instead of parsing a dozen individual "skill: level" pairs.
-        var groups = records
+        var groups = skillsToGroup
             .GroupBy(s => s.LevelDescriptor)
             .OrderByDescending(g => g.Max(s => s.Level))
             .Select(g =>
@@ -194,12 +200,10 @@ public static class ContextBuilder
                     string passionLabel = showPassion && s.passion != Passion.None ? s.passion.GetLabel() : null;
                     return string.IsNullOrEmpty(passionLabel) ? s.def.label : $"{s.def.label} ({passionLabel})";
                 });
-                return $"{g.Key}: {string.Join(", ", names)}";
+                return $"[{g.Key}] {string.Join(", ", names)}";
             });
 
-        // Single line, semicolon-separated tiers: keeps the "Field: value" grammar the rest of the
-        // block uses, so a tier label like "Beginner:" can't be misread as a field name of its own.
-        return $"Skills: {string.Join("; ", groups)}";
+        return $"Skills: {string.Join(" | ", groups)}";
     }
 
     public static string GetHealthContext(Pawn pawn, PromptService.InfoLevel infoLevel)
@@ -220,9 +224,13 @@ public static class ContextBuilder
                 .Take(3);
         }
 
-        var healthInfo = string.Join(",", hediffs
+        var healthInfo = string.Join(", ", hediffs
             .GroupBy(h => h.def)
-            .Select(g => $"{g.Key.label}({string.Join(",", g.Select(h => h.Part?.Label ?? ""))})"));
+            .Select(g =>
+            {
+                var parts = string.Join(", ", g.Select(h => h.Part?.Label).Where(p => !string.IsNullOrEmpty(p)));
+                return string.IsNullOrEmpty(parts) ? g.Key.label : $"{g.Key.label} ({parts})";
+            }));
 
         if (!string.IsNullOrEmpty(healthInfo))
             return $"Health: {healthInfo}";
@@ -312,15 +320,15 @@ public static class ContextBuilder
 
         var equipment = new List<string>();
         if (pawn.equipment?.Primary != null)
-            equipment.Add($"Weapon: {DescribeThingLabel(pawn.equipment.Primary)}");
+            equipment.Add($"[Weapon] {DescribeThingLabel(pawn.equipment.Primary)}");
 
         var apparelLabels = pawn.apparel?.WornApparel?.Select(DescribeThingLabel);
         var enumerable = apparelLabels as string[] ?? apparelLabels?.ToArray() ?? [];
         if (enumerable.Any())
-            equipment.Add($"Apparel: {string.Join(", ", enumerable)}");
+            equipment.Add($"[Apparel] {string.Join(", ", enumerable)}");
 
         if (equipment.Any())
-            return $"Equipment: {string.Join(", ", equipment)}";
+            return $"Equipment: {string.Join(" | ", equipment)}";
         return null;
     }
 

@@ -14,16 +14,16 @@ public static class Describer
     {
         return wealthTotal switch
         {
-            < 50_000f => "impecunious",
-            < 100_000f => "needy",
-            < 200_000f => "no longer starving",
-            < 300_000f => "moderately prosperous",
+            < 50_000f => "destitute",
+            < 100_000f => "struggling",
+            < 200_000f => "modest",
+            < 300_000f => "prosperous",
             < 400_000f => "rich",
             < 600_000f => "luxurious",
             < 1_000_000f => "extravagant",
-            < 1_500_000f => "treasures fill the home",
-            < 2_000_000f => "as wealthy as a glitterworld",
-            _ => "richest in the galaxy"
+            < 1_500_000f => "opulent",
+            < 2_000_000f => "glitterworld-tier",
+            _ => "legendary"
         };
     }
 
@@ -70,11 +70,11 @@ public static class Describer
     {
         return value switch
         {
-            <= 0f => "Completely broken, ready to join",
-            < 2f => "Barely resisting, close to giving in",
-            < 6f => "Weakened, but still cautious",
-            < 12f => "Strong-willed, requires effort",
-            _ => "Extremely defiant, will take a long time to break"
+            <= 0f => "broken",
+            < 2f => "wavering",
+            < 6f => "weakened",
+            < 12f => "stubborn",
+            _ => "defiant"
         };
     }
 
@@ -82,11 +82,11 @@ public static class Describer
     {
         return value switch
         {
-            <= 0f => "No will left, ready for slavery",
-            < 2f => "Weak-willed, easy to enslave",
-            < 6f => "Moderate will, may resist a little",
-            < 12f => "Strong will, difficult to enslave",
-            _ => "Unyielding, very hard to enslave"
+            <= 0f => "broken",
+            < 2f => "frail",
+            < 6f => "moderate",
+            < 12f => "resolute",
+            _ => "unyielding"
         };
     }
 
@@ -94,10 +94,10 @@ public static class Describer
     {
         return value switch
         {
-            < 20f => "Openly rebellious, likely to resist or escape",
-            < 50f => "Unstable, may push boundaries",
-            < 80f => "Generally obedient, but watchful",
-            _ => "Completely cowed, unlikely to resist"
+            < 20f => "rebellious",
+            < 50f => "unruly",
+            < 80f => "obedient",
+            _ => "subdued"
         };
     }
 

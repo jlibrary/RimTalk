@@ -68,9 +68,8 @@ public static class RelationsService
                 {
                     string pawnName = otherPawn.LabelShort;
                     // Fallback label is derived from opinionValue; skip the opinion word to avoid "(Friend) friendly".
-                    relationsSb.Append(isOpinionFallback
-                        ? $"{pawnName}({label}), "
-                        : $"{pawnName}({label}) {Describer.Opinion(opinionValue)}, ");
+                    string desc = isOpinionFallback ? label : $"{label}, {Describer.Opinion(opinionValue)}";
+                    relationsSb.Append($"{pawnName}({desc}), ");
                 }
             }
             catch (Exception)
@@ -122,9 +121,8 @@ public static class RelationsService
             if (TryGetSocialLabel(pawn, otherPawn, out var label, out var opinionValue, out var isOpinionFallback))
             {
                 string pawnName = otherPawn.LabelShort;
-                relationsSb.Append(isOpinionFallback
-                    ? $"{pawnName}({label}), "
-                    : $"{pawnName}({label}) {Describer.Opinion(opinionValue)}, ");
+                string desc = isOpinionFallback ? label : $"{label}, {Describer.Opinion(opinionValue)}";
+                relationsSb.Append($"{pawnName}({desc}), ");
             }
         }
 
