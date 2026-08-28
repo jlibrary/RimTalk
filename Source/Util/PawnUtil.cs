@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using RimTalk.Data;
+using RimTalk.Service;
 using RimWorld;
 using Verse;
 using Verse.AI;
@@ -478,10 +479,10 @@ public static class PawnUtil
 
         var target = pawn.IsAttacking() ? pawn.TargetCurrentlyAimingAt.Thing?.LabelShortCap : null;
         if (target != null)
-            return $"Attacking {target}";
+            return $"Attacking {Describer.StripConditionSuffix(target)}";
 
-        var lord = pawn.GetLord()?.LordJob?.GetReport(pawn);
-        var job = pawn.jobs?.curDriver?.GetReport();
+        var lord = Describer.StripConditionSuffix(pawn.GetLord()?.LordJob?.GetReport(pawn));
+        var job = Describer.StripConditionSuffix(pawn.jobs?.curDriver?.GetReport());
 
         string activity = lord == null ? job :
             job == null ? lord :
@@ -501,7 +502,8 @@ public static class PawnUtil
             && !Near(pawn.CurJob.targetC)
             && !MovementJobPatterns.Any(p => pawn.CurJob.def.defName.IndexOf(p, StringComparison.OrdinalIgnoreCase) >= 0)) 
         {
-            activity = $"(traveling to) {activity}";
+            // One flowing phrase, not a disconnected "(traveling to)" tag stapled onto a gerund.
+            activity = $"traveling to {activity}";
         }
 
         return activity;
@@ -514,7 +516,7 @@ public static class PawnUtil
 
         float progress = Find.ResearchManager.GetProgress(project);
         float percentage = (progress / project.baseCost) * 100f;
-        return $"{activity} (Project: {project.label} - {percentage:F0}%)";
+        return $"{activity} (Project: {project.label} - {Describer.Progress(percentage)})";
     }
 
     private static void AddJobTargetsToRelevantPawns(Job job, HashSet<Pawn> relevantPawns)
@@ -563,19 +565,24 @@ public static class PawnUtil
         return MapRole.Visiting;
     }
 
-    public static string GetPrisonerSlaveStatus(this Pawn pawn)
+    public static string GetPrisonerSlaveStatus(this Pawn pawn, PromptService.InfoLevel infoLevel = PromptService.InfoLevel.Normal)
     {
         if (pawn == null) return null;
 
         var lines = new List<string>();
+        bool showRaw = infoLevel == PromptService.InfoLevel.Full;
 
         if (pawn.IsPrisoner)
         {
             float resistance = pawn.guest.resistance;
-            lines.Add($"Resistance: {resistance:0.0} ({Describer.Resistance(resistance)})");
+            lines.Add(showRaw
+                ? $"Resistance: {resistance:0.0} ({Describer.Resistance(resistance)})"
+                : $"Resistance: {Describer.Resistance(resistance)}");
 
             float will = pawn.guest.will;
-            lines.Add($"Will: {will:0.0} ({Describer.Will(will)})");
+            lines.Add(showRaw
+                ? $"Will: {will:0.0} ({Describer.Will(will)})"
+                : $"Will: {Describer.Will(will)}");
         }
         else if (pawn.IsSlave)
         {
@@ -583,7 +590,9 @@ public static class PawnUtil
             if (suppressionNeed != null)
             {
                 float suppression = suppressionNeed.CurLevelPercentage * 100f;
-                lines.Add($"Suppression: {suppression:0.0}% ({Describer.Suppression(suppression)})");
+                lines.Add(showRaw
+                    ? $"Suppression: {suppression:0.0}% ({Describer.Suppression(suppression)})"
+                    : $"Suppression: {Describer.Suppression(suppression)}");
             }
         }
 

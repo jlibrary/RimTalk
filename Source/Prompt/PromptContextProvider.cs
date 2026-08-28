@@ -62,12 +62,8 @@ public static class PromptContextProvider
     public static string GetBeautyString(Pawn pawn)
     {
         if (pawn?.Map == null) return "";
-        
-        var nearbyCells = ContextHelper.GetNearbyCells(pawn);
-        if (nearbyCells.Count == 0) return "";
-        
-        var beautySum = nearbyCells.Sum(c => BeautyUtility.CellBeauty(c, pawn.Map));
-        return Describer.Beauty(beautySum / nearbyCells.Count);
+
+        return Describer.Beauty(pawn) ?? "";
     }
 
     /// <summary>

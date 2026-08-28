@@ -68,29 +68,16 @@ public static class ContextHelper
 
     public static string FormatBackstory(string label, BackstoryDef backstory, Pawn pawn, InfoLevel infoLevel)
     {
-        var result = $"{label}: {backstory.title}({backstory.titleShort})";
+        // Skip titleShort when it adds nothing over title (e.g. "tinkerer(tinkerer)",
+        // or "medieval slave(slave)" where titleShort is just a substring of title).
+        var titleSuffix = !string.IsNullOrEmpty(backstory.titleShort) &&
+                           backstory.title.IndexOf(backstory.titleShort, StringComparison.OrdinalIgnoreCase) < 0
+            ? $"({backstory.titleShort})"
+            : "";
+        var result = $"{label}: {backstory.title}{titleSuffix}";
         if (infoLevel == InfoLevel.Full)
             result += $":{CommonUtil.Sanitize(backstory.description, pawn)}";
         return result;
-    }
-
-    public static List<IntVec3> GetNearbyCells(Pawn pawn, int distance = 5)
-    {
-        var cells = new List<IntVec3>();
-        var facing = pawn.Rotation.FacingCell;
-
-        for (int i = 1; i <= distance; i++)
-        {
-            var targetCell = pawn.Position + facing * i;
-            for (int offset = -1; offset <= 1; offset++)
-            {
-                var cell = new IntVec3(targetCell.x + offset, targetCell.y, targetCell.z);
-                if (cell.InBounds(pawn.Map))
-                    cells.Add(cell);
-            }
-        }
-
-        return cells;
     }
 
     private static List<IntVec3> GetNearbyCellsRadial(Pawn pawn, int radius, bool sameRoomOnly)

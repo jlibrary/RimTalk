@@ -162,7 +162,7 @@ public static class ContextBuilder
 
         if (traits.Any())
         {
-            var separator = infoLevel == PromptService.InfoLevel.Full ? "\n" : ",";
+            var separator = infoLevel == PromptService.InfoLevel.Full ? "\n" : ", ";
             return $"Traits: {string.Join(separator, traits)}";
         }
 
@@ -175,10 +175,31 @@ public static class ContextBuilder
         if (!contextSettings.IncludeSkills)
             return null;
 
-        var skills = pawn.skills?.skills?.Select(s => $"{s.def.label}: {s.Level}");
-        if (skills?.Any() == true)
-            return $"Skills: {string.Join(", ", skills)}";
-        return null;
+        bool showPassion = infoLevel != PromptService.InfoLevel.Short;
+        var records = pawn.skills?.skills;
+        if (records == null || records.Count == 0)
+            return null;
+
+        // Group by proficiency tier so a small model reads "who's good at what" at a glance
+        // instead of parsing a dozen individual "skill: level" pairs.
+        var groups = records
+            .GroupBy(s => s.LevelDescriptor)
+            .OrderByDescending(g => g.Max(s => s.Level))
+            .Select(g =>
+            {
+                var names = g.Select(s =>
+                {
+                    // Delegates to vanilla's own SkillUI.GetLabel so a mod's custom passion tier (which can only
+                    // reach players by Harmony-patching that same method) is picked up instead of dropped as null.
+                    string passionLabel = showPassion && s.passion != Passion.None ? s.passion.GetLabel() : null;
+                    return string.IsNullOrEmpty(passionLabel) ? s.def.label : $"{s.def.label} ({passionLabel})";
+                });
+                return $"{g.Key}: {string.Join(", ", names)}";
+            });
+
+        // Single line, semicolon-separated tiers: keeps the "Field: value" grammar the rest of the
+        // block uses, so a tier label like "Beginner:" can't be misread as a field name of its own.
+        return $"Skills: {string.Join("; ", groups)}";
     }
 
     public static string GetHealthContext(Pawn pawn, PromptService.InfoLevel infoLevel)
@@ -221,7 +242,9 @@ public static class ContextBuilder
                 ? "Critical: Downed (in pain/distress)"
                 : pawn.InMentalState
                     ? $"Mood: {pawn.MentalState?.InspectLine} (in mental break)"
-                    : $"Mood: {m.MoodString} ({(int)(m.CurLevelPercentage * 100)}%)";
+                    : infoLevel == PromptService.InfoLevel.Full
+                        ? $"Mood: {m.MoodString} ({(int)(m.CurLevelPercentage * 100)}%)"
+                        : $"Mood: {m.MoodString}";
             return mood;
         }
 
@@ -269,7 +292,7 @@ public static class ContextBuilder
         if (!contextSettings.IncludePrisonerSlaveStatus || (!pawn.IsSlave && !pawn.IsPrisoner))
             return null;
 
-        return pawn.GetPrisonerSlaveStatus();
+        return pawn.GetPrisonerSlaveStatus(infoLevel);
     }
 
     public static string GetRelationsContext(Pawn pawn, PromptService.InfoLevel infoLevel)
@@ -289,16 +312,36 @@ public static class ContextBuilder
 
         var equipment = new List<string>();
         if (pawn.equipment?.Primary != null)
-            equipment.Add($"Weapon: {pawn.equipment.Primary.LabelCap}");
+            equipment.Add($"Weapon: {DescribeThingLabel(pawn.equipment.Primary)}");
 
-        var apparelLabels = pawn.apparel?.WornApparel?.Select(a => a.LabelCap);
-        var enumerable = apparelLabels as string[] ?? apparelLabels.ToArray();
+        var apparelLabels = pawn.apparel?.WornApparel?.Select(DescribeThingLabel);
+        var enumerable = apparelLabels as string[] ?? apparelLabels?.ToArray() ?? [];
         if (enumerable.Any())
             equipment.Add($"Apparel: {string.Join(", ", enumerable)}");
 
         if (equipment.Any())
             return $"Equipment: {string.Join(", ", equipment)}";
         return null;
+    }
+
+    // GetCustomLabelNoCount(includeHp: false) is the virtual, comp-aware path that drops GenLabel.LabelExtras'
+    // raw "(NN%)" hit-point fraction while preserving comp label overrides (art titles, quality, etc.).
+    private static string DescribeThingLabel(Thing thing)
+    {
+        string label = thing.GetCustomLabelNoCount(includeHp: false).CapitalizeFirst(thing.def);
+
+        if (thing.def.useHitPoints && thing.def.stackLimit == 1 && thing.HitPoints < thing.MaxHitPoints)
+        {
+            float pct = (float)thing.HitPoints / thing.MaxHitPoints * 100f;
+            string condition = Describer.Condition(pct);
+
+            // Fold into an existing quality parenthetical instead of appending a second "(...)".
+            label = label.EndsWith(")")
+                ? $"{label[..^1]}, {condition})"
+                : $"{label} ({condition})";
+        }
+
+        return label;
     }
 
     public static void BuildDialogueType(StringBuilder sb, TalkRequest talkRequest, List<Pawn> pawns, string shortName, Pawn mainPawn)
@@ -435,13 +478,12 @@ public static class ContextBuilder
 
         if (contextSettings.IncludeBeauty)
         {
-            var nearbyCells = ContextHelper.GetNearbyCells(mainPawn);
-            if (nearbyCells.Count > 0)
+            var beautyLabel = Describer.Beauty(mainPawn);
+            if (!string.IsNullOrEmpty(beautyLabel))
             {
-                var beautySum = nearbyCells.Sum(c => BeautyUtility.CellBeauty(c, mainPawn.Map));
                 var value = ContextHookRegistry.ApplyPawnHooks(
-                    ContextCategories.Pawn.Beauty, mainPawn, Describer.Beauty(beautySum / nearbyCells.Count));
-                sb.Append($"\nCellBeauty: {value}");
+                    ContextCategories.Pawn.Beauty, mainPawn, beautyLabel);
+                sb.Append($"\nSurroundings beauty: {value}");
             }
         }
 
