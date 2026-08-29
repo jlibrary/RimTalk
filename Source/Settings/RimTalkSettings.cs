@@ -18,7 +18,7 @@ public class RimTalkSettings : ModSettings
     public string SimpleApiKey = "";
     public bool IsUsingFallbackModel = false;
     public bool IsEnabled = true;
-    public int TalkInterval = 7;
+    public int TalkInterval = 10;
     public int ReplyInterval = 4;
     public bool ProcessNonRimTalkInteractions = true;
     public bool AllowSimultaneousConversations = false;
@@ -167,7 +167,7 @@ public class RimTalkSettings : ModSettings
         Scribe_Values.Look(ref UseSimpleConfig, "useSimpleConfig", true);
         Scribe_Values.Look(ref SimpleApiKey, "simpleApiKey", "");
         Scribe_Values.Look(ref IsEnabled, "isEnabled", true);
-        Scribe_Values.Look(ref TalkInterval, "talkInterval", 7);
+        Scribe_Values.Look(ref TalkInterval, "talkInterval", 10);
         Scribe_Values.Look(ref ReplyInterval, "replyInterval", 4);
         Scribe_Values.Look(ref ProcessNonRimTalkInteractions, "processNonRimTalkInteractions", true);
         Scribe_Values.Look(ref AllowSimultaneousConversations, "allowSimultaneousConversations", false);

@@ -51,7 +51,7 @@ public static class TalkService
         var (status, isInDanger) = talkRequest.Initiator.GetPawnStatusFull(nearbyPawns);
         
         // Avoid spamming generations if the pawn's status hasn't changed recently.
-        if (!talkRequest.TalkType.IsFromUser() && status == pawn1.LastStatus && pawn1.RejectCount < 2)
+        if (!talkRequest.TalkType.IsFromUser() && talkRequest.TalkType != TalkType.Interaction && status == pawn1.LastStatus && pawn1.RejectCount < 2)
         {
             pawn1.RejectCount++;
             return false;

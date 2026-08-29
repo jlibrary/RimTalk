@@ -72,36 +72,47 @@ public class PawnSelector
     public static Pawn SelectNextAvailablePawn()
     {
         Pawn pawnWithOldestUserRequest = null;
+        Pawn pawnWithSpecialRequest = null;
         int oldestTick = int.MaxValue;
         var talkReadyPawns = new List<Pawn>();
 
         // Find the pawn with the highest priority task:
         // 1. The oldest user-initiated talk request (absolute priority).
-        // 2. Pawns that can talk normally (for fallback).
+        // 2. Pawns with pending special talk requests (second priority).
+        // 3. Pawns that can talk normally (for fallback).
         foreach (var pawn in Cache.Keys)
         {
             var pawnState = Cache.Get(pawn);
+            if (pawnState == null) continue;
 
-            var minTick = pawnState.TalkRequests
-                .Where(req => req.TalkType.IsFromUser())
-                .Select(req => req.CreatedTick)
-                .DefaultIfEmpty(int.MaxValue)
-                .Min();
-
-            if (minTick < oldestTick)
-            {
-                oldestTick = minTick;
-                pawnWithOldestUserRequest = pawn;
-            }
-
-            if (pawnState.CanGenerateTalk())
+            bool canTalk = pawnState.CanGenerateTalk();
+            if (canTalk)
             {
                 talkReadyPawns.Add(pawn);
+            }
+
+            for (var node = pawnState.TalkRequests.First; node != null; node = node.Next)
+            {
+                var req = node.Value;
+                if (req.TalkType.IsFromUser())
+                {
+                    if (req.CreatedTick < oldestTick)
+                    {
+                        oldestTick = req.CreatedTick;
+                        pawnWithOldestUserRequest = pawn;
+                    }
+                }
+                else if (canTalk && pawnWithSpecialRequest == null &&
+                         req.TalkType is TalkType.Interaction or TalkType.Other or TalkType.Urgent or TalkType.Event or TalkType.QuestOffer)
+                {
+                    pawnWithSpecialRequest = pawn;
+                }
             }
         }
 
         // Return the highest priority pawn found, or null if none are available.
         return pawnWithOldestUserRequest ?? 
-               (talkReadyPawns.Any() ? Cache.GetRandomWeightedPawn(talkReadyPawns) : null);
+               pawnWithSpecialRequest ?? 
+               (talkReadyPawns.Count > 0 ? Cache.GetRandomWeightedPawn(talkReadyPawns) : null);
     }
 }

@@ -251,9 +251,9 @@ public partial class Settings
         
         if (listingStandard.ButtonText("RimTalk.Settings.ResetToDefault".Translate().ToString()))
         {
-            settings.TalkInterval = 7;
+            settings.TalkInterval = 10;
             settings.ReplyInterval = 4;
-            _talkIntervalBuffer = "7";
+            _talkIntervalBuffer = "10";
             _replyIntervalBuffer = "4";
             settings.ProcessNonRimTalkInteractions = true;
             settings.AllowSimultaneousConversations = false;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using Bubbles.Core;
 using HarmonyLib;
@@ -70,7 +70,7 @@ public static class Bubbler_Add
 
         // Otherwise, block normal bubble and generate talk
         prompt = $"{prompt} ({interactionDef.label})";
-        pawnState.AddTalkRequest(prompt, recipient, TalkType.Chitchat);
+        pawnState.AddTalkRequest(prompt, recipient, isChitchat ? TalkType.Chitchat : TalkType.Interaction);
         return false;
     }
 

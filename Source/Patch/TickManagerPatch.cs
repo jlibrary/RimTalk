@@ -73,7 +73,7 @@ internal static class TickManagerPatch
 
         if (IsNow(1))
         {
-            // User-initiated talks are checked every second
+            // Fast-track requests: User-initiated talks (priority 1), Interactions (priority 2)
             while (UserRequestPool.GetNextUserRequest() is { } pawn)
             {
                 var pawnState = Cache.Get(pawn);
@@ -90,7 +90,11 @@ internal static class TickManagerPatch
                     continue;
                 }
 
-                if (!request.TalkType.IsFromUser()) break;
+                if (!request.TalkType.IsFromUser() && request.TalkType != TalkType.Interaction)
+                {
+                    UserRequestPool.Remove(pawn);
+                    continue;
+                }
 
                 if (TalkService.GenerateTalk(request))
                     UserRequestPool.Remove(pawn);

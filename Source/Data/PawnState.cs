@@ -68,9 +68,17 @@ public class PawnState(Pawn pawn)
             TalkRequests.AddFirst(newRequest);
             IgnoreAllTalkResponses();
             Cache.Get(recipient)?.IgnoreAllTalkResponses();
-            UserRequestPool.Add(Pawn);
+            UserRequestPool.Add(Pawn, priority: true);
         }
-        else if (talkType is TalkType.Event or TalkType.QuestOffer)
+        else if (talkType == TalkType.Interaction)
+        {
+            TalkRequests.AddFirst(newRequest);
+            IgnoreAllTalkResponses();
+            Cache.Get(recipient)?.IgnoreAllTalkResponses();
+            LastTalkTick = 0;
+            UserRequestPool.Add(Pawn, priority: false);
+        }
+        else if (talkType is TalkType.Event or TalkType.QuestOffer or TalkType.Other)
         {
             TalkRequests.AddFirst(newRequest);
         }

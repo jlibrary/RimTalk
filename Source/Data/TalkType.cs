@@ -6,6 +6,7 @@ public enum TalkType
     Hediff,
     LevelUp,
     Chitchat,
+    Interaction,
     Event,
     QuestOffer,
     QuestEnd,
