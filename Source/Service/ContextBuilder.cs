@@ -213,6 +213,7 @@ public static class ContextBuilder
             return null;
 
         var hediffs = (IEnumerable<Hediff>)VisibleHediffsMethod.Invoke(null, [pawn, false]);
+        if (hediffs == null) return null;
 
         // For Short level, only show top 3 most recent/severe hediffs
         if (infoLevel == PromptService.InfoLevel.Short)
@@ -224,16 +225,50 @@ public static class ContextBuilder
                 .Take(3);
         }
 
-        var healthInfo = string.Join(", ", hediffs
-            .GroupBy(h => h.def)
+        var items = new List<string>();
+
+        // Check active bleeding
+        if (pawn.health?.hediffSet != null && pawn.health.hediffSet.BleedRateTotal > 0.01f)
+        {
+            float rate = pawn.health.hediffSet.BleedRateTotal;
+            float currentBloodLoss = pawn.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.BloodLoss)?.Severity ?? 0f;
+            float remainingToFatal = 1f - currentBloodLoss;
+            if (remainingToFatal > 0f)
+            {
+                float hoursToDeath = (remainingToFatal / rate) * 24f;
+                if (hoursToDeath < 24f)
+                {
+                    string hoursStr = hoursToDeath < 1f
+                        ? $"{(int)(hoursToDeath * 60f)} minutes"
+                        : $"{hoursToDeath:0.#} hours";
+                    items.Add($"Bleeding ({Describer.Bleeding(rate)}, death in {hoursStr})");
+                }
+                else
+                {
+                    items.Add($"Bleeding ({Describer.Bleeding(rate)})");
+                }
+            }
+        }
+
+        var hediffSummary = hediffs
+            .GroupBy(h => h.Label)
             .Select(g =>
             {
-                var parts = string.Join(", ", g.Select(h => h.Part?.Label).Where(p => !string.IsNullOrEmpty(p)));
-                return string.IsNullOrEmpty(parts) ? g.Key.label : $"{g.Key.label} ({parts})";
-            }));
+                var parts = g
+                    .Select(h => h.Part?.Label)
+                    .Where(p => !string.IsNullOrEmpty(p))
+                    .GroupBy(p => p)
+                    .Select(pg => pg.Count() > 1 ? $"{pg.Key} x{pg.Count()}" : pg.Key)
+                    .ToList();
 
-        if (!string.IsNullOrEmpty(healthInfo))
-            return $"Health: {healthInfo}";
+                string partStr = parts.Count > 0 ? $" ({string.Join(", ", parts)})" : "";
+                return g.Count() > 1 ? $"{g.Key} x{g.Count()}{partStr}" : $"{g.Key}{partStr}";
+            });
+
+        items.AddRange(hediffSummary);
+
+        if (items.Count > 0)
+            return $"Health: {string.Join(", ", items)}";
         return null;
     }
 

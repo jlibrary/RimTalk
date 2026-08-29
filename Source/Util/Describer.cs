@@ -141,6 +141,18 @@ public static class Describer
         };
     }
 
+    public static string Bleeding(float bleedRate)
+    {
+        return bleedRate switch
+        {
+            < 0.15f => "minor",
+            < 0.5f => "moderate",
+            < 1.0f => "heavy",
+            < 2.0f => "severe",
+            _ => "critical"
+        };
+    }
+
     // Matches the "(84%)" / "(masterwork 84%)" hit-point suffix GenLabel.LabelExtras appends to
     // damaged, non-stacked Things - that's remaining health, not job/task progress.
     private static readonly Regex ConditionSuffixPattern =
