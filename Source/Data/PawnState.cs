@@ -17,7 +17,15 @@ public class PawnState(Pawn pawn)
     public int RejectCount { get; set; }
     public readonly List<TalkResponse> TalkResponses = [];
     private readonly ConcurrentQueue<TalkResponse> _incomingTalkResponses = new();
-    public bool IsGeneratingTalk { get; set; }
+    // Same hazard as AIService._busy: set on the main thread, cleared in a finally on a
+    // threadpool thread. An auto-property gives no memory barrier, so a stale `true` here
+    // would silence this pawn for good.
+    private volatile bool _isGeneratingTalk;
+    public bool IsGeneratingTalk
+    {
+        get => _isGeneratingTalk;
+        set => _isGeneratingTalk = value;
+    }
     public readonly LinkedList<TalkRequest> TalkRequests = [];
     
     public HashSet<Hediff> Hediffs { get; set; } = pawn.GetHediffs();
