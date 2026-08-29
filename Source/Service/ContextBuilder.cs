@@ -443,11 +443,7 @@ public static class ContextBuilder
         }
         else
         {
-            if (pawns.Count == 1)
-            {
-                intentSb.Append($"{shortName} start or continue a monologue");
-            }
-            else if (mainPawn.IsInCombat() || mainPawn.GetMapRole() == MapRole.Invading)
+            if (mainPawn.IsInCombat() || mainPawn.GetMapRole() == MapRole.Invading)
             {
                 if (talkRequest.TalkType != TalkType.Urgent && !mainPawn.InMentalState)
                     talkRequest.Prompt = null;
@@ -456,6 +452,10 @@ public static class ContextBuilder
                 intentSb.Append(mainPawn.IsSlave || mainPawn.IsPrisoner
                     ? $"{shortName} dialogue short (worry)"
                     : $"{shortName} dialogue short, urgent tone ({mainPawn.GetMapRole().ToString().ToLower()}/command)");
+            }
+            else if (pawns.Count == 1)
+            {
+                intentSb.Append($"{shortName} start or continue a monologue");
             }
             else
             {

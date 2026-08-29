@@ -29,9 +29,13 @@ public static class TopicService
 
     /// <summary>
     /// Returns a topic string with probability roll, or guaranteed topic if it's the pawn's first talk.
+    /// Non-humanlikes (animals, mechanoids, entities) and mutants never receive human narrative topics.
     /// </summary>
     public static string TryGetTopic(Pawn pawn = null)
     {
+        if (pawn != null && (!pawn.RaceProps.Humanlike || pawn.IsMutant))
+            return null;
+
         lock (Lock)
         {
             bool isFirstTalk = pawn != null && Cache.Get(pawn)?.LastTalkTick == 0;
