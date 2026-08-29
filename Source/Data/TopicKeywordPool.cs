@@ -9,55 +9,52 @@ public static class TopicKeywordPool
 {
     /// <summary>
     /// Conversational approach/angle (1-2 words).
-    /// Works seamlessly with any personality (cynical, cheerful, stoic, paranoid, etc.).
+    /// Works seamlessly in both solo monologue and multi-pawn dialogues with any personality.
     /// </summary>
     public static readonly string[] ApproachKeywords =
     [
-        "joke", "tease", "gripe", "opinion", "advice",
-        "question", "nostalgia", "speculation", "curiosity", "bragging",
-        "rumor", "storytelling", "philosophy", "confession", "praise",
-        "observation", "worry", "ambition", "debate", "suggestion",
-        "reminiscing", "reflection", "sarcasm", "sympathy", "inquiry",
-        "comparison", "banter", "planning", "complaint", "reassurance"
+        "banter", "complaint", "nostalgia", "philosophy", "curiosity",
+        "worry", "storytelling", "bragging", "rumor", "confession",
+        "praise", "observation", "ambition", "debate", "advice",
+        "sarcasm", "sympathy", "daydreaming", "reassurance", "speculation",
+        "boredom", "self-mockery", "relief", "caution", "skepticism",
+        "gratitude", "hesitation", "enthusiasm", "resignation", "morbid humor",
+        "envy", "awkwardness", "determination", "suspicion", "shyness",
+        "fascination", "fondness", "cynicism", "impatience", "indifference",
+        "provocation", "regret", "lightheartedness", "melancholy", "amazement",
+        "earnestness", "irritation", "playfulness", "solemnity", "yearning"
     ];
 
     /// <summary>
-    /// Discussion subjects (1-2 words).
-    /// Broad and context-safe: can be discussed via memories, opinions, or casual remarks
-    /// without asserting fake in-game facts.
+    /// Pure narrative discussion subjects (1-2 words).
+    /// Focuses strictly on lore, past memories, philosophy, quirks, and self-contained musings
+    /// that are completely independent of current events, combat, or the presence of others.
     /// </summary>
     public static readonly string[] SubjectKeywords =
     [
-        // Survival & Daily Life
-        "food", "meals", "cooking", "farming", "harvest",
-        "rations", "alcohol", "drinks", "sleep", "fatigue",
-        "chores", "labor", "construction", "crafting", "tools",
-        "weapons", "armor", "clothing", "silver", "wealth",
-        "trading", "merchants", "caravans", "recreation", "music",
-        "art", "games", "hobbies", "health", "injuries",
+        // Past Life & Origins
+        "childhood", "hometown", "past job", "family memories", "old mentors",
+        "forgotten skills", "school days", "past mistakes", "first journey", "family heirlooms",
+        "childhood games", "lost keepsakes", "cryptosleep stories", "accent and dialect",
+        "past celebrations", "earliest memory", "life before landing", "old friends",
 
-        // People & Personal Lore
-        "family", "friends", "childhood", "past job", "hometown",
-        "teamwork", "leadership", "secrets", "romance", "loneliness",
-        "trust", "habits", "quirks", "aging", "nightmares",
-        "dreams", "luck", "destiny", "superstitions", "rumors",
+        // Tastes, Habits & Quirks
+        "taste in music", "favorite flavors", "bad habits", "useless skills", "meaning of names",
+        "superstitions", "personal rituals", "hidden talents", "things people misunderstand", "sense of humor",
+        "pet peeves", "definition of home", "awkward memories", "guilty pleasures", "personal pride",
 
-        // World & Nature
-        "starships", "glitterworlds", "outer space", "wanderers", "visitors",
-        "factions", "ancient ruins", "lost tech", "mechanoids", "insects",
-        "raiders", "wild animals", "pets", "hunting", "wilderness",
-        "weather", "seasons", "night sky", "stars", "survival"
-    ];
+        // Inner Mind & Psychology
+        "trust", "secrets", "loyalty", "forgiveness", "loneliness",
+        "guilt and regrets", "stubbornness", "patience", "fears", "peace of mind",
 
-    /// <summary>
-    /// Concise keywords for solo monologue/muttering (1-2 words).
-    /// </summary>
-    public static readonly string[] MonologueKeywords =
-    [
-        "chores", "old memories", "meals", "rest", "starships",
-        "fatigue", "body aches", "spacing out", "tomorrow", "personal goals",
-        "the weather", "strange thoughts", "loneliness", "weapons", "hometown",
-        "humming", "sighing", "future dreams", "curiosity", "survival",
-        "family", "crafting", "luck", "the quiet", "patience"
+        // Philosophy, Values & Future Aspirations
+        "future dreams", "retirement dreams", "luck and fate", "fate vs choice", "meaning of survival",
+        "what comes next", "value of money", "fear of aging", "hope", "human nature",
+        "legacy", "good luck charms", "second chances", "justice", "curiosity about space",
+
+        // RimWorld Lore, Legends & Frontier Rumors
+        "glitterworlds", "ancient legends", "tribal myths", "old earth tales", "space travel stories",
+        "bionic philosophy", "drifter stories", "strange rumors", "survival wisdom", "deep space myths",
+        "frontier legends", "lost colony rumors"
     ];
 }

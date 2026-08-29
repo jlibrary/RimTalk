@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using RimTalk.Data;
+using Verse;
 
 namespace RimTalk.Service;
 
@@ -16,51 +17,35 @@ public static class TopicService
 
     private static Queue<string> _approachDeck = new();
     private static Queue<string> _subjectDeck = new();
-    private static Queue<string> _monologueDeck = new();
 
     /// <summary>
     /// Generates a composite topic with an Approach keyword and a Subject keyword.
-    /// Example: "[approach: reminiscing | topic: favorite meals and comfort food]"
+    /// Example: "[reminiscing, food]"
     /// </summary>
-    public static string GetNextDailyTopic()
+    public static string GetNextTopic()
     {
-        lock (Lock) { EnsureDecks(); return DailyTopicCore(); }
+        lock (Lock) { EnsureDecks(); return TopicCore(); }
     }
 
     /// <summary>
-    /// Generates a non-repeating monologue keyword for solo pawns.
+    /// Returns a topic string with probability roll, or guaranteed topic if it's the pawn's first talk.
     /// </summary>
-    public static string GetNextMonologueTopic()
-    {
-        lock (Lock) { EnsureDecks(); return MonologueTopicCore(); }
-    }
-
-    /// <summary>
-    /// Returns a topic string with 50% probability, or null if the roll fails.
-    /// Encapsulates the random gate so callers don't need their own Random instance.
-    /// </summary>
-    /// <param name="isSolo">True for solo pawn monologues, false for group dialogue.</param>
-    public static string TryGetTopic(bool isSolo)
+    public static string TryGetTopic(Pawn pawn = null)
     {
         lock (Lock)
         {
-            if (Rng.NextDouble() >= 0.50) return null;
+            bool isFirstTalk = pawn != null && Cache.Get(pawn)?.LastTalkTick == 0;
+            if (!isFirstTalk && Rng.NextDouble() >= 0.50) return null;
             EnsureDecks();
-            return isSolo ? MonologueTopicCore() : DailyTopicCore();
+            return TopicCore();
         }
     }
 
-    private static string DailyTopicCore()
+    private static string TopicCore()
     {
         string approach = PeekDeck(_approachDeck) ?? "casual remark";
         string subject  = PeekDeck(_subjectDeck)  ?? "daily life";
         return $"[{approach}, {subject}]";
-    }
-
-    private static string MonologueTopicCore()
-    {
-        string monologue = PeekDeck(_monologueDeck) ?? "quietly reflecting";
-        return $"[{monologue}]";
     }
 
     private static string PeekDeck(Queue<string> deck)
@@ -71,9 +56,8 @@ public static class TopicService
 
     private static void EnsureDecks()
     {
-        if (_approachDeck.Count == 0)  RefillDeck(ref _approachDeck,  TopicKeywordPool.ApproachKeywords);
-        if (_subjectDeck.Count == 0)   RefillDeck(ref _subjectDeck,   TopicKeywordPool.SubjectKeywords);
-        if (_monologueDeck.Count == 0) RefillDeck(ref _monologueDeck, TopicKeywordPool.MonologueKeywords);
+        if (_approachDeck.Count == 0) RefillDeck(ref _approachDeck, TopicKeywordPool.ApproachKeywords);
+        if (_subjectDeck.Count == 0)  RefillDeck(ref _subjectDeck,  TopicKeywordPool.SubjectKeywords);
     }
 
     private static void RefillDeck(ref Queue<string> deck, string[] source)
@@ -100,7 +84,6 @@ public static class TopicService
         {
             _approachDeck.Clear();
             _subjectDeck.Clear();
-            _monologueDeck.Clear();
         }
     }
 }

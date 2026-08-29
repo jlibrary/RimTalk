@@ -445,7 +445,7 @@ public static class ContextBuilder
         {
             if (pawns.Count == 1)
             {
-                intentSb.Append($"{shortName} short monologue");
+                intentSb.Append($"{shortName} start or continue a monologue");
             }
             else if (mainPawn.IsInCombat() || mainPawn.GetMapRole() == MapRole.Invading)
             {
@@ -459,19 +459,18 @@ public static class ContextBuilder
             }
             else
             {
-                intentSb.Append($"{shortName} starts conversation, taking turns");
+                intentSb.Append($"{shortName} continue or switch topics, taking turns");
             }
 
             if (mainPawn.InMentalState)
-                topicSb.Append("be dramatic (mental break)");
+                topicSb.Append("be distressed (mental break)");
             else if (mainPawn.Downed && !mainPawn.IsBaby())
                 topicSb.Append("(downed in pain. Short, strained dialogue)");
             else if (talkRequest.Prompt != null)
                 topicSb.Append(talkRequest.Prompt);
             else if (talkRequest.TalkType != TalkType.Urgent)
             {
-                // 50% probability: randomly select a non-repeating topic from TopicService deck
-                string topicKeywords = TopicService.TryGetTopic(isSolo: pawns.Count == 1);
+                string topicKeywords = TopicService.TryGetTopic(mainPawn);
                 if (topicKeywords != null)
                     topicSb.Append($"Topic keywords: {topicKeywords}.");
             }
