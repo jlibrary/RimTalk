@@ -62,7 +62,47 @@ public static class PromptService
             context.AppendLine($"[P{i + 1}]").AppendLine(pawnContext);
         }
 
+        if (pawns.Count > 0 && pawns[0] != null)
+        {
+            var envContext = BuildEnvironmentContextString(pawns[0]);
+            if (!string.IsNullOrWhiteSpace(envContext))
+            {
+                context.AppendLine("[Environment]").AppendLine(envContext);
+            }
+        }
+
         return context.ToString().TrimEnd();
+    }
+
+    /// <summary>Creates the environment context section (Time, Date, Season, Weather, Location, Environment, Wealth).</summary>
+    public static string BuildEnvironmentContextString(Pawn mainPawn)
+    {
+        if (mainPawn == null || mainPawn.Map == null) return string.Empty;
+
+        var contextSettings = Settings.Get().Context;
+        var sb = new StringBuilder();
+        var gameData = CommonUtil.GetInGameData();
+
+        // Time and weather (apply environment hooks with injections)
+        if (contextSettings.IncludeTime)
+            sb.Append($"Time: {ApplyEnvironmentWithHook(mainPawn.Map, ContextCategories.Environment.Time, gameData.Hour12HString)}");
+        if (contextSettings.IncludeDate)
+            sb.Append($"\nToday: {ApplyEnvironmentWithHook(mainPawn.Map, ContextCategories.Environment.Date, gameData.DateString)}");
+        if (contextSettings.IncludeSeason)
+            sb.Append($"\nSeason: {ApplyEnvironmentWithHook(mainPawn.Map, ContextCategories.Environment.Season, gameData.SeasonString)}");
+        if (contextSettings.IncludeWeather)
+            sb.Append($"\nWeather: {ApplyEnvironmentWithHook(mainPawn.Map, ContextCategories.Environment.Weather, gameData.WeatherString)}");
+
+        // Location
+        ContextBuilder.BuildLocationContext(sb, contextSettings, mainPawn);
+
+        // Environment
+        ContextBuilder.BuildEnvironmentContext(sb, contextSettings, mainPawn);
+
+        if (contextSettings.IncludeWealth)
+            sb.Append($"\nWealth: {ApplyEnvironmentWithHook(mainPawn.Map, ContextCategories.Environment.Wealth, Describer.Wealth(mainPawn.Map.wealthWatcher.WealthTotal))}");
+
+        return sb.ToString().Trim();
     }
 
     /// <summary>Creates a token-efficient 1-line profile for announcement listeners using native Traits, Role, and Mood.</summary>
@@ -153,37 +193,16 @@ public static class PromptService
         return sb.ToString();
     }
 
-    /// <summary>Decorates the prompt with dialogue type, time, weather, location, and environment.</summary>
+    /// <summary>Decorates the prompt with dialogue type and status.</summary>
     public static void DecoratePrompt(TalkRequest talkRequest, List<Pawn> pawns, string status)
     {
-        var contextSettings = Settings.Get().Context;
         var sb = new StringBuilder();
-        var gameData = CommonUtil.GetInGameData();
         var mainPawn = pawns[0];
         var shortName = $"{mainPawn.LabelShort}";
 
         // Dialogue type
         ContextBuilder.BuildDialogueType(sb, talkRequest, pawns, shortName, mainPawn);
         sb.Append($"\n{status}");
-
-        // Time and weather (apply environment hooks with injections)
-        if (contextSettings.IncludeTime)
-            sb.Append($"\nTime: {ApplyEnvironmentWithHook(mainPawn.Map, ContextCategories.Environment.Time, gameData.Hour12HString)}");
-        if (contextSettings.IncludeDate)
-            sb.Append($"\nToday: {ApplyEnvironmentWithHook(mainPawn.Map, ContextCategories.Environment.Date, gameData.DateString)}");
-        if (contextSettings.IncludeSeason)
-            sb.Append($"\nSeason: {ApplyEnvironmentWithHook(mainPawn.Map, ContextCategories.Environment.Season, gameData.SeasonString)}");
-        if (contextSettings.IncludeWeather)
-            sb.Append($"\nWeather: {ApplyEnvironmentWithHook(mainPawn.Map, ContextCategories.Environment.Weather, gameData.WeatherString)}");
-
-        // Location
-        ContextBuilder.BuildLocationContext(sb, contextSettings, mainPawn);
-
-        // Environment
-        ContextBuilder.BuildEnvironmentContext(sb, contextSettings, mainPawn);
-
-        if (contextSettings.IncludeWealth)
-            sb.Append($"\nWealth: {ApplyEnvironmentWithHook(mainPawn.Map, ContextCategories.Environment.Wealth, Describer.Wealth(mainPawn.Map.wealthWatcher.WealthTotal))}");
 
         if (AIService.IsFirstInstruction())
             sb.Append($"\nin {Constant.Lang}");
