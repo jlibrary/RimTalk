@@ -453,7 +453,13 @@ public partial class Settings
 
             if (models != null && models.Any())
             {
-                options.AddRange(models.Select(model => new FloatMenuOption(model, () => config.SelectedModel = model)));
+                // Sorted here (not in FetchModelsAsync) so the cached path benefits too.
+                // OpenRouter alone returns 400+ models in whatever order its API feels like.
+                var sorted = models
+                    .OrderBy(model => model, StringComparer.OrdinalIgnoreCase)
+                    .ThenBy(model => model, StringComparer.Ordinal);
+
+                options.AddRange(sorted.Select(model => new FloatMenuOption(model, () => config.SelectedModel = model)));
             }
             else
             {
