@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using HarmonyLib;
+using RimTalk.Service;
 using RimTalk.UI;
 using RimTalk.Util;
 using RimWorld;
@@ -155,7 +156,7 @@ public static class FloatMenuPatch
         if (initiator == null || target == null) return;
 
         result.Add(new FloatMenuOption(
-            "RimTalk.FloatMenu.ChatWith".Translate(target.LabelShortCap),
+            "RimTalk.FloatMenu.ChatWith".Translate(PromptService.GetUniqueName(target).CapitalizeFirst()),
             delegate
             {
                 Find.WindowStack.Add(new CustomDialogueWindow(initiator, target));

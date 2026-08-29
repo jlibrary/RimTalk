@@ -35,7 +35,8 @@ public static class AIService
             return await client.GetStreamingChatCompletionAsync<TalkResponse>(prefixMessages, [],
                 response =>
                 {
-                    if (Cache.GetByName(response.Name) == null) return; 
+                    var pawnState = request.ResolvePawnState(response.Name);
+                    if (pawnState == null) return; 
                     
                     response.TalkType = request.TalkType;
 

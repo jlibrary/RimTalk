@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using RimTalk.Data;
 using RimTalk.Util;
@@ -38,14 +39,7 @@ public static class UIUtil
 
             if (Widgets.ButtonInvisible(rect))
             {
-                if (pawn.Dead && pawn.Corpse != null && pawn.Corpse.Spawned)
-                {
-                    CameraJumper.TryJump(pawn.Corpse);
-                }
-                else if (!pawn.Dead && pawn.Spawned)
-                {
-                    CameraJumper.TryJump(pawn);
-                }
+                CameraJumper.TryJumpAndSelect(pawn.Dead && pawn.Corpse != null ? pawn.Corpse : pawn);
             }
 
             GUI.color = originalColor;

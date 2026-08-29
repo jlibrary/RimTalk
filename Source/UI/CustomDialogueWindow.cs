@@ -62,14 +62,16 @@ public class CustomDialogueWindow : Window
         }
 
         float labelWidth = iconStartX - (allowAnnouncement ? 6f : 0f);
+        string recipientLabel = PromptService.GetUniqueName(_recipient).CapitalizeFirst();
+        string initiatorLabel = PromptService.GetUniqueName(_initiator).CapitalizeFirst();
         string labelText = _mode switch
         {
             DialogueMode.Direct => _initiator.IsPlayer()
-                ? "RimTalk.FloatMenu.WhatToSayToSelf".Translate(_recipient.LabelShortCap)
-                : "RimTalk.FloatMenu.WhatToSayToOther".Translate(_initiator.LabelShortCap, _recipient.LabelShortCap),
+                ? "RimTalk.FloatMenu.WhatToSayToSelf".Translate(recipientLabel)
+                : "RimTalk.FloatMenu.WhatToSayToOther".Translate(initiatorLabel, recipientLabel),
             DialogueMode.Announce => _initiator.IsPlayer()
-                ? "RimTalk.FloatMenu.WhatToAnnounceToSelf".Translate(_recipient.LabelShortCap)
-                : "RimTalk.FloatMenu.WhatToAnnounceToOther".Translate(_initiator.LabelShortCap),
+                ? "RimTalk.FloatMenu.WhatToAnnounceToSelf".Translate(recipientLabel)
+                : "RimTalk.FloatMenu.WhatToAnnounceToOther".Translate(initiatorLabel),
             _ => ""
         };
 

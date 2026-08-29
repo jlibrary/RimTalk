@@ -80,6 +80,9 @@ public static class TalkService
         if (!settings.AllowMonologue && talkRequest.IsMonologue && !talkRequest.TalkType.IsFromUser())
             return false;
 
+        // Store dialogue participants for disambiguating duplicate pawn names during async streaming response processing
+        talkRequest.Participants = pawns;
+
         // Delegate prompt assembly to PromptManager (Handles Simple/Advanced modes and fallbacks)
         talkRequest.PromptMessages = PromptManager.Instance.BuildMessages(talkRequest, pawns, status);
         
@@ -115,7 +118,9 @@ public static class TalkService
                 {
                     Logger.Debug($"Streamed: {talkResponse}");
 
-                    PawnState pawnState = Cache.GetByName(talkResponse.Name);
+                    // Resolve target pawn from response name (handling aliases) and revert to native LabelShort for in-game talk bubbles
+                    PawnState pawnState = talkRequest.ResolvePawnState(talkResponse.Name);
+                    if (pawnState == null) return;
                     talkResponse.Name = pawnState.Pawn.LabelShort;
 
                     // Link replies to the previous message in the conversation.
@@ -132,7 +137,7 @@ public static class TalkService
             );
 
             // Once the stream is complete, save the full conversation to history.
-            AddResponsesToHistory(receivedResponses, talkRequest.Prompt);
+            AddResponsesToHistory(receivedResponses, talkRequest.Prompt, talkRequest);
         }
         catch (Exception ex)
         {
@@ -147,18 +152,19 @@ public static class TalkService
     /// <summary>
     /// Serializes the generated responses and adds them to the message history for all involved pawns.
     /// </summary>
-    private static void AddResponsesToHistory(List<TalkResponse> responses, string prompt)
+    private static void AddResponsesToHistory(List<TalkResponse> responses, string prompt, TalkRequest talkRequest)
     {
         if (!responses.Any()) return;
         string serializedResponses = JsonUtil.SerializeToJson(responses);
-        var uniquePawns = responses
-            .Select(r => Cache.GetByName(r.Name)?.Pawn)
-            .Where(p => p != null)
-            .Distinct();
+        var uniquePawns = talkRequest.Participants ?? [talkRequest.Initiator];
 
-        foreach (var pawn in uniquePawns)
+        for (int i = 0; i < uniquePawns.Count; i++)
         {
-            TalkHistory.AddMessageHistory(pawn, prompt, serializedResponses);
+            var pawn = uniquePawns[i];
+            if (pawn != null)
+            {
+                TalkHistory.AddMessageHistory(pawn, prompt, serializedResponses);
+            }
         }
     }
 

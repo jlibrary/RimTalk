@@ -21,6 +21,38 @@ public static class PromptService
 {
     public enum InfoLevel { Short, Normal, Full }
 
+    /// <summary>Disambiguates duplicate pawn names in dialogue using Last Name or stable index among talk-eligible pawns.</summary>
+    public static string GetUniqueName(Pawn pawn, List<Pawn> pawns = null)
+    {
+        if (pawn == null) return string.Empty;
+        var pool = pawn.Map?.mapPawns?.AllPawnsSpawned ?? pawns ?? Find.CurrentMap?.mapPawns?.AllPawnsSpawned;
+        if (pool == null) return pawn.LabelShort;
+
+        int dupIndex = 0, dupCount = 0;
+        for (int i = 0; i < pool.Count; i++)
+        {
+            var p = pool[i];
+            if (p == null || p.LabelShort != pawn.LabelShort || !p.IsTalkEligible()) continue;
+            dupCount++;
+            if (p.thingIDNumber <= pawn.thingIDNumber) dupIndex++;
+        }
+
+        if (dupCount <= 1) return pawn.LabelShort;
+        if (pawn.Name is NameTriple t && !string.IsNullOrEmpty(t.Last))
+        {
+            var fullName = $"{pawn.LabelShort} {t.Last}";
+            int nameDupCount = 0;
+            for (int i = 0; i < pool.Count; i++)
+            {
+                var p = pool[i];
+                if (p != null && p.IsTalkEligible() && p.Name is NameTriple pt && $"{p.LabelShort} {pt.Last}" == fullName)
+                    nameDupCount++;
+            }
+            if (nameDupCount <= 1) return fullName;
+        }
+        return $"{pawn.LabelShort} {dupIndex}";
+    }
+
     public static string BuildContext(List<Pawn> pawns, bool isAnnouncement = false)
     {
         var context = new StringBuilder();
@@ -28,6 +60,9 @@ public static class PromptService
         for (int i = 0; i < pawns.Count; i++)
         {
             var pawn = pawns[i];
+            var displayName = GetUniqueName(pawn, pawns);
+            bool hasUniqueAlias = displayName != pawn.LabelShort;
+
             if (pawn.IsPlayer())
             {
                 if (Settings.Get().PlayerDialogueMode == Settings.PlayerDialogueMode.AIDriven)
@@ -35,7 +70,7 @@ public static class PromptService
                     var playerPersona = Settings.Get().PlayerPersona;
                     if (!string.IsNullOrWhiteSpace(playerPersona))
                     {
-                        string playerContext = $"{pawn.LabelShort} (Player)\nPersonality: {playerPersona.Trim()}";
+                        string playerContext = $"{displayName} (Player)\nPersonality: {playerPersona.Trim()}";
                         var playerState = Cache.Get(pawn);
                         if (playerState != null) playerState.Context = playerContext;
                         context.AppendLine($"[P{i + 1}]").AppendLine(playerContext);
@@ -47,6 +82,10 @@ public static class PromptService
             if (isAnnouncement && i > 0)
             {
                 var minimalContext = CreateMinimalListenerContext(pawn);
+                // If duplicate names exist, replace leading LabelShort with unique display name
+                if (hasUniqueAlias && !string.IsNullOrEmpty(pawn.LabelShort) && minimalContext.StartsWith(pawn.LabelShort))
+                    minimalContext = displayName + minimalContext.Substring(pawn.LabelShort.Length);
+
                 var pawnState = Cache.Get(pawn);
                 if (pawnState != null) pawnState.Context = minimalContext;
                 context.AppendLine($"[P{i + 1}]").AppendLine(minimalContext);
@@ -56,6 +95,11 @@ public static class PromptService
             InfoLevel infoLevel = Settings.Get().Context.EnableContextOptimization 
                                   || i != 0 ? InfoLevel.Short : InfoLevel.Normal;
             var pawnContext = CreatePawnContext(pawn, infoLevel);
+            
+            // Preserve Harmony patches on CreatePawnContext while safely replacing leading LabelShort with unique alias
+            if (hasUniqueAlias && !string.IsNullOrEmpty(pawn.LabelShort) && pawnContext.StartsWith(pawn.LabelShort))
+                pawnContext = displayName + pawnContext.Substring(pawn.LabelShort.Length);
+
             pawnContext = CommonUtil.StripFormattingTags(pawnContext);
 
             Cache.Get(pawn).Context = pawnContext;
@@ -222,7 +266,7 @@ public static class PromptService
     {
         var sb = new StringBuilder();
         var mainPawn = pawns[0];
-        var shortName = $"{mainPawn.LabelShort}";
+        var shortName = GetUniqueName(mainPawn, pawns);
 
         // Dialogue type
         ContextBuilder.BuildDialogueType(sb, talkRequest, pawns, shortName, mainPawn);

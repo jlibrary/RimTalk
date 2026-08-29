@@ -355,6 +355,10 @@ public class PromptManager : IExposable
     public List<(Role role, string content)> BuildMessages(TalkRequest talkRequest, List<Pawn> pawns, string status)
     {
         var settings = Settings.Get();
+        if (talkRequest != null && talkRequest.Participants == null && pawns != null)
+        {
+            talkRequest.Participants = pawns;
+        }
         
         // 1. Prepare shared context data
         var (dialogueType, intent, topic) = PromptContextProvider.GetDialogueTypeData(talkRequest, pawns);

@@ -601,7 +601,7 @@ public class DebugWindow : Window
         {
             string pawnName = request.Name ?? "-";
             var pawnNameRect = new Rect(currentX, rowRect.y, PawnColumnWidth, RowHeight);
-            var pawn = _pawnStates.FirstOrDefault(p => p.Pawn.LabelShort == pawnName)?.Pawn;
+            var pawn = request.TalkRequest?.ResolvePawnState(pawnName)?.Pawn ?? Cache.GetByName(pawnName)?.Pawn;
             UIUtil.DrawClickablePawnName(pawnNameRect, pawnName, pawn);
             currentX += PawnColumnWidth + ColumnPadding;
         }

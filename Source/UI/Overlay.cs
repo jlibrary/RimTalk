@@ -161,11 +161,12 @@ public class Overlay : MapComponent
             : value;
     }
 
-    private static Pawn FindPawn(string pawnName)
+    private static Pawn FindPawn(string pawnName, TalkRequest talkRequest = null)
     {
         if (string.IsNullOrWhiteSpace(pawnName)) return null;
 
-        return Cache.GetByName(pawnName)?.Pawn ??
+        return talkRequest?.ResolvePawnState(pawnName)?.Pawn ??
+               Cache.GetByName(pawnName)?.Pawn ??
                Find.CurrentMap?.mapPawns?.AllPawns?.FirstOrDefault(p =>
                    p?.Name?.ToStringShort == pawnName) ??
                Find.WorldPawns?.AllPawnsAliveOrDead.FirstOrDefault(p =>
@@ -341,12 +342,12 @@ public class Overlay : MapComponent
                 newCache.Add(new CachedMessageLine
                 {
                     PawnName = speakerName,
-                    PawnInstance = FindPawn(speakerName),
+                    PawnInstance = FindPawn(speakerName, message.TalkRequest),
                     SpeakerName = speakerName,
                     SpeakerLabel = speakerLabel,
                     TargetName = targetName,
                     TargetLabel = targetLabel,
-                    TargetPawnInstance = FindPawn(targetName),
+                    TargetPawnInstance = FindPawn(targetName, message.TalkRequest),
                     RawDialogue = message.Response ?? string.Empty,
                     LeftBracketWidth = leftBracketWidth,
                     SpeakerWidth = speakerWidth,

@@ -15,7 +15,8 @@ public static class ApiHistory
 
     public static ApiLog AddRequest(TalkRequest request, Channel channel)
     {
-        var log = new ApiLog(request.Initiator.LabelShort, request, null, null, DateTime.Now, channel)
+        var initiatorName = Service.PromptService.GetUniqueName(request.Initiator, request.Participants);
+        var log = new ApiLog(initiatorName, request, null, null, DateTime.Now, channel)
             {
                 IsFirstDialogue = true,
                 ConversationId = request.IsMonologue ? -1 : _conversationIdIndex++
@@ -84,13 +85,18 @@ public static class ApiHistory
     
     public static ApiLog AddUserHistory(Pawn initiator, Pawn recipient, string text, TalkType talkType = TalkType.User)
     {
+        var initiatorName = Service.PromptService.GetUniqueName(initiator);
+        var recipientName = recipient != null ? Service.PromptService.GetUniqueName(recipient) : null;
         var prompt = talkType == TalkType.Announcement
-            ? $"{initiator.LabelShort} announced"
-            : $"{initiator.LabelShort} talked to {recipient?.LabelShort}"; 
-        TalkRequest talkRequest = new(prompt, initiator, recipient, talkType);
-        var log = new ApiLog(initiator.LabelShort, talkRequest, text, null, DateTime.Now, Channel.User)
+            ? $"{initiatorName} announced"
+            : $"{initiatorName} talked to {recipientName}"; 
+        TalkRequest talkRequest = new(prompt, initiator, recipient, talkType)
         {
-            TargetName = recipient?.LabelShort
+            Participants = recipient != null ? [initiator, recipient] : [initiator]
+        };
+        var log = new ApiLog(initiatorName, talkRequest, text, null, DateTime.Now, Channel.User)
+        {
+            TargetName = recipientName
         };
         History[log.Id] = log;
         return log;

@@ -403,9 +403,9 @@ public static class ContextBuilder
             var speaker = talkRequest.Recipient != null && talkRequest.Recipient.IsPlayer() 
                 ? talkRequest.Recipient 
                 : talkRequest.Initiator;
-            var speakerName = speaker.LabelShort;
+            var speakerName = PromptService.GetUniqueName(speaker, pawns);
             var listeners = pawns.Where(p => p != speaker && !p.IsPlayer()).ToList();
-            var listenerNames = string.Join(", ", listeners.Select(p => p.LabelShort));
+            var listenerNames = string.Join(", ", listeners.Select(p => PromptService.GetUniqueName(p, pawns)));
 
             topicSb.Append($"{speakerName} announced to everyone nearby: '{talkRequest.Prompt}'. ");
             intentSb.Append(listeners.Count > 0
@@ -416,7 +416,8 @@ public static class ContextBuilder
         }
         else if (talkRequest.TalkType.IsFromUser())
         {
-            topicSb.Append($"{pawns[1].LabelShort}({pawns[1].GetRole()}) said to {shortName}: '{talkRequest.Prompt}'. ");
+            var speaker1Name = PromptService.GetUniqueName(pawns[1], pawns);
+            topicSb.Append($"{speaker1Name}({pawns[1].GetRole()}) said to {shortName}: '{talkRequest.Prompt}'. ");
 
             var mode = Settings.Get().PlayerDialogueMode;
 
@@ -426,7 +427,7 @@ public static class ContextBuilder
                 bool multiTurn = mode != Settings.PlayerDialogueMode.Manual;
                 intentSb.Append(multiTurn
                     ? $"Generate multi turn dialogues starting after this (do not repeat initial dialogue), beginning with {shortName}"
-                    : $"Generate dialogue starting after this. Do not generate any further lines for {pawns[1].LabelShort}");
+                    : $"Generate dialogue starting after this. Do not generate any further lines for {speaker1Name}");
             }
             else
             {
@@ -434,9 +435,9 @@ public static class ContextBuilder
                 if (mode == Settings.PlayerDialogueMode.AIDriven)
                     intentSb.Append($"Generate multi turn dialogues starting after this (do not repeat initial dialogue), beginning with {shortName}");
                 else if (mode == Settings.PlayerDialogueMode.AIDrivenPawnOnly && pawns.Count > 2)
-                    intentSb.Append($"Generate multi turn dialogues starting after this (do not repeat initial dialogue), beginning with {shortName}. Do not generate any further lines for {pawns[1].LabelShort}");
+                    intentSb.Append($"Generate multi turn dialogues starting after this (do not repeat initial dialogue), beginning with {shortName}. Do not generate any further lines for {speaker1Name}");
                 else
-                    intentSb.Append($"Generate dialogue starting after this. Do not generate any further lines for {pawns[1].LabelShort}");
+                    intentSb.Append($"Generate dialogue starting after this. Do not generate any further lines for {speaker1Name}");
             }
 
             sb.Append(topicSb).Append(intentSb);
