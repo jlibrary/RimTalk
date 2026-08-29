@@ -443,23 +443,42 @@ public static class ContextBuilder
         }
         else
         {
-            if (mainPawn.IsInCombat() || mainPawn.GetMapRole() == MapRole.Invading)
+            bool inCombat = mainPawn.IsInCombat() || mainPawn.GetMapRole() == MapRole.Invading;
+            bool hasActiveHostiles = inCombat && mainPawn.HasActiveHostiles();
+
+            if (inCombat)
             {
                 if (talkRequest.TalkType != TalkType.Urgent && !mainPawn.InMentalState)
                     talkRequest.Prompt = null;
 
                 talkRequest.TalkType = TalkType.Urgent;
-                intentSb.Append(mainPawn.IsSlave || mainPawn.IsPrisoner
-                    ? $"{shortName} dialogue short (worry)"
-                    : $"{shortName} dialogue short, urgent tone ({mainPawn.GetMapRole().ToString().ToLower()}/command)");
+
+                if (mainPawn.CurJobDef == JobDefOf.Flee || mainPawn.CurJobDef == JobDefOf.FleeAndCower)
+                {
+                    intentSb.Append($"{shortName} dialogue short, panicked/retreating tone (fleeing)");
+                }
+                else if (!hasActiveHostiles)
+                {
+                    intentSb.Append($"{shortName} dialogue short, confident/victorious tone (destroying remnants/mopping up)");
+                }
+                else
+                {
+                    intentSb.Append(mainPawn.IsSlave || mainPawn.IsPrisoner
+                        ? $"{shortName} dialogue short (worry)"
+                        : $"{shortName} dialogue short, urgent tone ({mainPawn.GetMapRole().ToString().ToLower()}/command)");
+                }
             }
             else if (pawns.Count == 1)
             {
-                intentSb.Append($"{shortName} start or continue a monologue");
+                intentSb.Append(talkRequest.Prompt != null
+                    ? $"{shortName} start monologue"
+                    : $"{shortName} continue monologue");
             }
             else
             {
-                intentSb.Append($"{shortName} continue or switch topics, taking turns");
+                intentSb.Append(talkRequest.Prompt != null
+                    ? $"{shortName} start conversation, taking turns"
+                    : $"{shortName} continue, taking turns");
             }
 
             if (mainPawn.InMentalState)

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using RimTalk.Data;
+using RimTalk.Source.Data;
 using RimTalk.Service;
 using RimWorld;
 using Verse;
@@ -50,8 +51,8 @@ public static class PawnUtil
         if (pawn.IsBurning()) return true;
         if (pawn.health.hediffSet.PainTotal >= pawn.GetStatValue(StatDefOf.PainShockThreshold)) return true;
         if (pawn.health.hediffSet.BleedRateTotal > 0.3f) return true;
-        if (pawn.IsInCombat()) return true;
         if (pawn.CurJobDef == JobDefOf.Flee || pawn.CurJobDef == JobDefOf.FleeAndCower) return true;
+        if (pawn.IsInCombat()) return true;
 
         // Check severe Hediffs
         foreach (var h in pawn.health.hediffSet.hediffs)
@@ -153,7 +154,7 @@ public static class PawnUtil
 
     public static bool IsEnemy(this Pawn pawn)
     {
-        return pawn != null && Faction.OfPlayer != null && pawn.HostileTo(Faction.OfPlayer) && !pawn.IsPrisoner;
+        return pawn?.Faction != null && Faction.OfPlayer != null && pawn.Faction != Faction.OfPlayer && pawn.HostileTo(Faction.OfPlayer) && !pawn.IsPrisoner;
     }
 
     public static bool IsBaby(this Pawn pawn)
@@ -244,7 +245,7 @@ public static class PawnUtil
                 string activity = GetPawnActivity(p, relevantPawns, useOptimization);
                 string talkRequestStr = "";
                 var talkRequest = pawnState.GetNextTalkRequest();
-                if (talkRequest != null)
+                if (talkRequest != null && !p.HostileTo(mainPawn))
                 {
                     pawnState.MarkRequestSpoken(talkRequest);
                     talkRequestStr = $" - {talkRequest.Prompt}";
@@ -315,8 +316,13 @@ public static class PawnUtil
 
         if (pawn.IsFreeColonist && pawn.GetMapRole() == MapRole.Invading)
         {
-            lines.Add("You are away from colony, attacking to capture enemy settlement");
-            return;
+            if (pawn.HasActiveHostiles())
+                lines.Add("You are away from colony, attacking to capture enemy settlement");
+            else
+            {
+                lines.Add("You secured/captured enemy settlement; destroying remaining enemy assets or gathering loot");
+                return;
+            }
         }
 
         if (pawn.IsEnemy())
@@ -331,29 +337,63 @@ public static class PawnUtil
             }
             else
             {
-                lines.Add("Fighting to protect your home from being captured");
+                if (pawn.HasActiveHostiles())
+                    lines.Add("Fighting to protect your home from being captured");
+                else
+                {
+                    lines.Add("Defended settlement; secured victory over invaders (destroying remnants/loot)");
+                    return;
+                }
             }
-
-            return;
         }
 
-        // Check for nearby hostiles
-        Pawn nearestHostile = pawn.GetHostilePawnNearBy();
+        // Check for hostiles and threat scale
+        var (threatCount, nearestHostile, threatSummary, dangerAssessment, isSevere) = pawn.GetHostileThreatInfo();
         if (nearestHostile != null)
         {
             float distance = pawn.Position.DistanceTo(nearestHostile.Position);
-            string threatLabel = GetThreatLabel(nearestHostile);
-            StoryDanger danger = pawn.Map?.dangerWatcher?.DangerRating ?? StoryDanger.None;
-            string threatLevel = danger.ToString().ToLower();
+            string scaleLabel = threatCount == 1 ? "1 Hostile" : $"{threatCount} Hostiles";
 
             if (distance <= 10f)
-                lines.Add($"Threat ({threatLevel}): Engaging in battle with {threatLabel}!");
+            {
+                lines.Add($"Combat ({dangerAssessment}): Engaging in battle with {GetThreatLabel(nearestHostile)}!");
+                isInDanger = true;
+            }
             else if (distance <= 20f)
-                lines.Add($"Threat ({threatLevel}): Hostiles{threatLabel} are dangerously close!");
+            {
+                lines.Add($"Threat ({dangerAssessment} - {scaleLabel}): {threatSummary} dangerously close!");
+                if (isSevere) isInDanger = true;
+            }
             else
-                lines.Add($"Alert ({threatLevel}): Hostiles{threatLabel} in the area");
-            isInDanger = true;
+            {
+                lines.Add($"Alert ({dangerAssessment} - {scaleLabel}): {threatSummary} in the area (distant, not engaged yet)");
+            }
         }
+    }
+
+    /// <summary>
+    /// Checks if there are any active, conscious, non-downed hostile pawns on the map.
+    /// </summary>
+    public static bool HasActiveHostiles(this Pawn pawn)
+    {
+        if (pawn?.Map == null) return false;
+
+        Faction referenceFaction = GetReferenceFaction(pawn);
+        if (referenceFaction == null) return false;
+
+        var hostileTargets = pawn.Map.attackTargetsCache?.TargetsHostileToFaction(referenceFaction);
+        if (hostileTargets == null) return false;
+
+        foreach (var target in hostileTargets)
+        {
+            if (target.Thing is not Pawn threatPawn || threatPawn.Downed || threatPawn.Dead)
+                continue;
+
+            if (IsValidThreat(pawn, threatPawn) && GenHostility.IsActiveThreatTo(target, referenceFaction))
+                return true;
+        }
+
+        return false;
     }
 
     /// <summary>
@@ -376,17 +416,104 @@ public static class PawnUtil
             current.Replace(replacement.Key, replacement.Value));
     }
 
-    public static Pawn GetHostilePawnNearBy(this Pawn pawn)
+    public static (int totalCount, Pawn nearest, string summary, string dangerAssessment, bool isSevere) GetHostileThreatInfo(this Pawn pawn)
     {
-        if (pawn?.Map == null) return null;
+        if (pawn?.Map == null) return (0, null, null, null, false);
 
         Faction referenceFaction = GetReferenceFaction(pawn);
-        if (referenceFaction == null) return null;
+        if (referenceFaction == null) return (0, null, null, null, false);
 
         var hostileTargets = pawn.Map.attackTargetsCache?.TargetsHostileToFaction(referenceFaction);
-        if (hostileTargets == null) return null;
+        if (hostileTargets == null) return (0, null, null, null, false);
 
-        return FindClosestValidThreat(pawn, referenceFaction, hostileTargets);
+        Pawn closestPawn = null;
+        float closestDistSq = float.MaxValue;
+        int totalCount = 0;
+        float enemyPower = 0f;
+        int fleeingCount = 0;
+        var threatCounts = new Dictionary<string, int>();
+
+        foreach (var target in hostileTargets)
+        {
+            if (!GenHostility.IsActiveThreatTo(target, referenceFaction))
+                continue;
+
+            if (target.Thing is not Pawn threatPawn || threatPawn.Downed || threatPawn.Dead)
+                continue;
+
+            if (!IsValidThreat(pawn, threatPawn))
+                continue;
+
+            totalCount++;
+            enemyPower += threatPawn.kindDef?.combatPower ?? 50f;
+
+            if (threatPawn.MentalStateDef == MentalStateDefOf.PanicFlee ||
+                threatPawn.CurJobDef == JobDefOf.Flee || threatPawn.CurJobDef == JobDefOf.FleeAndCower ||
+                threatPawn.GetLord()?.CurLordToil is LordToil_PanicFlee)
+            {
+                fleeingCount++;
+            }
+
+            string label = GetThreatLabel(threatPawn);
+            threatCounts[label] = threatCounts.TryGetValue(label, out int c) ? c + 1 : 1;
+
+            float distSq = pawn.Position.DistanceToSquared(threatPawn.Position);
+            if (distSq < closestDistSq)
+            {
+                closestDistSq = distSq;
+                closestPawn = threatPawn;
+            }
+        }
+
+        if (totalCount == 0 || closestPawn == null)
+            return (0, null, null, null, false);
+
+        // Calculate ally combat power on map
+        float allyPower = 0f;
+        var spawnedAllies = pawn.Map.mapPawns?.SpawnedPawnsInFaction(referenceFaction);
+        if (spawnedAllies != null)
+        {
+            foreach (var ally in spawnedAllies)
+            {
+                if (ally.Downed || ally.Dead || !ally.health.capacities.CapableOf(PawnCapacityDefOf.Moving))
+                    continue;
+                allyPower += ally.kindDef?.combatPower ?? 50f;
+            }
+        }
+        if (allyPower < 50f) allyPower = 50f;
+
+        float ratio = enemyPower / allyPower;
+        string dangerAssessment;
+        bool isSevere;
+
+        if (fleeingCount >= totalCount)
+        {
+            dangerAssessment = "Enemies Fleeing";
+            isSevere = false;
+        }
+        else if (ratio < 0.35f)
+        {
+            dangerAssessment = "Low Danger";
+            isSevere = false;
+        }
+        else if (ratio <= 1.25f)
+        {
+            dangerAssessment = "Moderate Danger";
+            isSevere = true;
+        }
+        else
+        {
+            dangerAssessment = "Severe Danger";
+            isSevere = true;
+        }
+
+        string summary = string.Join(", ", threatCounts.Select(kv => kv.Value > 1 ? $"{kv.Key} x{kv.Value}" : kv.Key));
+        return (totalCount, closestPawn, summary, dangerAssessment, isSevere);
+    }
+
+    public static Pawn GetHostilePawnNearBy(this Pawn pawn)
+    {
+        return pawn.GetHostileThreatInfo().nearest;
     }
 
     private static Faction GetReferenceFaction(Pawn pawn)
@@ -398,34 +525,6 @@ public static class PawnUtil
         }
 
         return pawn.Faction;
-    }
-
-    private static Pawn FindClosestValidThreat(Pawn pawn, Faction referenceFaction,
-        IEnumerable<IAttackTarget> hostileTargets)
-    {
-        Pawn closestPawn = null;
-        float closestDistSq = float.MaxValue;
-
-        foreach (var target in hostileTargets)
-        {
-            if (!GenHostility.IsActiveThreatTo(target, referenceFaction))
-                continue;
-
-            if (target.Thing is not Pawn threatPawn || threatPawn.Downed)
-                continue;
-
-            if (!IsValidThreat(pawn, threatPawn))
-                continue;
-
-            float distSq = pawn.Position.DistanceToSquared(threatPawn.Position);
-            if (distSq < closestDistSq)
-            {
-                closestDistSq = distSq;
-                closestPawn = threatPawn;
-            }
-        }
-
-        return closestPawn;
     }
 
     private static bool IsValidThreat(Pawn observer, Pawn threat)
@@ -464,9 +563,15 @@ public static class PawnUtil
     {
         if (threat == null) return "unknown threat";
 
-        return threat.Faction is { IsPlayer: false }
-            ? $"{threat.KindLabel} ({threat.Faction.Name})"
-            : threat.KindLabel;
+        if (threat.RaceProps.Humanlike)
+        {
+            if (ModsConfig.BiotechActive && threat.genes?.Xenotype != null)
+                return threat.genes.XenotypeLabel;
+
+            return threat.def.LabelCap.RawText;
+        }
+
+        return threat.KindLabel;
     }
 
     private static readonly HashSet<string> ResearchJobDefNames =
@@ -492,9 +597,18 @@ public static class PawnUtil
         if (pawn.CurJobDef is null)
             return null;
 
-        var target = pawn.IsAttacking() ? pawn.TargetCurrentlyAimingAt.Thing?.LabelShortCap : null;
-        if (target != null)
-            return $"Attacking {Describer.StripConditionSuffix(target)}";
+        var targetThing = pawn.IsAttacking() ? pawn.TargetCurrentlyAimingAt.Thing : null;
+        if (targetThing != null)
+        {
+            string targetLabel = Describer.StripConditionSuffix(targetThing.LabelShortCap);
+            if (targetThing.Faction != null && targetThing.Faction != pawn.Faction)
+            {
+                bool isTargetPlayer = targetThing.Faction == Faction.OfPlayer;
+                string ownerPrefix = isTargetPlayer ? "invader's" : $"{targetThing.Faction.Name}'s";
+                return $"Attacking {ownerPrefix} {targetLabel}";
+            }
+            return $"Attacking {targetLabel}";
+        }
 
         var lord = Describer.StripConditionSuffix(pawn.GetLord()?.LordJob?.GetReport(pawn));
         var job = Describer.StripConditionSuffix(pawn.jobs?.curDriver?.GetReport());
