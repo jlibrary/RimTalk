@@ -32,7 +32,7 @@ public class PlayerSettingsWindow : Window
         preventCameraMotion = false;
     }
 
-    public override Vector2 InitialSize => new Vector2(580f, 490f);
+    public override Vector2 InitialSize => new Vector2(580f, 510f);
 
     public override void DoWindowContents(Rect inRect)
     {
@@ -136,8 +136,24 @@ public class PlayerSettingsWindow : Window
 
         curY = personaHeaderRect.yMax + 4f;
 
-        // Scrollable multi-line text area
-        Rect textBoxRect = new Rect(inRect.x, curY, inRect.width, 130f);
+        // 4. Bottom Buttons (Save & Clear only) - Anchored to window bottom
+        float buttonWidth = 110f;
+        float buttonHeight = 30f;
+        float spacing = 16f;
+        float buttonY = inRect.yMax - buttonHeight;
+
+        float totalWidth = (buttonWidth * 2f) + spacing;
+        float startX = inRect.center.x - (totalWidth / 2f);
+
+        Rect saveButton = new Rect(startX, buttonY, buttonWidth, buttonHeight);
+        Rect clearButton = new Rect(saveButton.xMax + spacing, buttonY, buttonWidth, buttonHeight);
+
+        // Character count - Placed right above buttons
+        Rect countRect = new Rect(inRect.x, saveButton.y - 20f, inRect.width, 18f);
+
+        // Scrollable multi-line text area - Fills available vertical space
+        float textBoxHeight = Mathf.Max(60f, countRect.y - curY - 4f);
+        Rect textBoxRect = new Rect(inRect.x, curY, inRect.width, textBoxHeight);
         float innerWidth = textBoxRect.width - 16f;
         float contentHeight = Mathf.Max(textBoxRect.height, Text.CalcHeight(
             string.IsNullOrEmpty(_editingPersona) ? " " : _editingPersona, innerWidth));
@@ -162,8 +178,7 @@ public class PlayerSettingsWindow : Window
         Widgets.EndScrollView();
         GUI.color = savedColor;
 
-        // Character count
-        Rect countRect = new Rect(inRect.x, textBoxRect.yMax + 2f, inRect.width, 18f);
+        // Render Character count
         Text.Font = GameFont.Tiny;
         Color countColor = _editingPersona.Length > 300 ? Color.yellow : Color.gray;
         if (_editingPersona.Length >= MaxLength) countColor = Color.red;
@@ -174,18 +189,6 @@ public class PlayerSettingsWindow : Window
         Text.Anchor = TextAnchor.UpperLeft;
         GUI.color = Color.white;
         Text.Font = GameFont.Small;
-
-        // 4. Bottom Buttons (Save & Clear only)
-        float buttonWidth = 110f;
-        float buttonHeight = 30f;
-        float spacing = 16f;
-        float buttonY = countRect.yMax + 10f;
-
-        float totalWidth = (buttonWidth * 2f) + spacing;
-        float startX = inRect.center.x - (totalWidth / 2f);
-
-        Rect saveButton = new Rect(startX, buttonY, buttonWidth, buttonHeight);
-        Rect clearButton = new Rect(saveButton.xMax + spacing, buttonY, buttonWidth, buttonHeight);
 
         if (Widgets.ButtonText(saveButton, "RimTalk.PlayerSettings.Save".Translate()))
         {

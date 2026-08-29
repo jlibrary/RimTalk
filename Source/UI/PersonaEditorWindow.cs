@@ -92,7 +92,7 @@ public class PersonaEditorWindow : Window
             Text.Anchor = TextAnchor.MiddleLeft;
             Widgets.Label(listenerLabelRect, "RimTalk.PersonaEditor.Quiet".Translate());
 
-            initiatorLabelRect = new Rect(sliderRowRect.xMax - 70f, sliderRowRect.y, 70f, sliderRowRect.height);
+            initiatorLabelRect = new Rect(sliderRowRect.xMax - 80f, sliderRowRect.y, 80f, sliderRowRect.height);
             Text.Anchor = TextAnchor.MiddleRight;
             Widgets.Label(initiatorLabelRect, "RimTalk.PersonaEditor.Chatty".Translate());
         }

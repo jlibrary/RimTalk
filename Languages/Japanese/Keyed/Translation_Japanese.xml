@@ -226,10 +226,10 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Settings.Configure>設定</RimTalk.Settings.Configure>
     <RimTalk.PlayerSettings.Title>カスタム会話設定</RimTalk.PlayerSettings.Title>
     <RimTalk.PlayerSettings.Instruct>プレイヤーの会話参加方式、名前、ペルソナを設定します。</RimTalk.PlayerSettings.Instruct>
-    <RimTalk.PlayerSettings.ModeDesc>• 無効：プレイヤーは会話に参加しませんが、ポーン同士の会話を直接入力して開始することは可能です。
-• 手動返信：プレイヤーが直接最初のセリフを入力します（プレイヤーのセリフは自動生成されません）。
-• 自動生成：ポーンのみ：プレイヤーが話しかけた後、続く会話はポーン同士でのみ進行します。
-• 自動生成：ポーン＋プレイヤー：AIがポーンとプレイヤー両方のセリフを自動生成します（プレイヤーペルソナ適用）。</RimTalk.PlayerSettings.ModeDesc>
+    <RimTalk.PlayerSettings.ModeDesc>• 無効：プレイヤーは不参加ですが、ポーン同士の会話を開始できます。
+• 手動返信：最初のセリフを直接入力します（プレイヤーの自動生成なし）。
+• 自動生成：ポーンのみ：話しかけた後の会話はポーン同士でのみ進行します。
+• 自動生成：ポーン＋プレイヤー：AIが両方のセリフを自動生成（ペルソナ適用）。</RimTalk.PlayerSettings.ModeDesc>
     <RimTalk.PlayerSettings.PersonaOnlyAIDriven>（「自動生成：ポーン＋プレイヤー」モードでのみ有効）</RimTalk.PlayerSettings.PersonaOnlyAIDriven>
     <RimTalk.PlayerSettings.Save>保存</RimTalk.PlayerSettings.Save>
     <RimTalk.PlayerSettings.Saved>プレイヤー会話設定が保存されました。</RimTalk.PlayerSettings.Saved>
