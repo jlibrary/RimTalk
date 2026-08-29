@@ -46,7 +46,7 @@ public static class FloatMenuPatch
         if (result == null) return;
         if (!Settings.Get().AllowCustomConversation) return;
 
-        if (selectedPawn == null || selectedPawn.Drafted) return;
+        if (selectedPawn == null) return;
         if (!selectedPawn.Spawned || selectedPawn.Dead) return;
 
         Map map = selectedPawn.Map;
@@ -140,7 +140,8 @@ public static class FloatMenuPatch
             return true;
 
         // Could add path to reach
-        if (!initiator.CanReach(target, PathEndMode.Touch, Danger.None))
+        Danger maxDanger = initiator.Drafted ? Danger.Deadly : Danger.Some;
+        if (!initiator.CanReach(target, PathEndMode.Touch, maxDanger))
             return false;
 
         return true;
