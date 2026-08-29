@@ -48,6 +48,8 @@ public static class CustomDialogueService
 
     public static bool CanTalk(Pawn initiator, Pawn recipient)
     {
+        if (initiator == null || recipient == null) return false;
+
         // Player talking to a pawn is always allowed
         if (initiator.IsPlayer()) return true;
 

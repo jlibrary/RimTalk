@@ -15,6 +15,7 @@ public static class PawnUtil
 {
     public static bool IsTalkEligible(this Pawn pawn)
     {
+        if (pawn == null) return false;
         if (pawn.IsPlayer()) return true;
         if (pawn.HasVocalLink()) return true;
         if (pawn.DestroyedOrNull() || !pawn.Spawned || pawn.Dead) return false;
@@ -621,12 +622,15 @@ public static class PawnUtil
 
     public static bool IsPlayer(this Pawn pawn)
     {
-        return pawn == Cache.GetPlayer();
+        // Cache.GetPlayer() is null until the invisible player pawn is created, so without
+        // the null guard every null pawn would count as "the player".
+        return pawn != null && pawn == Cache.GetPlayer();
     }
 
     public static bool HasVocalLink(this Pawn pawn)
     {
         return Settings.Get().AllowNonHumanToTalk &&
+               pawn?.health?.hediffSet != null &&
                pawn.health.hediffSet.HasHediff(Constant.VocalLinkDef);
     }
 }
