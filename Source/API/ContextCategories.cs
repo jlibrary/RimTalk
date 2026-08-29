@@ -63,6 +63,7 @@ public static class ContextCategories
         public static readonly ContextCategory Weather = new("weather", ContextType.Environment);
         public static readonly ContextCategory Temperature = new("temperature", ContextType.Environment);
         public static readonly ContextCategory Wealth = new("wealth", ContextType.Environment);
+        public static readonly ContextCategory Events = new("events", ContextType.Environment);
         
         private static readonly Lazy<IReadOnlyList<ContextCategory>> _all = new(() =>
             typeof(Environment).GetFields(BindingFlags.Public | BindingFlags.Static)

@@ -35,6 +35,12 @@ public class PawnState(Pawn pawn)
 
     public void AddTalkRequest(string prompt, Pawn recipient = null, TalkType talkType = TalkType.Other)
     {
+        // Enemies should never receive colony incident, quest, or thought prompts
+        if (Pawn.IsEnemy() && talkType is TalkType.Event or TalkType.QuestOffer or TalkType.QuestEnd or TalkType.Thought)
+        {
+            return;
+        }
+
         // 1. If Urgent, clear out less important active requests
         if (talkType == TalkType.Urgent)
         {

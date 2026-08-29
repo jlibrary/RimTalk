@@ -23,6 +23,7 @@ public partial class Settings : Mod
     private string _replyIntervalBuffer;
     private string _maxPawnContextBuffer;
     private string _conversationHistoryBuffer;
+    private string _maxEventsBuffer;
 
     // Tab system
     private enum SettingsTab

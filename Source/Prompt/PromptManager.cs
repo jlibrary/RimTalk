@@ -267,7 +267,7 @@ public class PromptManager : IExposable
                 },
                 new()
                 {
-                    Name = "Pawn Profiles",
+                    Name = "Context",
                     Role = PromptRole.System,
                     Position = PromptPosition.Relative,
                     Content = "{{context}}"

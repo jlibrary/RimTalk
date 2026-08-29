@@ -346,6 +346,11 @@ Scriban 魔法 (動態內容)
     <RimTalk.Settings.ConversationHistoryCount.Tooltip>每個會話包含多輪對話，可能會顯著增加 Token 數量</RimTalk.Settings.ConversationHistoryCount.Tooltip>
     <RimTalk.Settings.MaxPawnContextCount>包含的最大殖民者數量</RimTalk.Settings.MaxPawnContextCount>
     <RimTalk.Settings.MaxPawnContextCount.Tooltip>控制可參與對話的殖民者最大數量</RimTalk.Settings.MaxPawnContextCount.Tooltip>
+    <RimTalk.Settings.MaxEventsCount>包含的最大事件數量</RimTalk.Settings.MaxEventsCount>
+    <RimTalk.Settings.MaxEventsCount.Tooltip>控制上下文中包含的最新活躍殖民地事件和通知信件的最大數量</RimTalk.Settings.MaxEventsCount.Tooltip>
+    <RimTalk.Settings.IncludeEvents>啟用殖民地事件</RimTalk.Settings.IncludeEvents>
+    <RimTalk.Settings.IncludeEvents.Tooltip>控制上下文中是否包含最新活躍殖民地事件和通知信件，並指定最大包含數量</RimTalk.Settings.IncludeEvents.Tooltip>
+    <RimTalk.Settings.ExternalEventModDetected>檢測到外部事件擴充模組 (RimTalk Event+)。為防止提示詞重複，內置殖民地事件預設已停用。如果您希望同時使用，請勾選此項。</RimTalk.Settings.ExternalEventModDetected>
 
     <RimTalk.Settings.PawnInfo>殖民者資訊</RimTalk.Settings.PawnInfo>
     <RimTalk.Settings.IncludeRace>種族</RimTalk.Settings.IncludeRace>
@@ -371,6 +376,7 @@ Scriban 魔法 (動態內容)
     <RimTalk.Settings.IncludeCleanliness>清潔度</RimTalk.Settings.IncludeCleanliness>
     <RimTalk.Settings.IncludeSurroundings>附近的物品</RimTalk.Settings.IncludeSurroundings>
     <RimTalk.Settings.IncludeWealth>殖民地財富</RimTalk.Settings.IncludeWealth>
+    <RimTalk.Settings.IncludeEvents>殖民地事件</RimTalk.Settings.IncludeEvents>
 
     <!-- DebugWindow.cs -->
     <RimTalk.DebugWindow.ViewByTime>依時間</RimTalk.DebugWindow.ViewByTime>

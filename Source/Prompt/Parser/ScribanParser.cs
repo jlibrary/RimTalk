@@ -90,7 +90,7 @@ public static class ScribanParser
             // Keep `date` under `game` because `date` is a Scriban builtin object.
             var game = CreateGameState(context.Map);
             scriptObject.Add("game", game);
-            foreach (var name in new[] { "time", "hour", "day", "quadrum", "year", "season", "weather", "temperature", "wealth" })
+            foreach (var name in new[] { "time", "hour", "day", "quadrum", "year", "season", "weather", "temperature", "wealth", "events" })
                 scriptObject.Add(name, game[name]);
             
             var json = new ScriptObject();
@@ -347,6 +347,8 @@ public static class ScribanParser
             map != null ? Mathf.RoundToInt(map.mapTemperature.OutdoorTemp).ToString() : ""));
         game.Add("wealth", ApplyEnvironmentHook(map, ContextCategories.Environment.Wealth,
             map?.wealthWatcher != null ? Describer.Wealth(map.wealthWatcher.WealthTotal) : ""));
+        game.Add("events", ApplyEnvironmentHook(map, ContextCategories.Environment.Events,
+            ContextBuilder.GetEventsContext(map, PromptService.InfoLevel.Normal) ?? ""));
         return game;
     }
 
@@ -370,6 +372,7 @@ public static class ScribanParser
             "weather" => map.weatherManager?.curWeather?.label ?? "",
             "temperature" => Mathf.RoundToInt(map.mapTemperature.OutdoorTemp).ToString(),
             "wealth" => map?.wealthWatcher != null ? Describer.Wealth(map.wealthWatcher.WealthTotal) : "",
+            "events" => ContextBuilder.GetEventsContext(map, PromptService.InfoLevel.Normal) ?? "",
             _ => null
         };
     }

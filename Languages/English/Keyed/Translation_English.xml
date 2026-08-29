@@ -342,6 +342,11 @@ Crucial Tips:
     <RimTalk.Settings.ConversationHistoryCount.Tooltip>Each session contains multiple dialogue turns, which can significantly increase token count</RimTalk.Settings.ConversationHistoryCount.Tooltip>
     <RimTalk.Settings.MaxPawnContextCount>Maximum Number of Pawns to Include</RimTalk.Settings.MaxPawnContextCount>
     <RimTalk.Settings.MaxPawnContextCount.Tooltip>Controls the maximum number of pawns that can participate in a conversation</RimTalk.Settings.MaxPawnContextCount.Tooltip>
+    <RimTalk.Settings.MaxEventsCount>Maximum Colony Events to Include</RimTalk.Settings.MaxEventsCount>
+    <RimTalk.Settings.MaxEventsCount.Tooltip>Controls the maximum number of active colony events and letter notifications to include in context</RimTalk.Settings.MaxEventsCount.Tooltip>
+    <RimTalk.Settings.IncludeEvents>Enable Colony Events</RimTalk.Settings.IncludeEvents>
+    <RimTalk.Settings.IncludeEvents.Tooltip>Controls whether active colony events and letter notifications are included in context, and specifies the maximum count</RimTalk.Settings.IncludeEvents.Tooltip>
+    <RimTalk.Settings.ExternalEventModDetected>External event addon mod detected (RimTalk Event+). Built-in colony events are disabled by default to prevent duplicate prompt context. Check this box to enable if you want to use both.</RimTalk.Settings.ExternalEventModDetected>
     
     <RimTalk.Settings.PawnInfo>Pawn Info</RimTalk.Settings.PawnInfo>
     <RimTalk.Settings.IncludeRace>Race</RimTalk.Settings.IncludeRace>
@@ -367,6 +372,7 @@ Crucial Tips:
     <RimTalk.Settings.IncludeCleanliness>Cleanliness</RimTalk.Settings.IncludeCleanliness>
     <RimTalk.Settings.IncludeSurroundings>Nearby Items</RimTalk.Settings.IncludeSurroundings>
     <RimTalk.Settings.IncludeWealth>Colony Wealth</RimTalk.Settings.IncludeWealth>
+    <RimTalk.Settings.IncludeEvents>Colony Events</RimTalk.Settings.IncludeEvents>
     
     <!-- DebugWindow.cs -->
     <RimTalk.DebugWindow.ViewByTime>By Time</RimTalk.DebugWindow.ViewByTime>

@@ -67,11 +67,35 @@ public static class PromptService
             var envContext = BuildEnvironmentContextString(pawns[0]);
             if (!string.IsNullOrWhiteSpace(envContext))
             {
+                if (context.Length > 0 && !context.ToString().EndsWith("\n\n"))
+                    context.AppendLine();
                 context.AppendLine("[Environment]").AppendLine(envContext);
+            }
+
+            var eventsContext = BuildEventsContextString(pawns[0]);
+            if (!string.IsNullOrWhiteSpace(eventsContext))
+            {
+                if (context.Length > 0 && !context.ToString().EndsWith("\n\n"))
+                    context.AppendLine();
+                context.AppendLine("[Events]").AppendLine(eventsContext);
             }
         }
 
         return context.ToString().TrimEnd();
+    }
+
+    /// <summary>Creates the events context section (Active Letters and Notifications).</summary>
+    public static string BuildEventsContextString(Pawn mainPawn)
+    {
+        if (mainPawn == null || mainPawn.Map == null || mainPawn.IsEnemy()) return string.Empty;
+
+        var contextSettings = Settings.Get().Context;
+        if (!contextSettings.IncludeEvents || contextSettings.MaxEventsCount <= 0) return string.Empty;
+
+        var events = ContextBuilder.GetEventsContext(mainPawn.Map, PromptService.InfoLevel.Normal);
+        if (string.IsNullOrEmpty(events)) return string.Empty;
+
+        return ApplyEnvironmentWithHook(mainPawn.Map, ContextCategories.Environment.Events, events);
     }
 
     /// <summary>Creates the environment context section (Time, Date, Season, Weather, Location, Environment, Wealth).</summary>

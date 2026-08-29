@@ -119,7 +119,7 @@ internal static class TickManagerPatch
                 if (!talkGenerated)
                 {
                     var pawnState = Cache.Get(selectedPawn);
-                    if (pawnState.GetNextTalkRequest() != null)
+                    if (pawnState?.GetNextTalkRequest() != null)
                         talkGenerated = TalkService.GenerateTalk(pawnState.GetNextTalkRequest());
                 }
 

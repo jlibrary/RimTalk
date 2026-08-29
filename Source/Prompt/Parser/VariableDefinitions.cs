@@ -48,6 +48,7 @@ public static class VariableDefinitions
         RootTypeMap["weather"] = typeof(string);
         RootTypeMap["temperature"] = typeof(string);
         RootTypeMap["wealth"] = typeof(string);
+        RootTypeMap["events"] = typeof(string);
 
         // 4. Auto-populate from PromptContext (imported properties)
         foreach (var prop in typeof(PromptContext).GetProperties(BindingFlags.Public | BindingFlags.Instance))
@@ -110,12 +111,15 @@ public static class VariableDefinitions
             ("weather", "Current weather label (alias of game.weather)"),
             ("temperature", "Current outdoor temperature in Celsius (alias of game.temperature)"),
             ("wealth", "Current map wealth description (alias of game.wealth)"),
+            ("events", "Active colony events and letter notifications (alias of game.events)"),
+            ("game.events", "Active colony events and letter notifications"),
             ("map.time", "Local in-game time with environment hooks applied"),
             ("map.date", "Full local in-game date with environment hooks applied"),
             ("map.season", "Local season with environment hooks applied"),
             ("map.weather", "Current weather with environment hooks applied"),
             ("map.temperature", "Current outdoor temperature with environment hooks applied"),
-            ("map.wealth", "Current map wealth description with environment hooks applied")
+            ("map.wealth", "Current map wealth description with environment hooks applied"),
+            ("map.events", "Active colony events with environment hooks applied")
         };
         
         // 3.5 Game Static Classes

@@ -346,6 +346,11 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.Settings.ConversationHistoryCount.Tooltip>각 세션은 여러 대화 턴을 포함하며 토큰 수가 크게 증가할 수 있습니다</RimTalk.Settings.ConversationHistoryCount.Tooltip>
     <RimTalk.Settings.MaxPawnContextCount>포함할 최대 폰 수</RimTalk.Settings.MaxPawnContextCount>
     <RimTalk.Settings.MaxPawnContextCount.Tooltip>대화에 참여할 수 있는 폰의 최대 수를 설정합니다</RimTalk.Settings.MaxPawnContextCount.Tooltip>
+    <RimTalk.Settings.MaxEventsCount>포함할 최대 이벤트 수</RimTalk.Settings.MaxEventsCount>
+    <RimTalk.Settings.MaxEventsCount.Tooltip>컨텍스트에 포함할 최신 활성 이벤트 및 알림 편지의 최대 수를 설정합니다</RimTalk.Settings.MaxEventsCount.Tooltip>
+    <RimTalk.Settings.IncludeEvents>정착지 이벤트 활성화</RimTalk.Settings.IncludeEvents>
+    <RimTalk.Settings.IncludeEvents.Tooltip>컨텍스트에 최신 활성 이벤트 및 알림 편지를 포함할지 여부와 최대 포함 개수를 설정합니다</RimTalk.Settings.IncludeEvents.Tooltip>
+    <RimTalk.Settings.ExternalEventModDetected>외부 이벤트 애드온 모드(RimTalk Event+)가 감지되었습니다. 프롬프트 중복을 방지하기 위해 내장 이벤트가 기본적으로 비활성화되었습니다. 내장 이벤트를 사용하려면 이 체크박스를 활성화하세요.</RimTalk.Settings.ExternalEventModDetected>
 
     <RimTalk.Settings.PawnInfo>폰 정보</RimTalk.Settings.PawnInfo>
     <RimTalk.Settings.IncludeRace>인종</RimTalk.Settings.IncludeRace>
@@ -371,6 +376,7 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.Settings.IncludeCleanliness>청결도</RimTalk.Settings.IncludeCleanliness>
     <RimTalk.Settings.IncludeSurroundings>주변 아이템</RimTalk.Settings.IncludeSurroundings>
     <RimTalk.Settings.IncludeWealth>식민지 자산</RimTalk.Settings.IncludeWealth>
+    <RimTalk.Settings.IncludeEvents>진행 중인 이벤트</RimTalk.Settings.IncludeEvents>
 
     <!-- DebugWindow.cs -->
     <RimTalk.DebugWindow.ViewByTime>시간순</RimTalk.DebugWindow.ViewByTime>

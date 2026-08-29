@@ -346,6 +346,11 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Settings.ConversationHistoryCount.Tooltip>各セッションには複数の対話ターンが含まれ、トークン数が大幅に増える可能性があります</RimTalk.Settings.ConversationHistoryCount.Tooltip>
     <RimTalk.Settings.MaxPawnContextCount>含める最大ポーン数</RimTalk.Settings.MaxPawnContextCount>
     <RimTalk.Settings.MaxPawnContextCount.Tooltip>会話に参加できるポーンの最大数を制御します</RimTalk.Settings.MaxPawnContextCount.Tooltip>
+    <RimTalk.Settings.MaxEventsCount>含める最大イベント数</RimTalk.Settings.MaxEventsCount>
+    <RimTalk.Settings.MaxEventsCount.Tooltip>コンテキストに含める最新のアクティブイベントおよび通知手紙の最大数を制御します</RimTalk.Settings.MaxEventsCount.Tooltip>
+    <RimTalk.Settings.IncludeEvents>コロニーイベントを有効化</RimTalk.Settings.IncludeEvents>
+    <RimTalk.Settings.IncludeEvents.Tooltip>コンテキストに最新のアクティブイベントおよび通知手紙を含めるかどうかを制御し、最大数を指定します</RimTalk.Settings.IncludeEvents.Tooltip>
+    <RimTalk.Settings.ExternalEventModDetected>外部イベント拡張MOD (RimTalk Event+) が検出されました。プロンプトの重複を防ぐため、組み込みイベントはデフォルトで無効になっています。両方を使用する場合はチェックを入れて有効にしてください。</RimTalk.Settings.ExternalEventModDetected>
 
     <RimTalk.Settings.PawnInfo>ポーン情報</RimTalk.Settings.PawnInfo>
     <RimTalk.Settings.IncludeRace>種族</RimTalk.Settings.IncludeRace>
@@ -371,6 +376,7 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Settings.IncludeCleanliness>清潔さ</RimTalk.Settings.IncludeCleanliness>
     <RimTalk.Settings.IncludeSurroundings>近くのアイテム</RimTalk.Settings.IncludeSurroundings>
     <RimTalk.Settings.IncludeWealth>コロニーの富</RimTalk.Settings.IncludeWealth>
+    <RimTalk.Settings.IncludeEvents>コロニーのイベント</RimTalk.Settings.IncludeEvents>
 
     <!-- DebugWindow.cs -->
     <RimTalk.DebugWindow.ViewByTime>時間順</RimTalk.DebugWindow.ViewByTime>

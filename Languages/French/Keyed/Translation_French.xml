@@ -346,6 +346,11 @@ Conseils Cruciaux :
     <RimTalk.Settings.ConversationHistoryCount.Tooltip>Chaque session contient plusieurs échanges, ce qui peut augmenter considérablement le nombre de tokens</RimTalk.Settings.ConversationHistoryCount.Tooltip>
     <RimTalk.Settings.MaxPawnContextCount>Nombre maximum de colons à inclure</RimTalk.Settings.MaxPawnContextCount>
     <RimTalk.Settings.MaxPawnContextCount.Tooltip>Définit le nombre maximum de colons pouvant participer à une conversation</RimTalk.Settings.MaxPawnContextCount.Tooltip>
+    <RimTalk.Settings.MaxEventsCount>Nombre maximum d'événements à inclure</RimTalk.Settings.MaxEventsCount>
+    <RimTalk.Settings.MaxEventsCount.Tooltip>Contrôle le nombre maximal d'événements actifs et de lettres de notification à inclure dans le contexte</RimTalk.Settings.MaxEventsCount.Tooltip>
+    <RimTalk.Settings.IncludeEvents>Activer les événements de la colonie</RimTalk.Settings.IncludeEvents>
+    <RimTalk.Settings.IncludeEvents.Tooltip>Contrôle si les événements actifs et les lettres de notification sont inclus dans le contexte, et définit le nombre maximal</RimTalk.Settings.IncludeEvents.Tooltip>
+    <RimTalk.Settings.ExternalEventModDetected>Mod d'extension d'événements externe détecté (RimTalk Event+). Les événements intégrés sont désactivés par défaut pour éviter le contexte en double. Cochez cette case pour les activer si vous souhaitez utiliser les deux.</RimTalk.Settings.ExternalEventModDetected>
 
     <RimTalk.Settings.PawnInfo>Infos sur le pion</RimTalk.Settings.PawnInfo>
     <RimTalk.Settings.IncludeRace>La race</RimTalk.Settings.IncludeRace>
@@ -371,6 +376,7 @@ Conseils Cruciaux :
     <RimTalk.Settings.IncludeCleanliness>La propreté</RimTalk.Settings.IncludeCleanliness>
     <RimTalk.Settings.IncludeSurroundings>Les objets à proximité</RimTalk.Settings.IncludeSurroundings>
     <RimTalk.Settings.IncludeWealth>La richesse de la colonie</RimTalk.Settings.IncludeWealth>
+    <RimTalk.Settings.IncludeEvents>Événements de la colonie</RimTalk.Settings.IncludeEvents>
 
     <!-- DebugWindow.cs -->
     <RimTalk.DebugWindow.ViewByTime>Par temps</RimTalk.DebugWindow.ViewByTime>

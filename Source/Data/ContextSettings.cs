@@ -33,12 +33,16 @@ namespace RimTalk.Data
         public bool IncludeCleanliness = false;
         public bool IncludeSurroundings = false;
         public bool IncludeWealth = false;
+        public bool IncludeEvents = Service.EventService.DefaultIncludeEvents;
+        public int MaxEventsCount = 5;
 
         public void ExposeData()
         {
             Scribe_Values.Look(ref EnableContextOptimization, "EnableContextOptimization", false);
             Scribe_Values.Look(ref MaxPawnContextCount, "MaxPawnContextCount", 3);
             Scribe_Values.Look(ref ConversationHistoryCount, "ConversationHistoryCount", 2);
+            Scribe_Values.Look(ref IncludeEvents, "IncludeEvents", Service.EventService.DefaultIncludeEvents);
+            Scribe_Values.Look(ref MaxEventsCount, "MaxEventsCount", 5);
             Scribe_Values.Look(ref IncludeRace, "IncludeRace", true);
             Scribe_Values.Look(ref IncludeNotableGenes, "IncludeNotableGenes", true);
             Scribe_Values.Look(ref IncludeIdeology, "IncludeIdeology", true);

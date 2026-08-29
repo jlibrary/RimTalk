@@ -551,6 +551,11 @@ public static class ContextBuilder
         }
     }
 
+    public static string GetEventsContext(Map map, PromptService.InfoLevel infoLevel = PromptService.InfoLevel.Normal)
+    {
+        return EventService.GetEventsContext(map, infoLevel);
+    }
+
     [Obsolete("Use CommonUtil.Sanitize instead. Kept for backward compatibility.")]
     public static string Sanitize(string text, Pawn pawn = null)
     {

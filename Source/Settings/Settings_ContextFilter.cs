@@ -27,6 +27,7 @@ namespace RimTalk
                 EnableContextOptimization = true,
                 MaxPawnContextCount = 2,
                 ConversationHistoryCount = 1,
+                MaxEventsCount = 3,
                 
                 IncludeRace = true,
                 IncludeNotableGenes = false,
@@ -49,13 +50,14 @@ namespace RimTalk
                 IncludeTerrain = false,
                 IncludeBeauty = false,
                 IncludeCleanliness = false,
-                IncludeSurroundings = false,
-                IncludeWealth = false
+                IncludeWealth = false,
+                IncludeEvents = false
             }},
             { ContextPreset.Standard, new ContextSettings {
                 EnableContextOptimization = false,
                 MaxPawnContextCount = 3,
                 ConversationHistoryCount = 2,
+                MaxEventsCount = 5,
                 
                 IncludeRace = true,
                 IncludeNotableGenes = true,
@@ -79,12 +81,14 @@ namespace RimTalk
                 IncludeBeauty = false,
                 IncludeCleanliness = false,
                 IncludeSurroundings = false,
-                IncludeWealth = false
+                IncludeWealth = false,
+                IncludeEvents = Service.EventService.DefaultIncludeEvents
             }},
             { ContextPreset.Comprehensive, new ContextSettings {
                 EnableContextOptimization = false,
                 MaxPawnContextCount = 3,
                 ConversationHistoryCount = 3,
+                MaxEventsCount = 10,
                 
                 IncludeRace = true,
                 IncludeNotableGenes = true,
@@ -108,7 +112,8 @@ namespace RimTalk
                 IncludeBeauty = true,
                 IncludeCleanliness = true,
                 IncludeSurroundings = true,
-                IncludeWealth = true
+                IncludeWealth = true,
+                IncludeEvents = Service.EventService.DefaultIncludeEvents
             }}
         };
 
@@ -122,6 +127,7 @@ namespace RimTalk
                 DetermineCurrentPreset(context);
                 _maxPawnContextBuffer = context.MaxPawnContextCount.ToString();
                 _conversationHistoryBuffer = context.ConversationHistoryCount.ToString();
+                _maxEventsBuffer = context.MaxEventsCount.ToString();
                 _presetInitialized = true;
             }
 
@@ -157,6 +163,18 @@ namespace RimTalk
             listing.Gap(6f);
 
             DrawNumericInput(listing, "RimTalk.Settings.ConversationHistoryCount", ref context.ConversationHistoryCount, ref _conversationHistoryBuffer, 0, 9999);
+            listing.Gap(6f);
+
+            DrawCheckboxWithNumericInput(listing, "RimTalk.Settings.IncludeEvents", ref context.IncludeEvents, ref context.MaxEventsCount, ref _maxEventsBuffer, 1, 9999);
+            if (Service.EventService.IsExternalEventModActive)
+            {
+                GUI.color = new Color(1f, 0.75f, 0.3f);
+                Text.Font = GameFont.Tiny;
+                var eventModMsg = "RimTalk.Settings.ExternalEventModDetected".Translate();
+                Widgets.Label(listing.GetRect(Text.CalcHeight(eventModMsg, listing.ColumnWidth)), eventModMsg);
+                Text.Font = GameFont.Small;
+                GUI.color = Color.white;
+            }
             listing.Gap();
 
             DrawColumns(listing, context);
@@ -289,14 +307,42 @@ namespace RimTalk
             listing.Gap(Mathf.Max(leftListing.CurHeight, rightListing.CurHeight));
         }
 
+        private void DrawCheckboxWithNumericInput(Listing_Standard listing, string labelKey, ref bool checkboxVal, ref int intVal, ref string buffer, int min, int max)
+        {
+            const float textFieldWidth = 60f;
+            Rect rowRect = listing.GetRect(24f);
+            Rect checkRect = new Rect(rowRect.x, rowRect.y, rowRect.width - textFieldWidth - 10f, rowRect.height);
+            Rect fieldRect = new Rect(rowRect.xMax - textFieldWidth, rowRect.y, textFieldWidth, rowRect.height);
+
+            Widgets.CheckboxLabeled(checkRect, labelKey.Translate(), ref checkboxVal);
+            TooltipHandler.TipRegion(checkRect, (labelKey + ".Tooltip").Translate());
+
+            if (!checkboxVal)
+            {
+                GUI.color = new Color(0.6f, 0.6f, 0.6f, 0.45f);
+                GUI.enabled = false;
+                Widgets.TextFieldNumeric(fieldRect, ref intVal, ref buffer, min, max);
+                GUI.enabled = true;
+                GUI.color = Color.white;
+            }
+            else
+            {
+                Widgets.TextFieldNumeric(fieldRect, ref intVal, ref buffer, min, max);
+            }
+            TooltipHandler.TipRegion(fieldRect, (labelKey + ".Tooltip").Translate());
+        }
+
         private void ApplyPreset(ContextSettings context, ContextPreset preset)
         {
             if (PresetDefinitions.TryGetValue(preset, out var source))
             {
+                bool previousIncludeEvents = context.IncludeEvents;
                 CopyFields(source, context);
+                context.IncludeEvents = previousIncludeEvents;
                 _currentPreset = preset;
                 _maxPawnContextBuffer = context.MaxPawnContextCount.ToString();
                 _conversationHistoryBuffer = context.ConversationHistoryCount.ToString();
+                _maxEventsBuffer = context.MaxEventsCount.ToString();
             }
         }
 
@@ -312,6 +358,7 @@ namespace RimTalk
         {
             foreach (var field in typeof(ContextSettings).GetFields(BindingFlags.Public | BindingFlags.Instance))
             {
+                if (field.Name == nameof(ContextSettings.IncludeEvents)) continue;
                 var valA = field.GetValue(a);
                 var valB = field.GetValue(b);
                 if (!object.Equals(valA, valB)) return false;

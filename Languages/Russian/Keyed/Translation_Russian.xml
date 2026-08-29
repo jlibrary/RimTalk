@@ -345,6 +345,11 @@
     <RimTalk.Settings.ConversationHistoryCount.Tooltip>Каждая сессия содержит несколько реплик, что может значительно увеличить число токенов</RimTalk.Settings.ConversationHistoryCount.Tooltip>
     <RimTalk.Settings.MaxPawnContextCount>Максимальное количество пешек для включения</RimTalk.Settings.MaxPawnContextCount>
     <RimTalk.Settings.MaxPawnContextCount.Tooltip>Определяет максимальное количество пешек, которые могут участвовать в разговоре</RimTalk.Settings.MaxPawnContextCount.Tooltip>
+    <RimTalk.Settings.MaxEventsCount>Максимальное количество событий</RimTalk.Settings.MaxEventsCount>
+    <RimTalk.Settings.MaxEventsCount.Tooltip>Определяет максимальное количество активных событий и писем-уведомлений колонии в контексте</RimTalk.Settings.MaxEventsCount.Tooltip>
+    <RimTalk.Settings.IncludeEvents>Включить события поселения</RimTalk.Settings.IncludeEvents>
+    <RimTalk.Settings.IncludeEvents.Tooltip>Определяет, будут ли активные события и письма-уведомления включаться в контекст, и задает их максимальное количество</RimTalk.Settings.IncludeEvents.Tooltip>
+    <RimTalk.Settings.ExternalEventModDetected>Обнаружен внешний мод событий (RimTalk Event+). Встроенные события по умолчанию отключены для предотвращения дублирования контекста. Установите этот флажок, если хотите включить их.</RimTalk.Settings.ExternalEventModDetected>
 
     <RimTalk.Settings.PawnInfo>Информация о пешке</RimTalk.Settings.PawnInfo>
     <RimTalk.Settings.IncludeRace>Расу</RimTalk.Settings.IncludeRace>
@@ -370,6 +375,7 @@
     <RimTalk.Settings.IncludeCleanliness>Чистоту</RimTalk.Settings.IncludeCleanliness>
     <RimTalk.Settings.IncludeSurroundings>Близлежащие предметы</RimTalk.Settings.IncludeSurroundings>
     <RimTalk.Settings.IncludeWealth>Богатство колонии</RimTalk.Settings.IncludeWealth>
+    <RimTalk.Settings.IncludeEvents>События колонии</RimTalk.Settings.IncludeEvents>
 
     <!-- DebugWindow.cs -->
     <RimTalk.DebugWindow.ViewByTime>По времени</RimTalk.DebugWindow.ViewByTime>
