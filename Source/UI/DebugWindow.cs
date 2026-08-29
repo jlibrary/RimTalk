@@ -167,37 +167,45 @@ public class DebugWindow : Window
 
     public override void DoWindowContents(Rect inRect)
     {
-        HandleGlobalClicks(inRect);
-        UpdateData();
+        Text.WordWrap = false;
+        try
+        {
+            HandleGlobalClicks(inRect);
+            UpdateData();
 
-        const float bottomSectionHeight = 150f;
-        const float spacing = 10f;
+            const float bottomSectionHeight = 150f;
+            const float spacing = 10f;
 
-        float contentHeight = inRect.height - bottomSectionHeight - spacing;
+            float contentHeight = inRect.height - bottomSectionHeight - spacing;
 
-        // LEFT PANE (Table + Filters) vs RIGHT PANE (Details)
-        float leftWidth = inRect.width * 0.60f - (spacing / 2);
-        float rightWidth = inRect.width * 0.40f - (spacing / 2);
+            // LEFT PANE (Table + Filters) vs RIGHT PANE (Details)
+            float leftWidth = inRect.width * 0.60f - (spacing / 2);
+            float rightWidth = inRect.width * 0.40f - (spacing / 2);
 
-        var leftPaneRect = new Rect(inRect.x, inRect.y, leftWidth, contentHeight);
-        var detailsRect = new Rect(leftPaneRect.xMax + spacing, inRect.y, rightWidth, contentHeight);
+            var leftPaneRect = new Rect(inRect.x, inRect.y, leftWidth, contentHeight);
+            var detailsRect = new Rect(leftPaneRect.xMax + spacing, inRect.y, rightWidth, contentHeight);
 
-        DrawLeftPane(leftPaneRect);
-        DrawDetailsPanel(detailsRect);
+            DrawLeftPane(leftPaneRect);
+            DrawDetailsPanel(detailsRect);
 
-        // Bottom Section
-        var bottomRect = new Rect(inRect.x, leftPaneRect.yMax + spacing, inRect.width, bottomSectionHeight);
-        float graphWidth = bottomRect.width * 0.50f;
-        float statsWidth = bottomRect.width * 0.30f;
-        float actionsWidth = bottomRect.width * 0.20f - (spacing * 2);
+            // Bottom Section
+            var bottomRect = new Rect(inRect.x, leftPaneRect.yMax + spacing, inRect.width, bottomSectionHeight);
+            float graphWidth = bottomRect.width * 0.50f;
+            float statsWidth = bottomRect.width * 0.30f;
+            float actionsWidth = bottomRect.width * 0.20f - (spacing * 2);
 
-        var graphRect = new Rect(bottomRect.x, bottomRect.y, graphWidth, bottomRect.height);
-        var statsRect = new Rect(graphRect.xMax + spacing, bottomRect.y, statsWidth, bottomRect.height);
-        var actionsRect = new Rect(statsRect.xMax + spacing, bottomRect.y, actionsWidth, bottomRect.height);
+            var graphRect = new Rect(bottomRect.x, bottomRect.y, graphWidth, bottomRect.height);
+            var statsRect = new Rect(graphRect.xMax + spacing, bottomRect.y, statsWidth, bottomRect.height);
+            var actionsRect = new Rect(statsRect.xMax + spacing, bottomRect.y, actionsWidth, bottomRect.height);
 
-        DrawGraph(graphRect);
-        DrawStatsSection(statsRect);
-        DrawBottomActions(actionsRect);
+            DrawGraph(graphRect);
+            DrawStatsSection(statsRect);
+            DrawBottomActions(actionsRect);
+        }
+        finally
+        {
+            Text.WordWrap = true;
+        }
     }
 
     private void UpdateData()
@@ -493,11 +501,9 @@ public class DebugWindow : Window
             Widgets.Label(recRect, "-");
         currentX += ARRecipientWidth + ColumnPadding;
 
-        // 4. Prompt (Truncated)
-        string prompt = req.Prompt ?? "";
-        Text.WordWrap = false;
+        // 4. Prompt (Truncated, Single Line)
+        string prompt = (req.Prompt ?? "").Replace("\r", "").Replace("\n", " ");
         Widgets.Label(new Rect(currentX, rowY, promptWidth, RowHeight), prompt);
-        Text.WordWrap = true;
         currentX += promptWidth + ColumnPadding;
 
         // 5. Type
@@ -600,10 +606,8 @@ public class DebugWindow : Window
             currentX += PawnColumnWidth + ColumnPadding;
         }
 
-        string resp = request.Response ?? _generating;
-        Text.WordWrap = false;
+        string resp = (request.Response ?? _generating).Replace("\r", "").Replace("\n", " ");
         Widgets.Label(new Rect(currentX, rowRect.y, responseColumnWidth, RowHeight), resp);
-        Text.WordWrap = true;
         currentX += responseColumnWidth + ColumnPadding;
 
         string interactionType = request.InteractionType ?? "-";
@@ -645,13 +649,10 @@ public class DebugWindow : Window
         Widgets.DrawBoxSolid(rect, new Color(0.08f, 0.08f, 0.1f, 0.8f));
         InitializeContextStyle();
 
-        var inner = rect.ContractedBy(8f);
+        var inner = rect.ContractedBy(4f);
         GUI.BeginGroup(inner);
 
         float y = 0f;
-        Text.Font = GameFont.Small;
-        Widgets.Label(new Rect(0f, y, inner.width, 24f), "RimTalk.DebugWindow.Details".Translate());
-        y += 26f;
 
         if (_selectedLog == null)
         {
@@ -690,9 +691,9 @@ public class DebugWindow : Window
 
         Text.Font = GameFont.Tiny;
         GUI.color = Color.gray;
-        Widgets.Label(new Rect(0f, y, inner.width, 18f), header.ToString());
+        Widgets.Label(new Rect(0f, y, inner.width, 24f), header.ToString());
         GUI.color = Color.white;
-        y += 22f;
+        y += 24f;
 
         float buttonsRowH = 24f;
         float btnW = 88f;
@@ -882,42 +883,114 @@ public class DebugWindow : Window
             return;
         }
 
-        const float messageHeaderHeight = 22f;
+        const float messageHeaderHeight = 24f;
         const float messageSpacing = 6f;
 
         for (int i = 0; i < segments.Count; i++)
         {
             var segment = segments[i];
+            bool isExpanded = _expandedPromptSegmentIndices.Contains(i);
             string preview = GetPromptMessagePreview(segment.Content);
             string roleLabel = GetRoleLabel(segment.Role);
+            Color roleColor = GetRoleColor(segment.Role);
             string entryName = string.IsNullOrWhiteSpace(segment.EntryName) ? "Entry" : segment.EntryName;
-            string state = _expandedPromptSegmentIndices.Contains(i) ? "[-]" : "[+]";
-            string label = $"{state} {i + 1}. {entryName} ({roleLabel}): {preview}";
 
             var headerRect = new Rect(0f, y, width, messageHeaderHeight);
-            Widgets.DrawBoxSolid(headerRect, new Color(0.12f, 0.12f, 0.12f, 0.6f));
-            Widgets.Label(new Rect(headerRect.x + 6f, headerRect.y + 2f, headerRect.width - 12f, headerRect.height),
-                label);
+            bool isMouseOverHeader = Mouse.IsOver(headerRect);
 
-            if (Widgets.ButtonInvisible(headerRect))
+            // Distinct background for expanded vs collapsed (with hover feedback)
+            if (isExpanded)
             {
-                if (_expandedPromptSegmentIndices.Contains(i))
+                Widgets.DrawBoxSolid(headerRect, new Color(0.18f, 0.24f, 0.35f, 0.95f));
+                // Left accent bar
+                Widgets.DrawBoxSolid(new Rect(0f, y, 3.5f, messageHeaderHeight), roleColor);
+            }
+            else
+            {
+                Color collapsedBg = isMouseOverHeader
+                    ? new Color(0.18f, 0.20f, 0.25f, 0.85f)
+                    : new Color(0.12f, 0.13f, 0.16f, 0.70f);
+                Widgets.DrawBoxSolid(headerRect, collapsedBg);
+            }
+
+            // Copy button for individual segment (on right edge of header)
+            Rect copyBtnRect = new Rect(headerRect.xMax - 22f, y + (messageHeaderHeight - 16f) / 2f, 16f, 16f);
+            if (Widgets.ButtonImage(copyBtnRect, TexButton.Copy))
+            {
+                GUIUtility.systemCopyBuffer = segment.Content ?? "";
+                Messages.Message("RimTalk.DebugWindow.Copied".Translate(), MessageTypeDefOf.TaskCompletion, false);
+            }
+            TooltipHandler.TipRegion(copyBtnRect, "RimTalk.DebugWindow.Copy".Translate());
+
+            // Header Text components (Single line)
+            Text.Font = GameFont.Tiny;
+            Text.Anchor = TextAnchor.MiddleLeft;
+            float currentX = 8f;
+            float maxTextRight = copyBtnRect.x - 6f;
+
+            // 1. Index & Entry Name
+            string titleText = $"{i + 1}. {entryName}";
+            Vector2 titleSize = Text.CalcSize(titleText);
+            var titleRect = new Rect(currentX, y, titleSize.x, messageHeaderHeight);
+            GUI.color = Color.white;
+            Widgets.Label(titleRect, titleText);
+            currentX += titleSize.x + 5f;
+
+            // 2. Role Badge
+            string roleText = $"({roleLabel})";
+            Vector2 roleSize = Text.CalcSize(roleText);
+            var roleRect = new Rect(currentX, y, roleSize.x, messageHeaderHeight);
+            GUI.color = roleColor;
+            Widgets.Label(roleRect, roleText);
+            currentX += roleSize.x + 2f;
+
+            // 3. Separator
+            string sep = ": ";
+            Vector2 sepSize = Text.CalcSize(sep);
+            var sepRect = new Rect(currentX, y, sepSize.x, messageHeaderHeight);
+            GUI.color = new Color(0.6f, 0.6f, 0.6f);
+            Widgets.Label(sepRect, sep);
+            currentX += sepSize.x;
+
+            // 4. Preview Text (Single line)
+            float previewWidth = Mathf.Max(0f, maxTextRight - currentX);
+            if (previewWidth > 10f)
+            {
+                var previewRect = new Rect(currentX, y, previewWidth, messageHeaderHeight);
+                GUI.color = isExpanded ? new Color(0.85f, 0.88f, 0.92f) : new Color(0.70f, 0.73f, 0.77f);
+                Widgets.Label(previewRect, preview);
+            }
+
+            // Reset text settings
+            Text.Anchor = TextAnchor.UpperLeft;
+            GUI.color = Color.white;
+
+            // Header toggle click region (excluding copy button)
+            Rect clickRect = new Rect(headerRect.x, headerRect.y, headerRect.width - 24f, messageHeaderHeight);
+            if (Widgets.ButtonInvisible(clickRect))
+            {
+                if (isExpanded)
                     _expandedPromptSegmentIndices.Remove(i);
                 else
                     _expandedPromptSegmentIndices.Add(i);
+                SoundDefOf.Click.PlayOneShotOnCamera();
             }
 
             y += messageHeaderHeight;
 
-            if (_expandedPromptSegmentIndices.Contains(i))
+            // Expanded Body Section
+            if (isExpanded)
             {
                 string safeContent = segment.Content ?? "";
-                float bodyHeight = Mathf.Max(40f,
-                    _monoTinyStyle.CalcHeight(new GUIContent(safeContent), width - 8f) + 10f);
+                float bodyHeight = Mathf.Max(45f,
+                    _monoTinyStyle.CalcHeight(new GUIContent(safeContent), width - 16f) + 14f);
                 var bodyRect = new Rect(0f, y, width, bodyHeight);
-                Widgets.DrawBoxSolid(bodyRect, new Color(0.05f, 0.05f, 0.05f, 0.55f));
 
-                var textRect = bodyRect.ContractedBy(4f);
+                // Body background with left role-colored accent line
+                Widgets.DrawBoxSolid(bodyRect, new Color(0.06f, 0.07f, 0.09f, 0.90f));
+                Widgets.DrawBoxSolid(new Rect(0f, y, 3.5f, bodyHeight), new Color(roleColor.r, roleColor.g, roleColor.b, 0.5f));
+
+                var textRect = new Rect(bodyRect.x + 8f, bodyRect.y + 6f, bodyRect.width - 14f, bodyRect.height - 12f);
                 string newContent = GUI.TextArea(textRect, safeContent, _monoTinyStyle);
                 if (newContent != safeContent)
                 {
@@ -991,7 +1064,7 @@ public class DebugWindow : Window
             UIUtil.DrawClickablePawnName(pawnNameRect, pawnKey, pawnState.Pawn);
             currentX += GroupedPawnNameWidth + ColumnPadding;
 
-            string lastResponse = GetLastResponseForPawn(pawnKey);
+            string lastResponse = GetLastResponseForPawn(pawnKey).Replace("\r", "").Replace("\n", " ");
             Widgets.Label(new Rect(currentX, rowRect.y, responseColumnWidth, RowHeight), lastResponse);
             currentX += responseColumnWidth + ColumnPadding;
 
@@ -1491,7 +1564,7 @@ public class DebugWindow : Window
         if (segments == null || segments.Count == 0)
             return height + 20f;
 
-        const float messageHeaderHeight = 22f;
+        const float messageHeaderHeight = 24f;
         const float messageSpacing = 6f;
 
         for (int i = 0; i < segments.Count; i++)
@@ -1500,8 +1573,8 @@ public class DebugWindow : Window
             if (_expandedPromptSegmentIndices.Contains(i))
             {
                 string content = segments[i].Content ?? "";
-                height += Mathf.Max(40f,
-                    _monoTinyStyle.CalcHeight(new GUIContent(content), width - 8f) + 10f);
+                height += Mathf.Max(45f,
+                    _monoTinyStyle.CalcHeight(new GUIContent(content), width - 16f) + 14f);
             }
             height += messageSpacing;
         }
@@ -1515,8 +1588,9 @@ public class DebugWindow : Window
             return "(empty)";
 
         var firstLine = content.Replace("\r", "").Split('\n')[0].Trim();
-        if (firstLine.Length > 80)
-            firstLine = firstLine.Substring(0, 77) + "...";
+        firstLine = System.Text.RegularExpressions.Regex.Replace(firstLine, @"\s+", " ");
+        if (firstLine.Length > 90)
+            firstLine = firstLine.Substring(0, 87) + "...";
 
         return firstLine;
     }
@@ -1524,6 +1598,17 @@ public class DebugWindow : Window
     private static string GetRoleLabel(Role role)
     {
         return role == Role.AI ? "Assistant" : role.ToString();
+    }
+
+    private static Color GetRoleColor(Role role)
+    {
+        return role switch
+        {
+            Role.System => new Color(0.95f, 0.78f, 0.35f),
+            Role.User => new Color(0.40f, 0.80f, 1.0f),
+            Role.AI => new Color(0.45f, 0.90f, 0.55f),
+            _ => new Color(0.85f, 0.85f, 0.85f)
+        };
     }
 
     /// <summary>
