@@ -105,7 +105,7 @@ public static class AIErrorHandler
             Logger.Warning(ex.Message);
             PendingMessages.Enqueue(() =>
             {
-                string message = "RimTalk.TalkService.QuotaExceeded".Translate();
+                string message = "RimTalk.TalkService.QuotaReached".Translate();
                 Messages.Message(message, MessageTypeDefOf.NeutralEvent, false);
             });
         }
