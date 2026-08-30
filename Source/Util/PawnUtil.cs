@@ -15,6 +15,7 @@ public static class PawnUtil
 {
     public static bool IsTalkEligible(this Pawn pawn)
     {
+        if (pawn == null) return false;
         if (pawn.IsPlayer()) return true;
         if (pawn.HasVocalLink()) return true;
         if (pawn.DestroyedOrNull() || !pawn.Spawned || pawn.Dead) return false;
@@ -43,7 +44,8 @@ public static class PawnUtil
         if (pawn == null || pawn.IsPlayer()) return false;
         if (pawn.Dead) return true;
         if (pawn.Downed) return true;
-        if (!pawn.health.capacities.CapableOf(PawnCapacityDefOf.Moving)) return true;
+        // Being unable to walk is a condition, not a danger - genuine danger to an immobile
+        // pawn is already covered by the hostile/bleeding/pain/burning/hediff checks below.
         if (pawn.InMentalState && includeMentalState) return true;
         if (pawn.IsBurning()) return true;
         if (pawn.health.hediffSet.PainTotal >= pawn.GetStatValue(StatDefOf.PainShockThreshold)) return true;
@@ -66,13 +68,26 @@ public static class PawnUtil
     {
         if (pawn == null) return false;
 
-        if (pawn.mindState.enemyTarget != null) return true;
+        // enemyTarget is sticky - RimWorld doesn't reliably clear it when a fight ends and it
+        // survives save/reload, so a raw null check marks anyone who's ever fought as permanently
+        // in combat. Only count it while the target is still a live threat.
+        var target = pawn.mindState?.enemyTarget;
+        if (IsLiveThreat(pawn, target)) return true;
 
         if (pawn.stances?.curStance is Stance_Busy busy && busy.verb != null)
             return true;
 
         Pawn hostilePawn = pawn.GetHostilePawnNearBy();
         return hostilePawn != null && pawn.Position.DistanceTo(hostilePawn.Position) <= 20f;
+    }
+
+    /// <summary>A remembered target only counts while it is still there and still a threat.</summary>
+    private static bool IsLiveThreat(Pawn pawn, Thing target)
+    {
+        if (target == null || target.Destroyed || !target.Spawned) return false;
+        if (target.Map != pawn.Map) return false;
+        if (target is Pawn tp && (tp.Dead || tp.Downed)) return false;
+        return pawn.Position.DistanceTo(target.Position) <= 30f;
     }
 
     public static string GetRole(this Pawn pawn, bool includeFaction = false)
@@ -607,12 +622,15 @@ public static class PawnUtil
 
     public static bool IsPlayer(this Pawn pawn)
     {
-        return pawn == Cache.GetPlayer();
+        // Cache.GetPlayer() is null until the invisible player pawn is created, so without
+        // the null guard every null pawn would count as "the player".
+        return pawn != null && pawn == Cache.GetPlayer();
     }
 
     public static bool HasVocalLink(this Pawn pawn)
     {
         return Settings.Get().AllowNonHumanToTalk &&
+               pawn?.health?.hediffSet != null &&
                pawn.health.hediffSet.HasHediff(Constant.VocalLinkDef);
     }
 }

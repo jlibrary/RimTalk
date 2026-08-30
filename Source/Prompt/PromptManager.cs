@@ -395,15 +395,23 @@ public class PromptManager : IExposable
         // 4. Reset session variables and build
         ScribanParser.ResetSessionVariables();
         var segments = new List<PromptMessageSegment>();
-        var messages = BuildMessagesFromPreset(preset, context, segments);
-        
-        if (baseEntry != null && originalBaseContent != null)
+        List<(PromptRole role, string content)> messages;
+        try
         {
-            baseEntry.Content = originalBaseContent;
+            messages = BuildMessagesFromPreset(preset, context, segments);
         }
-        
+        finally
+        {
+            // Simple mode overwrites the saved Base Instruction to render it; restore it even
+            // if rendering throws, or the preset is left permanently holding the simple-mode text.
+            if (baseEntry != null && originalBaseContent != null)
+            {
+                baseEntry.Content = originalBaseContent;
+            }
+        }
+
         talkRequest.PromptMessageSegments = segments.Count > 0 ? segments : null;
-        
+
         return messages.Select(m => ((Role)m.role, m.content)).ToList();
     }
 

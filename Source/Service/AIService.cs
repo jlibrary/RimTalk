@@ -14,7 +14,10 @@ namespace RimTalk.Service;
 // In most cases, you should NOT modify this file.
 public static class AIService
 {
-    private static bool _busy;
+    // volatile: written in an async finally on a threadpool thread, read on the main thread every
+    // tick. Without it the main thread can cache a stale `true` and dialogue stops silently for good.
+    private static volatile bool _busy;
+    private static DateTime? _busySince;
     private static bool _firstInstruction = true;
 
     /// <summary>
@@ -87,6 +90,7 @@ public static class AIService
     private static async Task<Payload> ExecuteWithRetry(ApiLog apiLog, Func<IAIClient, Task<Payload>> action)
     {
         _busy = true;
+        _busySince = DateTime.Now;
         try
         {
             Exception capturedEx = null;
@@ -120,6 +124,7 @@ public static class AIService
         finally
         {
             _busy = false;
+            _busySince = null;
         }
     }
 
@@ -144,10 +149,21 @@ public static class AIService
     }
 
     public static bool IsFirstInstruction() => _firstInstruction;
-    public static bool IsBusy() => _busy;
+    public static bool IsBusy()
+    {
+        if (!BusyGate.IsStuck(_busy, _busySince, DateTime.Now)) return _busy;
+
+        Logger.Warning($"The AI slot has been held for over {BusyGate.StuckAfterSeconds}s. " +
+                       "Releasing it - no request can legitimately take that long, and while it " +
+                       "is held nobody in the colony can speak.");
+        _busy = false;
+        _busySince = null;
+        return false;
+    }
     public static void Clear()
     {
         _busy = false;
+        _busySince = null;
         _firstInstruction = true;
     }
 }
