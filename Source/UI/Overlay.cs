@@ -27,8 +27,11 @@ public class Overlay : MapComponent
         public Pawn PawnInstance;
 
         public string SpeakerName;
+        public string SpeakerLabel;
         public string TargetName;
+        public string TargetLabel;
         public Pawn TargetPawnInstance;
+        public string RawDialogue;
         public string Dialogue;
         public float LeftBracketWidth;
         public float SpeakerWidth;
@@ -61,6 +64,9 @@ public class Overlay : MapComponent
     private const float DropdownHeight = 255f;
     private const int MaxMessagesInLog = 10;
     private const float TextPadding = 5f;
+    private const float MaxNameColumnFraction = 0.45f;
+    private const float MinimumDialogueWidth = 120f;
+    private const float LineVerticalPadding = 2f;
     private const string LeftBracket = "[";
     private const string Direction = " -> ";
     private const string RightBracket = "]";
@@ -166,6 +172,128 @@ public class Overlay : MapComponent
                    p?.Name?.ToStringShort == pawnName);
     }
 
+    private static float CalcRichTextHeight(string text, float width)
+    {
+        // Verse.Text.CalcHeight strips tags first. Calling the active GUIStyle directly
+        // makes measurement honor rich-text styles such as <b> exactly as GUI.Label does.
+        return Text.CurFontStyle.CalcHeight(new GUIContent(text ?? string.Empty), Mathf.Max(1f, width));
+    }
+
+    private static string ClampSingleLineWithEllipsis(string text, float maxWidth)
+    {
+        text ??= string.Empty;
+        if (Text.CalcSize(text).x <= maxWidth) return text;
+
+        const string ellipsis = "…";
+        if (Text.CalcSize(ellipsis).x > maxWidth) return string.Empty;
+
+        int low = 0;
+        int high = text.Length;
+        int bestLength = 0;
+        while (low <= high)
+        {
+            int middle = (low + high) / 2;
+            int safeLength = GetSafeSubstringLength(text, middle);
+            string candidate = text[..safeLength].TrimEnd() + ellipsis;
+            if (Text.CalcSize(candidate).x <= maxWidth)
+            {
+                bestLength = safeLength;
+                low = middle + 1;
+            }
+            else
+            {
+                high = middle - 1;
+            }
+        }
+
+        return text[..bestLength].TrimEnd() + ellipsis;
+    }
+
+    private static int GetSafeSubstringLength(string text, int length)
+    {
+        if (length > 0 && length < text.Length &&
+            char.IsHighSurrogate(text[length - 1]) && char.IsLowSurrogate(text[length]))
+        {
+            return length - 1;
+        }
+
+        return length;
+    }
+
+    private static string FitDialogueToHeight(string rawDialogue, float width, float maxHeight)
+    {
+        rawDialogue ??= string.Empty;
+        string fullDialogue = BuildFinalRichText(rawDialogue);
+        if (CalcRichTextHeight(fullDialogue, width) <= maxHeight) return fullDialogue;
+
+        const string ellipsis = "…";
+        string bestDialogue = BuildFinalRichText(ellipsis);
+        int low = 0;
+        int high = rawDialogue.Length;
+
+        while (low <= high)
+        {
+            int middle = (low + high) / 2;
+            int safeLength = GetSafeSubstringLength(rawDialogue, middle);
+            string candidate = rawDialogue[..safeLength].TrimEnd() + ellipsis;
+            string formattedCandidate = BuildFinalRichText(candidate);
+
+            if (CalcRichTextHeight(formattedCandidate, width) <= maxHeight)
+            {
+                bestDialogue = formattedCandidate;
+                low = middle + 1;
+            }
+            else
+            {
+                high = middle - 1;
+            }
+        }
+
+        return bestDialogue;
+    }
+
+    private static void CalculateParticipantLayout(string speakerName, string targetName, float maxNameWidth,
+        out string speakerLabel, out string targetLabel, out float leftBracketWidth, out float speakerWidth,
+        out float directionWidth, out float targetWidth, out float rightBracketWidth, out float nameWidth)
+    {
+        leftBracketWidth = Text.CalcSize(LeftBracket).x;
+        directionWidth = targetName == null ? 0f : Text.CalcSize(Direction).x;
+        rightBracketWidth = Text.CalcSize(RightBracket).x;
+
+        float availableNameWidth = Mathf.Max(1f,
+            maxNameWidth - leftBracketWidth - directionWidth - rightBracketWidth);
+        float naturalSpeakerWidth = Text.CalcSize(speakerName).x;
+        float naturalTargetWidth = targetName == null ? 0f : Text.CalcSize(targetName).x;
+
+        float speakerLimit = availableNameWidth;
+        float targetLimit = 0f;
+        if (targetName != null)
+        {
+            float halfWidth = availableNameWidth * 0.5f;
+            if (naturalSpeakerWidth <= halfWidth)
+            {
+                speakerLimit = naturalSpeakerWidth;
+                targetLimit = availableNameWidth - speakerLimit;
+            }
+            else if (naturalTargetWidth <= halfWidth)
+            {
+                targetLimit = naturalTargetWidth;
+                speakerLimit = availableNameWidth - targetLimit;
+            }
+            else
+            {
+                speakerLimit = halfWidth;
+                targetLimit = halfWidth;
+            }
+        }
+
+        speakerLabel = ClampSingleLineWithEllipsis(speakerName, speakerLimit);
+        targetLabel = targetName == null ? null : ClampSingleLineWithEllipsis(targetName, targetLimit);
+        speakerWidth = Text.CalcSize(speakerLabel).x;
+        targetWidth = targetLabel == null ? 0f : Text.CalcSize(targetLabel).x;
+        nameWidth = leftBracketWidth + speakerWidth + directionWidth + targetWidth + rightBracketWidth;
+    }
+
     public override void MapRemoved()
     {
         base.MapRemoved();
@@ -189,6 +317,10 @@ public class Overlay : MapComponent
             Text.Anchor = TextAnchor.UpperLeft;
 
             float contentWidth = settings.OverlayRectNonDebug.width - 10f;
+            float contentHeight = Mathf.Max(1f, settings.OverlayRectNonDebug.height - 10f);
+            float maxNameWidth = Mathf.Max(1f, Mathf.Min(
+                contentWidth * MaxNameColumnFraction,
+                contentWidth - MinimumDialogueWidth - TextPadding));
 
             var newCache = new List<CachedMessageLine>();
             var messages = allRequests
@@ -201,43 +333,61 @@ public class Overlay : MapComponent
             {
                 SplitParticipantNames(message.Name, message.TargetName, out string speakerName, out string targetName);
 
-                // Generate rich text before measuring it. The exact cached string is also used for drawing.
-                string dialogue = BuildFinalRichText(message.Response);
-
-                float leftBracketWidth = Text.CalcSize(LeftBracket).x;
-                float speakerWidth = Text.CalcSize(speakerName).x;
-                float directionWidth = targetName == null ? 0f : Text.CalcSize(Direction).x;
-                float targetWidth = targetName == null ? 0f : Text.CalcSize(targetName).x;
-                float rightBracketWidth = Text.CalcSize(RightBracket).x;
-                float nameWidth = leftBracketWidth + speakerWidth + directionWidth + targetWidth + rightBracketWidth;
-                float availableDialogueWidth = contentWidth - nameWidth - TextPadding;
-                float dialogueWidthForCalc = Mathf.Max(1f, availableDialogueWidth);
-
-                float dialogueHeight = Text.CalcHeight(dialogue, dialogueWidthForCalc);
-                float nameHeight = Text.CalcSize(LeftBracket + speakerName +
-                    (targetName == null ? string.Empty : Direction + targetName) + RightBracket).y;
-                float lineHeight = Mathf.Max(dialogueHeight, nameHeight);
-
-                lineHeight += 2f;
+                CalculateParticipantLayout(speakerName, targetName, maxNameWidth,
+                    out string speakerLabel, out string targetLabel,
+                    out float leftBracketWidth, out float speakerWidth, out float directionWidth,
+                    out float targetWidth, out float rightBracketWidth, out float nameWidth);
 
                 newCache.Add(new CachedMessageLine
                 {
                     PawnName = speakerName,
                     PawnInstance = FindPawn(speakerName),
                     SpeakerName = speakerName,
+                    SpeakerLabel = speakerLabel,
                     TargetName = targetName,
+                    TargetLabel = targetLabel,
                     TargetPawnInstance = FindPawn(targetName),
-                    Dialogue = dialogue,
+                    RawDialogue = message.Response ?? string.Empty,
                     LeftBracketWidth = leftBracketWidth,
                     SpeakerWidth = speakerWidth,
                     DirectionWidth = directionWidth,
                     TargetWidth = targetWidth,
                     RightBracketWidth = rightBracketWidth,
                     NameWidth = nameWidth,
-                    LineHeight = lineHeight,
                     TalkType = message.TalkRequest?.TalkType ?? TalkType.Other,
                     IsUserEntered = message.Channel == Channel.User,
                 });
+            }
+
+            if (newCache.Count > 0)
+            {
+                // Use one bounded name column for every row. This keeps the dialogue column
+                // aligned and prevents long participant names from covering dialogue text.
+                float nameColumnWidth = newCache.Max(line => line.NameWidth);
+                float dialogueWidth = Mathf.Max(1f, contentWidth - nameColumnWidth - TextPadding);
+                float maxLatestDialogueHeight = Mathf.Max(1f, contentHeight - LineVerticalPadding);
+
+                for (int i = 0; i < newCache.Count; i++)
+                {
+                    var line = newCache[i];
+                    line.NameWidth = nameColumnWidth;
+
+                    // The newest message gets the whole bubble first. Only truncate that
+                    // message when it cannot fit even with every older row omitted.
+                    line.Dialogue = i == 0
+                        ? FitDialogueToHeight(line.RawDialogue, dialogueWidth, maxLatestDialogueHeight)
+                        : BuildFinalRichText(line.RawDialogue);
+
+                    float dialogueHeight = CalcRichTextHeight(line.Dialogue, dialogueWidth);
+                    float nameHeight = Text.CalcSize(LeftBracket + line.SpeakerLabel +
+                        (line.TargetLabel == null ? string.Empty : Direction + line.TargetLabel) + RightBracket).y;
+                    line.LineHeight = Mathf.Max(dialogueHeight, nameHeight) + LineVerticalPadding;
+
+                    if (i == 0)
+                    {
+                        line.LineHeight = Mathf.Min(line.LineHeight, contentHeight);
+                    }
+                }
             }
 
             _cachedMessagesForLog = newCache;
@@ -527,7 +677,7 @@ public class Overlay : MapComponent
         currentX += message.LeftBracketWidth;
 
         var speakerRect = new Rect(currentX, rowRect.y, message.SpeakerWidth, rowRect.height);
-        UIUtil.DrawClickablePawnName(speakerRect, message.SpeakerName, message.PawnInstance, false);
+        UIUtil.DrawClickablePawnName(speakerRect, message.SpeakerLabel, message.PawnInstance, false);
         currentX += message.SpeakerWidth;
 
         if (message.TargetName != null)
@@ -536,7 +686,7 @@ public class Overlay : MapComponent
             currentX += message.DirectionWidth;
 
             var targetRect = new Rect(currentX, rowRect.y, message.TargetWidth, rowRect.height);
-            UIUtil.DrawClickablePawnName(targetRect, message.TargetName, message.TargetPawnInstance, false);
+            UIUtil.DrawClickablePawnName(targetRect, message.TargetLabel, message.TargetPawnInstance, false);
             currentX += message.TargetWidth;
         }
 
@@ -570,10 +720,15 @@ public class Overlay : MapComponent
             for (int i = 0; i < _cachedMessagesForLog.Count; i++)
             {
                 var message = _cachedMessagesForLog[i];
-                currentY -= message.LineHeight;
-                if (currentY < contentRect.y) break;
+                float remainingHeight = currentY - contentRect.y;
+                if (i > 0 && message.LineHeight > remainingHeight) break;
 
-                var rowRect = new Rect(contentRect.x, currentY, contentRect.width, message.LineHeight);
+                float rowHeight = i == 0
+                    ? Mathf.Min(message.LineHeight, remainingHeight)
+                    : message.LineHeight;
+                currentY -= rowHeight;
+
+                var rowRect = new Rect(contentRect.x, currentY, contentRect.width, rowHeight);
                 float dialogueWidth = Mathf.Max(1f, rowRect.width - message.NameWidth - TextPadding);
                 var dialogueRect = new Rect(rowRect.x + message.NameWidth + TextPadding, rowRect.y,
                     dialogueWidth, rowRect.height);
