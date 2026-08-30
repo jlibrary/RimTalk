@@ -49,12 +49,19 @@ public static class ApiHistory
 
     public static ApiLog AddResponse(Guid id, string response, string name, string interactionType, Payload payload = null, int elapsedMs = 0)
     {
+        return AddResponse(id, response, name, interactionType, payload, elapsedMs, null);
+    }
+
+    public static ApiLog AddResponse(Guid id, string response, string name, string interactionType, Payload payload,
+        int elapsedMs, string targetName)
+    {
         if (!History.TryGetValue(id, out var originalLog)) return null;
 
         // first message
         if (originalLog.Response == null)
         {
             originalLog.Name = name ?? originalLog.Name;
+            originalLog.TargetName = targetName;
             originalLog.Response = response;
             originalLog.InteractionType = interactionType;
             if (payload != null)
@@ -64,7 +71,10 @@ public static class ApiHistory
         }
         
         // multi-turn messages
-        var newLog = new ApiLog(name, originalLog.TalkRequest, response, payload, DateTime.Now, originalLog.Channel);
+        var newLog = new ApiLog(name, originalLog.TalkRequest, response, payload, DateTime.Now, originalLog.Channel)
+        {
+            TargetName = targetName
+        };
         History[newLog.Id] = newLog;
         newLog.InteractionType = interactionType;
         newLog.ElapsedMs = elapsedMs;
@@ -78,7 +88,10 @@ public static class ApiHistory
             ? $"{initiator.LabelShort} announced"
             : $"{initiator.LabelShort} talked to {recipient?.LabelShort}"; 
         TalkRequest talkRequest = new(prompt, initiator, recipient, talkType);
-        var log = new ApiLog(initiator.LabelShort, talkRequest, text, null, DateTime.Now, Channel.User);
+        var log = new ApiLog(initiator.LabelShort, talkRequest, text, null, DateTime.Now, Channel.User)
+        {
+            TargetName = recipient?.LabelShort
+        };
         History[log.Id] = log;
         return log;
     }

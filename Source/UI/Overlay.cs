@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using HarmonyLib;
 using RimTalk.Data;
 using RimTalk.Source.Data;
@@ -21,11 +22,21 @@ public class Overlay : MapComponent
 
     private class CachedMessageLine
     {
+        // Kept for compatibility with extensions which inspect RimTalk's overlay cache.
         public string PawnName;
+        public Pawn PawnInstance;
+
+        public string SpeakerName;
+        public string TargetName;
+        public Pawn TargetPawnInstance;
         public string Dialogue;
+        public float LeftBracketWidth;
+        public float SpeakerWidth;
+        public float DirectionWidth;
+        public float TargetWidth;
+        public float RightBracketWidth;
         public float NameWidth;
         public float LineHeight;
-        public Pawn PawnInstance;
         public TalkType TalkType;
         public bool IsUserEntered;
     }
@@ -49,7 +60,13 @@ public class Overlay : MapComponent
     private const float DropdownWidth = 200f;
     private const float DropdownHeight = 255f;
     private const int MaxMessagesInLog = 10;
-    private const float TextPadding = 5f; 
+    private const float TextPadding = 5f;
+    private const string LeftBracket = "[";
+    private const string Direction = " -> ";
+    private const string RightBracket = "]";
+
+    private static bool _externalDialogueFormatterResolved;
+    private static MethodInfo _externalDialogueFormatter;
 
     private static readonly Color AnnounceBgColor = new(0.8f, 0.5f, 0.0f, 0.18f);
     private static readonly Color AnnounceNameColor = new(1.0f, 0.78f, 0.2f);
@@ -65,6 +82,88 @@ public class Overlay : MapComponent
     private void MarkCacheAsDirty()
     {
         _isCacheDirty = true;
+    }
+
+    private static string BuildFinalRichText(string text)
+    {
+        text ??= string.Empty;
+
+        if (!_externalDialogueFormatterResolved)
+        {
+            _externalDialogueFormatterResolved = true;
+            var formatterType = AccessTools.TypeByName("RimTalkDynamicColors.DynamicColorMod");
+            var formatter = formatterType == null
+                ? null
+                : AccessTools.Method(formatterType, "ColorizeString", [typeof(string)]);
+
+            if (formatter is { IsStatic: true } && formatter.ReturnType == typeof(string))
+            {
+                _externalDialogueFormatter = formatter;
+            }
+        }
+
+        if (_externalDialogueFormatter == null) return text;
+
+        try
+        {
+            return _externalDialogueFormatter.Invoke(null, [text]) as string ?? text;
+        }
+        catch
+        {
+            // A compatibility formatter must never prevent the overlay from rendering.
+            _externalDialogueFormatter = null;
+            return text;
+        }
+    }
+
+    private static void SplitParticipantNames(string combinedName, string explicitTargetName,
+        out string speakerName, out string targetName)
+    {
+        string candidate = TrimOuterBrackets(combinedName);
+        targetName = TrimOuterBrackets(explicitTargetName);
+
+        int separatorIndex = candidate.IndexOf("->", StringComparison.Ordinal);
+        int separatorLength = 2;
+        if (separatorIndex < 0)
+        {
+            separatorIndex = candidate.IndexOf('→');
+            separatorLength = 1;
+        }
+
+        if (separatorIndex > 0 && separatorIndex + separatorLength < candidate.Length)
+        {
+            speakerName = candidate[..separatorIndex].Trim();
+            if (string.IsNullOrWhiteSpace(targetName))
+            {
+                targetName = candidate[(separatorIndex + separatorLength)..].Trim();
+            }
+        }
+        else
+        {
+            speakerName = candidate;
+        }
+
+        if (string.IsNullOrWhiteSpace(speakerName)) speakerName = "Unknown";
+        if (string.IsNullOrWhiteSpace(targetName)) targetName = null;
+    }
+
+    private static string TrimOuterBrackets(string value)
+    {
+        value = value?.Trim() ?? string.Empty;
+        return value.Length >= 2 && value[0] == '[' && value[^1] == ']'
+            ? value[1..^1].Trim()
+            : value;
+    }
+
+    private static Pawn FindPawn(string pawnName)
+    {
+        if (string.IsNullOrWhiteSpace(pawnName)) return null;
+
+        return Cache.GetByName(pawnName)?.Pawn ??
+               Find.CurrentMap?.mapPawns?.AllPawns?.FirstOrDefault(p =>
+                   p?.Name?.ToStringShort == pawnName) ??
+               Find.WorldPawns?.AllPawnsAliveOrDead.FirstOrDefault(p =>
+                   p?.Name?.ToStringShort == pawnName);
     }
 
     public override void MapRemoved()
@@ -100,40 +199,42 @@ public class Overlay : MapComponent
 
             foreach (var message in messages)
             {
-                string pawnName = message.Name ?? "Unknown";
-                string dialogue = message.Response ?? "";
-                string formattedName = $"[{pawnName}]";
-                
-                float nameWidth = Text.CalcSize(formattedName).x;
-                float availableDialogueWidth = contentWidth - nameWidth - TextPadding;
-                
-                if (availableDialogueWidth < 0)
-                {
-                    availableDialogueWidth = contentWidth * 0.5f;
-                }
-                
-                const float safetyMargin = 3f;
-                float dialogueWidthForCalc = Mathf.Max(0f, availableDialogueWidth - safetyMargin);
-                
-                float dialogueHeight = Text.CalcHeight(dialogue, dialogueWidthForCalc);
-                float nameHeight = Text.CalcHeight(formattedName, nameWidth);
-                float lineHeight = Mathf.Max(dialogueHeight, nameHeight);
-                
-                lineHeight += 2f;
+                SplitParticipantNames(message.Name, message.TargetName, out string speakerName, out string targetName);
 
-                var foundPawn = Cache.GetByName(pawnName)?.Pawn ??
-                                Find.CurrentMap?.mapPawns?.AllPawns?.FirstOrDefault(p =>
-                                    p?.Name?.ToStringShort == pawnName) ??
-                                Find.WorldPawns?.AllPawnsAliveOrDead.FirstOrDefault(p =>
-                                    p?.Name?.ToStringShort == pawnName);
+                // Generate rich text before measuring it. The exact cached string is also used for drawing.
+                string dialogue = BuildFinalRichText(message.Response);
+
+                float leftBracketWidth = Text.CalcSize(LeftBracket).x;
+                float speakerWidth = Text.CalcSize(speakerName).x;
+                float directionWidth = targetName == null ? 0f : Text.CalcSize(Direction).x;
+                float targetWidth = targetName == null ? 0f : Text.CalcSize(targetName).x;
+                float rightBracketWidth = Text.CalcSize(RightBracket).x;
+                float nameWidth = leftBracketWidth + speakerWidth + directionWidth + targetWidth + rightBracketWidth;
+                float availableDialogueWidth = contentWidth - nameWidth - TextPadding;
+                float dialogueWidthForCalc = Mathf.Max(1f, availableDialogueWidth);
+
+                float dialogueHeight = Text.CalcHeight(dialogue, dialogueWidthForCalc);
+                float nameHeight = Text.CalcSize(LeftBracket + speakerName +
+                    (targetName == null ? string.Empty : Direction + targetName) + RightBracket).y;
+                float lineHeight = Mathf.Max(dialogueHeight, nameHeight);
+
+                lineHeight += 2f;
 
                 newCache.Add(new CachedMessageLine
                 {
-                    PawnName = pawnName,
+                    PawnName = speakerName,
+                    PawnInstance = FindPawn(speakerName),
+                    SpeakerName = speakerName,
+                    TargetName = targetName,
+                    TargetPawnInstance = FindPawn(targetName),
                     Dialogue = dialogue,
+                    LeftBracketWidth = leftBracketWidth,
+                    SpeakerWidth = speakerWidth,
+                    DirectionWidth = directionWidth,
+                    TargetWidth = targetWidth,
+                    RightBracketWidth = rightBracketWidth,
                     NameWidth = nameWidth,
                     LineHeight = lineHeight,
-                    PawnInstance = foundPawn,
                     TalkType = message.TalkRequest?.TalkType ?? TalkType.Other,
                     IsUserEntered = message.Channel == Channel.User,
                 });
@@ -411,6 +512,37 @@ public class Overlay : MapComponent
         listing.End();
     }
 
+    private static void DrawCachedLabel(Rect rect, string text)
+    {
+        // Keep Widgets.Label outside DrawMessageLog so compatibility transpilers cannot
+        // transform the already measured rich text a second time at the call site.
+        Widgets.Label(rect, text);
+    }
+
+    private static void DrawParticipants(Rect rowRect, CachedMessageLine message)
+    {
+        float currentX = rowRect.x;
+
+        DrawCachedLabel(new Rect(currentX, rowRect.y, message.LeftBracketWidth, rowRect.height), LeftBracket);
+        currentX += message.LeftBracketWidth;
+
+        var speakerRect = new Rect(currentX, rowRect.y, message.SpeakerWidth, rowRect.height);
+        UIUtil.DrawClickablePawnName(speakerRect, message.SpeakerName, message.PawnInstance, false);
+        currentX += message.SpeakerWidth;
+
+        if (message.TargetName != null)
+        {
+            DrawCachedLabel(new Rect(currentX, rowRect.y, message.DirectionWidth, rowRect.height), Direction);
+            currentX += message.DirectionWidth;
+
+            var targetRect = new Rect(currentX, rowRect.y, message.TargetWidth, rowRect.height);
+            UIUtil.DrawClickablePawnName(targetRect, message.TargetName, message.TargetPawnInstance, false);
+            currentX += message.TargetWidth;
+        }
+
+        DrawCachedLabel(new Rect(currentX, rowRect.y, message.RightBracketWidth, rowRect.height), RightBracket);
+    }
+
     private void DrawMessageLog(Rect inRect)
     {
         if (_isCacheDirty)
@@ -442,32 +574,32 @@ public class Overlay : MapComponent
                 if (currentY < contentRect.y) break;
 
                 var rowRect = new Rect(contentRect.x, currentY, contentRect.width, message.LineHeight);
-                var nameRect = new Rect(rowRect.x, rowRect.y, message.NameWidth, rowRect.height);
-                float totalDialogueSpace = Mathf.Max(0f, rowRect.width - message.NameWidth);
-                var dialogueRect = new Rect(nameRect.xMax + TextPadding, rowRect.y, totalDialogueSpace - TextPadding, rowRect.height);
+                float dialogueWidth = Mathf.Max(1f, rowRect.width - message.NameWidth - TextPadding);
+                var dialogueRect = new Rect(rowRect.x + message.NameWidth + TextPadding, rowRect.y,
+                    dialogueWidth, rowRect.height);
 
                 // Only the text that user enters gets highlighted
                 if (message.IsUserEntered && message.TalkType == TalkType.Announcement)
                 {
                     Widgets.DrawBoxSolid(rowRect, AnnounceBgColor);
                     GUI.color = AnnounceNameColor;
-                    UIUtil.DrawClickablePawnName(nameRect, message.PawnName, message.PawnInstance);
+                    DrawParticipants(rowRect, message);
                     GUI.color = AnnounceTextColor;
-                    Widgets.Label(dialogueRect, message.Dialogue);
+                    DrawCachedLabel(dialogueRect, message.Dialogue);
                     GUI.color = Color.white;
                 }
                 else if (message.IsUserEntered && message.TalkType == TalkType.User)
                 {
                     GUI.color = UserNameColor;
-                    UIUtil.DrawClickablePawnName(nameRect, message.PawnName, message.PawnInstance);
+                    DrawParticipants(rowRect, message);
                     GUI.color = UserTextColor;
-                    Widgets.Label(dialogueRect, message.Dialogue);
+                    DrawCachedLabel(dialogueRect, message.Dialogue);
                     GUI.color = Color.white;
                 }
                 else
                 {
-                    UIUtil.DrawClickablePawnName(nameRect, message.PawnName, message.PawnInstance);
-                    Widgets.Label(dialogueRect, message.Dialogue);
+                    DrawParticipants(rowRect, message);
+                    DrawCachedLabel(dialogueRect, message.Dialogue);
                 }
             }
         }
