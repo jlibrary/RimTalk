@@ -13,6 +13,7 @@ public enum TalkType
     Thought,
     User,
     Announcement,
+    Sleep,
     Other
 }
 

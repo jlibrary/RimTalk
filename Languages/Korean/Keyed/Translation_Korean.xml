@@ -195,6 +195,8 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.Settings.AllowCustomConversationTooltip>사용자가 직접 대사를 작성해 캐릭터 간 대화를 시작하거나, 특정 캐릭터와 대화할 수 있습니다. 대화를 시작하려면 원하는 캐릭터를 우클릭하세요.</RimTalk.Settings.AllowCustomConversationTooltip>
     <RimTalk.Settings.ContinueDialogueWhileSleeping>자는 동안 대화 계속</RimTalk.Settings.ContinueDialogueWhileSleeping>
     <RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>활성화하면, 폰이 잠들어도 생성된 모든 대화를 계속 진행합니다.</RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>
+    <RimTalk.Settings.EnableSleepDialogue>수면 및 기상 대화</RimTalk.Settings.EnableSleepDialogue>
+    <RimTalk.Settings.EnableSleepDialogueTooltip>활성화하면, 폰이 잠자리에 들거나 잠에서 깰 때 짧은 대사나 혼잣말을 생성합니다.</RimTalk.Settings.EnableSleepDialogueTooltip>
 
     <RimTalk.Settings.AllowMonologue>독백 허용</RimTalk.Settings.AllowMonologue>
     <RimTalk.Settings.AllowMonologueTooltip>활성화하면 다른 폰이 근처에 없어도 폰이 AI 기반 독백을 생성할 수 있습니다.</RimTalk.Settings.AllowMonologueTooltip>

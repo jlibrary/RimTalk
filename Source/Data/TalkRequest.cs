@@ -67,8 +67,12 @@ public class TalkRequest(string prompt, Pawn initiator, Pawn recipient = null, T
 
     public bool IsExpired()
     {
-        int duration = 20;
         if (TalkType.IsFromUser()) return false;
+        if (TalkType == TalkType.Sleep)
+        {
+            return GenTicks.TicksGame - CreatedTick > 5000;
+        }
+        int duration = 20;
         if (TalkType == TalkType.Urgent)
         {
             duration = 5;

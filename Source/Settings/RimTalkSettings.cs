@@ -40,6 +40,7 @@ public class RimTalkSettings : ModSettings
     public string PlayerName = "Player";
     public string PlayerPersona = "";
     public bool ContinueDialogueWhileSleeping = false;
+    public bool EnableSleepDialogue = true;
     public bool AllowBabiesToTalk = true;
     public bool AllowNonHumanToTalk = true;
     public bool AllowAnnouncement = true;
@@ -183,6 +184,7 @@ public class RimTalkSettings : ModSettings
         Scribe_Values.Look(ref PlayerPersona, "playerPersona", "");
         
         Scribe_Values.Look(ref ContinueDialogueWhileSleeping, "continueDialogueWhileSleeping", false);
+        Scribe_Values.Look(ref EnableSleepDialogue, "enableSleepDialogue", true);
         Scribe_Values.Look(ref DisableAiAtSpeed, "DisableAiAtSpeed", 0);
         Scribe_Collections.Look(ref EnabledArchivableTypes, "enabledArchivableTypes", LookMode.Value, LookMode.Value);
         Scribe_Values.Look(ref AllowBabiesToTalk, "allowBabiesToTalk", true);

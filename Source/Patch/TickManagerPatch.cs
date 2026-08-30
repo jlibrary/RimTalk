@@ -90,12 +90,6 @@ internal static class TickManagerPatch
                     continue;
                 }
 
-                if (!request.TalkType.IsFromUser() && request.TalkType != TalkType.Interaction)
-                {
-                    UserRequestPool.Remove(pawn);
-                    continue;
-                }
-
                 if (TalkService.GenerateTalk(request))
                     UserRequestPool.Remove(pawn);
                 return;
@@ -160,5 +154,6 @@ internal static class TickManagerPatch
         _initialCacheRefresh = false;
         _lastTalkEndTick = GenTicks.TicksGame;
         TopicService.Reset();
+        SleepDialogueTracker.Reset();
     }
 }

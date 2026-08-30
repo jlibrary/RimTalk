@@ -195,6 +195,8 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Settings.AllowCustomConversationTooltip>自分でセリフを入力してキャラクター同士の会話を始めたり、特定のキャラクターと直接話すことができます。対象のキャラクターを右クリックして会話を開始します。</RimTalk.Settings.AllowCustomConversationTooltip>
     <RimTalk.Settings.ContinueDialogueWhileSleeping>睡眠中も会話を続ける</RimTalk.Settings.ContinueDialogueWhileSleeping>
     <RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>有効にすると、ポーンが眠っていても生成されたすべての会話を続けます。</RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>
+    <RimTalk.Settings.EnableSleepDialogue>就寝・起床時の会話</RimTalk.Settings.EnableSleepDialogue>
+    <RimTalk.Settings.EnableSleepDialogueTooltip>有効にすると、ポーンが就寝時や起床時に短い会話やつぶやきを生成します。</RimTalk.Settings.EnableSleepDialogueTooltip>
 
     <RimTalk.Settings.AllowMonologue>独り言を許可</RimTalk.Settings.AllowMonologue>
     <RimTalk.Settings.AllowMonologueTooltip>有効にすると、他のキャラクターが近くにいなくても、キャラクターがAI生成の独り言をする場合があります。</RimTalk.Settings.AllowMonologueTooltip>

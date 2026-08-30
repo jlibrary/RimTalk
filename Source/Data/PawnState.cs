@@ -61,7 +61,11 @@ public class PawnState(Pawn pawn)
         }
 
         // 2. Create and Enqueue
-        var newRequest = new TalkRequest(prompt, Pawn, recipient, talkType) { Status = RequestStatus.Pending };
+        var newRequest = new TalkRequest(prompt, Pawn, recipient, talkType)
+        {
+            Status = RequestStatus.Pending,
+            IsMonologue = recipient == null
+        };
 
         if (talkType.IsFromUser())
         {
@@ -75,6 +79,12 @@ public class PawnState(Pawn pawn)
             TalkRequests.AddFirst(newRequest);
             IgnoreAllTalkResponses();
             Cache.Get(recipient)?.IgnoreAllTalkResponses();
+            LastTalkTick = 0;
+            UserRequestPool.Add(Pawn, priority: false);
+        }
+        else if (talkType == TalkType.Sleep)
+        {
+            TalkRequests.AddFirst(newRequest);
             LastTalkTick = 0;
             UserRequestPool.Add(Pawn, priority: false);
         }
@@ -142,7 +152,8 @@ public class PawnState(Pawn pawn)
         
         RimTalkSettings settings = Settings.Get();
         if (!settings.DisplayTalkWhenDrafted && Pawn.Drafted) return false;
-        if (!settings.ContinueDialogueWhileSleeping && !Pawn.Awake()) return false;
+        bool allowSleeping = TalkResponses.Count > 0 && TalkResponses[0].TalkType == TalkType.Sleep;
+        if (!settings.ContinueDialogueWhileSleeping && !Pawn.Awake() && !allowSleeping) return false;
 
         return !Pawn.Dead && TalkInitiationWeight > 0;
     }
