@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using RimTalk.Data;
 using RimTalk.Service;
 using RimTalk.Source.Data;
+using RimTalk.Util;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -101,6 +102,7 @@ public class DebugWindow : Window
     private const string ControlNameTextSearch = "TextSearchField";
     private const string ControlNameDetailResponse = "DetailResponseField";
     private const string ControlNameDetailMessages = "DetailMessagesField";
+    private const string ControlNameDetailPromptMessages = "DetailPromptMessagesField";
 
     // Styles
     private GUIStyle _contextStyle;
@@ -109,13 +111,10 @@ public class DebugWindow : Window
     public DebugWindow()
     {
         doCloseX = true;
+        closeOnClickedOutside = false;
         draggable = true;
         resizeable = true;
         absorbInputAroundWindow = false;
-        closeOnClickedOutside = false;
-        closeOnAccept = false;
-        closeOnCancel = true;
-        preventCameraMotion = false;
 
         var settings = Settings.Get();
         _viewMode = 0;
@@ -123,7 +122,7 @@ public class DebugWindow : Window
         _sortAscending = settings.DebugSortAscending;
         _expandedPawns = [];
 
-        _maxRows = 500;
+        _maxRows = ApiHistory.MaxHistoryCount;
         _pawnFilter = string.Empty;
         _textSearch = string.Empty;
         _stateFilter = State.None;
@@ -395,13 +394,20 @@ public class DebugWindow : Window
         {
             var options = new List<FloatMenuOption>
             {
-                new($"{lastPrefix} 200", () => _maxRows = 200),
-                new($"{lastPrefix} 500", () => _maxRows = 500),
-                new($"{lastPrefix} 1000", () => _maxRows = 1000),
-                new($"{lastPrefix} 2000", () => _maxRows = 2000)
+                new($"{lastPrefix} 200", () => SetMaxRows(200)),
+                new($"{lastPrefix} 500", () => SetMaxRows(500)),
+                new($"{lastPrefix} 1000", () => SetMaxRows(1000)),
+                new($"{lastPrefix} 2000", () => SetMaxRows(2000))
             };
             Find.WindowStack.Add(new FloatMenu(options));
         }
+    }
+
+    private void SetMaxRows(int count)
+    {
+        _maxRows = count;
+        ApiHistory.MaxHistoryCount = count;
+        ApiHistory.TrimHistory();
     }
 
     private void DrawActiveRequestsTable(Rect rect)
@@ -630,9 +636,18 @@ public class DebugWindow : Window
         currentX += TimeColumnWidth + ColumnPadding;
 
         int count = request.Payload?.TokenCount ?? 0;
-        string tokenCountText = count != 0
-            ? count.ToString()
-            : request.IsFirstDialogue ? "-" : "";
+        if (count == 0 && request.Channel == Channel.User && request.ConversationId >= 0)
+        {
+            var payload = ApiHistory.GetPayload(request);
+            count = payload?.TokenCount ?? 0;
+        }
+        else if (count != 0 && request.ConversationId >= 0)
+        {
+            if (ApiHistory.GetAll().Any(l => l.ConversationId == request.ConversationId && l.Channel == Channel.User))
+                count = 0;
+        }
+
+        string tokenCountText = count > 0 ? count.ToString() : "";
         Widgets.Label(new Rect(currentX, rowRect.y, TokensColumnWidth, RowHeight), tokenCountText);
         currentX += TokensColumnWidth + ColumnPadding;
 
@@ -717,7 +732,7 @@ public class DebugWindow : Window
         }
 
         // API Log Button
-        if (_selectedLog.Channel != Channel.User && _selectedLog.GetState() != State.None)
+        if (_selectedLog.GetState() != State.None)
         {
             btnX += btnW + 6f;
             Rect reportRect = new Rect(btnX, y, btnW, buttonsRowH);
@@ -775,8 +790,7 @@ public class DebugWindow : Window
             _monoTinyStyle.CalcHeight(new GUIContent(_tempResponse), textAreaWidth) + 10f);
         float msgH = CalculatePromptSegmentsHeight(_tempPromptSegments, viewWidth);
 
-        var viewH = headerH + respH + blockSpacing +
-                    msgH + 10f;
+        var viewH = headerH + respH + blockSpacing + msgH + 10f;
 
         var view = new Rect(0f, 0f, scrollOuter.width - 16f, viewH);
 
@@ -1534,15 +1548,30 @@ public class DebugWindow : Window
 
     private static List<PromptMessageSegment> ResolvePromptSegments(ApiLog log)
     {
-        var request = log?.TalkRequest;
-        if (request?.PromptMessageSegments != null && request.PromptMessageSegments.Count > 0)
-            return request.PromptMessageSegments;
-
-        var segments = new List<PromptMessageSegment>();
-        if (request == null) return segments;
-
-        if (request.PromptMessages != null && request.PromptMessages.Count > 0)
+        var targetLog = log;
+        if (targetLog != null && targetLog.TalkRequest?.PromptMessageSegments == null &&
+            targetLog.TalkRequest?.PromptMessages == null && targetLog.ConversationId >= 0)
         {
+            foreach (var item in ApiHistory.GetAll())
+            {
+                if (item.ConversationId == targetLog.ConversationId && item.Channel != Channel.User &&
+                    (item.TalkRequest?.PromptMessageSegments != null || item.TalkRequest?.PromptMessages != null))
+                {
+                    targetLog = item;
+                    break;
+                }
+            }
+        }
+
+        var request = targetLog?.TalkRequest;
+        if (request?.PromptMessageSegments != null && request.PromptMessageSegments.Count > 0)
+        {
+            return request.PromptMessageSegments;
+        }
+
+        if (request?.PromptMessages != null && request.PromptMessages.Count > 0)
+        {
+            var segments = new List<PromptMessageSegment>();
             for (int i = 0; i < request.PromptMessages.Count; i++)
             {
                 var (role, content) = request.PromptMessages[i];
@@ -1551,21 +1580,7 @@ public class DebugWindow : Window
             return segments;
         }
 
-        var instruction = $"{Constant.Instruction}\n{request.Context}";
-        segments.Add(new PromptMessageSegment("system-instruction", "RimTalk.DebugWindow.SystemInstruction".Translate(), Role.System, instruction));
-
-        if (request.Initiator != null)
-        {
-            foreach (var (role, message) in TalkHistory.GetMessageHistory(request.Initiator))
-            {
-                segments.Add(new PromptMessageSegment("chat-history", "RimTalk.DebugWindow.ChatHistory".Translate(), role, message));
-            }
-        }
-
-        if (!string.IsNullOrWhiteSpace(request.Prompt))
-            segments.Add(new PromptMessageSegment("input-prompt", "RimTalk.DebugWindow.InputPrompt".Translate(), Role.User, request.Prompt));
-
-        return segments;
+        return new List<PromptMessageSegment>();
     }
 
     private float CalculatePromptSegmentsHeight(List<PromptMessageSegment> segments, float width)

@@ -9,26 +9,50 @@ namespace RimTalk.Data;
 public static class ApiHistory
 {
     private static readonly Dictionary<Guid, ApiLog> History = new();
+    private static readonly List<Guid> HistoryOrder = new();
     private static int _conversationIdIndex = 0;
+    
+    public static int MaxHistoryCount { get; set; } = 500;
     
     public static int NextConversationId() => _conversationIdIndex++;
 
     public static ApiLog GetApiLog(Guid id) => History.TryGetValue(id, out var apiLog) ? apiLog : null;
 
+    private static void RegisterLog(ApiLog log)
+    {
+        if (log == null) return;
+        History[log.Id] = log;
+        HistoryOrder.Add(log.Id);
+        TrimHistory();
+    }
+
+    public static void TrimHistory()
+    {
+        while (HistoryOrder.Count > MaxHistoryCount && HistoryOrder.Count > 0)
+        {
+            var oldId = HistoryOrder[0];
+            HistoryOrder.RemoveAt(0);
+            History.Remove(oldId);
+        }
+    }
+
     public static ApiLog AddRequest(TalkRequest request, Channel channel)
     {
-        var initiatorName = Service.PromptService.GetUniqueName(request.Initiator, request.Participants);
-        int conversationId = request.ConversationId >= 0
+        var initiatorName = request?.Initiator != null 
+            ? Service.PromptService.GetUniqueName(request.Initiator, request.Participants) 
+            : (request?.Initiator?.LabelShort ?? "Player");
+        int conversationId = request != null && request.ConversationId >= 0
             ? request.ConversationId
-            : (request.IsMonologue ? -1 : _conversationIdIndex++);
-        request.ConversationId = conversationId;
+            : ((request?.IsMonologue ?? false) ? -1 : _conversationIdIndex++);
+        if (request != null)
+            request.ConversationId = conversationId;
 
         var log = new ApiLog(initiatorName, request, null, null, DateTime.Now, channel)
             {
                 IsFirstDialogue = true,
                 ConversationId = conversationId
             };
-        History[log.Id] = log;
+        RegisterLog(log);
         return log;
     }
 
@@ -83,10 +107,10 @@ public static class ApiHistory
         {
             TargetName = targetName
         };
-        History[newLog.Id] = newLog;
         newLog.InteractionType = interactionType;
         newLog.ElapsedMs = elapsedMs;
         newLog.ConversationId = originalLog.ConversationId;
+        RegisterLog(newLog);
         return newLog;
     }
     
@@ -108,7 +132,7 @@ public static class ApiHistory
             TargetName = recipientName,
             ConversationId = conversationId
         };
-        History[log.Id] = log;
+        RegisterLog(log);
         return log;
     }
 
@@ -123,5 +147,6 @@ public static class ApiHistory
     public static void Clear()
     {
         History.Clear();
+        HistoryOrder.Clear();
     }
 }
