@@ -64,6 +64,7 @@ public static class CustomDialogueService
             return;
 
         TalkType talkType = isAnnouncement ? TalkType.Announcement : TalkType.User;
+        int conversationId = isAnnouncement && recipient == null ? -1 : ApiHistory.NextConversationId();
 
         if (isAnnouncement)
         {
@@ -73,7 +74,10 @@ public static class CustomDialogueService
             PawnState primaryState = Cache.Get(primaryPawn);
             if (primaryState != null && primaryState.CanDisplayTalk())
             {
-                var request = new TalkRequest(message, primaryPawn, otherPawn, talkType);
+                var request = new TalkRequest(message, primaryPawn, otherPawn, talkType)
+                {
+                    ConversationId = conversationId
+                };
                 primaryState.TalkRequests.AddFirst(request);
                 primaryState.IgnoreAllTalkResponses();
                 UserRequestPool.Add(primaryPawn);
@@ -83,7 +87,11 @@ public static class CustomDialogueService
         {
             PawnState recipientState = Cache.Get(recipient);
             if (recipientState != null && recipientState.CanDisplayTalk())
+            {
                 recipientState.AddTalkRequest(message, initiator, talkType);
+                if (recipientState.TalkRequests.First != null)
+                    recipientState.TalkRequests.First.Value.ConversationId = conversationId;
+            }
         }
 
         if (AIService.IsBusy())
@@ -91,7 +99,7 @@ public static class CustomDialogueService
             AIService.CancelCurrent();
         }
 
-        ApiLog apiLog = ApiHistory.AddUserHistory(initiator, recipient, message, talkType);
+        ApiLog apiLog = ApiHistory.AddUserHistory(initiator, recipient, message, talkType, conversationId);
         
         if (initiator.IsPlayer())
         {

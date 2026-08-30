@@ -27,6 +27,7 @@ public class TalkRequest(string prompt, Pawn initiator, Pawn recipient = null, T
     public DateTime CreatedTime { get; set; } = DateTime.Now; 
     public int FinishedTick { get; set; } = -1; 
     public RequestStatus Status { get; set; } = RequestStatus.Pending;
+    public int ConversationId { get; set; } = -1;
     public bool IsMonologue;
     public bool IsAnnouncement => TalkType == TalkType.Announcement;
     

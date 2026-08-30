@@ -11,15 +11,22 @@ public static class ApiHistory
     private static readonly Dictionary<Guid, ApiLog> History = new();
     private static int _conversationIdIndex = 0;
     
+    public static int NextConversationId() => _conversationIdIndex++;
+
     public static ApiLog GetApiLog(Guid id) => History.TryGetValue(id, out var apiLog) ? apiLog : null;
 
     public static ApiLog AddRequest(TalkRequest request, Channel channel)
     {
         var initiatorName = Service.PromptService.GetUniqueName(request.Initiator, request.Participants);
+        int conversationId = request.ConversationId >= 0
+            ? request.ConversationId
+            : (request.IsMonologue ? -1 : _conversationIdIndex++);
+        request.ConversationId = conversationId;
+
         var log = new ApiLog(initiatorName, request, null, null, DateTime.Now, channel)
             {
                 IsFirstDialogue = true,
-                ConversationId = request.IsMonologue ? -1 : _conversationIdIndex++
+                ConversationId = conversationId
             };
         History[log.Id] = log;
         return log;
@@ -83,20 +90,23 @@ public static class ApiHistory
         return newLog;
     }
     
-    public static ApiLog AddUserHistory(Pawn initiator, Pawn recipient, string text, TalkType talkType = TalkType.User)
+    public static ApiLog AddUserHistory(Pawn initiator, Pawn recipient, string text, TalkType talkType = TalkType.User, int conversationId = -1)
     {
         var initiatorName = Service.PromptService.GetUniqueName(initiator);
-        var recipientName = recipient != null ? Service.PromptService.GetUniqueName(recipient) : null;
+        bool hasDistinctRecipient = recipient != null && recipient != initiator && talkType != TalkType.Announcement;
+        var recipientName = hasDistinctRecipient ? Service.PromptService.GetUniqueName(recipient) : null;
         var prompt = talkType == TalkType.Announcement
             ? $"{initiatorName} announced"
             : $"{initiatorName} talked to {recipientName}"; 
         TalkRequest talkRequest = new(prompt, initiator, recipient, talkType)
         {
-            Participants = recipient != null ? [initiator, recipient] : [initiator]
+            Participants = hasDistinctRecipient ? [initiator, recipient] : [initiator],
+            ConversationId = conversationId
         };
         var log = new ApiLog(initiatorName, talkRequest, text, null, DateTime.Now, Channel.User)
         {
-            TargetName = recipientName
+            TargetName = recipientName,
+            ConversationId = conversationId
         };
         History[log.Id] = log;
         return log;

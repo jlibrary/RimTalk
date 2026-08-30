@@ -590,7 +590,17 @@ public class DebugWindow : Window
         if (rowIndex % 2 == 0) Widgets.DrawBoxSolid(rowRect, new Color(0.15f, 0.15f, 0.15f, 0.4f));
 
         bool isSelected = _selectedLog != null && _selectedLog.Id == request.Id;
-        if (isSelected) Widgets.DrawBoxSolid(rowRect, new Color(0.2f, 0.25f, 0.35f, 0.45f));
+        bool isSameConversation = !isSelected && _selectedLog != null && _selectedLog.ConversationId >= 0 &&
+                                  _selectedLog.ConversationId == request.ConversationId;
+
+        if (isSelected)
+            Widgets.DrawBoxSolid(rowRect, new Color(0.2f, 0.25f, 0.35f, 0.45f));
+        else if (isSameConversation)
+            Widgets.DrawBoxSolid(rowRect, new Color(0.18f, 0.22f, 0.28f, 0.35f));
+
+        // Left accent color bar indicating conversation group
+        Color groupColor = UIUtil.GetConversationColor(request.ConversationId, fallbackMuted: true);
+        Widgets.DrawBoxSolid(new Rect(xOffset, rowY, 3.5f, RowHeight), groupColor);
 
         float currentX = xOffset + 5f;
         Widgets.Label(new Rect(currentX, rowRect.y, TimestampColumnWidth, RowHeight),

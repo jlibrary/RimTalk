@@ -42,6 +42,7 @@ public class Overlay : MapComponent
         public float LineHeight;
         public TalkType TalkType;
         public bool IsUserEntered;
+        public int ConversationId;
     }
 
     private bool _isDragging;
@@ -61,7 +62,7 @@ public class Overlay : MapComponent
     private const float OptionsBarHeight = 30f;
     private const float ResizeHandleSize = 24f;
     private const float DropdownWidth = 200f;
-    private const float DropdownHeight = 255f;
+    private const float DropdownHeight = 310f;
     private const int MaxMessagesInLog = 10;
     private const float TextPadding = 5f;
     private const float MaxNameColumnFraction = 0.45f;
@@ -150,7 +151,7 @@ public class Overlay : MapComponent
         }
 
         if (string.IsNullOrWhiteSpace(speakerName)) speakerName = "Unknown";
-        if (string.IsNullOrWhiteSpace(targetName)) targetName = null;
+        if (string.IsNullOrWhiteSpace(targetName) || string.Equals(speakerName, targetName, StringComparison.OrdinalIgnoreCase)) targetName = null;
     }
 
     private static string TrimOuterBrackets(string value)
@@ -357,21 +358,23 @@ public class Overlay : MapComponent
                     NameWidth = nameWidth,
                     TalkType = message.TalkRequest?.TalkType ?? TalkType.Other,
                     IsUserEntered = message.Channel == Channel.User,
+                    ConversationId = message.ConversationId
                 });
             }
 
             if (newCache.Count > 0)
             {
-                // Use one bounded name column for every row. This keeps the dialogue column
-                // aligned and prevents long participant names from covering dialogue text.
-                float nameColumnWidth = newCache.Max(line => line.NameWidth);
-                float dialogueWidth = Mathf.Max(1f, contentWidth - nameColumnWidth - TextPadding);
+                // If aligned name column is enabled, align all rows to the widest name column.
+                // Otherwise, let dialogue immediately follow each individual name.
+                float maxNameWidthFound = settings.OverlayAlignNameColumn ? newCache.Max(l => l.NameWidth) : 0f;
+                float totalHeight = 0f;
                 float maxLatestDialogueHeight = Mathf.Max(1f, contentHeight - LineVerticalPadding);
 
                 for (int i = 0; i < newCache.Count; i++)
                 {
                     var line = newCache[i];
-                    line.NameWidth = nameColumnWidth;
+                    float activeNameWidth = settings.OverlayAlignNameColumn ? maxNameWidthFound : line.NameWidth;
+                    float dialogueWidth = Mathf.Max(1f, contentWidth - activeNameWidth - TextPadding);
 
                     // The newest message gets the whole bubble first. Only truncate that
                     // message when it cannot fit even with every older row omitted.
@@ -384,9 +387,21 @@ public class Overlay : MapComponent
                         (line.TargetLabel == null ? string.Empty : Direction + line.TargetLabel) + RightBracket).y;
                     line.LineHeight = Mathf.Max(dialogueHeight, nameHeight) + LineVerticalPadding;
 
-                    if (i == 0)
+                    if (i == 0) line.LineHeight = Mathf.Min(line.LineHeight, contentHeight);
+
+                    totalHeight += line.LineHeight;
+                    if (i > 0 && totalHeight > contentHeight)
                     {
-                        line.LineHeight = Mathf.Min(line.LineHeight, contentHeight);
+                        newCache.RemoveRange(i, newCache.Count - i);
+                        break;
+                    }
+                }
+
+                if (settings.OverlayAlignNameColumn)
+                {
+                    for (int i = 0; i < newCache.Count; i++)
+                    {
+                        newCache[i].NameWidth = maxNameWidthFound;
                     }
                 }
             }
@@ -604,13 +619,28 @@ public class Overlay : MapComponent
         
         listing.Gap(6);
         
-        bool overlayDrawAboveUI = settings.OverlayDrawAboveUI;
-        listing.CheckboxLabeled("RimTalk.Overlay.DrawAboveUI".Translate(), ref overlayDrawAboveUI);
-        if (overlayDrawAboveUI != settings.OverlayDrawAboveUI)
+        DrawSettingsCheckbox(listing, "RimTalk.Overlay.DrawAboveUI".Translate(), settings.OverlayDrawAboveUI, value =>
         {
-            settings.OverlayDrawAboveUI = overlayDrawAboveUI;
+            settings.OverlayDrawAboveUI = value;
             settings.Write();
-        }
+        });
+
+        listing.Gap(6);
+
+        DrawSettingsCheckbox(listing, "RimTalk.Overlay.ShowGroupColors".Translate(), settings.OverlayShowGroupColors, value =>
+        {
+            settings.OverlayShowGroupColors = value;
+            settings.Write();
+        });
+
+        listing.Gap(6);
+
+        DrawSettingsCheckbox(listing, "RimTalk.Overlay.AlignNameColumn".Translate(), settings.OverlayAlignNameColumn, value =>
+        {
+            settings.OverlayAlignNameColumn = value;
+            _isCacheDirty = true;
+            settings.Write();
+        });
 
         listing.Gap(6);
 
@@ -728,6 +758,14 @@ public class Overlay : MapComponent
                     ? Mathf.Min(message.LineHeight, remainingHeight)
                     : message.LineHeight;
                 currentY -= rowHeight;
+
+                // Left accent bar for conversation groups
+                if (settings.OverlayShowGroupColors)
+                {
+                    Color groupColor = UIUtil.GetConversationColor(message.ConversationId);
+                    if (groupColor != Color.clear)
+                        Widgets.DrawBoxSolid(new Rect(inRect.x, currentY, 2.5f, rowHeight), groupColor);
+                }
 
                 var rowRect = new Rect(contentRect.x, currentY, contentRect.width, rowHeight);
                 float dialogueWidth = Mathf.Max(1f, rowRect.width - message.NameWidth - TextPadding);

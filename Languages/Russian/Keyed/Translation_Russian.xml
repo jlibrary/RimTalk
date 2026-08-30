@@ -449,6 +449,8 @@
     <RimTalk.Overlay.Debug>Отладка</RimTalk.Overlay.Debug>
     <RimTalk.Overlay.Option>Опция наложения</RimTalk.Overlay.Option>
     <RimTalk.Overlay.DrawAboveUI>Отображать поверх UI</RimTalk.Overlay.DrawAboveUI>
+    <RimTalk.Overlay.ShowGroupColors>Цвета групп диалогов</RimTalk.Overlay.ShowGroupColors>
+    <RimTalk.Overlay.AlignNameColumn>Выравнивать колонку имен</RimTalk.Overlay.AlignNameColumn>
     <RimTalk.Overlay.Opacity>Прозрачность</RimTalk.Overlay.Opacity>
     <RimTalk.Overlay.FontSize>Размер шрифта</RimTalk.Overlay.FontSize>
     <RimTalk.Overlay.TurnOff>Отключить оверлей</RimTalk.Overlay.TurnOff>
