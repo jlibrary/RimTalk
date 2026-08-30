@@ -493,7 +493,7 @@ Scriban 魔法 (动态内容)
     <RimTalk.PlayerSettings.Enabled>启用</RimTalk.PlayerSettings.Enabled>
     <RimTalk.PlayerSettings.PresetTitleTooltip>右键点击殖民者时显示的菜单标题。</RimTalk.PlayerSettings.PresetTitleTooltip>
     <RimTalk.PlayerSettings.Vision>📷 视觉</RimTalk.PlayerSettings.Vision>
-    <RimTalk.PlayerSettings.VisionTooltip>勾选时，将在对话请求中附带当前屏幕截图。</RimTalk.PlayerSettings.VisionTooltip>
+    <RimTalk.PlayerSettings.VisionTooltip>勾选时，将在对话请求中附带当前屏幕截图。（截图时可能会出现短暂闪烁）</RimTalk.PlayerSettings.VisionTooltip>
     <RimTalk.PlayerSettings.Announce>📢 公告</RimTalk.PlayerSettings.Announce>
     <RimTalk.PlayerSettings.AnnounceTooltip>勾选时，将以向附近所有殖民者喊话的公告形式进行对话。</RimTalk.PlayerSettings.AnnounceTooltip>
     <RimTalk.PlayerSettings.AllowCustomConversation>启用自定义对话</RimTalk.PlayerSettings.AllowCustomConversation>
@@ -503,7 +503,7 @@ Scriban 魔法 (动态内容)
     <RimTalk.PlayerSettings.AllowPlayerAiGen>AI自动生成玩家台词（应用人设）</RimTalk.PlayerSettings.AllowPlayerAiGen>
     <RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>勾选时，AI将在对话中根据玩家人设自动生成玩家的后续台词。取消勾选时，玩家只说出用户手动输入的台词。</RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>
     <RimTalk.PlayerSettings.PromptLabel>发送的对话提示词（问题 / 指示）：</RimTalk.PlayerSettings.PromptLabel>
-    <RimTalk.FloatMenu.AttachPhotoTooltip>切换屏幕截图附件（Ctrl+1 快捷键）</RimTalk.FloatMenu.AttachPhotoTooltip>
+    <RimTalk.FloatMenu.AttachPhotoTooltip>切换屏幕截图附件（Ctrl+1）（截图时可能会出现短暂闪烁）</RimTalk.FloatMenu.AttachPhotoTooltip>
     <RimTalk.DebugWindow.AttachedImage>附带图像（点击放大）：</RimTalk.DebugWindow.AttachedImage>
     <RimTalk.DebugWindow.AttachedImageBase64>附带图像 (Base64)</RimTalk.DebugWindow.AttachedImageBase64>
     <RimTalk.DebugWindow.ClickToExpandImage>点击以在大窗口中查看图像。</RimTalk.DebugWindow.ClickToExpandImage>

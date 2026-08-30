@@ -496,7 +496,7 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.PlayerSettings.Enabled>有効</RimTalk.PlayerSettings.Enabled>
     <RimTalk.PlayerSettings.PresetTitleTooltip>ポーン右クリック時に表示されるメニュータイトルです。</RimTalk.PlayerSettings.PresetTitleTooltip>
     <RimTalk.PlayerSettings.Vision>📷 ビジョン</RimTalk.PlayerSettings.Vision>
-    <RimTalk.PlayerSettings.VisionTooltip>チェックすると、対話リクエストに現在の画面スクリーンショットを添付します。</RimTalk.PlayerSettings.VisionTooltip>
+    <RimTalk.PlayerSettings.VisionTooltip>チェックすると、対話リクエストに現在の画面スクリーンショットを添付します。（画面キャプチャ時に一瞬ちらつきが発生する場合があります）</RimTalk.PlayerSettings.VisionTooltip>
     <RimTalk.PlayerSettings.Announce>📢 周知</RimTalk.PlayerSettings.Announce>
     <RimTalk.PlayerSettings.AnnounceTooltip>チェックすると、周囲のすべてのポーンに呼びかける周知形式で対話します。</RimTalk.PlayerSettings.AnnounceTooltip>
     <RimTalk.PlayerSettings.AllowCustomConversation>カスタム対話を有効化</RimTalk.PlayerSettings.AllowCustomConversation>
@@ -506,7 +506,7 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.PlayerSettings.AllowPlayerAiGen>プレイヤーのセリフもAIが自動生成（ペルソナ適用）</RimTalk.PlayerSettings.AllowPlayerAiGen>
     <RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>チェックすると、AIがプレイヤーペルソナに合わせて会話中のプレイヤーの後続セリフを自動生成します。オフの場合、手動入力したセリフのみ発言します。</RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>
     <RimTalk.PlayerSettings.PromptLabel>送信する対話プロンプト（質問 / 指示）：</RimTalk.PlayerSettings.PromptLabel>
-    <RimTalk.FloatMenu.AttachPhotoTooltip>画面写真の添付切り替え（Ctrl+1）</RimTalk.FloatMenu.AttachPhotoTooltip>
+    <RimTalk.FloatMenu.AttachPhotoTooltip>画面写真の添付切り替え（Ctrl+1）（画面キャプチャ時に一瞬ちらつきが発生する場合があります）</RimTalk.FloatMenu.AttachPhotoTooltip>
     <RimTalk.DebugWindow.AttachedImage>添付画像（クリックして拡大）：</RimTalk.DebugWindow.AttachedImage>
     <RimTalk.DebugWindow.AttachedImageBase64>添付画像 (Base64)</RimTalk.DebugWindow.AttachedImageBase64>
     <RimTalk.DebugWindow.ClickToExpandImage>クリックして画像を拡大ウィンドウで表示します。</RimTalk.DebugWindow.ClickToExpandImage>

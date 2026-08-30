@@ -496,7 +496,7 @@ Conseils Cruciaux :
     <RimTalk.PlayerSettings.Enabled>Activé</RimTalk.PlayerSettings.Enabled>
     <RimTalk.PlayerSettings.PresetTitleTooltip>Titre affiché dans le menu lors d'un clic droit sur un colon.</RimTalk.PlayerSettings.PresetTitleTooltip>
     <RimTalk.PlayerSettings.Vision>📷 Vision</RimTalk.PlayerSettings.Vision>
-    <RimTalk.PlayerSettings.VisionTooltip>Si coché, joint une capture d'écran actuelle à la requête de dialogue.</RimTalk.PlayerSettings.VisionTooltip>
+    <RimTalk.PlayerSettings.VisionTooltip>Si coché, joint une capture d'écran actuelle à la requête de dialogue. (Peut provoquer un bref scintillement lors de la capture)</RimTalk.PlayerSettings.VisionTooltip>
     <RimTalk.PlayerSettings.Announce>📢 Annonce</RimTalk.PlayerSettings.Announce>
     <RimTalk.PlayerSettings.AnnounceTooltip>Si coché, diffuse le dialogue à tous les colons proches sous forme d'annonce.</RimTalk.PlayerSettings.AnnounceTooltip>
     <RimTalk.PlayerSettings.AllowCustomConversation>Activer les dialogues personnalisés</RimTalk.PlayerSettings.AllowCustomConversation>
@@ -506,7 +506,7 @@ Conseils Cruciaux :
     <RimTalk.PlayerSettings.AllowPlayerAiGen>Réponses IA générées pour le joueur (Persona appliqué)</RimTalk.PlayerSettings.AllowPlayerAiGen>
     <RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>Si coché, l'IA génère les répliques suivantes du joueur selon son persona. Décoché, le joueur ne dit que le texte saisi manuellement.</RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>
     <RimTalk.PlayerSettings.PromptLabel>Prompt de dialogue à envoyer (Question / Instruction) :</RimTalk.PlayerSettings.PromptLabel>
-    <RimTalk.FloatMenu.AttachPhotoTooltip>Attacher une capture d'écran (Ctrl+1)</RimTalk.FloatMenu.AttachPhotoTooltip>
+    <RimTalk.FloatMenu.AttachPhotoTooltip>Attacher une capture d'écran (Ctrl+1) (Peut provoquer un bref scintillement lors de la capture)</RimTalk.FloatMenu.AttachPhotoTooltip>
     <RimTalk.DebugWindow.AttachedImage>Image jointe (Cliquer pour agrandir) :</RimTalk.DebugWindow.AttachedImage>
     <RimTalk.DebugWindow.AttachedImageBase64>Image jointe (Base64)</RimTalk.DebugWindow.AttachedImageBase64>
     <RimTalk.DebugWindow.ClickToExpandImage>Cliquez pour agrandir l'image dans une fenêtre dédiée.</RimTalk.DebugWindow.ClickToExpandImage>

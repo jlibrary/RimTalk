@@ -237,7 +237,7 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.PlayerSettings.Enabled>활성화</RimTalk.PlayerSettings.Enabled>
     <RimTalk.PlayerSettings.PresetTitleTooltip>폰 우클릭 시 표시될 메뉴 제목입니다.</RimTalk.PlayerSettings.PresetTitleTooltip>
     <RimTalk.PlayerSettings.Vision>📷 비전</RimTalk.PlayerSettings.Vision>
-    <RimTalk.PlayerSettings.VisionTooltip>체크 시 대화 요청과 함께 현재 화면 스크린샷을 첨부합니다.</RimTalk.PlayerSettings.VisionTooltip>
+    <RimTalk.PlayerSettings.VisionTooltip>체크 시 대화 요청과 함께 현재 화면 스크린샷을 첨부합니다. (화면 캡처 시 일시적인 깜빡임이 발생할 수 있습니다)</RimTalk.PlayerSettings.VisionTooltip>
     <RimTalk.PlayerSettings.Announce>📢 공지</RimTalk.PlayerSettings.Announce>
     <RimTalk.PlayerSettings.AnnounceTooltip>체크 시 주변 모든 폰에게 외치는 공지 형태로 대화합니다.</RimTalk.PlayerSettings.AnnounceTooltip>
     <RimTalk.PlayerSettings.AllowCustomConversation>커스텀 대화 활성화</RimTalk.PlayerSettings.AllowCustomConversation>
@@ -491,7 +491,7 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.FloatMenu.WhatToAnnounceToOther>{0}(이)가 주변에 어떤 내용을 공지하도록 하시겠습니까?</RimTalk.FloatMenu.WhatToAnnounceToOther>
     <RimTalk.FloatMenu.DirectModeTooltip>일반 대화 (Tab 키로 전환)</RimTalk.FloatMenu.DirectModeTooltip>
     <RimTalk.FloatMenu.AnnounceModeTooltip>주변 폰들에게 공지 (Tab 키로 전환)</RimTalk.FloatMenu.AnnounceModeTooltip>
-    <RimTalk.FloatMenu.AttachPhotoTooltip>현재 화면 사진 첨부 토글 (Ctrl+1로 전환)</RimTalk.FloatMenu.AttachPhotoTooltip>
+    <RimTalk.FloatMenu.AttachPhotoTooltip>현재 화면 사진 첨부 토글 (Ctrl+1) (화면 캡처 시 일시적인 깜빡임이 발생할 수 있습니다)</RimTalk.FloatMenu.AttachPhotoTooltip>
     <RimTalk.FloatMenu.Send>전송</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>취소</RimTalk.FloatMenu.Cancel>
 

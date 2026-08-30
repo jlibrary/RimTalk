@@ -495,7 +495,7 @@
     <RimTalk.PlayerSettings.Enabled>Включено</RimTalk.PlayerSettings.Enabled>
     <RimTalk.PlayerSettings.PresetTitleTooltip>Заголовок, отображаемый в меню при правом клике на поселенца.</RimTalk.PlayerSettings.PresetTitleTooltip>
     <RimTalk.PlayerSettings.Vision>📷 Зрение</RimTalk.PlayerSettings.Vision>
-    <RimTalk.PlayerSettings.VisionTooltip>При включении к запросу прикрепляется снимок экрана.</RimTalk.PlayerSettings.VisionTooltip>
+    <RimTalk.PlayerSettings.VisionTooltip>При включении к запросу прикрепляется снимок экрана. (Во время захвата экрана может возникнуть кратковременное мерцание)</RimTalk.PlayerSettings.VisionTooltip>
     <RimTalk.PlayerSettings.Announce>📢 Объявление</RimTalk.PlayerSettings.Announce>
     <RimTalk.PlayerSettings.AnnounceTooltip>При включении диалог озвучивается как громкое объявление для всех поселенцев поблизости.</RimTalk.PlayerSettings.AnnounceTooltip>
     <RimTalk.PlayerSettings.AllowCustomConversation>Разрешить пользовательские диалоги</RimTalk.PlayerSettings.AllowCustomConversation>
@@ -505,7 +505,7 @@
     <RimTalk.PlayerSettings.AllowPlayerAiGen>Автогенерация реплик игрока ИИ (применяет персону)</RimTalk.PlayerSettings.AllowPlayerAiGen>
     <RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>При включении ИИ автоматически генерирует последующие ответы игрока согласно персоне. При отключении игрок говорит только введенные вручную фразы.</RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>
     <RimTalk.PlayerSettings.PromptLabel>Промпт диалога для отправки (Вопрос / Указание):</RimTalk.PlayerSettings.PromptLabel>
-    <RimTalk.FloatMenu.AttachPhotoTooltip>Прикрепить снимок экрана (Ctrl+1)</RimTalk.FloatMenu.AttachPhotoTooltip>
+    <RimTalk.FloatMenu.AttachPhotoTooltip>Прикрепить снимок экрана (Ctrl+1) (Во время захвата экрана может возникнуть кратковременное мерцание)</RimTalk.FloatMenu.AttachPhotoTooltip>
     <RimTalk.DebugWindow.AttachedImage>Прикреплённое изображение (нажмите для увеличения):</RimTalk.DebugWindow.AttachedImage>
     <RimTalk.DebugWindow.AttachedImageBase64>Прикреплённое изображение (Base64)</RimTalk.DebugWindow.AttachedImageBase64>
     <RimTalk.DebugWindow.ClickToExpandImage>Нажмите, чтобы открыть изображение в большом окне.</RimTalk.DebugWindow.ClickToExpandImage>

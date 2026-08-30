@@ -233,7 +233,7 @@ Crucial Tips:
     <RimTalk.PlayerSettings.Enabled>Enabled</RimTalk.PlayerSettings.Enabled>
     <RimTalk.PlayerSettings.PresetTitleTooltip>The menu title displayed when right-clicking a pawn.</RimTalk.PlayerSettings.PresetTitleTooltip>
     <RimTalk.PlayerSettings.Vision>📷 Vision</RimTalk.PlayerSettings.Vision>
-    <RimTalk.PlayerSettings.VisionTooltip>When enabled, captures and attaches a screenshot to the dialogue request.</RimTalk.PlayerSettings.VisionTooltip>
+    <RimTalk.PlayerSettings.VisionTooltip>When enabled, captures and attaches a screenshot to the dialogue request. (May cause a brief flicker while capturing)</RimTalk.PlayerSettings.VisionTooltip>
     <RimTalk.PlayerSettings.Announce>📢 Announce</RimTalk.PlayerSettings.Announce>
     <RimTalk.PlayerSettings.AnnounceTooltip>When enabled, broadcasts the dialogue to all nearby pawns as an announcement.</RimTalk.PlayerSettings.AnnounceTooltip>
     <RimTalk.PlayerSettings.AllowCustomConversation>Enable Custom Dialogue</RimTalk.PlayerSettings.AllowCustomConversation>
@@ -492,7 +492,7 @@ Crucial Tips:
     <RimTalk.FloatMenu.WhatToAnnounceToOther>What do you want {0} to announce to nearby?</RimTalk.FloatMenu.WhatToAnnounceToOther>
     <RimTalk.FloatMenu.DirectModeTooltip>Regular conversation (Tab to switch)</RimTalk.FloatMenu.DirectModeTooltip>
     <RimTalk.FloatMenu.AnnounceModeTooltip>Broadcast announcement to nearby pawns (Tab to switch)</RimTalk.FloatMenu.AnnounceModeTooltip>
-    <RimTalk.FloatMenu.AttachPhotoTooltip>Toggle photo attachment (Ctrl+1 to switch)</RimTalk.FloatMenu.AttachPhotoTooltip>
+    <RimTalk.FloatMenu.AttachPhotoTooltip>Toggle photo attachment (Ctrl+1) (May cause a brief flicker while capturing)</RimTalk.FloatMenu.AttachPhotoTooltip>
     <RimTalk.FloatMenu.Send>Send</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>Cancel</RimTalk.FloatMenu.Cancel>
 
