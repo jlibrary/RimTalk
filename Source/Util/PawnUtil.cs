@@ -164,42 +164,47 @@ public static class PawnUtil
 
     public static (string, bool) GetPawnStatusFull(this Pawn pawn, List<Pawn> nearbyPawns)
     {
+        return GetPawnStatusFull(pawn, nearbyPawns, false);
+    }
+
+    public static (string, bool) GetPawnStatusFull(this Pawn pawn, List<Pawn> nearbyPawns, bool isAnnouncement)
+    {
         var settings = Settings.Get();
-
-        if (pawn == null)
-            return (null, false);
-
-        if (pawn.IsPlayer())
-            return (settings.PlayerName, false);
+        if (pawn == null) return (null, false);
+        if (pawn.IsPlayer() && !isAnnouncement) return (settings.PlayerName, false);
 
         bool isInDanger = false;
         var lines = new List<string>();
-
-        // 1. Collect Context
         var relevantPawns = CollectRelevantPawns(pawn, nearbyPawns);
         bool useOptimization = settings.Context.EnableContextOptimization;
 
-        // 2. Main Pawn Line
-        string pawnLabel = GetPawnLabel(pawn, relevantPawns, useOptimization);
-        string pawnActivity = GetPawnActivity(pawn, relevantPawns, useOptimization);
-
-        // Check if main pawn is in danger (Panic/Combat/Health)
-        if (pawn.IsInDanger())
+        if (pawn.IsPlayer())
         {
-            lines.Add($"{pawnLabel} {pawnActivity} [IN DANGER]");
-            isInDanger = true;
+            lines.Add(settings.PlayerName);
         }
         else
         {
-            lines.Add($"{pawnLabel} {pawnActivity}");
+            string pawnLabel = GetPawnLabel(pawn, relevantPawns, useOptimization);
+            string pawnActivity = GetPawnActivity(pawn, relevantPawns, useOptimization);
+            if (pawn.IsInDanger())
+            {
+                lines.Add($"{pawnLabel} {pawnActivity} [IN DANGER]");
+                isInDanger = true;
+            }
+            else
+            {
+                lines.Add($"{pawnLabel} {pawnActivity}");
+            }
         }
 
-        // 3. Combined Nearby List
         if (nearbyPawns != null && nearbyPawns.Any())
         {
-            // Update ref situationIsCritical inside this method
+            int maxCount = isAnnouncement
+                ? Math.Max(settings.Context.MaxPawnContextCount, nearbyPawns.Count)
+                : settings.Context.MaxPawnContextCount;
+
             string nearbyList = GetCombinedNearbyList(pawn, nearbyPawns, relevantPawns,
-                useOptimization, settings.Context.MaxPawnContextCount, ref isInDanger);
+                useOptimization, maxCount, ref isInDanger);
 
             lines.Add("Nearby: " + nearbyList);
         }
@@ -208,9 +213,7 @@ public static class PawnUtil
             lines.Add("Nearby people: none");
         }
 
-        // 4. Global Contextual Info
-        AddContextualInfo(pawn, lines, ref isInDanger);
-
+        AddContextualInfo(pawn.IsPlayer() ? nearbyPawns?.FirstOrDefault(p => !p.IsPlayer()) ?? pawn : pawn, lines, ref isInDanger);
         return (string.Join("\n", lines), isInDanger);
     }
 
@@ -227,6 +230,8 @@ public static class PawnUtil
 
         foreach (var p in pawnsToScan)
         {
+            if (p == null || p.IsPlayer()) continue;
+
             string label = GetPawnLabel(p, relevantPawns, useOptimization);
             string extraStatus = "";
 

@@ -43,12 +43,14 @@ public static class TalkService
             talkRequest.Recipient = null;
         }
 
+        bool isPlayerAnnouncement = talkRequest.IsAnnouncement && talkRequest.Recipient.IsPlayer();
+        Pawn mainPawn = isPlayerAnnouncement ? talkRequest.Recipient : talkRequest.Initiator;
+
         List<Pawn> nearbyPawns = PawnSelector.GetAllNearByPawns(talkRequest.Initiator, isAnnouncement: talkRequest.IsAnnouncement);
-        // Recipient may have just been nulled above; guard explicitly so a null pawn
-        // doesn't get inserted into nearbyPawns and NRE downstream.
-        if (talkRequest.Recipient != null && talkRequest.Recipient.IsPlayer())
-            nearbyPawns.Insert(0, talkRequest.Recipient);
-        var (status, isInDanger) = talkRequest.Initiator.GetPawnStatusFull(nearbyPawns);
+        if (isPlayerAnnouncement) nearbyPawns.Insert(0, talkRequest.Initiator);
+        else if (talkRequest.Recipient != null && talkRequest.Recipient.IsPlayer()) nearbyPawns.Insert(0, talkRequest.Recipient);
+
+        var (status, isInDanger) = mainPawn.GetPawnStatusFull(nearbyPawns, talkRequest.IsAnnouncement);
         
         // Avoid spamming generations if the pawn's status hasn't changed recently.
         if (!talkRequest.TalkType.IsFromUser() && talkRequest.TalkType != TalkType.Interaction && status == pawn1.LastStatus && pawn1.RejectCount < 2)
@@ -63,17 +65,22 @@ public static class TalkService
         pawn1.LastStatus = status;
 
         // Select the most relevant pawns for the conversation context.
-        List<Pawn> pawns = new List<Pawn> { talkRequest.Initiator, talkRequest.Recipient }
+        List<Pawn> pawns = new List<Pawn> { mainPawn, isPlayerAnnouncement ? null : talkRequest.Recipient }
             .Where(p => p != null)
             .Concat(nearbyPawns.Where(p =>
             {
                 var pawnState = Cache.Get(p);
-                pawnState.DrainIncomingTalkResponses();
-                return pawnState.CanDisplayTalk() && pawnState.TalkResponses.Empty();
+                pawnState?.DrainIncomingTalkResponses();
+                return pawnState != null && pawnState.CanDisplayTalk() &&
+                       (talkRequest.IsAnnouncement || pawnState.TalkResponses.Empty());
             }))
             .Distinct()
             .Take(talkRequest.IsAnnouncement ? Math.Max(settings.Context.MaxPawnContextCount, 8) : settings.Context.MaxPawnContextCount)
             .ToList();
+
+        if (talkRequest.IsAnnouncement)
+            foreach (var p in pawns.Where(p => p != null && !p.IsPlayer()))
+                Cache.Get(p)?.IgnoreAllTalkResponses([TalkType.Urgent, TalkType.User, TalkType.Announcement]);
         
         if (pawns.Count == 1) talkRequest.IsMonologue = true;
 
@@ -201,10 +208,11 @@ public static class TalkService
             }
 
             int replyInterval = Settings.Get().ReplyInterval;
-            if (pawn.IsInDanger())
+            if (pawn.IsInDanger() || talk.TalkType == TalkType.Announcement)
             {
                 replyInterval = Math.Min(replyInterval, 2);
-                pawnState.IgnoreAllTalkResponses([TalkType.Urgent, TalkType.User, TalkType.Announcement]);
+                if (pawn.IsInDanger())
+                    pawnState.IgnoreAllTalkResponses([TalkType.Urgent, TalkType.User, TalkType.Announcement]);
             }
 
             // Enforce a delay for replies to make conversations feel more natural.
