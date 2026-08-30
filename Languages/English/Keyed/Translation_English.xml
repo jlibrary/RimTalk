@@ -11,6 +11,7 @@
     <RimTalk.TalkService.APIError>API error occurred</RimTalk.TalkService.APIError>
     <RimTalk.TalkService.TryingNextAPI>Trying next API ({0})</RimTalk.TalkService.TryingNextAPI>
     <RimTalk.TalkService.GenerationFailed>RimTalk generation failed</RimTalk.TalkService.GenerationFailed>
+    <RimTalk.TalkService.VisionUnsupportedFallback>Current model ({0}) does not support image input. Proceeded without image.</RimTalk.TalkService.VisionUnsupportedFallback>
 
     <!-- Persona -->
     <RimTalk.Persona.CheerfulHelper>Cheerful Helper - Warm, upbeat, and encouraging. Always trying to lift spirits.</RimTalk.Persona.CheerfulHelper>
@@ -214,8 +215,35 @@ Crucial Tips:
     <RimTalk.Settings.PlayerNameTooltip>The name that will appear when you participate in conversations. This represents how pawns will perceive your presence.</RimTalk.Settings.PlayerNameTooltip>
     <RimTalk.Settings.PlayerPersona>Player Persona</RimTalk.Settings.PlayerPersona>
     <RimTalk.Settings.PlayerPersonaTooltip>Describe the player's personality, tone, and speaking style. Applied when AI generates lines for the player or talks with the player.</RimTalk.Settings.PlayerPersonaTooltip>
+    <RimTalk.Settings.CustomDialogue>Custom Dialogue</RimTalk.Settings.CustomDialogue>
+    <RimTalk.PlayerSettings.SectionPlayer>Player Dialogue Settings</RimTalk.PlayerSettings.SectionPlayer>
+    <RimTalk.PlayerSettings.SectionPresets>Dialogue Presets</RimTalk.PlayerSettings.SectionPresets>
+    <RimTalk.PlayerSettings.Title>Custom Dialogue &amp; Preset Settings</RimTalk.PlayerSettings.Title>
+    <RimTalk.PlayerSettings.AddPreset>Add New</RimTalk.PlayerSettings.AddPreset>
+    <RimTalk.PlayerSettings.ResetPresetsConfirm>Are you sure you want to reset all presets to the default recommendations?</RimTalk.PlayerSettings.ResetPresetsConfirm>
+    <RimTalk.PlayerSettings.PresetsDesc>Enabled presets appear directly in the pawn right-click menu as quick dialogue options.</RimTalk.PlayerSettings.PresetsDesc>
+    <RimTalk.PlayerSettings.Preset1.Title>Base &amp; Life</RimTalk.PlayerSettings.Preset1.Title>
+    <RimTalk.PlayerSettings.Preset1.Prompt>Looking around our base, how do you feel about our setup and daily life here?</RimTalk.PlayerSettings.Preset1.Prompt>
+    <RimTalk.PlayerSettings.Preset2.Title>Mood &amp; Well-being</RimTalk.PlayerSettings.Preset2.Title>
+    <RimTalk.PlayerSettings.Preset2.Prompt>How are you holding up lately? Anything on your mind or bothering you?</RimTalk.PlayerSettings.Preset2.Prompt>
+    <RimTalk.PlayerSettings.Preset3.Title>Defenses &amp; Tactics</RimTalk.PlayerSettings.Preset3.Title>
+    <RimTalk.PlayerSettings.Preset3.Prompt>Take a look at our defenses and gear. Spot any tactical weak points we should reinforce?</RimTalk.PlayerSettings.Preset3.Prompt>
+    <RimTalk.PlayerSettings.Preset4.Title>Work &amp; Safety Notice</RimTalk.PlayerSettings.Preset4.Title>
+    <RimTalk.PlayerSettings.Preset4.Prompt>Attention everyone! Stay alert, mind your safety, and let's focus on our duties!</RimTalk.PlayerSettings.Preset4.Prompt>
+    <RimTalk.PlayerSettings.Enabled>Enabled</RimTalk.PlayerSettings.Enabled>
+    <RimTalk.PlayerSettings.PresetTitleTooltip>The menu title displayed when right-clicking a pawn.</RimTalk.PlayerSettings.PresetTitleTooltip>
+    <RimTalk.PlayerSettings.Vision>📷 Vision</RimTalk.PlayerSettings.Vision>
+    <RimTalk.PlayerSettings.VisionTooltip>When enabled, captures and attaches a screenshot to the dialogue request.</RimTalk.PlayerSettings.VisionTooltip>
+    <RimTalk.PlayerSettings.Announce>📢 Announce</RimTalk.PlayerSettings.Announce>
+    <RimTalk.PlayerSettings.AnnounceTooltip>When enabled, broadcasts the dialogue to all nearby pawns as an announcement.</RimTalk.PlayerSettings.AnnounceTooltip>
+    <RimTalk.PlayerSettings.AllowCustomConversation>Enable Custom Dialogue</RimTalk.PlayerSettings.AllowCustomConversation>
+    <RimTalk.PlayerSettings.AllowCustomConversationTooltip>Enable pawn dialogue commands, gizmos, and right-click dialogue presets.</RimTalk.PlayerSettings.AllowCustomConversationTooltip>
+    <RimTalk.PlayerSettings.AllowDirectPlayerTalk>Allow Direct Player ↔ Pawn Dialogue</RimTalk.PlayerSettings.AllowDirectPlayerTalk>
+    <RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>Allow the player to talk directly with pawns or receive direct responses. If disabled, only pawn-to-pawn conversations can be directed.</RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>
+    <RimTalk.PlayerSettings.AllowPlayerAiGen>AI-Generated Player Responses (Apply Persona)</RimTalk.PlayerSettings.AllowPlayerAiGen>
+    <RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>When enabled, AI generates subsequent responses for the player matching the player's persona. When disabled, the player only speaks text manually entered by you.</RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>
+    <RimTalk.PlayerSettings.PromptLabel>Prompt to send (Question / Instruction):</RimTalk.PlayerSettings.PromptLabel>
     <RimTalk.Settings.Configure>Settings</RimTalk.Settings.Configure>
-    <RimTalk.PlayerSettings.Title>Custom Conversation Settings</RimTalk.PlayerSettings.Title>
     <RimTalk.PlayerSettings.Instruct>Configure player dialogue mode, name, and persona.</RimTalk.PlayerSettings.Instruct>
     <RimTalk.PlayerSettings.ModeDesc>• Disabled: Player cannot participate in conversations, but you can still direct dialogues between pawns.
 • Manual Replies: You write the initial dialogue; player lines are not auto-generated.
@@ -279,7 +307,6 @@ Crucial Tips:
     <RimTalk.Settings.CustomizeRequestTooltip>Customize request JSON (temperature, reasoning effort, etc.)</RimTalk.Settings.CustomizeRequestTooltip>
     <RimTalk.Settings.CustomizeRequestTitle>Customize Request: {0} ({1})</RimTalk.Settings.CustomizeRequestTitle>
     <RimTalk.Settings.CustomizeRequestDesc>Configure custom JSON request parameters for this LLM. These values are merged into outgoing API request payloads (e.g., temperature, reasoning_effort, max_tokens, thinking parameters).</RimTalk.Settings.CustomizeRequestDesc>
-    <RimTalk.Settings.ResetToDefault>Reset to Default</RimTalk.Settings.ResetToDefault>
     <RimTalk.Settings.FormatJson>Format JSON</RimTalk.Settings.FormatJson>
     <RimTalk.Settings.ClearOverride>Clear</RimTalk.Settings.ClearOverride>
     <RimTalk.Settings.CustomJsonSave>Save</RimTalk.Settings.CustomJsonSave>
@@ -465,6 +492,7 @@ Crucial Tips:
     <RimTalk.FloatMenu.WhatToAnnounceToOther>What do you want {0} to announce to nearby?</RimTalk.FloatMenu.WhatToAnnounceToOther>
     <RimTalk.FloatMenu.DirectModeTooltip>Regular conversation (Tab to switch)</RimTalk.FloatMenu.DirectModeTooltip>
     <RimTalk.FloatMenu.AnnounceModeTooltip>Broadcast announcement to nearby pawns (Tab to switch)</RimTalk.FloatMenu.AnnounceModeTooltip>
+    <RimTalk.FloatMenu.AttachPhotoTooltip>Toggle photo attachment (Ctrl+1 to switch)</RimTalk.FloatMenu.AttachPhotoTooltip>
     <RimTalk.FloatMenu.Send>Send</RimTalk.FloatMenu.Send>
     <RimTalk.FloatMenu.Cancel>Cancel</RimTalk.FloatMenu.Cancel>
 
@@ -472,6 +500,15 @@ Crucial Tips:
     <RimTalk.ScribanVar.Category.PawnShorthands>Pawn Shorthands</RimTalk.ScribanVar.Category.PawnShorthands>
     <RimTalk.ScribanVar.Category.CoreObjects>Core Objects</RimTalk.ScribanVar.Category.CoreObjects>
     <RimTalk.ScribanVar.Category.Context>Context</RimTalk.ScribanVar.Category.Context>
-    <RimTalk.ScribanVar.Category.GameStatic>Game Objects (Static)</RimTalk.ScribanVar.Category.GameStatic>
     <RimTalk.ScribanVar.Category.System>System</RimTalk.ScribanVar.Category.System>
+    <RimTalk.ScribanVar.Category.GameStatic>Game Objects (Static)</RimTalk.ScribanVar.Category.GameStatic>
+    <RimTalk.DebugWindow.AttachedImage>Attached Image (Click to expand):</RimTalk.DebugWindow.AttachedImage>
+    <RimTalk.DebugWindow.AttachedImageBase64>Attached Image (Base64)</RimTalk.DebugWindow.AttachedImageBase64>
+    <RimTalk.DebugWindow.ClickToExpandImage>Click to expand image.</RimTalk.DebugWindow.ClickToExpandImage>
+    <RimTalk.DebugWindow.CopyImage>Copy Image (Clipboard)</RimTalk.DebugWindow.CopyImage>
+    <RimTalk.DebugWindow.ImageCopied>Image copied to clipboard.</RimTalk.DebugWindow.ImageCopied>
+    <RimTalk.PlayerSettings.DisabledNotice>Custom dialogue is disabled. Pawn right-click menu and player conversation features will not be active.</RimTalk.PlayerSettings.DisabledNotice>
+    <RimTalk.PlayerSettings.NewPresetName>New Preset</RimTalk.PlayerSettings.NewPresetName>
+    <RimTalk.PlayerSettings.PresetTitleHeader>Title / Menu Name</RimTalk.PlayerSettings.PresetTitleHeader>
+    <RimTalk.PlayerSettings.PresetTitlePlaceholder>Preset title...</RimTalk.PlayerSettings.PresetTitlePlaceholder>
 </LanguageData>

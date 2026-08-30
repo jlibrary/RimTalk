@@ -36,6 +36,7 @@ public class RimTalkSettings : ModSettings
     public bool AllowOtherFactionsToTalk = false;
     public bool AllowEnemiesToTalk = false;
     public bool AllowCustomConversation = true;
+    public List<CustomDialoguePreset> DialoguePresets = [];
     public Settings.PlayerDialogueMode PlayerDialogueMode = Settings.PlayerDialogueMode.Manual;
     public string PlayerName = "Player";
     public string PlayerPersona = "";
@@ -150,11 +151,7 @@ public class RimTalkSettings : ModSettings
         var activeConfig = GetActiveConfig();
         if (activeConfig == null) return Constant.DefaultCloudModel;
 
-        if (activeConfig.SelectedModel == "Custom")
-        {
-            return activeConfig.CustomModelName;
-        }
-        return activeConfig.SelectedModel;
+        return activeConfig.GetEffectiveModelName();
     }
 
     public override void ExposeData()
@@ -242,6 +239,8 @@ public class RimTalkSettings : ModSettings
             OverlayRectNonDebug = new Rect(overlayNonDebugX, overlayNonDebugY, overlayNonDebugWidth, overlayNonDebugHeight);
         }
 
+        Scribe_Collections.Look(ref DialoguePresets, "dialoguePresets", LookMode.Deep);
+
         // Initialize collections if null
         if (CloudConfigs == null)
             CloudConfigs = new List<ApiConfig>();
@@ -249,6 +248,9 @@ public class RimTalkSettings : ModSettings
         if (LocalConfig == null)
             LocalConfig = new ApiConfig { Provider = AIProvider.Local };
                 
+        if (DialoguePresets == null || DialoguePresets.Count == 0)
+            DialoguePresets = CustomDialoguePreset.CreateDefaultPresets();
+
         if (EnabledArchivableTypes == null)
             EnabledArchivableTypes = new Dictionary<string, bool>();
 

@@ -282,7 +282,6 @@
     <RimTalk.Settings.CustomizeRequestTooltip>Настроить JSON запроса (температура, уровень размышлений и др.)</RimTalk.Settings.CustomizeRequestTooltip>
     <RimTalk.Settings.CustomizeRequestTitle>Настройка запроса: {0} ({1})</RimTalk.Settings.CustomizeRequestTitle>
     <RimTalk.Settings.CustomizeRequestDesc>Настройте пользовательские параметры JSON запроса для этой LLM. Эти значения объединяются с полезной нагрузкой запроса API (например: temperature, reasoning_effort, max_tokens, параметры thinking и др.).</RimTalk.Settings.CustomizeRequestDesc>
-    <RimTalk.Settings.ResetToDefault>По умолчанию</RimTalk.Settings.ResetToDefault>
     <RimTalk.Settings.FormatJson>Форматировать JSON</RimTalk.Settings.FormatJson>
     <RimTalk.Settings.ClearOverride>Очистить</RimTalk.Settings.ClearOverride>
     <RimTalk.Settings.CustomJsonSave>Сохранить</RimTalk.Settings.CustomJsonSave>
@@ -477,4 +476,43 @@
     <RimTalk.ScribanVar.Category.Context>Контекст</RimTalk.ScribanVar.Category.Context>
     <RimTalk.ScribanVar.Category.GameStatic>Игровые объекты (Статические)</RimTalk.ScribanVar.Category.GameStatic>
     <RimTalk.ScribanVar.Category.System>Система</RimTalk.ScribanVar.Category.System>
+
+    <RimTalk.TalkService.VisionUnsupportedFallback>Текущая модель ({0}) не поддерживает изображения. Диалог продолжен без изображения.</RimTalk.TalkService.VisionUnsupportedFallback>
+    <RimTalk.Settings.CustomDialogue>Пользовательские диалоги</RimTalk.Settings.CustomDialogue>
+    <RimTalk.PlayerSettings.SectionPlayer>Настройки диалогов игрока</RimTalk.PlayerSettings.SectionPlayer>
+    <RimTalk.PlayerSettings.SectionPresets>Управление пресетами диалогов</RimTalk.PlayerSettings.SectionPresets>
+    <RimTalk.PlayerSettings.AddPreset>Добавить</RimTalk.PlayerSettings.AddPreset>
+    <RimTalk.PlayerSettings.ResetPresetsConfirm>Вы уверены, что хотите сбросить все пресеты к рекомендованным по умолчанию?</RimTalk.PlayerSettings.ResetPresetsConfirm>
+    <RimTalk.PlayerSettings.PresetsDesc>Включённые пресеты отображаются в контекстном меню поселенца при правом клике.</RimTalk.PlayerSettings.PresetsDesc>
+    <RimTalk.PlayerSettings.Preset1.Title>База и окружение</RimTalk.PlayerSettings.Preset1.Title>
+    <RimTalk.PlayerSettings.Preset1.Prompt>Оглядываясь вокруг, как тебе наши постройки и жизнь в поселении в целом?</RimTalk.PlayerSettings.Preset1.Prompt>
+    <RimTalk.PlayerSettings.Preset2.Title>Настроение и самочувствие</RimTalk.PlayerSettings.Preset2.Title>
+    <RimTalk.PlayerSettings.Preset2.Prompt>Как ты себя чувствуешь в последнее время? Тебя что-то тревожит или беспокоит?</RimTalk.PlayerSettings.Preset2.Prompt>
+    <RimTalk.PlayerSettings.Preset3.Title>Оборона и тактика</RimTalk.PlayerSettings.Preset3.Title>
+    <RimTalk.PlayerSettings.Preset3.Prompt>Взгляни на нашу оборону и снаряжение. Видишь ли тактические уязвимости, которые стоит укрепить перед нападением?</RimTalk.PlayerSettings.Preset3.Prompt>
+    <RimTalk.PlayerSettings.Preset4.Title>Объявление о работе и безопасности</RimTalk.PlayerSettings.Preset4.Title>
+    <RimTalk.PlayerSettings.Preset4.Prompt>Внимание всем! Соблюдайте осторожность и сосредоточьтесь на своих текущих задачах!</RimTalk.PlayerSettings.Preset4.Prompt>
+    <RimTalk.PlayerSettings.Enabled>Включено</RimTalk.PlayerSettings.Enabled>
+    <RimTalk.PlayerSettings.PresetTitleTooltip>Заголовок, отображаемый в меню при правом клике на поселенца.</RimTalk.PlayerSettings.PresetTitleTooltip>
+    <RimTalk.PlayerSettings.Vision>📷 Зрение</RimTalk.PlayerSettings.Vision>
+    <RimTalk.PlayerSettings.VisionTooltip>При включении к запросу прикрепляется снимок экрана.</RimTalk.PlayerSettings.VisionTooltip>
+    <RimTalk.PlayerSettings.Announce>📢 Объявление</RimTalk.PlayerSettings.Announce>
+    <RimTalk.PlayerSettings.AnnounceTooltip>При включении диалог озвучивается как громкое объявление для всех поселенцев поблизости.</RimTalk.PlayerSettings.AnnounceTooltip>
+    <RimTalk.PlayerSettings.AllowCustomConversation>Разрешить пользовательские диалоги</RimTalk.PlayerSettings.AllowCustomConversation>
+    <RimTalk.PlayerSettings.AllowCustomConversationTooltip>Включает команды диалога, гизмо и пресеты при клике правой кнопкой мыши.</RimTalk.PlayerSettings.AllowCustomConversationTooltip>
+    <RimTalk.PlayerSettings.AllowDirectPlayerTalk>Разрешить прямой диалог Игрок ↔ Поселенец</RimTalk.PlayerSettings.AllowDirectPlayerTalk>
+    <RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>Позволяет игроку напрямую общаться с поселенцами в роли «Player». Если отключено, доступны только диалоги между поселенцами.</RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>
+    <RimTalk.PlayerSettings.AllowPlayerAiGen>Автогенерация реплик игрока ИИ (применяет персону)</RimTalk.PlayerSettings.AllowPlayerAiGen>
+    <RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>При включении ИИ автоматически генерирует последующие ответы игрока согласно персоне. При отключении игрок говорит только введенные вручную фразы.</RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>
+    <RimTalk.PlayerSettings.PromptLabel>Промпт диалога для отправки (Вопрос / Указание):</RimTalk.PlayerSettings.PromptLabel>
+    <RimTalk.FloatMenu.AttachPhotoTooltip>Прикрепить снимок экрана (Ctrl+1)</RimTalk.FloatMenu.AttachPhotoTooltip>
+    <RimTalk.DebugWindow.AttachedImage>Прикреплённое изображение (нажмите для увеличения):</RimTalk.DebugWindow.AttachedImage>
+    <RimTalk.DebugWindow.AttachedImageBase64>Прикреплённое изображение (Base64)</RimTalk.DebugWindow.AttachedImageBase64>
+    <RimTalk.DebugWindow.ClickToExpandImage>Нажмите, чтобы открыть изображение в большом окне.</RimTalk.DebugWindow.ClickToExpandImage>
+    <RimTalk.DebugWindow.CopyImage>Скопировать изображение (в буфер обмена)</RimTalk.DebugWindow.CopyImage>
+    <RimTalk.DebugWindow.ImageCopied>Изображение скопировано в буфер обмена.</RimTalk.DebugWindow.ImageCopied>
+    <RimTalk.PlayerSettings.DisabledNotice>Пользовательские диалоги отключены. Контекстное меню и диалоги игрока будут недоступны.</RimTalk.PlayerSettings.DisabledNotice>
+    <RimTalk.PlayerSettings.NewPresetName>Новый пресет</RimTalk.PlayerSettings.NewPresetName>
+    <RimTalk.PlayerSettings.PresetTitleHeader>Заголовок / Название в меню</RimTalk.PlayerSettings.PresetTitleHeader>
+    <RimTalk.PlayerSettings.PresetTitlePlaceholder>Название пресета...</RimTalk.PlayerSettings.PresetTitlePlaceholder>
 </LanguageData>

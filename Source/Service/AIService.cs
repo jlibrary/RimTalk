@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using RimTalk.Client;
+using RimTalk.Client.OpenAI;
 using RimTalk.Data;
 using RimTalk.Error;
 using RimTalk.Source.Data;
@@ -22,6 +23,7 @@ public static class AIService
     private static bool _firstInstruction = true;
     private static System.Threading.CancellationTokenSource _currentCts;
     private static TalkRequest _currentRequest;
+    public static TalkRequest CurrentRequest => _currentRequest;
 
     /// <summary>
     /// Streaming chat that invokes callback as each player's dialogue is parsed
@@ -35,6 +37,32 @@ public static class AIService
 
         var payload = await ExecuteWithRetry(apiLog, async client =>
         {
+            if (!string.IsNullOrEmpty(request.ImageBase64) && client is OpenAIClient openAIClient)
+            {
+                return await openAIClient.GetStreamingChatCompletionAsync<TalkResponse>(prefixMessages, [],
+                    request.ImageBase64,
+                    response =>
+                    {
+                        var pawnState = request.ResolvePawnState(response.Name);
+                        if (pawnState == null) return;
+
+                        response.TalkType = request.TalkType;
+
+                        // Calculate timing relative to the correct previous log
+                        int elapsedMs = (int)(DateTime.Now - lastApiLog.Timestamp).TotalMilliseconds;
+                        if (lastApiLog == apiLog) elapsedMs -= lastApiLog.ElapsedMs;
+
+                        var newLog = ApiHistory.AddResponse(apiLog.Id, response.Text, response.Name,
+                            response.InteractionRaw, elapsedMs: elapsedMs);
+
+                        response.Id = newLog.Id;
+                        lastApiLog = newLog;
+
+                        onPlayerResponseReceived?.Invoke(response);
+                    },
+                    prep => ApiHistory.UpdatePayload(apiLog.Id, prep));
+            }
+
             // All prompt messages are already in prefixMessages, pass empty list for messages
             return await client.GetStreamingChatCompletionAsync<TalkResponse>(prefixMessages, [],
                 response =>

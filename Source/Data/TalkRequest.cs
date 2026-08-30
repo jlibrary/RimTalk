@@ -30,6 +30,7 @@ public class TalkRequest(string prompt, Pawn initiator, Pawn recipient = null, T
     public int ConversationId { get; set; } = -1;
     public bool IsMonologue;
     public bool IsAnnouncement => TalkType == TalkType.Announcement;
+    public string ImageBase64 { get; set; }
     
     /// <summary>
     /// All pawns participating in the dialogue (filled in sync layer)

@@ -40,7 +40,15 @@ public class OpenAIClient(
         List<(Role role, string message)> messages,
         Action<Payload> onRequestPrepared = null)
     {
-        string jsonContent = BuildRequestJson(prefixMessages, messages, stream: false);
+        return await GetChatCompletionAsync(prefixMessages, messages, null, onRequestPrepared);
+    }
+
+    public async Task<Payload> GetChatCompletionAsync(List<(Role role, string message)> prefixMessages,
+        List<(Role role, string message)> messages,
+        string imageBase64,
+        Action<Payload> onRequestPrepared = null)
+    {
+        string jsonContent = BuildRequestJson(prefixMessages, messages, stream: false, imageBase64: imageBase64);
         onRequestPrepared?.Invoke(new Payload(_endpointUrl, model, jsonContent, null, 0));
         string responseText = await SendRequestAsync(jsonContent, new DownloadHandlerBuffer());
 
@@ -56,7 +64,16 @@ public class OpenAIClient(
         Action<T> onResponseParsed,
         Action<Payload> onRequestPrepared = null) where T : class
     {
-        string jsonContent = BuildRequestJson(prefixMessages, messages, stream: true);
+        return await GetStreamingChatCompletionAsync(prefixMessages, messages, null, onResponseParsed, onRequestPrepared);
+    }
+
+    public async Task<Payload> GetStreamingChatCompletionAsync<T>(List<(Role role, string message)> prefixMessages,
+        List<(Role role, string message)> messages,
+        string imageBase64,
+        Action<T> onResponseParsed,
+        Action<Payload> onRequestPrepared = null) where T : class
+    {
+        string jsonContent = BuildRequestJson(prefixMessages, messages, stream: true, imageBase64: imageBase64);
         onRequestPrepared?.Invoke(new Payload(_endpointUrl, model, jsonContent, null, 0));
         var jsonParser = new JsonStreamParser<T>();
 
@@ -72,8 +89,32 @@ public class OpenAIClient(
             streamHandler.GetTotalTokens());
     }
 
+    public async Task<Payload> GetStreamingTextCompletionAsync(
+        List<(Role role, string message)> prefixMessages,
+        List<(Role role, string message)> messages,
+        string imageBase64,
+        Action<string> onChunkReceived,
+        Action<Payload> onRequestPrepared = null)
+    {
+        string jsonContent = BuildRequestJson(prefixMessages, messages, stream: true, imageBase64: imageBase64);
+        onRequestPrepared?.Invoke(new Payload(_endpointUrl, model, jsonContent, null, 0));
+
+        var streamHandler = new OpenAIStreamHandler(chunk =>
+        {
+            if (!string.IsNullOrEmpty(chunk))
+            {
+                onChunkReceived?.Invoke(chunk);
+            }
+        });
+
+        await SendRequestAsync(jsonContent, streamHandler);
+
+        return new Payload(_endpointUrl, model, jsonContent, streamHandler.GetFullText(),
+            streamHandler.GetTotalTokens());
+    }
+
     private string BuildRequestJson(List<(Role role, string message)> prefixMessages,
-        List<(Role role, string message)> messages, bool stream)
+        List<(Role role, string message)> messages, bool stream, string imageBase64 = null)
     {
         var rawMessages = new List<(Role role, string message)>();
         if (prefixMessages != null) rawMessages.AddRange(prefixMessages);
@@ -115,7 +156,7 @@ public class OpenAIClient(
             }
         }
         
-        string? reasoningEffort = null;
+        string reasoningEffort = null;
 
         if (!string.IsNullOrEmpty(model))
         {
@@ -126,16 +167,101 @@ public class OpenAIClient(
                 reasoningEffort = "minimal";
         }
 
-        var request = new OpenAIRequest
+        string baseJson;
+        if (!string.IsNullOrEmpty(imageBase64))
         {
-            Model = model,
-            Messages = mergedMessages,
-            Stream = stream,
-            StreamOptions = stream ? new StreamOptions { IncludeUsage = true } : null,
-            ReasoningEffort = reasoningEffort
-        };
+            var messageDicts = new List<object>();
+            bool imageAttached = false;
 
-        string baseJson = JsonUtil.SerializeToJson(request);
+            for (int i = 0; i < mergedMessages.Count; i++)
+            {
+                var msg = mergedMessages[i];
+                if (i == mergedMessages.Count - 1 && msg.Role == "user")
+                {
+                    imageAttached = true;
+                    messageDicts.Add(new Dictionary<string, object>
+                    {
+                        ["role"] = msg.Role,
+                        ["content"] = new List<object>
+                        {
+                            new Dictionary<string, object>
+                            {
+                                ["type"] = "text",
+                                ["text"] = msg.Content ?? ""
+                            },
+                            new Dictionary<string, object>
+                            {
+                                ["type"] = "image_url",
+                                ["image_url"] = new Dictionary<string, object>
+                                {
+                                    ["url"] = $"data:image/jpeg;base64,{imageBase64}",
+                                    ["detail"] = "auto"
+                                }
+                            }
+                        }
+                    });
+                }
+                else
+                {
+                    messageDicts.Add(new Dictionary<string, object>
+                    {
+                        ["role"] = msg.Role,
+                        ["content"] = msg.Content ?? ""
+                    });
+                }
+            }
+
+            if (!imageAttached)
+            {
+                messageDicts.Add(new Dictionary<string, object>
+                {
+                    ["role"] = "user",
+                    ["content"] = new List<object>
+                    {
+                        new Dictionary<string, object>
+                        {
+                            ["type"] = "image_url",
+                            ["image_url"] = new Dictionary<string, object>
+                            {
+                                ["url"] = $"data:image/jpeg;base64,{imageBase64}",
+                                ["detail"] = "auto"
+                            }
+                        }
+                    }
+                });
+            }
+
+            var rootDict = new Dictionary<string, object>
+            {
+                ["model"] = model,
+                ["messages"] = messageDicts,
+                ["stream"] = stream
+            };
+            if (stream)
+            {
+                rootDict["stream_options"] = new Dictionary<string, object> { ["include_usage"] = true };
+            }
+            if (!string.IsNullOrEmpty(reasoningEffort))
+            {
+                rootDict["reasoning_effort"] = reasoningEffort;
+            }
+
+            baseJson = JsonUtil.SerializeJsonValue(rootDict);
+        }
+        else
+        {
+            var request = new OpenAIRequest
+            {
+                Model = model,
+                Messages = mergedMessages,
+                Stream = stream,
+                StreamOptions = stream ? new StreamOptions { IncludeUsage = true } : null,
+                ReasoningEffort = reasoningEffort
+            };
+
+            baseJson = JsonUtil.SerializeToJson(request);
+        }
+
         if (!string.IsNullOrWhiteSpace(customRequestJson))
         {
             return JsonUtil.MergeJson(baseJson, customRequestJson);
@@ -256,7 +382,7 @@ public class OpenAIClient(
         if (webRequest.isNetworkError || webRequest.isHttpError)
         {
             string errorMsg = ErrorUtil.ExtractErrorMessage(responseText) ?? webRequest.error;
-            Logger.Error($"Request failed: {webRequest.responseCode} - {errorMsg}");
+            Logger.Warning($"Request failed: {webRequest.responseCode} - {errorMsg}");
             throw new AIRequestException(errorMsg,
                 new Payload(_endpointUrl, model, jsonContent, responseText, 0, errorMsg));
         }

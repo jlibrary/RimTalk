@@ -49,8 +49,7 @@ public partial class Settings
             _textAreaInitialized = true;
         }
 
-        var activeConfig = settings.GetActiveConfig();
-        var modelName = activeConfig?.SelectedModel ?? "N/A";
+        var modelName = settings.GetCurrentModel();
         var aiInstructionPrompt = "RimTalk.Settings.AIInstructionPrompt".Translate(modelName);
 
         float textHeight = Text.CalcHeight(aiInstructionPrompt,

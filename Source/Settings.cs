@@ -31,7 +31,8 @@ public partial class Settings : Mod
         Basic,
         PromptPreset,
         Context,
-        EventFilter
+        EventFilter,
+        CustomDialogue
     }
     public enum ButtonDisplayMode
     {
@@ -123,12 +124,13 @@ public partial class Settings : Mod
 
     private void DrawTabButtons(Rect rect)
     {
-        float tabWidth = rect.width / 4f;
+        float tabWidth = rect.width / 5f;
 
         Rect basicTabRect = new Rect(rect.x, rect.y, tabWidth, 30f);
         Rect promptTabRect = new Rect(rect.x + tabWidth, rect.y, tabWidth, 30f);
         Rect contextTabRect = new Rect(rect.x + tabWidth * 2, rect.y, tabWidth, 30f);
         Rect filterTabRect = new Rect(rect.x + tabWidth * 3, rect.y, tabWidth, 30f);
+        Rect customTabRect = new Rect(rect.x + tabWidth * 4, rect.y, tabWidth, 30f);
 
         GUI.color = _currentTab == SettingsTab.Basic ? Color.white : Color.gray;
         if (Widgets.ButtonText(basicTabRect, "RimTalk.Settings.BasicSettings".Translate()))
@@ -158,6 +160,12 @@ public partial class Settings : Mod
             }
         }
 
+        GUI.color = _currentTab == SettingsTab.CustomDialogue ? Color.white : Color.gray;
+        if (Widgets.ButtonText(customTabRect, "RimTalk.Settings.CustomDialogue".Translate()))
+        {
+            _currentTab = SettingsTab.CustomDialogue;
+        }
+
         GUI.color = Color.white;
     }
         
@@ -176,7 +184,7 @@ public partial class Settings : Mod
             settingsWindow.preventCameraMotion = false;
             settingsWindow.closeOnClickedOutside = false;
 
-            // Dynamically resize if in Advanced Prompt mode, otherwise reset to standard size
+            // Dynamically resize if in Advanced Prompt mode or Custom Dialogue mode
             float targetWidth;
             float targetHeight;
 
@@ -187,8 +195,8 @@ public partial class Settings : Mod
             }
             else
             {
-                targetWidth = 900f;
-                targetHeight = 700f;
+                targetWidth = Mathf.Min(Verse.UI.screenWidth * 0.85f, 960f);
+                targetHeight = Mathf.Min(Verse.UI.screenHeight * 0.85f, 740f);
             }
 
             if (Mathf.Abs(settingsWindow.windowRect.width - targetWidth) > 1f || 
@@ -209,9 +217,6 @@ public partial class Settings : Mod
         Rect contentRect = new Rect(inRect.x, inRect.y + 40f, inRect.width, inRect.height - 40f);
 
         // 3. Special Case: Prompt Preset Tab (Advanced Mode only)
-        // Why this is different: Advanced Mode contains a complex, full-height editor 
-        // that handles its own internal scrolling. Wrapping it in a main ScrollView causes 
-        // nested scroll issues.
         if (_currentTab == SettingsTab.PromptPreset && rtSettings.UseAdvancedPromptMode)
         {
             Listing_Standard promptListing = new Listing_Standard();
@@ -242,6 +247,9 @@ public partial class Settings : Mod
             case SettingsTab.EventFilter:
                 DrawEventFilterSettings(listing);
                 break;
+            case SettingsTab.CustomDialogue:
+                DrawCustomDialogueSettings(listing);
+                break;
         }
 
         float contentHeight = listing.CurHeight;
@@ -267,6 +275,9 @@ public partial class Settings : Mod
                 break;
             case SettingsTab.EventFilter:
                 DrawEventFilterSettings(listing);
+                break;
+            case SettingsTab.CustomDialogue:
+                DrawCustomDialogueSettings(listing);
                 break;
         }
 

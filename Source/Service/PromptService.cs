@@ -264,6 +264,7 @@ public static class PromptService
     /// <summary>Decorates the prompt with dialogue type and status.</summary>
     public static void DecoratePrompt(TalkRequest talkRequest, List<Pawn> pawns, string status)
     {
+        if (pawns == null || pawns.Count == 0) return;
         var sb = new StringBuilder();
         var mainPawn = pawns[0];
         var shortName = GetUniqueName(mainPawn, pawns);

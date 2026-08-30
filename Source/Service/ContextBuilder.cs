@@ -416,12 +416,14 @@ public static class ContextBuilder
         }
         else if (talkRequest.TalkType.IsFromUser())
         {
-            var speaker1Name = PromptService.GetUniqueName(pawns[1], pawns);
-            topicSb.Append($"{speaker1Name}({pawns[1].GetRole()}) said to {shortName}: '{talkRequest.Prompt}'. ");
+            var speaker = talkRequest.Recipient ?? (pawns.Count > 1 ? pawns[1] : null);
+            var speaker1Name = speaker != null ? PromptService.GetUniqueName(speaker, pawns) : "Someone";
+            var speakerRole = speaker != null ? $"({speaker.GetRole()})" : "";
+            topicSb.Append($"{speaker1Name}{speakerRole} said to {shortName}: '{talkRequest.Prompt}'. ");
 
             var mode = Settings.Get().PlayerDialogueMode;
 
-            if (!pawns[1].IsPlayer())
+            if (speaker != null && !speaker.IsPlayer())
             {
                 // Pawn to Pawn
                 bool multiTurn = mode != Settings.PlayerDialogueMode.Manual;

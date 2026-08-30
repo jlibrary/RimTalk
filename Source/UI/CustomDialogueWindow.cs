@@ -22,8 +22,13 @@ public class CustomDialogueWindow : Window
     private const string TextFieldControlName = "CustomTalkTextField";
     
     private DialogueMode _mode = DialogueMode.Direct;
-    private static readonly Texture2D DirectIcon = ContentFinder<Texture2D>.Get("UI/ChatGizmo");
-    private static readonly Texture2D AnnounceIcon = ContentFinder<Texture2D>.Get("UI/AnnounceGizmo");
+    private bool _attachPhoto;
+    private static Texture2D _directIcon;
+    private static Texture2D DirectIcon => _directIcon ??= ContentFinder<Texture2D>.Get("UI/ChatGizmo");
+    private static Texture2D _announceIcon;
+    private static Texture2D AnnounceIcon => _announceIcon ??= ContentFinder<Texture2D>.Get("UI/AnnounceGizmo");
+    private static Texture2D _cameraIcon;
+    private static Texture2D CameraIcon => _cameraIcon ??= ContentFinder<Texture2D>.Get("UI/VisionGizmo");
     private const float IconSize = 28f;
     private const float IconSpacing = 4f;
 
@@ -38,30 +43,47 @@ public class CustomDialogueWindow : Window
         preventCameraMotion = false;
     }
 
-    public override Vector2 InitialSize => new(420f, 155f);
+    public override Vector2 InitialSize => new(450f, 155f);
 
     public override void DoWindowContents(Rect inRect)
     {
         bool allowAnnouncement = Settings.Get().AllowAnnouncement;
-        if (allowAnnouncement && Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Tab)
+        if (Event.current.type == EventType.KeyDown)
         {
-            _mode = _mode == DialogueMode.Direct ? DialogueMode.Announce : DialogueMode.Direct;
-            Event.current.Use();
+            bool isCtrlOrCmd = Event.current.control || Event.current.command;
+            if (isCtrlOrCmd && (Event.current.keyCode == KeyCode.Alpha1 || Event.current.keyCode == KeyCode.Keypad1))
+            {
+                _attachPhoto = !_attachPhoto;
+                Event.current.Use();
+            }
+            else if (allowAnnouncement && Event.current.keyCode == KeyCode.Tab)
+            {
+                _mode = _mode == DialogueMode.Direct ? DialogueMode.Announce : DialogueMode.Direct;
+                Event.current.Use();
+            }
         }
 
         Text.Font = GameFont.Small;
 
-        float iconStartX = allowAnnouncement ? inRect.width - (IconSize * 2 + IconSpacing) : inRect.width;
+        int buttonCount = (allowAnnouncement ? 2 : 0) + 1; // +1 for camera toggle
+        float iconStartX = inRect.width - (buttonCount * IconSize + (buttonCount - 1) * IconSpacing);
+
+        float currentBtnX = iconStartX;
         if (allowAnnouncement)
         {
-            Rect directRect = new Rect(iconStartX, 0f, IconSize, IconSize);
-            Rect announceRect = new Rect(iconStartX + IconSize + IconSpacing, 0f, IconSize, IconSize);
+            Rect directRect = new Rect(currentBtnX, 0f, IconSize, IconSize);
+            currentBtnX += IconSize + IconSpacing;
+            Rect announceRect = new Rect(currentBtnX, 0f, IconSize, IconSize);
+            currentBtnX += IconSize + IconSpacing;
 
             DrawModeButton(directRect, DialogueMode.Direct, DirectIcon, "RimTalk.FloatMenu.DirectModeTooltip".Translate());
             DrawModeButton(announceRect, DialogueMode.Announce, AnnounceIcon, "RimTalk.FloatMenu.AnnounceModeTooltip".Translate());
         }
 
-        float labelWidth = iconStartX - (allowAnnouncement ? 6f : 0f);
+        Rect cameraRect = new Rect(currentBtnX, 0f, IconSize, IconSize);
+        DrawToggleButton(cameraRect, ref _attachPhoto, CameraIcon, "RimTalk.FloatMenu.AttachPhotoTooltip".Translate());
+
+        float labelWidth = iconStartX - 6f;
         string recipientLabel = PromptService.GetUniqueName(_recipient).CapitalizeFirst();
         string initiatorLabel = PromptService.GetUniqueName(_initiator).CapitalizeFirst();
         string labelText = _mode switch
@@ -97,7 +119,6 @@ public class CustomDialogueWindow : Window
             if (!string.IsNullOrWhiteSpace(_text))
             {
                 SendDialogue(_text);
-                Close();
             }
             Event.current.Use();
         }
@@ -109,7 +130,6 @@ public class CustomDialogueWindow : Window
             {
                 SendDialogue(_text);
             }
-            Close();
         }
 
         if (Widgets.ButtonText(new Rect(inRect.width / 2f + 5f, buttonY, inRect.width / 2f - 5f, 35f), "RimTalk.FloatMenu.Cancel".Translate()))
@@ -140,36 +160,57 @@ public class CustomDialogueWindow : Window
         TooltipHandler.TipRegion(rect, tooltip);
     }
 
+    private void DrawToggleButton(Rect rect, ref bool isToggled, Texture2D icon, string tooltip)
+    {
+        if (isToggled)
+        {
+            Widgets.DrawBoxSolid(rect, new Color(0.3f, 0.8f, 0.4f, 0.25f));
+            Widgets.DrawHighlightSelected(rect);
+        }
+        else
+        {
+            Widgets.DrawHighlightIfMouseover(rect);
+        }
+
+        if (Widgets.ButtonImage(rect, icon))
+        {
+            isToggled = !isToggled;
+            GUI.FocusControl(TextFieldControlName);
+        }
+
+        TooltipHandler.TipRegion(rect, tooltip);
+    }
+
     public override void OnAcceptKeyPressed()
     {
         if (!string.IsNullOrWhiteSpace(_text))
         {
             SendDialogue(_text);
         }
-        Close();
         Event.current.Use();
     }
 
     private void SendDialogue(string dialogue)
     {
         bool isAnnouncement = _mode == DialogueMode.Announce;
-        if (CustomDialogueService.CanTalk(_initiator, _recipient))
+
+        Close();
+
+        if (_attachPhoto)
         {
-            // Already close and in same room (or talking to self) - execute immediately
-            CustomDialogueService.ExecuteDialogue(_initiator, _recipient, dialogue, isAnnouncement);
+            VisionUtil.CaptureScreenAsync(imageBase64 =>
+            {
+                DispatchDialogue(dialogue, isAnnouncement, imageBase64);
+            });
         }
         else
         {
-            // Store pending dialogue and make pawn walk to target
-            CustomDialogueService.PendingDialogues[_initiator] = 
-                new CustomDialogueService.PendingDialogue(_recipient, dialogue, isAnnouncement);
-
-            Job job = JobMaker.MakeJob(JobDefOf.Goto, _recipient);
-            job.playerForced = true;
-            job.collideWithPawns = false;
-            job.locomotionUrgency = LocomotionUrgency.Jog;
-
-            _initiator.jobs.TryTakeOrderedJob(job, JobTag.Misc);
+            DispatchDialogue(dialogue, isAnnouncement, null);
         }
+    }
+
+    private void DispatchDialogue(string dialogue, bool isAnnouncement, string imageBase64)
+    {
+        CustomDialogueService.DispatchDialogue(_initiator, _recipient, dialogue, isAnnouncement, imageBase64);
     }
 }

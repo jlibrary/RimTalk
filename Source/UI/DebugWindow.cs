@@ -91,6 +91,9 @@ public class DebugWindow : Window
     private string _tempPromptSegmentsText;
     private List<PromptMessageSegment> _tempPromptSegments = [];
     private readonly HashSet<int> _expandedPromptSegmentIndices = new();
+    private Texture2D _cachedImageTexture;
+    private string _cachedImageBase64;
+    private Guid _cachedImageLogId = Guid.Empty;
 
     private DebugViewMode _viewMode;
     private string _sortColumn;
@@ -134,6 +137,13 @@ public class DebugWindow : Window
     public override void PreClose()
     {
         base.PreClose();
+        if (_cachedImageTexture != null)
+        {
+            UnityEngine.Object.Destroy(_cachedImageTexture);
+            _cachedImageTexture = null;
+        }
+        _cachedImageLogId = Guid.Empty;
+
         var settings = Settings.Get();
         settings.DebugSortColumn = _sortColumn;
         settings.DebugSortAscending = _sortAscending;
@@ -783,14 +793,19 @@ public class DebugWindow : Window
         float blockSpacing = 10f;
         float headerH = 18f;
 
+        UpdateCachedImage();
+
         // Calculate heights dynamically based on current content
         float viewWidth = scrollOuter.width - 16f;
         float textAreaWidth = viewWidth - 8f;
         float respH = Mathf.Max(40f,
             _monoTinyStyle.CalcHeight(new GUIContent(_tempResponse), textAreaWidth) + 10f);
+        float imgH = _cachedImageTexture != null ? 140f : 0f;
         float msgH = CalculatePromptSegmentsHeight(_tempPromptSegments, viewWidth);
 
-        var viewH = headerH + respH + blockSpacing + msgH + 10f;
+        var viewH = headerH + respH + blockSpacing +
+                    (imgH > 0f ? imgH + blockSpacing : 0f) +
+                    msgH + 10f;
 
         var view = new Rect(0f, 0f, scrollOuter.width - 16f, viewH);
 
@@ -808,6 +823,13 @@ public class DebugWindow : Window
             readOnly: true);
         yy += blockSpacing;
 
+        // Attached Image Block
+        if (_cachedImageTexture != null)
+        {
+            DrawImageAttachmentBlock(ref yy, view.width, _cachedImageTexture);
+            yy += blockSpacing;
+        }
+
         // Prompt Messages Block (segmented, collapsible)
         DrawPromptMessagesBlock(ref yy, view.width, "RimTalk.DebugWindow.PromptMessages".Translate(),
             _tempPromptSegments, _tempPromptSegmentsText);
@@ -815,6 +837,119 @@ public class DebugWindow : Window
         Widgets.EndScrollView();
 
         GUI.EndGroup();
+    }
+
+    private void UpdateCachedImage()
+    {
+        if (_selectedLog == null)
+        {
+            ClearCachedImage();
+            return;
+        }
+
+        string imageBase64 = _selectedLog.TalkRequest?.ImageBase64;
+
+        if (string.IsNullOrEmpty(imageBase64) && _selectedLog.ConversationId >= 0)
+        {
+            foreach (var item in ApiHistory.GetAll())
+            {
+                if (item.ConversationId == _selectedLog.ConversationId && !string.IsNullOrEmpty(item.TalkRequest?.ImageBase64))
+                {
+                    imageBase64 = item.TalkRequest.ImageBase64;
+                    break;
+                }
+            }
+        }
+
+        if (string.IsNullOrEmpty(imageBase64))
+        {
+            ClearCachedImage();
+            return;
+        }
+
+        if (_selectedLog.Id != _cachedImageLogId)
+        {
+            ClearCachedImage();
+
+            try
+            {
+                byte[] bytes = Convert.FromBase64String(imageBase64);
+                var tex = new Texture2D(2, 2, TextureFormat.RGB24, false);
+                if (tex.LoadImage(bytes))
+                {
+                    _cachedImageTexture = tex;
+                    _cachedImageBase64 = imageBase64;
+                    _cachedImageLogId = _selectedLog.Id;
+                }
+                else
+                {
+                    UnityEngine.Object.Destroy(tex);
+                }
+            }
+            catch (Exception ex)
+            {
+                Util.Logger.Error($"Failed to decode ImageBase64 for DebugWindow: {ex.Message}");
+            }
+        }
+    }
+
+    private void ClearCachedImage()
+    {
+        if (_cachedImageTexture != null)
+        {
+            UnityEngine.Object.Destroy(_cachedImageTexture);
+            _cachedImageTexture = null;
+        }
+        _cachedImageBase64 = null;
+        _cachedImageLogId = Guid.Empty;
+    }
+
+    private void DrawImageAttachmentBlock(ref float y, float width, Texture2D texture)
+    {
+        float headerHeight = 18f;
+        Text.Font = GameFont.Tiny;
+        GUI.color = new Color(0.4f, 0.8f, 1f);
+
+        string labelText = "RimTalk.DebugWindow.AttachedImage".Translate();
+        Vector2 labelSize = Text.CalcSize(labelText);
+        Rect labelRect = new Rect(0f, y, labelSize.x, headerHeight);
+        Widgets.Label(labelRect, labelText);
+
+        // Draw Copy Icon next to label
+        Rect copyRect = new Rect(labelRect.xMax + 8f, y, 16f, 16f);
+        if (Widgets.ButtonImage(copyRect, TexButton.Copy))
+        {
+            if (VisionUtil.CopyImageToClipboard(texture, _cachedImageBase64))
+            {
+                Messages.Message("RimTalk.DebugWindow.ImageCopied".Translate(), MessageTypeDefOf.TaskCompletion, false);
+            }
+            else if (!string.IsNullOrEmpty(_cachedImageBase64))
+            {
+                GUIUtility.systemCopyBuffer = _cachedImageBase64;
+                Messages.Message("RimTalk.DebugWindow.Copied".Translate(), MessageTypeDefOf.TaskCompletion, false);
+            }
+        }
+        TooltipHandler.TipRegion(copyRect, "RimTalk.DebugWindow.CopyImage".Translate());
+
+        GUI.color = Color.white;
+        y += headerHeight;
+
+        float imgHeight = 110f;
+        float imgWidth = Mathf.Min(width - 8f, imgHeight * ((float)texture.width / Mathf.Max(1, texture.height)));
+        var boxRect = new Rect(0f, y, width, imgHeight + 8f);
+        Widgets.DrawBoxSolid(boxRect, new Color(0.05f, 0.05f, 0.05f, 0.55f));
+
+        var drawRect = new Rect(4f, y + 4f, imgWidth, imgHeight);
+        GUI.DrawTexture(drawRect, texture, ScaleMode.ScaleToFit);
+
+        if (Widgets.ButtonInvisible(boxRect))
+        {
+            Find.WindowStack.Add(new Dialog_ImageViewer(texture));
+            SoundDefOf.Click.PlayOneShotOnCamera();
+        }
+        TooltipHandler.TipRegion(boxRect, "RimTalk.DebugWindow.ClickToExpandImage".Translate());
+
+        y += imgHeight + 8f;
     }
 
     private void DrawSelectableBlock(ref float y, float width, string title, ref string content, float contentHeight,
@@ -1564,9 +1699,31 @@ public class DebugWindow : Window
         }
 
         var request = targetLog?.TalkRequest;
+        string imageBase64 = request?.ImageBase64;
+        if (string.IsNullOrEmpty(imageBase64) && log != null && log.ConversationId >= 0)
+        {
+            foreach (var item in ApiHistory.GetAll())
+            {
+                if (item.ConversationId == log.ConversationId && !string.IsNullOrEmpty(item.TalkRequest?.ImageBase64))
+                {
+                    imageBase64 = item.TalkRequest.ImageBase64;
+                    break;
+                }
+            }
+        }
+
         if (request?.PromptMessageSegments != null && request.PromptMessageSegments.Count > 0)
         {
-            return request.PromptMessageSegments;
+            var result = request.PromptMessageSegments.ToList();
+            if (!string.IsNullOrEmpty(imageBase64) && !result.Any(s => s.EntryId == "attached-image-base64"))
+            {
+                result.Add(new PromptMessageSegment(
+                    "attached-image-base64",
+                    "RimTalk.DebugWindow.AttachedImageBase64".Translate(),
+                    Role.User,
+                    $"data:image/jpeg;base64,{imageBase64}"));
+            }
+            return result;
         }
 
         if (request?.PromptMessages != null && request.PromptMessages.Count > 0)
@@ -1576,6 +1733,15 @@ public class DebugWindow : Window
             {
                 var (role, content) = request.PromptMessages[i];
                 segments.Add(new PromptMessageSegment($"message-{i}", $"{"RimTalk.DebugWindow.FormatEntry".Translate()} {i + 1}", role, content));
+            }
+
+            if (!string.IsNullOrEmpty(imageBase64))
+            {
+                segments.Add(new PromptMessageSegment(
+                    "attached-image-base64",
+                    "RimTalk.DebugWindow.AttachedImageBase64".Translate(),
+                    Role.User,
+                    $"data:image/jpeg;base64,{imageBase64}"));
             }
             return segments;
         }

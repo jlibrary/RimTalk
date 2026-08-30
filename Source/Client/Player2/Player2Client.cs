@@ -236,7 +236,7 @@ public class Player2Client : IAIClient
         if (webRequest.isNetworkError || webRequest.isHttpError)
         {
             string errorMsg = ErrorUtil.ExtractErrorMessage(responseText) ?? webRequest.error;
-            Logger.Error($"Player2 failed: {webRequest.responseCode} - {errorMsg}");
+            Logger.Warning($"Player2 failed: {webRequest.responseCode} - {errorMsg}");
             throw new AIRequestException(errorMsg, new Payload(url, null, jsonContent, responseText, 0, errorMsg));
         }
 

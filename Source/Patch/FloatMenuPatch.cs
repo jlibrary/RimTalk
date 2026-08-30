@@ -101,12 +101,15 @@ public static class FloatMenuPatch
             if (Settings.Get().PlayerDialogueMode == Settings.PlayerDialogueMode.Disabled)
                 return false;
 
+            if (!selectedPawn.IsTalkEligible())
+                return false;
+
             var playerPawn = Cache.GetPlayer();
             if (playerPawn == null)
                 return false;
 
-            initiator = playerPawn;  
-            target = selectedPawn;    
+            initiator = playerPawn;
+            target = selectedPawn;
             return true;
         }
 
@@ -137,9 +140,6 @@ public static class FloatMenuPatch
         if (!(target.RaceProps?.Humanlike ?? false) && !target.HasVocalLink())
             return false;
 
-        if (initiator == Cache.GetPlayer())
-            return true;
-
         // Could add path to reach
         Danger maxDanger = initiator.Drafted ? Danger.Deadly : Danger.Some;
         if (!initiator.CanReach(target, PathEndMode.Touch, maxDanger))
@@ -156,7 +156,7 @@ public static class FloatMenuPatch
         if (initiator == null || target == null) return;
 
         result.Add(new FloatMenuOption(
-            "RimTalk.FloatMenu.ChatWith".Translate(PromptService.GetUniqueName(target).CapitalizeFirst()),
+            "RimTalk.FloatMenu.ChatWith".Translate(target.LabelShortCap),
             delegate
             {
                 Find.WindowStack.Add(new CustomDialogueWindow(initiator, target));
@@ -165,5 +165,41 @@ public static class FloatMenuPatch
             null,
             target
         ));
+
+        var presets = Settings.Get()?.DialoguePresets;
+        if (presets != null && presets.Count > 0)
+        {
+            for (int i = 0; i < presets.Count; i++)
+            {
+                var preset = presets[i];
+                if (preset == null || !preset.IsEnabled || string.IsNullOrWhiteSpace(preset.Title)) continue;
+
+                string optionLabel = $"[{target.LabelShortCap}] {preset.Title}";
+                var capturedPreset = preset;
+
+                result.Add(new FloatMenuOption(
+                    optionLabel,
+                    delegate
+                    {
+                        if (capturedPreset.IncludeVision)
+                        {
+                            VisionUtil.CaptureScreenAsync(img =>
+                            {
+                                CustomDialogueService.DispatchDialogue(initiator, target, capturedPreset.Prompt,
+                                    capturedPreset.IsAnnouncement, img);
+                            });
+                        }
+                        else
+                        {
+                            CustomDialogueService.DispatchDialogue(initiator, target, capturedPreset.Prompt,
+                                capturedPreset.IsAnnouncement, null);
+                        }
+                    },
+                    MenuOptionPriority.Default,
+                    null,
+                    target
+                ));
+            }
+        }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using RimTalk.Service;
 using RimTalk.Util;
 using RimWorld;
 using Verse;
@@ -11,6 +12,14 @@ public static class AIErrorHandler
 {
     private static bool _quotaWarningShown;
     private static readonly ConcurrentQueue<Action> PendingMessages = new();
+
+    public static void EnqueueMessage(Action action)
+    {
+        if (action != null)
+        {
+            PendingMessages.Enqueue(action);
+        }
+    }
 
     public static void DrainPendingMessages()
     {
@@ -39,6 +48,28 @@ public static class AIErrorHandler
         }
         catch (Exception ex)
         {
+            // If request had an image and failed, retry once silently without the image
+            var currentReq = AIService.CurrentRequest;
+            if (!string.IsNullOrEmpty(currentReq?.ImageBase64))
+            {
+                currentReq.ImageBase64 = null;
+                Logger.Warning($"Request with image failed ({ex.Message}). Retrying without image as fallback...");
+                try
+                {
+                    var result = await operation();
+                    ShowVisionFallbackMessage(Settings.Get()?.GetCurrentModel());
+                    return result;
+                }
+                catch (OperationCanceledException)
+                {
+                    throw;
+                }
+                catch (Exception retryNoImageEx)
+                {
+                    Logger.Warning($"Fallback retry without image also failed: {retryNoImageEx.Message}");
+                }
+            }
+
             var settings = Settings.Get();
             if (!CanRetryGeneration(settings))
             {
@@ -132,6 +163,16 @@ public static class AIErrorHandler
             string messageKey = ex is QuotaExceededException ? "RimTalk.TalkService.QuotaReached" : "RimTalk.TalkService.APIError";
             string message = $"{messageKey.Translate()}. {"RimTalk.TalkService.TryingNextAPI".Translate(nextModel)}";
             Messages.Message(message, MessageTypeDefOf.NeutralEvent, false);
+        });
+    }
+
+    private static void ShowVisionFallbackMessage(string model)
+    {
+        PendingMessages.Enqueue(() =>
+        {
+            string modelName = string.IsNullOrEmpty(model) ? "Unknown" : model;
+            string message = "RimTalk.TalkService.VisionUnsupportedFallback".Translate(modelName);
+            Messages.Message(message, MessageTypeDefOf.CautionInput, false);
         });
     }
 }

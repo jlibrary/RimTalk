@@ -108,3 +108,16 @@ public static class Bubbler_Add
         return field?.GetValue(entry) as InteractionDef;
     }
 }
+
+[HarmonyPatch(typeof(Bubbler), nameof(Bubbler.Draw))]
+public static class Bubbler_Draw
+{
+    public static bool Prefix()
+    {
+        if (UI.Overlay.SuppressForScreenshot)
+        {
+            return false;
+        }
+        return true;
+    }
+}

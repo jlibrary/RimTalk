@@ -168,12 +168,10 @@ public static class EventService
             .OrderBy(c => c.ElapsedTicks)
             .ToList();
 
-        bool isKorean = Constant.Lang == "Korean" || LanguageDatabase.activeLanguage?.FriendlyNameNative?.Contains("한국") == true;
-
         var formattedLines = new List<string>();
         foreach (var c in orderedSelection)
         {
-            string timeStr = FormatElapsedTime(c.ElapsedTicks, isKorean);
+            string timeStr = FormatElapsedTime(c.ElapsedTicks);
 
             // Fresh event (< 12 in-game hours): Include 1-line summary if available
             if (c.ElapsedHours < 12f && infoLevel != PromptService.InfoLevel.Short)
@@ -227,14 +225,9 @@ public static class EventService
 
         if (letter.def == LetterDefOf.NegativeEvent ||
             (letter.def?.defName != null && letter.def.defName.IndexOf("negative", StringComparison.OrdinalIgnoreCase) >= 0) ||
-            label.IndexOf("임신", StringComparison.OrdinalIgnoreCase) >= 0 ||
             label.IndexOf("pregnan", StringComparison.OrdinalIgnoreCase) >= 0 ||
-            label.IndexOf("출산", StringComparison.OrdinalIgnoreCase) >= 0 ||
             label.IndexOf("birth", StringComparison.OrdinalIgnoreCase) >= 0 ||
-            label.IndexOf("불시착", StringComparison.OrdinalIgnoreCase) >= 0 ||
-            label.IndexOf("경착륙", StringComparison.OrdinalIgnoreCase) >= 0 ||
             label.IndexOf("crash", StringComparison.OrdinalIgnoreCase) >= 0 ||
-            label.IndexOf("사망", StringComparison.OrdinalIgnoreCase) >= 0 ||
             label.IndexOf("death", StringComparison.OrdinalIgnoreCase) >= 0)
             return 500;
 
@@ -249,14 +242,19 @@ public static class EventService
         return 6f; // Minor: 6 hours
     }
 
-    public static string FormatElapsedTime(int elapsedTicks, bool isKorean)
+    public static string FormatElapsedTime(int elapsedTicks)
     {
         float hours = elapsedTicks / 2500f;
         if (hours < 1f)
-            return isKorean ? "방금" : "Just now";
+            return "Just now";
         if (hours < 24f)
-            return isKorean ? $"{(int)hours}시간 전" : $"{(int)hours}h ago";
+            return $"{(int)hours}h ago";
         int days = Mathf.Max(1, (int)(elapsedTicks / 60000f));
-        return isKorean ? $"{days}일 전" : $"{days}d ago";
+        return $"{days}d ago";
+    }
+
+    public static string FormatElapsedTime(int elapsedTicks, bool isKorean)
+    {
+        return FormatElapsedTime(elapsedTicks);
     }
 }

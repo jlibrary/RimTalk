@@ -5,6 +5,7 @@ using System.Reflection;
 using HarmonyLib;
 using RimTalk.Data;
 using RimTalk.Source.Data;
+using RimTalk.Util;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -14,6 +15,7 @@ namespace RimTalk.UI;
 
 public class Overlay : MapComponent
 {
+    public static bool SuppressForScreenshot = false;
     public static event Action OnLogUpdated;
     public static void NotifyLogUpdated()
     {
@@ -420,6 +422,7 @@ public class Overlay : MapComponent
 
     public override void MapComponentOnGUI()
     {
+        if (SuppressForScreenshot) return;
         if (Current.ProgramState != ProgramState.Playing) return;
 
         var settings = Settings.Get();
@@ -679,6 +682,7 @@ public class Overlay : MapComponent
             _showSettingsDropdown = false;
         }
 
+
         listing.Gap(6);
 
         Rect turnOffRect = listing.GetRect(28f);
@@ -832,6 +836,15 @@ public static class OverlayPatch
     [HarmonyPostfix]
     public static void Postfix()
     {
+        if (Overlay.SuppressForScreenshot)
+        {
+            if (Event.current.type == EventType.Repaint)
+            {
+                VisionUtil.DrawThingOverlays();
+            }
+            return;
+        }
+
         DrawOverlay(false);
     }
 }

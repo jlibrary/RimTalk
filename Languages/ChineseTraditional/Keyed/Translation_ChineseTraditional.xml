@@ -283,7 +283,6 @@ Scriban 魔法 (動態內容)
     <RimTalk.Settings.CustomizeRequestTooltip>自訂請求 JSON（溫度、思考等級等）</RimTalk.Settings.CustomizeRequestTooltip>
     <RimTalk.Settings.CustomizeRequestTitle>自訂請求：{0} ({1})</RimTalk.Settings.CustomizeRequestTitle>
     <RimTalk.Settings.CustomizeRequestDesc>為此 LLM 設定自訂 JSON 請求參數。這些值將合併到發送給 API 的請求載荷中（例如：temperature、reasoning_effort、max_tokens、thinking 參數等）。</RimTalk.Settings.CustomizeRequestDesc>
-    <RimTalk.Settings.ResetToDefault>恢復預設</RimTalk.Settings.ResetToDefault>
     <RimTalk.Settings.FormatJson>格式化 JSON</RimTalk.Settings.FormatJson>
     <RimTalk.Settings.ClearOverride>清空</RimTalk.Settings.ClearOverride>
     <RimTalk.Settings.CustomJsonSave>儲存</RimTalk.Settings.CustomJsonSave>
@@ -479,4 +478,43 @@ Scriban 魔法 (動態內容)
     <RimTalk.ScribanVar.Category.Context>上下文</RimTalk.ScribanVar.Category.Context>
     <RimTalk.ScribanVar.Category.GameStatic>遊戲對象 (靜態)</RimTalk.ScribanVar.Category.GameStatic>
     <RimTalk.ScribanVar.Category.System>系統</RimTalk.ScribanVar.Category.System>
+
+    <RimTalk.TalkService.VisionUnsupportedFallback>當前模型（{0}）不支援圖像輸入，已在無圖像的情況下繼續對話。</RimTalk.TalkService.VisionUnsupportedFallback>
+    <RimTalk.Settings.CustomDialogue>自訂對話</RimTalk.Settings.CustomDialogue>
+    <RimTalk.PlayerSettings.SectionPlayer>玩家對話設定</RimTalk.PlayerSettings.SectionPlayer>
+    <RimTalk.PlayerSettings.SectionPresets>對話預設管理</RimTalk.PlayerSettings.SectionPresets>
+    <RimTalk.PlayerSettings.AddPreset>新增</RimTalk.PlayerSettings.AddPreset>
+    <RimTalk.PlayerSettings.ResetPresetsConfirm>確定要將所有預設恢復為預設推薦設定嗎？</RimTalk.PlayerSettings.ResetPresetsConfirm>
+    <RimTalk.PlayerSettings.PresetsDesc>啟用的預設將直接顯示在殖民者右鍵選單中作為快捷對話選項。</RimTalk.PlayerSettings.PresetsDesc>
+    <RimTalk.PlayerSettings.Preset1.Title>基地環境與生活</RimTalk.PlayerSettings.Preset1.Title>
+    <RimTalk.PlayerSettings.Preset1.Prompt>環顧我們的基地，你覺得這裡的設施和日常生活怎麼樣？</RimTalk.PlayerSettings.Preset1.Prompt>
+    <RimTalk.PlayerSettings.Preset2.Title>心情與問候</RimTalk.PlayerSettings.Preset2.Title>
+    <RimTalk.PlayerSettings.Preset2.Prompt>最近身體狀況和心情如何？有什麼心事或困擾嗎？</RimTalk.PlayerSettings.Preset2.Prompt>
+    <RimTalk.PlayerSettings.Preset3.Title>防線與戰術檢查</RimTalk.PlayerSettings.Preset3.Title>
+    <RimTalk.PlayerSettings.Preset3.Prompt>看看我們的防線和裝備狀況，有什麼需要加強的戰術薄弱點嗎？</RimTalk.PlayerSettings.Preset3.Prompt>
+    <RimTalk.PlayerSettings.Preset4.Title>工作與安全通知</RimTalk.PlayerSettings.Preset4.Title>
+    <RimTalk.PlayerSettings.Preset4.Prompt>大家注意！請務必注意安全，專注做好今天各自負責的工作！</RimTalk.PlayerSettings.Preset4.Prompt>
+    <RimTalk.PlayerSettings.Enabled>啟用</RimTalk.PlayerSettings.Enabled>
+    <RimTalk.PlayerSettings.PresetTitleTooltip>右鍵點擊殖民者時顯示的選單標題。</RimTalk.PlayerSettings.PresetTitleTooltip>
+    <RimTalk.PlayerSettings.Vision>📷 視覺</RimTalk.PlayerSettings.Vision>
+    <RimTalk.PlayerSettings.VisionTooltip>勾選時，將在對話請求中附帶當前螢幕截圖。</RimTalk.PlayerSettings.VisionTooltip>
+    <RimTalk.PlayerSettings.Announce>📢 公告</RimTalk.PlayerSettings.Announce>
+    <RimTalk.PlayerSettings.AnnounceTooltip>勾選時，將以向附近所有殖民者喊話的公告形式進行對話。</RimTalk.PlayerSettings.AnnounceTooltip>
+    <RimTalk.PlayerSettings.AllowCustomConversation>啟用自訂對話</RimTalk.PlayerSettings.AllowCustomConversation>
+    <RimTalk.PlayerSettings.AllowCustomConversationTooltip>啟用殖民者對話指令、Gizmo以及右鍵對話預設選單。</RimTalk.PlayerSettings.AllowCustomConversationTooltip>
+    <RimTalk.PlayerSettings.AllowDirectPlayerTalk>允許玩家 ↔ 殖民者直接對話</RimTalk.PlayerSettings.AllowDirectPlayerTalk>
+    <RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>允許玩家以「Player」身份直接向殖民者搭話或接收回應。取消勾選時只能指示殖民者之間進行對話。</RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>
+    <RimTalk.PlayerSettings.AllowPlayerAiGen>AI自動生成玩家台詞（套用人設）</RimTalk.PlayerSettings.AllowPlayerAiGen>
+    <RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>勾選時，AI將在對話中根據玩家人設自動生成玩家的後續台詞。取消勾選時，玩家只說出使用者手動輸入的台詞。</RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>
+    <RimTalk.PlayerSettings.PromptLabel>發送的對話提示詞（問題 / 指示）：</RimTalk.PlayerSettings.PromptLabel>
+    <RimTalk.FloatMenu.AttachPhotoTooltip>切換螢幕截圖附件（Ctrl+1 快捷鍵）</RimTalk.FloatMenu.AttachPhotoTooltip>
+    <RimTalk.DebugWindow.AttachedImage>附帶圖像（點擊放大）：</RimTalk.DebugWindow.AttachedImage>
+    <RimTalk.DebugWindow.AttachedImageBase64>附帶圖像 (Base64)</RimTalk.DebugWindow.AttachedImageBase64>
+    <RimTalk.DebugWindow.ClickToExpandImage>點擊以在大視窗中查看圖像。</RimTalk.DebugWindow.ClickToExpandImage>
+    <RimTalk.DebugWindow.CopyImage>複製圖像（剪貼簿）</RimTalk.DebugWindow.CopyImage>
+    <RimTalk.DebugWindow.ImageCopied>圖像已複製到剪貼簿。</RimTalk.DebugWindow.ImageCopied>
+    <RimTalk.PlayerSettings.DisabledNotice>自訂對話已停用。殖民者右鍵選單與玩家對話功能將不會生效。</RimTalk.PlayerSettings.DisabledNotice>
+    <RimTalk.PlayerSettings.NewPresetName>新對話預設</RimTalk.PlayerSettings.NewPresetName>
+    <RimTalk.PlayerSettings.PresetTitleHeader>標題 / 選單名</RimTalk.PlayerSettings.PresetTitleHeader>
+    <RimTalk.PlayerSettings.PresetTitlePlaceholder>對話預設標題...</RimTalk.PlayerSettings.PresetTitlePlaceholder>
 </LanguageData>

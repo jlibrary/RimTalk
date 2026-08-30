@@ -26,6 +26,9 @@ public class ApiConfig : IExposable
 
     public string GetEffectiveModelName()
     {
+        if (Provider == AIProvider.Local)
+            return !string.IsNullOrWhiteSpace(CustomModelName) ? CustomModelName : "Local";
+
         return SelectedModel == "Custom" ? CustomModelName : SelectedModel;
     }
 

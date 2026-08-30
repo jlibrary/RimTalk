@@ -113,30 +113,6 @@ public partial class Settings
             "RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip".Translate().ToString());
         leftListing.Gap(6f);
         
-        // AllowCustomConversation with Settings Button
-        Rect customRowRect = leftListing.GetRect(24f);
-        if (settings.AllowCustomConversation)
-        {
-            const float configBtnWidth = 60f;
-            Rect checkRect = new Rect(customRowRect.x, customRowRect.y, customRowRect.width - configBtnWidth - 6f, customRowRect.height);
-            Rect configButtonRect = new Rect(customRowRect.xMax - configBtnWidth, customRowRect.y, configBtnWidth, customRowRect.height);
-
-            Widgets.CheckboxLabeled(checkRect, "RimTalk.Settings.AllowCustomConversation".Translate().ToString(),
-                ref settings.AllowCustomConversation);
-            TooltipHandler.TipRegion(checkRect, "RimTalk.Settings.AllowCustomConversationTooltip".Translate().ToString());
-
-            if (Widgets.ButtonText(configButtonRect, "RimTalk.Settings.Configure".Translate().ToString()))
-            {
-                Find.WindowStack.Add(new PlayerSettingsWindow());
-            }
-        }
-        else
-        {
-            Widgets.CheckboxLabeled(customRowRect, "RimTalk.Settings.AllowCustomConversation".Translate().ToString(),
-                ref settings.AllowCustomConversation);
-            TooltipHandler.TipRegion(customRowRect, "RimTalk.Settings.AllowCustomConversationTooltip".Translate().ToString());
-        }
-
         leftListing.End();
 
         // --- Right Column ---
@@ -166,13 +142,6 @@ public partial class Settings
         rightListing.Gap(6f);
         rightListing.CheckboxLabeled("RimTalk.Settings.AllowNonHumanToTalk".Translate().ToString(),
             ref settings.AllowNonHumanToTalk, "RimTalk.Settings.AllowNonHumanToTalkTooltip".Translate().ToString());
-        rightListing.Gap(6f);
-        bool customConvEnabled = settings.AllowCustomConversation;
-        Rect announceRect = rightListing.GetRect(24f);
-        Widgets.CheckboxLabeled(announceRect, "RimTalk.Settings.AllowAnnouncement".Translate().ToString(),
-            ref settings.AllowAnnouncement, disabled: !customConvEnabled);
-        TooltipHandler.TipRegion(announceRect, "RimTalk.Settings.AllowAnnouncementTooltip".Translate().ToString());
-
         rightListing.End();
 
         // Advance the main listing standard's vertical position based on the taller of the two columns.

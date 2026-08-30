@@ -283,7 +283,6 @@ Conseils Cruciaux :
     <RimTalk.Settings.CustomizeRequestTooltip>Personnaliser le JSON de la requête (température, réflexion, etc.)</RimTalk.Settings.CustomizeRequestTooltip>
     <RimTalk.Settings.CustomizeRequestTitle>Personnaliser la requête : {0} ({1})</RimTalk.Settings.CustomizeRequestTitle>
     <RimTalk.Settings.CustomizeRequestDesc>Configurez des paramètres JSON personnalisés pour ce LLM. Ces valeurs sont fusionnées dans la requête envoyée à l'API (ex. : temperature, reasoning_effort, max_tokens, paramètres thinking, etc.).</RimTalk.Settings.CustomizeRequestDesc>
-    <RimTalk.Settings.ResetToDefault>Réinitialiser</RimTalk.Settings.ResetToDefault>
     <RimTalk.Settings.FormatJson>Formater JSON</RimTalk.Settings.FormatJson>
     <RimTalk.Settings.ClearOverride>Effacer</RimTalk.Settings.ClearOverride>
     <RimTalk.Settings.CustomJsonSave>Enregistrer</RimTalk.Settings.CustomJsonSave>
@@ -478,4 +477,43 @@ Conseils Cruciaux :
     <RimTalk.ScribanVar.Category.Context>Contexte</RimTalk.ScribanVar.Category.Context>
     <RimTalk.ScribanVar.Category.GameStatic>Objets de Jeu (Statiques)</RimTalk.ScribanVar.Category.GameStatic>
     <RimTalk.ScribanVar.Category.System>Système</RimTalk.ScribanVar.Category.System>
+
+    <RimTalk.TalkService.VisionUnsupportedFallback>Le modèle actuel ({0}) ne prend pas en charge les images. Poursuite du dialogue sans image.</RimTalk.TalkService.VisionUnsupportedFallback>
+    <RimTalk.Settings.CustomDialogue>Dialogue personnalisé</RimTalk.Settings.CustomDialogue>
+    <RimTalk.PlayerSettings.SectionPlayer>Paramètres de dialogue du joueur</RimTalk.PlayerSettings.SectionPlayer>
+    <RimTalk.PlayerSettings.SectionPresets>Gestion des préréglages</RimTalk.PlayerSettings.SectionPresets>
+    <RimTalk.PlayerSettings.AddPreset>Ajouter</RimTalk.PlayerSettings.AddPreset>
+    <RimTalk.PlayerSettings.ResetPresetsConfirm>Voulez-vous vraiment restaurer tous les préréglages recommandés par défaut ?</RimTalk.PlayerSettings.ResetPresetsConfirm>
+    <RimTalk.PlayerSettings.PresetsDesc>Les préréglages activés apparaissent directement dans le menu clic droit d'un colon comme options de dialogue rapide.</RimTalk.PlayerSettings.PresetsDesc>
+    <RimTalk.PlayerSettings.Preset1.Title>Base et quotidien</RimTalk.PlayerSettings.Preset1.Title>
+    <RimTalk.PlayerSettings.Preset1.Prompt>En regardant notre base, que penses-tu de nos installations et de la vie ici ?</RimTalk.PlayerSettings.Preset1.Prompt>
+    <RimTalk.PlayerSettings.Preset2.Title>Moral et état d'esprit</RimTalk.PlayerSettings.Preset2.Title>
+    <RimTalk.PlayerSettings.Preset2.Prompt>Comment te sens-tu ces temps-ci ? Quelque chose te préoccupe ou te pèse ?</RimTalk.PlayerSettings.Preset2.Prompt>
+    <RimTalk.PlayerSettings.Preset3.Title>Défenses et tactique</RimTalk.PlayerSettings.Preset3.Title>
+    <RimTalk.PlayerSettings.Preset3.Prompt>Jette un œil à nos défenses et équipements. Vois-tu des faiblesses tactiques à renforcer contre les raids ?</RimTalk.PlayerSettings.Preset3.Prompt>
+    <RimTalk.PlayerSettings.Preset4.Title>Avis de travail et sécurité</RimTalk.PlayerSettings.Preset4.Title>
+    <RimTalk.PlayerSettings.Preset4.Prompt>Attention tout le monde ! Restez vigilants pour votre sécurité et concentrez-vous sur vos tâches !</RimTalk.PlayerSettings.Preset4.Prompt>
+    <RimTalk.PlayerSettings.Enabled>Activé</RimTalk.PlayerSettings.Enabled>
+    <RimTalk.PlayerSettings.PresetTitleTooltip>Titre affiché dans le menu lors d'un clic droit sur un colon.</RimTalk.PlayerSettings.PresetTitleTooltip>
+    <RimTalk.PlayerSettings.Vision>📷 Vision</RimTalk.PlayerSettings.Vision>
+    <RimTalk.PlayerSettings.VisionTooltip>Si coché, joint une capture d'écran actuelle à la requête de dialogue.</RimTalk.PlayerSettings.VisionTooltip>
+    <RimTalk.PlayerSettings.Announce>📢 Annonce</RimTalk.PlayerSettings.Announce>
+    <RimTalk.PlayerSettings.AnnounceTooltip>Si coché, diffuse le dialogue à tous les colons proches sous forme d'annonce.</RimTalk.PlayerSettings.AnnounceTooltip>
+    <RimTalk.PlayerSettings.AllowCustomConversation>Activer les dialogues personnalisés</RimTalk.PlayerSettings.AllowCustomConversation>
+    <RimTalk.PlayerSettings.AllowCustomConversationTooltip>Active les commandes de dialogue, les gizmos et le menu des préréglages au clic droit.</RimTalk.PlayerSettings.AllowCustomConversationTooltip>
+    <RimTalk.PlayerSettings.AllowDirectPlayerTalk>Autoriser le dialogue direct Joueur ↔ Colon</RimTalk.PlayerSettings.AllowDirectPlayerTalk>
+    <RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>Permet au joueur de dialoguer directement en tant que 'Player' avec les colons. Décoché, seuls les dialogues entre colons sont autorisés.</RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>
+    <RimTalk.PlayerSettings.AllowPlayerAiGen>Réponses IA générées pour le joueur (Persona appliqué)</RimTalk.PlayerSettings.AllowPlayerAiGen>
+    <RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>Si coché, l'IA génère les répliques suivantes du joueur selon son persona. Décoché, le joueur ne dit que le texte saisi manuellement.</RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>
+    <RimTalk.PlayerSettings.PromptLabel>Prompt de dialogue à envoyer (Question / Instruction) :</RimTalk.PlayerSettings.PromptLabel>
+    <RimTalk.FloatMenu.AttachPhotoTooltip>Attacher une capture d'écran (Ctrl+1)</RimTalk.FloatMenu.AttachPhotoTooltip>
+    <RimTalk.DebugWindow.AttachedImage>Image jointe (Cliquer pour agrandir) :</RimTalk.DebugWindow.AttachedImage>
+    <RimTalk.DebugWindow.AttachedImageBase64>Image jointe (Base64)</RimTalk.DebugWindow.AttachedImageBase64>
+    <RimTalk.DebugWindow.ClickToExpandImage>Cliquez pour agrandir l'image dans une fenêtre dédiée.</RimTalk.DebugWindow.ClickToExpandImage>
+    <RimTalk.DebugWindow.CopyImage>Copier l'image (Presse-papiers)</RimTalk.DebugWindow.CopyImage>
+    <RimTalk.DebugWindow.ImageCopied>Image copiée dans le presse-papiers.</RimTalk.DebugWindow.ImageCopied>
+    <RimTalk.PlayerSettings.DisabledNotice>Les dialogues personnalisés sont désactivés. Le menu clic droit et les fonctionnalités de dialogue du joueur ne seront pas actifs.</RimTalk.PlayerSettings.DisabledNotice>
+    <RimTalk.PlayerSettings.NewPresetName>Nouveau préréglage</RimTalk.PlayerSettings.NewPresetName>
+    <RimTalk.PlayerSettings.PresetTitleHeader>Titre / Nom du menu</RimTalk.PlayerSettings.PresetTitleHeader>
+    <RimTalk.PlayerSettings.PresetTitlePlaceholder>Titre du préréglage...</RimTalk.PlayerSettings.PresetTitlePlaceholder>
 </LanguageData>

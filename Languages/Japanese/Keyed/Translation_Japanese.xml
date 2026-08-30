@@ -283,7 +283,6 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Settings.CustomizeRequestTooltip>リクエストJSONのカスタマイズ（温度、思考レベルなど）</RimTalk.Settings.CustomizeRequestTooltip>
     <RimTalk.Settings.CustomizeRequestTitle>リクエストのカスタマイズ: {0} ({1})</RimTalk.Settings.CustomizeRequestTitle>
     <RimTalk.Settings.CustomizeRequestDesc>このLLM用のカスタムJSONリクエストパラメータを設定します。設定された値はAPI送信リクエストペイロードにマージされます（例: temperature、reasoning_effort、max_tokens、thinkingパラメータなど）。</RimTalk.Settings.CustomizeRequestDesc>
-    <RimTalk.Settings.ResetToDefault>デフォルトに戻す</RimTalk.Settings.ResetToDefault>
     <RimTalk.Settings.FormatJson>JSON整形</RimTalk.Settings.FormatJson>
     <RimTalk.Settings.ClearOverride>クリア</RimTalk.Settings.ClearOverride>
     <RimTalk.Settings.CustomJsonSave>保存</RimTalk.Settings.CustomJsonSave>
@@ -478,4 +477,43 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.ScribanVar.Category.Context>コンテキスト</RimTalk.ScribanVar.Category.Context>
     <RimTalk.ScribanVar.Category.GameStatic>ゲームオブジェクト (静的)</RimTalk.ScribanVar.Category.GameStatic>
     <RimTalk.ScribanVar.Category.System>システム</RimTalk.ScribanVar.Category.System>
+
+    <RimTalk.TalkService.VisionUnsupportedFallback>現在のモデル（{0}）は画像入力をサポートしていないため、画像なしで会話を続行しました。</RimTalk.TalkService.VisionUnsupportedFallback>
+    <RimTalk.Settings.CustomDialogue>カスタム対話</RimTalk.Settings.CustomDialogue>
+    <RimTalk.PlayerSettings.SectionPlayer>プレイヤー対話設定</RimTalk.PlayerSettings.SectionPlayer>
+    <RimTalk.PlayerSettings.SectionPresets>対話プリセット管理</RimTalk.PlayerSettings.SectionPresets>
+    <RimTalk.PlayerSettings.AddPreset>新規追加</RimTalk.PlayerSettings.AddPreset>
+    <RimTalk.PlayerSettings.ResetPresetsConfirm>すべてのプリセットをデフォルトの推奨設定に戻しますか？</RimTalk.PlayerSettings.ResetPresetsConfirm>
+    <RimTalk.PlayerSettings.PresetsDesc>有効なプリセットはポーンの右クリックメニューにクイック対話オプションとして直接表示されます。</RimTalk.PlayerSettings.PresetsDesc>
+    <RimTalk.PlayerSettings.Preset1.Title>拠点環境と生活</RimTalk.PlayerSettings.Preset1.Title>
+    <RimTalk.PlayerSettings.Preset1.Prompt>うちの拠点を見回して、設備や日々のコロニー生活についてどう思う？</RimTalk.PlayerSettings.Preset1.Prompt>
+    <RimTalk.PlayerSettings.Preset2.Title>気分と安否の確認</RimTalk.PlayerSettings.Preset2.Title>
+    <RimTalk.PlayerSettings.Preset2.Prompt>最近の体調や気分はどう？何か気になってることや悩みはある？</RimTalk.PlayerSettings.Preset2.Prompt>
+    <RimTalk.PlayerSettings.Preset3.Title>防衛線と戦術確認</RimTalk.PlayerSettings.Preset3.Title>
+    <RimTalk.PlayerSettings.Preset3.Prompt>うちの防衛線と装備を見てみてくれ。襲撃に備えて補強すべき戦術的な弱点はあるか？</RimTalk.PlayerSettings.Preset3.Prompt>
+    <RimTalk.PlayerSettings.Preset4.Title>作業と安全の周知</RimTalk.PlayerSettings.Preset4.Title>
+    <RimTalk.PlayerSettings.Preset4.Prompt>全員注目！安全には十分に注意して、各自の持ち場と作業に集中しよう！</RimTalk.PlayerSettings.Preset4.Prompt>
+    <RimTalk.PlayerSettings.Enabled>有効</RimTalk.PlayerSettings.Enabled>
+    <RimTalk.PlayerSettings.PresetTitleTooltip>ポーン右クリック時に表示されるメニュータイトルです。</RimTalk.PlayerSettings.PresetTitleTooltip>
+    <RimTalk.PlayerSettings.Vision>📷 ビジョン</RimTalk.PlayerSettings.Vision>
+    <RimTalk.PlayerSettings.VisionTooltip>チェックすると、対話リクエストに現在の画面スクリーンショットを添付します。</RimTalk.PlayerSettings.VisionTooltip>
+    <RimTalk.PlayerSettings.Announce>📢 周知</RimTalk.PlayerSettings.Announce>
+    <RimTalk.PlayerSettings.AnnounceTooltip>チェックすると、周囲のすべてのポーンに呼びかける周知形式で対話します。</RimTalk.PlayerSettings.AnnounceTooltip>
+    <RimTalk.PlayerSettings.AllowCustomConversation>カスタム対話を有効化</RimTalk.PlayerSettings.AllowCustomConversation>
+    <RimTalk.PlayerSettings.AllowCustomConversationTooltip>ポーンへの対話指示、ギズモ、および右クリック対話プリセットメニューを有効にします。</RimTalk.PlayerSettings.AllowCustomConversationTooltip>
+    <RimTalk.PlayerSettings.AllowDirectPlayerTalk>プレイヤー ↔ ポーンの直接対話を許可</RimTalk.PlayerSettings.AllowDirectPlayerTalk>
+    <RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>プレイヤーが「Player」としてポーンに直接話しかけたり返答を受けたりできます。オフにするとポーン同士の対話指示のみ可能になります。</RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>
+    <RimTalk.PlayerSettings.AllowPlayerAiGen>プレイヤーのセリフもAIが自動生成（ペルソナ適用）</RimTalk.PlayerSettings.AllowPlayerAiGen>
+    <RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>チェックすると、AIがプレイヤーペルソナに合わせて会話中のプレイヤーの後続セリフを自動生成します。オフの場合、手動入力したセリフのみ発言します。</RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>
+    <RimTalk.PlayerSettings.PromptLabel>送信する対話プロンプト（質問 / 指示）：</RimTalk.PlayerSettings.PromptLabel>
+    <RimTalk.FloatMenu.AttachPhotoTooltip>画面写真の添付切り替え（Ctrl+1）</RimTalk.FloatMenu.AttachPhotoTooltip>
+    <RimTalk.DebugWindow.AttachedImage>添付画像（クリックして拡大）：</RimTalk.DebugWindow.AttachedImage>
+    <RimTalk.DebugWindow.AttachedImageBase64>添付画像 (Base64)</RimTalk.DebugWindow.AttachedImageBase64>
+    <RimTalk.DebugWindow.ClickToExpandImage>クリックして画像を拡大ウィンドウで表示します。</RimTalk.DebugWindow.ClickToExpandImage>
+    <RimTalk.DebugWindow.CopyImage>画像をコピー（クリップボード）</RimTalk.DebugWindow.CopyImage>
+    <RimTalk.DebugWindow.ImageCopied>画像がクリップボードにコピーされました。</RimTalk.DebugWindow.ImageCopied>
+    <RimTalk.PlayerSettings.DisabledNotice>カスタム対話が無効になっています。ポーンの右クリックメニューおよびプレイヤー対話機能は動作しません。</RimTalk.PlayerSettings.DisabledNotice>
+    <RimTalk.PlayerSettings.NewPresetName>新しい対話プリセット</RimTalk.PlayerSettings.NewPresetName>
+    <RimTalk.PlayerSettings.PresetTitleHeader>タイトル / メニュー名</RimTalk.PlayerSettings.PresetTitleHeader>
+    <RimTalk.PlayerSettings.PresetTitlePlaceholder>対話プリセットのタイトル...</RimTalk.PlayerSettings.PresetTitlePlaceholder>
 </LanguageData>

@@ -116,6 +116,11 @@ public static class ApiHistory
     
     public static ApiLog AddUserHistory(Pawn initiator, Pawn recipient, string text, TalkType talkType = TalkType.User, int conversationId = -1)
     {
+        return AddUserHistory(initiator, recipient, text, talkType, null, conversationId);
+    }
+
+    public static ApiLog AddUserHistory(Pawn initiator, Pawn recipient, string text, TalkType talkType, string imageBase64, int conversationId = -1)
+    {
         var initiatorName = Service.PromptService.GetUniqueName(initiator);
         bool hasDistinctRecipient = recipient != null && recipient != initiator && talkType != TalkType.Announcement;
         var recipientName = hasDistinctRecipient ? Service.PromptService.GetUniqueName(recipient) : null;
@@ -125,7 +130,8 @@ public static class ApiHistory
         TalkRequest talkRequest = new(prompt, initiator, recipient, talkType)
         {
             Participants = hasDistinctRecipient ? [initiator, recipient] : [initiator],
-            ConversationId = conversationId
+            ConversationId = conversationId,
+            ImageBase64 = imageBase64
         };
         var log = new ApiLog(initiatorName, talkRequest, text, null, DateTime.Now, Channel.User)
         {
