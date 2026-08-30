@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using RimTalk.Data;
 using RimTalk.Error;
+using RimTalk.Service;
 using RimTalk.Util;
 using RimWorld;
 using UnityEngine.Networking;
@@ -178,6 +179,11 @@ public class Player2Client : IAIClient
         while (!asyncOp.isDone)
         {
             if (Current.Game == null) return null;
+            if (AIService.IsCancellationRequested())
+            {
+                webRequest.Abort();
+                throw new OperationCanceledException("Request canceled by fast-track request.");
+            }
             await Task.Delay(100);
 
             ulong currentBytes = webRequest.downloadedBytes;

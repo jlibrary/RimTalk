@@ -415,6 +415,7 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.DebugWindow.PromptMessages>요청 세부 정보</RimTalk.DebugWindow.PromptMessages>
     <RimTalk.DebugWindow.Contexts>컨텍스트 (Contexts)</RimTalk.DebugWindow.Contexts>
     <RimTalk.DebugWindow.Generating>[생성 중...]</RimTalk.DebugWindow.Generating>
+    <RimTalk.DebugWindow.Canceled>[취소됨]</RimTalk.DebugWindow.Canceled>
     <RimTalk.DebugWindow.StatusDisabled>비활성화됨</RimTalk.DebugWindow.StatusDisabled>
     <RimTalk.DebugWindow.StatusProcessing>처리 중</RimTalk.DebugWindow.StatusProcessing>
     <RimTalk.DebugWindow.StatusIdle>대기 중</RimTalk.DebugWindow.StatusIdle>

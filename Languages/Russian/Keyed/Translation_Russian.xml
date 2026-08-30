@@ -414,6 +414,7 @@
     <RimTalk.DebugWindow.PromptMessages>Подробности запроса</RimTalk.DebugWindow.PromptMessages>
     <RimTalk.DebugWindow.Contexts>Контексты (Contexts)</RimTalk.DebugWindow.Contexts>
     <RimTalk.DebugWindow.Generating>[Генерация...]</RimTalk.DebugWindow.Generating>
+    <RimTalk.DebugWindow.Canceled>[Отменено]</RimTalk.DebugWindow.Canceled>
     <RimTalk.DebugWindow.StatusDisabled>Отключено</RimTalk.DebugWindow.StatusDisabled>
     <RimTalk.DebugWindow.StatusProcessing>Обработка</RimTalk.DebugWindow.StatusProcessing>
     <RimTalk.DebugWindow.StatusIdle>Ожидание</RimTalk.DebugWindow.StatusIdle>

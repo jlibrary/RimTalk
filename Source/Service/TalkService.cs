@@ -146,13 +146,18 @@ public static class TalkService
             // Once the stream is complete, save the full conversation to history.
             AddResponsesToHistory(receivedResponses, talkRequest.Prompt, talkRequest);
         }
+        catch (OperationCanceledException)
+        {
+            Logger.Debug("Dialogue generation canceled.");
+        }
         catch (Exception ex)
         {
             Logger.Error(ex.StackTrace);
         }
         finally
         {
-            Cache.Get(initiator).IsGeneratingTalk = false;
+            var pState = Cache.Get(initiator);
+            pState?.IsGeneratingTalk = false;
         }
     }
 

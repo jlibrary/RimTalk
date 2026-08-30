@@ -90,8 +90,15 @@ internal static class TickManagerPatch
                     continue;
                 }
 
-                if (TalkService.GenerateTalk(request))
-                    UserRequestPool.Remove(pawn);
+                if (AIService.IsBusy())
+                {
+                    if (AIService.CanCancelFor(request))
+                        AIService.CancelCurrent();
+                    return;
+                }
+
+                TalkService.GenerateTalk(request);
+                UserRequestPool.Remove(pawn);
                 return;
             }
         }

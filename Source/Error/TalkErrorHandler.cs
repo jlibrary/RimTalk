@@ -33,6 +33,10 @@ public static class AIErrorHandler
         {
             return await operation();
         }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             var settings = Settings.Get();

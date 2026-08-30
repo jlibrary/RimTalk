@@ -23,4 +23,9 @@ public static class TalkTypeExtensions
     {
         return talkType is TalkType.User or TalkType.Announcement;
     }
+
+    public static bool IsFastTrack(this TalkType talkType)
+    {
+        return talkType is TalkType.User or TalkType.Announcement or TalkType.Interaction or TalkType.Urgent;
+    }
 }

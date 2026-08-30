@@ -415,6 +415,7 @@ Scriban 魔法 (動態內容)
     <RimTalk.DebugWindow.PromptMessages>請求詳情</RimTalk.DebugWindow.PromptMessages>
     <RimTalk.DebugWindow.Contexts>上下文 (Contexts)</RimTalk.DebugWindow.Contexts>
     <RimTalk.DebugWindow.Generating>[正在生成...]</RimTalk.DebugWindow.Generating>
+    <RimTalk.DebugWindow.Canceled>[已取消]</RimTalk.DebugWindow.Canceled>
     <RimTalk.DebugWindow.StatusDisabled>已禁用</RimTalk.DebugWindow.StatusDisabled>
     <RimTalk.DebugWindow.StatusProcessing>處理中</RimTalk.DebugWindow.StatusProcessing>
     <RimTalk.DebugWindow.StatusIdle>閒置</RimTalk.DebugWindow.StatusIdle>

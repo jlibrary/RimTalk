@@ -86,6 +86,11 @@ public static class CustomDialogueService
                 recipientState.AddTalkRequest(message, initiator, talkType);
         }
 
+        if (AIService.IsBusy())
+        {
+            AIService.CancelCurrent();
+        }
+
         ApiLog apiLog = ApiHistory.AddUserHistory(initiator, recipient, message, talkType);
         
         if (initiator.IsPlayer())

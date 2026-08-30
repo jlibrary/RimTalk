@@ -411,6 +411,7 @@ Crucial Tips:
     <RimTalk.DebugWindow.PromptMessages>Request Details</RimTalk.DebugWindow.PromptMessages>
     <RimTalk.DebugWindow.Contexts>Contexts</RimTalk.DebugWindow.Contexts>
     <RimTalk.DebugWindow.Generating>[Generating...]</RimTalk.DebugWindow.Generating>
+    <RimTalk.DebugWindow.Canceled>[Cancelled]</RimTalk.DebugWindow.Canceled>
     <RimTalk.DebugWindow.StatusDisabled>Disabled</RimTalk.DebugWindow.StatusDisabled>
     <RimTalk.DebugWindow.StatusProcessing>Processing</RimTalk.DebugWindow.StatusProcessing>
     <RimTalk.DebugWindow.StatusIdle>Idle</RimTalk.DebugWindow.StatusIdle>

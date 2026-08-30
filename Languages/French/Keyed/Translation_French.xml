@@ -415,6 +415,7 @@ Conseils Cruciaux :
     <RimTalk.DebugWindow.PromptMessages>Détails de la demande</RimTalk.DebugWindow.PromptMessages>
     <RimTalk.DebugWindow.Contexts>Contextes</RimTalk.DebugWindow.Contexts>
     <RimTalk.DebugWindow.Generating>[Génération...]</RimTalk.DebugWindow.Generating>
+    <RimTalk.DebugWindow.Canceled>[Annulé]</RimTalk.DebugWindow.Canceled>
     <RimTalk.DebugWindow.StatusDisabled>Désactivé</RimTalk.DebugWindow.StatusDisabled>
     <RimTalk.DebugWindow.StatusProcessing>En traitement</RimTalk.DebugWindow.StatusProcessing>
     <RimTalk.DebugWindow.StatusIdle>Inactif</RimTalk.DebugWindow.StatusIdle>

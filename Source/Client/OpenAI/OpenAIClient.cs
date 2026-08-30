@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using RimTalk.Data;
 using RimTalk.Error;
+using RimTalk.Service;
 using RimTalk.Util;
 using UnityEngine.Networking;
 using Verse;
@@ -192,6 +193,11 @@ public class OpenAIClient(
         while (!asyncOp.isDone)
         {
             if (Current.Game == null) return null;
+            if (AIService.IsCancellationRequested())
+            {
+                webRequest.Abort();
+                throw new OperationCanceledException("Request canceled by fast-track request.");
+            }
             await Task.Delay(100);
 
             ulong currentBytes = webRequest.downloadedBytes;

@@ -415,6 +415,7 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.DebugWindow.PromptMessages>リクエスト詳細</RimTalk.DebugWindow.PromptMessages>
     <RimTalk.DebugWindow.Contexts>コンテキスト (Contexts)</RimTalk.DebugWindow.Contexts>
     <RimTalk.DebugWindow.Generating>[生成中...]</RimTalk.DebugWindow.Generating>
+    <RimTalk.DebugWindow.Canceled>[キャンセル]</RimTalk.DebugWindow.Canceled>
     <RimTalk.DebugWindow.StatusDisabled>無効</RimTalk.DebugWindow.StatusDisabled>
     <RimTalk.DebugWindow.StatusProcessing>処理中</RimTalk.DebugWindow.StatusProcessing>
     <RimTalk.DebugWindow.StatusIdle>待機中</RimTalk.DebugWindow.StatusIdle>
