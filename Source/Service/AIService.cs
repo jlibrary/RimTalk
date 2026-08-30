@@ -44,7 +44,8 @@ public static class AIService
                     if (lastApiLog == apiLog) elapsedMs -= lastApiLog.ElapsedMs;
 
                     var newLog = ApiHistory.AddResponse(apiLog.Id, response.Text, response.Name,
-                        response.InteractionRaw, elapsedMs: elapsedMs);
+                        response.InteractionRaw, payload: null, elapsedMs: elapsedMs,
+                        targetName: response.TargetName);
                     
                     response.Id = newLog.Id;
                     lastApiLog = newLog;

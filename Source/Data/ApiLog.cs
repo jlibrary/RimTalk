@@ -18,6 +18,7 @@ public class ApiLog(string name, TalkRequest talkRequest, string response, Paylo
     public int ConversationId { get; set; }
     public TalkRequest TalkRequest { get; set; } = talkRequest ?? new TalkRequest(null, null);
     public string Name { get; set; } = name;
+    public string TargetName { get; set; }
     public string Response { get; set; } = response;
     public string InteractionType;
     public bool IsFirstDialogue;
@@ -50,6 +51,7 @@ public class ApiLog(string name, TalkRequest talkRequest, string response, Paylo
         var sb = new StringBuilder();
         sb.AppendLine($"Timestamp: {Timestamp:yyyy-MM-dd HH:mm:ss}");
         sb.AppendLine($"Pawn: {Name ?? "-"}");
+        sb.AppendLine($"Target: {TargetName ?? "-"}");
         sb.AppendLine($"InteractionType: {InteractionType ?? "-"}");
         sb.AppendLine($"ElapsedMs: {ElapsedMs}");
         sb.AppendLine($"TokenCount: {Payload?.TokenCount}");

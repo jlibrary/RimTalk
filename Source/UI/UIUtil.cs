@@ -19,8 +19,11 @@ public static class UIUtil
     /// <param name="rect">The rectangle area to draw in.</param>
     /// <param name="pawnName">The name of the pawn to display.</param>
     /// <param name="pawn">An optional direct reference to the pawn.</param>
-    public static void DrawClickablePawnName(Rect rect, string pawnName, Pawn pawn = null)
+    /// <param name="includeBrackets">Whether to include square brackets around the name.</param>
+    public static void DrawClickablePawnName(Rect rect, string pawnName, Pawn pawn = null, bool includeBrackets = true)
     {
+        string label = includeBrackets ? $"[{pawnName}]" : pawnName;
+
         if (pawn != null)
         {
             var originalColor = GUI.color;
@@ -31,7 +34,7 @@ public static class UIUtil
                 pawn.Dead ? Color.gray :
                 PawnNameColorUtility.PawnNameColorOf(pawn);
 
-            Widgets.Label(rect, $"[{pawnName}]");
+            Widgets.Label(rect, label);
 
             if (Widgets.ButtonInvisible(rect))
             {
@@ -49,7 +52,7 @@ public static class UIUtil
         }
         else
         {
-            Widgets.Label(rect, $"[{pawnName}]");
+            Widgets.Label(rect, label);
         }
     }
     
