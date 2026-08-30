@@ -50,8 +50,10 @@ namespace RimTalk
                 IncludeTerrain = false,
                 IncludeBeauty = false,
                 IncludeCleanliness = false,
+                IncludeSurroundings = false,
                 IncludeWealth = false,
-                IncludeEvents = false
+                IncludeEvents = false,
+                IncludeTopicKeywords = false
             }},
             { ContextPreset.Standard, new ContextSettings {
                 EnableContextOptimization = false,
@@ -82,7 +84,8 @@ namespace RimTalk
                 IncludeCleanliness = false,
                 IncludeSurroundings = false,
                 IncludeWealth = false,
-                IncludeEvents = Service.EventService.DefaultIncludeEvents
+                IncludeEvents = Service.EventService.DefaultIncludeEvents,
+                IncludeTopicKeywords = true
             }},
             { ContextPreset.Comprehensive, new ContextSettings {
                 EnableContextOptimization = false,
@@ -113,7 +116,8 @@ namespace RimTalk
                 IncludeCleanliness = true,
                 IncludeSurroundings = true,
                 IncludeWealth = true,
-                IncludeEvents = Service.EventService.DefaultIncludeEvents
+                IncludeEvents = Service.EventService.DefaultIncludeEvents,
+                IncludeTopicKeywords = true
             }}
         };
 
@@ -175,6 +179,11 @@ namespace RimTalk
                 Text.Font = GameFont.Small;
                 GUI.color = Color.white;
             }
+            listing.Gap(6f);
+
+            listing.CheckboxLabeled("RimTalk.Settings.IncludeTopicKeywords".Translate(),
+                ref context.IncludeTopicKeywords,
+                "RimTalk.Settings.IncludeTopicKeywords.Tooltip".Translate());
             listing.Gap();
 
             DrawColumns(listing, context);

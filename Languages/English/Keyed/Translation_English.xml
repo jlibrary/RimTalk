@@ -72,8 +72,6 @@
     <!-- Settings.cs -->
     <RimTalk.Settings.BasicSettings>Basic Settings</RimTalk.Settings.BasicSettings>
     <RimTalk.Settings.PromptSetting>Prompt Setting</RimTalk.Settings.PromptSetting>
-    <RimTalk.Settings.ImportPreset>Import</RimTalk.Settings.ImportPreset>
-    <RimTalk.Settings.ExportPreset>Export</RimTalk.Settings.ExportPreset>
     <RimTalk.Settings.ShowVariables>Reference</RimTalk.Settings.ShowVariables>
     <RimTalk.Settings.ResetConfirm>Are you sure you want to reset all prompt presets and reference data to default? This cannot be undone.</RimTalk.Settings.ResetConfirm>
     
@@ -86,9 +84,6 @@
     <RimTalk.Settings.PromptPreset.Activate>Activate</RimTalk.Settings.PromptPreset.Activate>
     <RimTalk.Settings.PromptPreset.Duplicate>Duplicate</RimTalk.Settings.PromptPreset.Duplicate>
     <RimTalk.Settings.PromptPreset.Delete>Delete</RimTalk.Settings.PromptPreset.Delete>
-    <RimTalk.Settings.PromptPreset.SectionSystem>System</RimTalk.Settings.PromptPreset.SectionSystem>
-    <RimTalk.Settings.PromptPreset.SectionHistory>History</RimTalk.Settings.PromptPreset.SectionHistory>
-    <RimTalk.Settings.PromptPreset.SectionPrompt>Prompt</RimTalk.Settings.PromptPreset.SectionPrompt>
     <RimTalk.Settings.PromptPreset.NewEntry>+ New Entry</RimTalk.Settings.PromptPreset.NewEntry>
     <RimTalk.Settings.PromptPreset.NewEntryName>New Entry</RimTalk.Settings.PromptPreset.NewEntryName>
     <RimTalk.Settings.PromptPreset.SelectEntryToEdit>Select an entry to edit</RimTalk.Settings.PromptPreset.SelectEntryToEdit>
@@ -100,7 +95,6 @@
     <RimTalk.Settings.PromptPreset.PositionRelative>Relative</RimTalk.Settings.PromptPreset.PositionRelative>
     <RimTalk.Settings.PromptPreset.PositionInChat>InChat</RimTalk.Settings.PromptPreset.PositionInChat>
     <RimTalk.Settings.PromptPreset.Depth>Depth:</RimTalk.Settings.PromptPreset.Depth>
-    <RimTalk.Settings.PromptPreset.Content>Content:</RimTalk.Settings.PromptPreset.Content>
     <RimTalk.Settings.PromptPreset.ModVariables>Mod Variables</RimTalk.Settings.PromptPreset.ModVariables>
     <RimTalk.Settings.PromptPreset.VariablePreviewHint>Shows all available objects, properties, and functions. In-game values shown when available.</RimTalk.Settings.PromptPreset.VariablePreviewHint>
     
@@ -118,7 +112,6 @@
     <RimTalk.Settings.PromptPreset.PreviewError>Error generating preview: {0}</RimTalk.Settings.PromptPreset.PreviewError>
     
     <!-- Simple/Advanced Mode -->
-    <RimTalk.Settings.SimpleModeTip>Simple Mode edits only the Base Instruction. The rest are auto-added in order: {{json.format}}, {{context}}, {{chat.history}}, {{prompt}}.</RimTalk.Settings.SimpleModeTip>
     <RimTalk.Settings.AdvancedModeWarning>Advanced mode gives full control over prompt entries, variables, and message ordering. Your current instruction will be preserved.\nThis feature is still in testing, so you may experience unexpected behavior. Do you want to continue?</RimTalk.Settings.AdvancedModeWarning>
     <RimTalk.Settings.PromptHelp>Help</RimTalk.Settings.PromptHelp>
     <RimTalk.Settings.AdvancedHelpContent>Advanced Preset Guide
@@ -276,7 +269,6 @@ Crucial Tips:
     <RimTalk.Settings.ProviderHeader>Provider</RimTalk.Settings.ProviderHeader>
     <RimTalk.Settings.ApiKeyHeader>API Key</RimTalk.Settings.ApiKeyHeader>
     <RimTalk.Settings.ModelHeader>Model</RimTalk.Settings.ModelHeader>
-    <RimTalk.Settings.CustomModelHeader>Custom Model</RimTalk.Settings.CustomModelHeader>
     <RimTalk.Settings.EnabledHeader>Enabled</RimTalk.Settings.EnabledHeader>
     <RimTalk.Settings.EnableDisableApiConfigTooltip>Enable or disable this API configuration</RimTalk.Settings.EnableDisableApiConfigTooltip>
     <RimTalk.Settings.LocalProviderConfiguration>Local Provider Configuration</RimTalk.Settings.LocalProviderConfiguration>
@@ -374,7 +366,8 @@ Crucial Tips:
     <RimTalk.Settings.IncludeCleanliness>Cleanliness</RimTalk.Settings.IncludeCleanliness>
     <RimTalk.Settings.IncludeSurroundings>Nearby Items</RimTalk.Settings.IncludeSurroundings>
     <RimTalk.Settings.IncludeWealth>Colony Wealth</RimTalk.Settings.IncludeWealth>
-    <RimTalk.Settings.IncludeEvents>Colony Events</RimTalk.Settings.IncludeEvents>
+    <RimTalk.Settings.IncludeTopicKeywords>Generate New Conversation Topics</RimTalk.Settings.IncludeTopicKeywords>
+    <RimTalk.Settings.IncludeTopicKeywords.Tooltip>When pawns have no specific events or context to discuss, randomly generates a new conversation topic with a 50% chance.</RimTalk.Settings.IncludeTopicKeywords.Tooltip>
     
     <!-- DebugWindow.cs -->
     <RimTalk.DebugWindow.ViewByTime>By Time</RimTalk.DebugWindow.ViewByTime>
@@ -383,7 +376,6 @@ Crucial Tips:
     <RimTalk.DebugWindow.FilterPawn>Name</RimTalk.DebugWindow.FilterPawn>
     <RimTalk.DebugWindow.Search>Search</RimTalk.DebugWindow.Search>
     <RimTalk.DebugWindow.State>State</RimTalk.DebugWindow.State>
-    <RimTalk.DebugWindow.Limit>Limit</RimTalk.DebugWindow.Limit>
     <RimTalk.DebugWindow.StateAll>All States</RimTalk.DebugWindow.StateAll>
     <RimTalk.DebugWindow.StatePending>Pending</RimTalk.DebugWindow.StatePending>
     <RimTalk.DebugWindow.StateIgnored>Ignored</RimTalk.DebugWindow.StateIgnored>
@@ -394,7 +386,6 @@ Crucial Tips:
     <RimTalk.DebugWindow.Last>Last</RimTalk.DebugWindow.Last>
     <RimTalk.DebugWindow.AutoScroll>Auto Scroll</RimTalk.DebugWindow.AutoScroll>
     <RimTalk.DebugWindow.TooltipSelectForDetails>Select a row to view details</RimTalk.DebugWindow.TooltipSelectForDetails>
-    <RimTalk.DebugWindow.Details>Details</RimTalk.DebugWindow.Details>
     <RimTalk.DebugWindow.SelectRowHint>Select a request on the left to inspect Prompt/Response/Contexts.</RimTalk.DebugWindow.SelectRowHint>
     <RimTalk.DebugWindow.Resend>Resend</RimTalk.DebugWindow.Resend>
     <RimTalk.DebugWindow.ResendTooltip>Edit context and prompt, then resend to test dialogue.</RimTalk.DebugWindow.ResendTooltip>
@@ -409,13 +400,11 @@ Crucial Tips:
     <RimTalk.DebugWindow.Prompt>Prompt</RimTalk.DebugWindow.Prompt>
     <RimTalk.DebugWindow.Response>Response</RimTalk.DebugWindow.Response>
     <RimTalk.DebugWindow.PromptMessages>Request Details</RimTalk.DebugWindow.PromptMessages>
-    <RimTalk.DebugWindow.Contexts>Contexts</RimTalk.DebugWindow.Contexts>
     <RimTalk.DebugWindow.Generating>[Generating...]</RimTalk.DebugWindow.Generating>
     <RimTalk.DebugWindow.Canceled>[Cancelled]</RimTalk.DebugWindow.Canceled>
     <RimTalk.DebugWindow.StatusDisabled>Disabled</RimTalk.DebugWindow.StatusDisabled>
     <RimTalk.DebugWindow.StatusProcessing>Processing</RimTalk.DebugWindow.StatusProcessing>
     <RimTalk.DebugWindow.StatusIdle>Idle</RimTalk.DebugWindow.StatusIdle>
-    <RimTalk.DebugWindow.GroupByPawn>Group by Pawn</RimTalk.DebugWindow.GroupByPawn>
     <RimTalk.DebugWindow.ModSettings>Settings</RimTalk.DebugWindow.ModSettings>
     <RimTalk.DebugWindow.Export>Export</RimTalk.DebugWindow.Export>
     <RimTalk.DebugWindow.ResetLogs>Reset Logs</RimTalk.DebugWindow.ResetLogs>
@@ -452,7 +441,6 @@ Crucial Tips:
     <RimTalk.DebugWindow.SystemInstruction>System Instruction</RimTalk.DebugWindow.SystemInstruction>
     <RimTalk.DebugWindow.ChatHistory>Chat History</RimTalk.DebugWindow.ChatHistory>
     <RimTalk.DebugWindow.InputPrompt>Input Prompt</RimTalk.DebugWindow.InputPrompt>
-    <RimTalk.DebugWindow.TooltipPromptResponse>Prompt:\n{0}\n\nResponse:\n{1}</RimTalk.DebugWindow.TooltipPromptResponse>
     
     <!-- Overlay.cs -->
     <RimTalk.Overlay.Debug>Debug</RimTalk.Overlay.Debug>

@@ -35,6 +35,7 @@ namespace RimTalk.Data
         public bool IncludeWealth = false;
         public bool IncludeEvents = Service.EventService.DefaultIncludeEvents;
         public int MaxEventsCount = 5;
+        public bool IncludeTopicKeywords = true;
 
         public void ExposeData()
         {
@@ -43,6 +44,7 @@ namespace RimTalk.Data
             Scribe_Values.Look(ref ConversationHistoryCount, "ConversationHistoryCount", 2);
             Scribe_Values.Look(ref IncludeEvents, "IncludeEvents", Service.EventService.DefaultIncludeEvents);
             Scribe_Values.Look(ref MaxEventsCount, "MaxEventsCount", 5);
+            Scribe_Values.Look(ref IncludeTopicKeywords, "IncludeTopicKeywords", true);
             Scribe_Values.Look(ref IncludeRace, "IncludeRace", true);
             Scribe_Values.Look(ref IncludeNotableGenes, "IncludeNotableGenes", true);
             Scribe_Values.Look(ref IncludeIdeology, "IncludeIdeology", true);

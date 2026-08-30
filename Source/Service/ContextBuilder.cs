@@ -488,7 +488,7 @@ public static class ContextBuilder
                 topicSb.Append("(downed in pain. Short, strained dialogue)");
             else if (talkRequest.Prompt != null)
                 topicSb.Append(talkRequest.Prompt);
-            else if (talkRequest.TalkType != TalkType.Urgent)
+            else if (talkRequest.TalkType != TalkType.Urgent && Settings.Get().Context.IncludeTopicKeywords)
             {
                 string topicKeywords = TopicService.TryGetTopic(mainPawn);
                 if (topicKeywords != null)

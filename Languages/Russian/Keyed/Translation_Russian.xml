@@ -72,8 +72,6 @@
     <!-- Settings.cs -->
     <RimTalk.Settings.BasicSettings>Основные настройки</RimTalk.Settings.BasicSettings>
     <RimTalk.Settings.PromptSetting>Настройка подсказки</RimTalk.Settings.PromptSetting>
-    <RimTalk.Settings.ImportPreset>Импорт</RimTalk.Settings.ImportPreset>
-    <RimTalk.Settings.ExportPreset>Экспорт</RimTalk.Settings.ExportPreset>
     <RimTalk.Settings.ShowVariables>Переменные</RimTalk.Settings.ShowVariables>
     <RimTalk.Settings.ResetConfirm>Вы уверены, что хотите сбросить все пресеты и справочные данные до значений по умолчанию? Это действие нельзя отменить.</RimTalk.Settings.ResetConfirm>
     
@@ -86,9 +84,6 @@
     <RimTalk.Settings.PromptPreset.Activate>Активировать</RimTalk.Settings.PromptPreset.Activate>
     <RimTalk.Settings.PromptPreset.Duplicate>Дублировать</RimTalk.Settings.PromptPreset.Duplicate>
     <RimTalk.Settings.PromptPreset.Delete>Удалить</RimTalk.Settings.PromptPreset.Delete>
-    <RimTalk.Settings.PromptPreset.SectionSystem>Система (System)</RimTalk.Settings.PromptPreset.SectionSystem>
-    <RimTalk.Settings.PromptPreset.SectionHistory>История (History)</RimTalk.Settings.PromptPreset.SectionHistory>
-    <RimTalk.Settings.PromptPreset.SectionPrompt>Промпт (Prompt)</RimTalk.Settings.PromptPreset.SectionPrompt>
     <RimTalk.Settings.PromptPreset.NewEntry>+ Новая запись</RimTalk.Settings.PromptPreset.NewEntry>
     <RimTalk.Settings.PromptPreset.NewEntryName>Новая запись</RimTalk.Settings.PromptPreset.NewEntryName>
     <RimTalk.Settings.PromptPreset.SelectEntryToEdit>Выберите запись для редактирования</RimTalk.Settings.PromptPreset.SelectEntryToEdit>
@@ -100,7 +95,6 @@
     <RimTalk.Settings.PromptPreset.PositionRelative>Относительно</RimTalk.Settings.PromptPreset.PositionRelative>
     <RimTalk.Settings.PromptPreset.PositionInChat>В чате (InChat)</RimTalk.Settings.PromptPreset.PositionInChat>
     <RimTalk.Settings.PromptPreset.Depth>Глубина:</RimTalk.Settings.PromptPreset.Depth>
-    <RimTalk.Settings.PromptPreset.Content>Содержание:</RimTalk.Settings.PromptPreset.Content>
     <RimTalk.Settings.PromptPreset.ModVariables>Переменные мода</RimTalk.Settings.PromptPreset.ModVariables>
     <RimTalk.Settings.PromptPreset.VariablePreviewHint>Показывает все доступные объекты, свойства и функции. Значения из игры отображаются при наличии.</RimTalk.Settings.PromptPreset.VariablePreviewHint>
     
@@ -118,7 +112,6 @@
     <RimTalk.Settings.PromptPreset.PreviewError>Ошибка при генерации предпросмотра: {0}</RimTalk.Settings.PromptPreset.PreviewError>
     
     <!-- Simple/Advanced Mode -->
-    <RimTalk.Settings.SimpleModeTip>Профили персонажей, история чата и контекст включаются автоматически.</RimTalk.Settings.SimpleModeTip>
     <RimTalk.Settings.AdvancedModeWarning>Режим «Расширенный» позволяет полностью контролировать записи подсказок, переменные и порядок сообщений. Ваши текущие инструкции будут сохранены.\nЭта функция все еще находится на стадии тестирования, поэтому возможны непредвиденные действия. Продолжить?</RimTalk.Settings.AdvancedModeWarning>
     <RimTalk.Settings.PromptHelp>Помощь</RimTalk.Settings.PromptHelp>
     <RimTalk.Settings.AdvancedHelpContent>Руководство по расширенным пресетам
@@ -279,7 +272,6 @@
     <RimTalk.Settings.ProviderHeader>Провайдер</RimTalk.Settings.ProviderHeader>
     <RimTalk.Settings.ApiKeyHeader>Ключ API</RimTalk.Settings.ApiKeyHeader>
     <RimTalk.Settings.ModelHeader>Модель</RimTalk.Settings.ModelHeader>
-    <RimTalk.Settings.CustomModelHeader>Пользовательская модель</RimTalk.Settings.CustomModelHeader>
     <RimTalk.Settings.EnabledHeader>Включено</RimTalk.Settings.EnabledHeader>
     <RimTalk.Settings.EnableDisableApiConfigTooltip>Включить или отключить эту конфигурацию API</RimTalk.Settings.EnableDisableApiConfigTooltip>
     <RimTalk.Settings.LocalProviderConfiguration>Конфигурация локального провайдера</RimTalk.Settings.LocalProviderConfiguration>
@@ -377,7 +369,8 @@
     <RimTalk.Settings.IncludeCleanliness>Чистоту</RimTalk.Settings.IncludeCleanliness>
     <RimTalk.Settings.IncludeSurroundings>Близлежащие предметы</RimTalk.Settings.IncludeSurroundings>
     <RimTalk.Settings.IncludeWealth>Богатство колонии</RimTalk.Settings.IncludeWealth>
-    <RimTalk.Settings.IncludeEvents>События колонии</RimTalk.Settings.IncludeEvents>
+    <RimTalk.Settings.IncludeTopicKeywords>Создавать новые темы для разговоров</RimTalk.Settings.IncludeTopicKeywords>
+    <RimTalk.Settings.IncludeTopicKeywords.Tooltip>Если у пешек нет конкретных событий или контекста для обсуждения, с вероятностью 50% создается новая случайная тема для разговора.</RimTalk.Settings.IncludeTopicKeywords.Tooltip>
 
     <!-- DebugWindow.cs -->
     <RimTalk.DebugWindow.ViewByTime>По времени</RimTalk.DebugWindow.ViewByTime>
@@ -386,7 +379,6 @@
     <RimTalk.DebugWindow.FilterPawn>Имя</RimTalk.DebugWindow.FilterPawn>
     <RimTalk.DebugWindow.Search>Поиск</RimTalk.DebugWindow.Search>
     <RimTalk.DebugWindow.State>Состояние</RimTalk.DebugWindow.State>
-    <RimTalk.DebugWindow.Limit>Лимит</RimTalk.DebugWindow.Limit>
     <RimTalk.DebugWindow.StateAll>Все</RimTalk.DebugWindow.StateAll>
     <RimTalk.DebugWindow.StatePending>Ожид.</RimTalk.DebugWindow.StatePending>
     <RimTalk.DebugWindow.StateIgnored>Игн.</RimTalk.DebugWindow.StateIgnored>
@@ -397,7 +389,6 @@
     <RimTalk.DebugWindow.Last>посл.</RimTalk.DebugWindow.Last>
     <RimTalk.DebugWindow.AutoScroll>Автопрокрутка</RimTalk.DebugWindow.AutoScroll>
     <RimTalk.DebugWindow.TooltipSelectForDetails>Выберите строку, чтобы просмотреть подробности</RimTalk.DebugWindow.TooltipSelectForDetails>
-    <RimTalk.DebugWindow.Details>Подробности</RimTalk.DebugWindow.Details>
     <RimTalk.DebugWindow.SelectRowHint>Выберите запрос слева, чтобы просмотреть промпт, ответ и контексты.</RimTalk.DebugWindow.SelectRowHint>
     <RimTalk.DebugWindow.Resend>Отправить снова</RimTalk.DebugWindow.Resend>
     <RimTalk.DebugWindow.ResendTooltip>Измените контекст и запрос, затем отправьте снова для тестирования диалога.</RimTalk.DebugWindow.ResendTooltip>
@@ -412,13 +403,11 @@
     <RimTalk.DebugWindow.Prompt>Промпт (Prompt)</RimTalk.DebugWindow.Prompt>
     <RimTalk.DebugWindow.Response>Ответ (Response)</RimTalk.DebugWindow.Response>
     <RimTalk.DebugWindow.PromptMessages>Подробности запроса</RimTalk.DebugWindow.PromptMessages>
-    <RimTalk.DebugWindow.Contexts>Контексты (Contexts)</RimTalk.DebugWindow.Contexts>
     <RimTalk.DebugWindow.Generating>[Генерация...]</RimTalk.DebugWindow.Generating>
     <RimTalk.DebugWindow.Canceled>[Отменено]</RimTalk.DebugWindow.Canceled>
     <RimTalk.DebugWindow.StatusDisabled>Отключено</RimTalk.DebugWindow.StatusDisabled>
     <RimTalk.DebugWindow.StatusProcessing>Обработка</RimTalk.DebugWindow.StatusProcessing>
     <RimTalk.DebugWindow.StatusIdle>Ожидание</RimTalk.DebugWindow.StatusIdle>
-    <RimTalk.DebugWindow.GroupByPawn>Группировать по пешке</RimTalk.DebugWindow.GroupByPawn>
     <RimTalk.DebugWindow.ModSettings>Настройки</RimTalk.DebugWindow.ModSettings>
     <RimTalk.DebugWindow.Export>Экспорт</RimTalk.DebugWindow.Export>
     <RimTalk.DebugWindow.ResetLogs>Сброс лога</RimTalk.DebugWindow.ResetLogs>
@@ -455,7 +444,6 @@
     <RimTalk.DebugWindow.SystemInstruction>Системная инструкция (System Instruction)</RimTalk.DebugWindow.SystemInstruction>
     <RimTalk.DebugWindow.ChatHistory>История чата (Chat History)</RimTalk.DebugWindow.ChatHistory>
     <RimTalk.DebugWindow.InputPrompt>Подсказка ввода (Input Prompt)</RimTalk.DebugWindow.InputPrompt>
-    <RimTalk.DebugWindow.TooltipPromptResponse>Запрос:\n{0}\n\nОтвет:\n{1}</RimTalk.DebugWindow.TooltipPromptResponse>
     
     <!-- Overlay.cs -->
     <RimTalk.Overlay.Debug>Отладка</RimTalk.Overlay.Debug>

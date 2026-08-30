@@ -72,8 +72,6 @@
     <!-- Settings.cs -->
     <RimTalk.Settings.BasicSettings>基本设置</RimTalk.Settings.BasicSettings>
     <RimTalk.Settings.PromptSetting>提示词设置</RimTalk.Settings.PromptSetting>
-    <RimTalk.Settings.ImportPreset>导入</RimTalk.Settings.ImportPreset>
-    <RimTalk.Settings.ExportPreset>导出</RimTalk.Settings.ExportPreset>
     <RimTalk.Settings.ShowVariables>变量参考</RimTalk.Settings.ShowVariables>
     <RimTalk.Settings.ResetConfirm>确定要将所有提示词预设和参考数据重置为默认值吗？此操作无法撤销。</RimTalk.Settings.ResetConfirm>
     
@@ -86,9 +84,6 @@
     <RimTalk.Settings.PromptPreset.Activate>激活</RimTalk.Settings.PromptPreset.Activate>
     <RimTalk.Settings.PromptPreset.Duplicate>复制</RimTalk.Settings.PromptPreset.Duplicate>
     <RimTalk.Settings.PromptPreset.Delete>删除</RimTalk.Settings.PromptPreset.Delete>
-    <RimTalk.Settings.PromptPreset.SectionSystem>系统 (System)</RimTalk.Settings.PromptPreset.SectionSystem>
-    <RimTalk.Settings.PromptPreset.SectionHistory>历史 (History)</RimTalk.Settings.PromptPreset.SectionHistory>
-    <RimTalk.Settings.PromptPreset.SectionPrompt>提示 (Prompt)</RimTalk.Settings.PromptPreset.SectionPrompt>
     <RimTalk.Settings.PromptPreset.NewEntry>+ 新建条目</RimTalk.Settings.PromptPreset.NewEntry>
     <RimTalk.Settings.PromptPreset.NewEntryName>新条目</RimTalk.Settings.PromptPreset.NewEntryName>
     <RimTalk.Settings.PromptPreset.SelectEntryToEdit>选择一个条目进行编辑</RimTalk.Settings.PromptPreset.SelectEntryToEdit>
@@ -100,7 +95,6 @@
     <RimTalk.Settings.PromptPreset.PositionRelative>相对</RimTalk.Settings.PromptPreset.PositionRelative>
     <RimTalk.Settings.PromptPreset.PositionInChat>聊天内</RimTalk.Settings.PromptPreset.PositionInChat>
     <RimTalk.Settings.PromptPreset.Depth>深度：</RimTalk.Settings.PromptPreset.Depth>
-    <RimTalk.Settings.PromptPreset.Content>内容：</RimTalk.Settings.PromptPreset.Content>
     <RimTalk.Settings.PromptPreset.ModVariables>Mod 变量</RimTalk.Settings.PromptPreset.ModVariables>
     <RimTalk.Settings.PromptPreset.VariablePreviewHint>显示所有可用的对象、属性和函数。游戏内可用时显示实际值。</RimTalk.Settings.PromptPreset.VariablePreviewHint>
     
@@ -118,7 +112,6 @@
     <RimTalk.Settings.PromptPreset.PreviewError>生成预览时出错：{0}</RimTalk.Settings.PromptPreset.PreviewError>
     
     <!-- Simple/Advanced Mode -->
-    <RimTalk.Settings.SimpleModeTip>简易模式仅编辑“基础指令”。其余内容会按顺序自动追加：{{json.format}}、{{context}}、{{chat.history}}、{{prompt}}。</RimTalk.Settings.SimpleModeTip>
     <RimTalk.Settings.AdvancedModeWarning>高级模式允许您完全控制提示条目、变量和消息顺序。您当前的指令将被保留。\n此功能仍在测试中，可能会出现意外行为。您要继续吗？</RimTalk.Settings.AdvancedModeWarning>
     <RimTalk.Settings.PromptHelp>帮助</RimTalk.Settings.PromptHelp>
     <RimTalk.Settings.AdvancedHelpContent>高级预设指南
@@ -276,7 +269,6 @@ Scriban 魔法 (动态内容)
     <RimTalk.Settings.ProviderHeader>供应商</RimTalk.Settings.ProviderHeader>
     <RimTalk.Settings.ApiKeyHeader>API 密钥</RimTalk.Settings.ApiKeyHeader>
     <RimTalk.Settings.ModelHeader>模型</RimTalk.Settings.ModelHeader>
-    <RimTalk.Settings.CustomModelHeader>自定义模型</RimTalk.Settings.CustomModelHeader>
     <RimTalk.Settings.EnabledHeader>已启用</RimTalk.Settings.EnabledHeader>
     <RimTalk.Settings.EnableDisableApiConfigTooltip>启用或禁用此 API 设置</RimTalk.Settings.EnableDisableApiConfigTooltip>
     <RimTalk.Settings.LocalProviderConfiguration>本地供应商设置</RimTalk.Settings.LocalProviderConfiguration>
@@ -374,7 +366,8 @@ Scriban 魔法 (动态内容)
     <RimTalk.Settings.IncludeCleanliness>清洁度</RimTalk.Settings.IncludeCleanliness>
     <RimTalk.Settings.IncludeSurroundings>附近的物品</RimTalk.Settings.IncludeSurroundings>
     <RimTalk.Settings.IncludeWealth>殖民地财富</RimTalk.Settings.IncludeWealth>
-    <RimTalk.Settings.IncludeEvents>殖民地事件</RimTalk.Settings.IncludeEvents>
+    <RimTalk.Settings.IncludeTopicKeywords>生成新的对话话题</RimTalk.Settings.IncludeTopicKeywords>
+    <RimTalk.Settings.IncludeTopicKeywords.Tooltip>当殖民者周围没有具体事件或上下文可供讨论时，有50%的概率随机生成一个新的对话话题。</RimTalk.Settings.IncludeTopicKeywords.Tooltip>
 
     <!-- DebugWindow.cs -->
     <RimTalk.DebugWindow.ViewByTime>按时间</RimTalk.DebugWindow.ViewByTime>
@@ -383,7 +376,6 @@ Scriban 魔法 (动态内容)
     <RimTalk.DebugWindow.FilterPawn>名称</RimTalk.DebugWindow.FilterPawn>
     <RimTalk.DebugWindow.Search>搜索</RimTalk.DebugWindow.Search>
     <RimTalk.DebugWindow.State>状态</RimTalk.DebugWindow.State>
-    <RimTalk.DebugWindow.Limit>限制</RimTalk.DebugWindow.Limit>
     <RimTalk.DebugWindow.StateAll>所有状态</RimTalk.DebugWindow.StateAll>
     <RimTalk.DebugWindow.StatePending>等待</RimTalk.DebugWindow.StatePending>
     <RimTalk.DebugWindow.StateIgnored>忽略</RimTalk.DebugWindow.StateIgnored>
@@ -394,7 +386,6 @@ Scriban 魔法 (动态内容)
     <RimTalk.DebugWindow.Last>最近</RimTalk.DebugWindow.Last>
     <RimTalk.DebugWindow.AutoScroll>自动滚动</RimTalk.DebugWindow.AutoScroll>
     <RimTalk.DebugWindow.TooltipSelectForDetails>选择一列展示细节</RimTalk.DebugWindow.TooltipSelectForDetails>
-    <RimTalk.DebugWindow.Details>细节</RimTalk.DebugWindow.Details>
     <RimTalk.DebugWindow.SelectRowHint>点击请求获取上下文和提示词</RimTalk.DebugWindow.SelectRowHint>
     <RimTalk.DebugWindow.Resend>重新发送</RimTalk.DebugWindow.Resend>
     <RimTalk.DebugWindow.ResendTooltip>编辑上下文和提示词，然后重新发送以测试对话。</RimTalk.DebugWindow.ResendTooltip>
@@ -409,13 +400,11 @@ Scriban 魔法 (动态内容)
     <RimTalk.DebugWindow.Prompt>提示词 (Prompt)</RimTalk.DebugWindow.Prompt>
     <RimTalk.DebugWindow.Response>响应 (Response)</RimTalk.DebugWindow.Response>
     <RimTalk.DebugWindow.PromptMessages>请求详情</RimTalk.DebugWindow.PromptMessages>
-    <RimTalk.DebugWindow.Contexts>上下文 (Contexts)</RimTalk.DebugWindow.Contexts>
     <RimTalk.DebugWindow.Generating>[正在生成...]</RimTalk.DebugWindow.Generating>
     <RimTalk.DebugWindow.Canceled>[已取消]</RimTalk.DebugWindow.Canceled>
     <RimTalk.DebugWindow.StatusDisabled>已禁用</RimTalk.DebugWindow.StatusDisabled>
     <RimTalk.DebugWindow.StatusProcessing>处理中</RimTalk.DebugWindow.StatusProcessing>
     <RimTalk.DebugWindow.StatusIdle>空闲</RimTalk.DebugWindow.StatusIdle>
-    <RimTalk.DebugWindow.GroupByPawn>按角色分组</RimTalk.DebugWindow.GroupByPawn>
     <RimTalk.DebugWindow.ModSettings>设置</RimTalk.DebugWindow.ModSettings>
     <RimTalk.DebugWindow.Export>导出</RimTalk.DebugWindow.Export>
     <RimTalk.DebugWindow.ResetLogs>重置日志</RimTalk.DebugWindow.ResetLogs>
@@ -452,7 +441,6 @@ Scriban 魔法 (动态内容)
     <RimTalk.DebugWindow.SystemInstruction>系统指令 (System Instruction)</RimTalk.DebugWindow.SystemInstruction>
     <RimTalk.DebugWindow.ChatHistory>聊天历史 (Chat History)</RimTalk.DebugWindow.ChatHistory>
     <RimTalk.DebugWindow.InputPrompt>输入提示词 (Input Prompt)</RimTalk.DebugWindow.InputPrompt>
-    <RimTalk.DebugWindow.TooltipPromptResponse>提示：\n{0}\n\n回应：\n{1}</RimTalk.DebugWindow.TooltipPromptResponse>
 
 
     <!-- Overlay.cs -->

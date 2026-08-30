@@ -72,8 +72,6 @@
     <!-- Settings.cs -->
     <RimTalk.Settings.BasicSettings>기본 설정</RimTalk.Settings.BasicSettings>
     <RimTalk.Settings.PromptSetting>프롬프트 설정</RimTalk.Settings.PromptSetting>
-    <RimTalk.Settings.ImportPreset>가져오기</RimTalk.Settings.ImportPreset>
-    <RimTalk.Settings.ExportPreset>내보내기</RimTalk.Settings.ExportPreset>
     <RimTalk.Settings.ShowVariables>레퍼런스</RimTalk.Settings.ShowVariables>
     <RimTalk.Settings.ResetConfirm>모든 프롬프트 프리셋과 레퍼런스 데이터를 기본값으로 재설정하시겠습니까? 이 작업은 되돌릴 수 없습니다.</RimTalk.Settings.ResetConfirm>
     
@@ -86,9 +84,6 @@
     <RimTalk.Settings.PromptPreset.Activate>활성화</RimTalk.Settings.PromptPreset.Activate>
     <RimTalk.Settings.PromptPreset.Duplicate>복제</RimTalk.Settings.PromptPreset.Duplicate>
     <RimTalk.Settings.PromptPreset.Delete>삭제</RimTalk.Settings.PromptPreset.Delete>
-    <RimTalk.Settings.PromptPreset.SectionSystem>시스템 (System)</RimTalk.Settings.PromptPreset.SectionSystem>
-    <RimTalk.Settings.PromptPreset.SectionHistory>히스토리 (History)</RimTalk.Settings.PromptPreset.SectionHistory>
-    <RimTalk.Settings.PromptPreset.SectionPrompt>프롬프트 (Prompt)</RimTalk.Settings.PromptPreset.SectionPrompt>
     <RimTalk.Settings.PromptPreset.NewEntry>+ 새 항목</RimTalk.Settings.PromptPreset.NewEntry>
     <RimTalk.Settings.PromptPreset.NewEntryName>새 항목</RimTalk.Settings.PromptPreset.NewEntryName>
     <RimTalk.Settings.PromptPreset.SelectEntryToEdit>편집할 항목을 선택하세요</RimTalk.Settings.PromptPreset.SelectEntryToEdit>
@@ -100,7 +95,6 @@
     <RimTalk.Settings.PromptPreset.PositionRelative>상대적</RimTalk.Settings.PromptPreset.PositionRelative>
     <RimTalk.Settings.PromptPreset.PositionInChat>채팅내</RimTalk.Settings.PromptPreset.PositionInChat>
     <RimTalk.Settings.PromptPreset.Depth>깊이:</RimTalk.Settings.PromptPreset.Depth>
-    <RimTalk.Settings.PromptPreset.Content>내용:</RimTalk.Settings.PromptPreset.Content>
     <RimTalk.Settings.PromptPreset.ModVariables>모드 변수</RimTalk.Settings.PromptPreset.ModVariables>
     <RimTalk.Settings.PromptPreset.VariablePreviewHint>사용 가능한 모든 객체, 속성, 함수를 표시합니다. 가능하면 게임 내 값이 표시됩니다.</RimTalk.Settings.PromptPreset.VariablePreviewHint>
     
@@ -119,7 +113,6 @@
     <RimTalk.Settings.PromptPreset.PreviewError>미리보기 생성 중 오류 발생: {0}</RimTalk.Settings.PromptPreset.PreviewError>
     
     <!-- Simple/Advanced Mode -->
-    <RimTalk.Settings.SimpleModeTip>캐릭터 프로필, 채팅 기록, 컨텍스트가 자동으로 포함됩니다.</RimTalk.Settings.SimpleModeTip>
     <RimTalk.Settings.AdvancedModeWarning>고급 모드에서는 프롬프트 항목, 변수 및 메시지 순서를 완전히 제어할 수 있습니다. 현재 지침은 유지됩니다.\n이 기능은 아직 테스트 중이며, 예상치 못한 동작이 발생할 수 있습니다. 계속하시겠습니까?</RimTalk.Settings.AdvancedModeWarning>
     <RimTalk.Settings.PromptHelp>도움말</RimTalk.Settings.PromptHelp>
     <RimTalk.Settings.AdvancedHelpContent>고급 프리셋 가이드
@@ -280,7 +273,6 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.Settings.ProviderHeader>서비스</RimTalk.Settings.ProviderHeader>
     <RimTalk.Settings.ApiKeyHeader>API 키</RimTalk.Settings.ApiKeyHeader>
     <RimTalk.Settings.ModelHeader>모델</RimTalk.Settings.ModelHeader>
-    <RimTalk.Settings.CustomModelHeader>사용자 지정 모델</RimTalk.Settings.CustomModelHeader>
     <RimTalk.Settings.EnabledHeader>활성화됨</RimTalk.Settings.EnabledHeader>
     <RimTalk.Settings.EnableDisableApiConfigTooltip>이 API 구성을 활성화 또는 비활성화합니다.</RimTalk.Settings.EnableDisableApiConfigTooltip>
     <RimTalk.Settings.LocalProviderConfiguration>로컬 서비스 구성</RimTalk.Settings.LocalProviderConfiguration>
@@ -378,7 +370,8 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.Settings.IncludeCleanliness>청결도</RimTalk.Settings.IncludeCleanliness>
     <RimTalk.Settings.IncludeSurroundings>주변 아이템</RimTalk.Settings.IncludeSurroundings>
     <RimTalk.Settings.IncludeWealth>식민지 자산</RimTalk.Settings.IncludeWealth>
-    <RimTalk.Settings.IncludeEvents>진행 중인 이벤트</RimTalk.Settings.IncludeEvents>
+    <RimTalk.Settings.IncludeTopicKeywords>새로운 대화 주제 생성</RimTalk.Settings.IncludeTopicKeywords>
+    <RimTalk.Settings.IncludeTopicKeywords.Tooltip>폰 주변에 아무런 새로운 정보나 이야기거리가 없을시 50% 확률로 새로운 대화 주제를 랜덤으로 생성합니다.</RimTalk.Settings.IncludeTopicKeywords.Tooltip>
 
     <!-- DebugWindow.cs -->
     <RimTalk.DebugWindow.ViewByTime>시간순</RimTalk.DebugWindow.ViewByTime>
@@ -387,7 +380,6 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.DebugWindow.FilterPawn>이름</RimTalk.DebugWindow.FilterPawn>
     <RimTalk.DebugWindow.Search>검색</RimTalk.DebugWindow.Search>
     <RimTalk.DebugWindow.State>상태</RimTalk.DebugWindow.State>
-    <RimTalk.DebugWindow.Limit>제한</RimTalk.DebugWindow.Limit>
     <RimTalk.DebugWindow.StateAll>모든 상태</RimTalk.DebugWindow.StateAll>
     <RimTalk.DebugWindow.StatePending>대기중</RimTalk.DebugWindow.StatePending>
     <RimTalk.DebugWindow.StateIgnored>무시됨</RimTalk.DebugWindow.StateIgnored>
@@ -398,7 +390,6 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.DebugWindow.Last>최근</RimTalk.DebugWindow.Last>
     <RimTalk.DebugWindow.AutoScroll>자동 스크롤</RimTalk.DebugWindow.AutoScroll>
     <RimTalk.DebugWindow.TooltipSelectForDetails>행을 선택하면 자세한 정보가 표시됩니다</RimTalk.DebugWindow.TooltipSelectForDetails>
-    <RimTalk.DebugWindow.Details>세부 정보</RimTalk.DebugWindow.Details>
     <RimTalk.DebugWindow.SelectRowHint>왼쪽에서 요청을 선택하여 프롬프트/응답/컨텍스트를 확인하세요.</RimTalk.DebugWindow.SelectRowHint>
     <RimTalk.DebugWindow.Resend>재전송</RimTalk.DebugWindow.Resend>
     <RimTalk.DebugWindow.ResendTooltip>컨텍스트와 프롬프트를 수정한 뒤 재전송하여 대화를 테스트합니다.</RimTalk.DebugWindow.ResendTooltip>
@@ -413,13 +404,11 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.DebugWindow.Prompt>프롬프트 (Prompt)</RimTalk.DebugWindow.Prompt>
     <RimTalk.DebugWindow.Response>응답 (Response)</RimTalk.DebugWindow.Response>
     <RimTalk.DebugWindow.PromptMessages>요청 세부 정보</RimTalk.DebugWindow.PromptMessages>
-    <RimTalk.DebugWindow.Contexts>컨텍스트 (Contexts)</RimTalk.DebugWindow.Contexts>
     <RimTalk.DebugWindow.Generating>[생성 중...]</RimTalk.DebugWindow.Generating>
     <RimTalk.DebugWindow.Canceled>[취소됨]</RimTalk.DebugWindow.Canceled>
     <RimTalk.DebugWindow.StatusDisabled>비활성화됨</RimTalk.DebugWindow.StatusDisabled>
     <RimTalk.DebugWindow.StatusProcessing>처리 중</RimTalk.DebugWindow.StatusProcessing>
     <RimTalk.DebugWindow.StatusIdle>대기 중</RimTalk.DebugWindow.StatusIdle>
-    <RimTalk.DebugWindow.GroupByPawn>정착민별로 그룹화</RimTalk.DebugWindow.GroupByPawn>
     <RimTalk.DebugWindow.ModSettings>모드 설정</RimTalk.DebugWindow.ModSettings>
     <RimTalk.DebugWindow.Export>내보내기</RimTalk.DebugWindow.Export>
     <RimTalk.DebugWindow.ResetLogs>로그 초기화</RimTalk.DebugWindow.ResetLogs>
@@ -456,7 +445,6 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.DebugWindow.SystemInstruction>시스템 지침 (System Instruction)</RimTalk.DebugWindow.SystemInstruction>
     <RimTalk.DebugWindow.ChatHistory>채팅 히스토리 (Chat History)</RimTalk.DebugWindow.ChatHistory>
     <RimTalk.DebugWindow.InputPrompt>입력 프롬프트 (Input Prompt)</RimTalk.DebugWindow.InputPrompt>
-    <RimTalk.DebugWindow.TooltipPromptResponse>프롬프트:\n{0}\n\n응답:\n{1}</RimTalk.DebugWindow.TooltipPromptResponse>
 
     <!-- Overlay.cs -->
     <RimTalk.Overlay.Debug>디버그</RimTalk.Overlay.Debug>
