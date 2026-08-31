@@ -60,7 +60,8 @@ public class RimTalkSettings : ModSettings
     // Overlay settings
     public bool OverlayEnabled = true;
     public bool OverlayShowGroupColors = true;
-    public bool OverlayAlignNameColumn = true;
+    public bool OverlayAlignNameColumn = false;
+    public bool OverlayShowTargetName = false;
     public float OverlayOpacity = 0.5f;
     public float OverlayFontSize = 15f;
     public bool OverlayDrawAboveUI = true;
@@ -209,7 +210,8 @@ public class RimTalkSettings : ModSettings
         // Overlay settings
         Scribe_Values.Look(ref OverlayEnabled, "overlayEnabled", true);
         Scribe_Values.Look(ref OverlayShowGroupColors, "overlayShowGroupColors", true);
-        Scribe_Values.Look(ref OverlayAlignNameColumn, "overlayAlignNameColumn", true);
+        Scribe_Values.Look(ref OverlayAlignNameColumn, "overlayAlignNameColumn", false);
+        Scribe_Values.Look(ref OverlayShowTargetName, "overlayShowTargetName", false);
         Scribe_Values.Look(ref OverlayOpacity, "overlayOpacity", 0.5f);
         Scribe_Values.Look(ref OverlayFontSize, "overlayFontSize", 15f);
         Scribe_Values.Look(ref OverlayDrawAboveUI, "overlayDrawAboveUI", true);

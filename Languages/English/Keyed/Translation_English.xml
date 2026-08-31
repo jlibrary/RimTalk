@@ -477,6 +477,7 @@ Crucial Tips:
     <RimTalk.Overlay.Option>Overlay Option</RimTalk.Overlay.Option>
     <RimTalk.Overlay.DrawAboveUI>Draw Above UI</RimTalk.Overlay.DrawAboveUI>
     <RimTalk.Overlay.ShowGroupColors>Show Group Colors</RimTalk.Overlay.ShowGroupColors>
+    <RimTalk.Overlay.ShowTargetName>Show Target Name [A -&gt; B]</RimTalk.Overlay.ShowTargetName>
     <RimTalk.Overlay.AlignNameColumn>Align Name Column</RimTalk.Overlay.AlignNameColumn>
     <RimTalk.Overlay.Opacity>Opacity</RimTalk.Overlay.Opacity>
     <RimTalk.Overlay.FontSize>Font Size</RimTalk.Overlay.FontSize>

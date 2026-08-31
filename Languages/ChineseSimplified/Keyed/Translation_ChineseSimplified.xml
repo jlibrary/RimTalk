@@ -450,6 +450,7 @@ Scriban 魔法 (动态内容)
     <RimTalk.Overlay.Option>悬浮窗选项</RimTalk.Overlay.Option>
     <RimTalk.Overlay.DrawAboveUI>在 UI 之上绘制</RimTalk.Overlay.DrawAboveUI>
     <RimTalk.Overlay.ShowGroupColors>显示对话组颜色</RimTalk.Overlay.ShowGroupColors>
+    <RimTalk.Overlay.ShowTargetName>显示对话目标 [A -&gt; B]</RimTalk.Overlay.ShowTargetName>
     <RimTalk.Overlay.AlignNameColumn>对齐名称列</RimTalk.Overlay.AlignNameColumn>
     <RimTalk.Overlay.Opacity>不透明度</RimTalk.Overlay.Opacity>
     <RimTalk.Overlay.FontSize>字体大小</RimTalk.Overlay.FontSize>

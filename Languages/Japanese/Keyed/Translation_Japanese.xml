@@ -453,6 +453,7 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Overlay.Option>オーバーレイオプション</RimTalk.Overlay.Option>
     <RimTalk.Overlay.DrawAboveUI>UI の上に表示</RimTalk.Overlay.DrawAboveUI>
     <RimTalk.Overlay.ShowGroupColors>会話グループの色を表示</RimTalk.Overlay.ShowGroupColors>
+    <RimTalk.Overlay.ShowTargetName>会話の対象を表示 [A -&gt; B]</RimTalk.Overlay.ShowTargetName>
     <RimTalk.Overlay.AlignNameColumn>名前列を揃える</RimTalk.Overlay.AlignNameColumn>
     <RimTalk.Overlay.Opacity>不透明度</RimTalk.Overlay.Opacity>
     <RimTalk.Overlay.FontSize>フォントサイズ</RimTalk.Overlay.FontSize>

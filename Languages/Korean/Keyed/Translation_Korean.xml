@@ -476,6 +476,7 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.Overlay.Option>오버레이 옵션</RimTalk.Overlay.Option>
     <RimTalk.Overlay.DrawAboveUI>UI 위에 표시</RimTalk.Overlay.DrawAboveUI>
     <RimTalk.Overlay.ShowGroupColors>대화 그룹 색상 표시</RimTalk.Overlay.ShowGroupColors>
+    <RimTalk.Overlay.ShowTargetName>대화 대상 표시 상A -&gt; B])</RimTalk.Overlay.ShowTargetName>
     <RimTalk.Overlay.AlignNameColumn>이름 컬럼 정렬</RimTalk.Overlay.AlignNameColumn>
     <RimTalk.Overlay.Opacity>투명도</RimTalk.Overlay.Opacity>
     <RimTalk.Overlay.FontSize>글꼴 크기</RimTalk.Overlay.FontSize>

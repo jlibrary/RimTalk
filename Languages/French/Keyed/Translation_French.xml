@@ -453,6 +453,7 @@ Conseils Cruciaux :
     <RimTalk.Overlay.Option>Option de Superposition</RimTalk.Overlay.Option>
     <RimTalk.Overlay.DrawAboveUI>Afficher au-dessus de l’UI</RimTalk.Overlay.DrawAboveUI>
     <RimTalk.Overlay.ShowGroupColors>Afficher les couleurs de groupe</RimTalk.Overlay.ShowGroupColors>
+    <RimTalk.Overlay.ShowTargetName>Afficher la cible [A -&gt; B]</RimTalk.Overlay.ShowTargetName>
     <RimTalk.Overlay.AlignNameColumn>Aligner la colonne des noms</RimTalk.Overlay.AlignNameColumn>
     <RimTalk.Overlay.Opacity>Opacité</RimTalk.Overlay.Opacity>
     <RimTalk.Overlay.FontSize>Taille de la police</RimTalk.Overlay.FontSize>
