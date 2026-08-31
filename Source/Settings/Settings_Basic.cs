@@ -104,10 +104,6 @@ public partial class Settings
             ref settings.ContinueDialogueWhileSleeping,
             "RimTalk.Settings.ContinueDialogueWhileSleepingTooltip".Translate().ToString());
         leftListing.Gap(6f);
-        leftListing.CheckboxLabeled("RimTalk.Settings.EnableSleepDialogue".Translate().ToString(),
-            ref settings.EnableSleepDialogue,
-            "RimTalk.Settings.EnableSleepDialogueTooltip".Translate().ToString());
-        leftListing.Gap(6f);
         leftListing.CheckboxLabeled("RimTalk.Settings.ApplyMoodAndSocialEffects".Translate().ToString(),
             ref settings.ApplyMoodAndSocialEffects,
             "RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip".Translate().ToString());

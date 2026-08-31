@@ -188,8 +188,6 @@ Scriban 魔法 (動態內容)
     <RimTalk.Settings.AllowCustomConversationTooltip>允許您在角色之間啟動自訂對話，或通過編寫自己的台詞直接與角色交談。右鍵點擊 Pawn 以開始對話。</RimTalk.Settings.AllowCustomConversationTooltip>
     <RimTalk.Settings.ContinueDialogueWhileSleeping>睡覺時繼續對話</RimTalk.Settings.ContinueDialogueWhileSleeping>
     <RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>如果啟用，即使 Pawn 入睡，他們也將繼續說完所有生成的台詞。</RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>
-    <RimTalk.Settings.EnableSleepDialogue>入睡與醒來對話</RimTalk.Settings.EnableSleepDialogue>
-    <RimTalk.Settings.EnableSleepDialogueTooltip>啟用後，殖民者在就寢或醒來時會偶爾發表睏倦的言論或獨白。</RimTalk.Settings.EnableSleepDialogueTooltip>
 
     <RimTalk.Settings.AllowMonologue>允許獨白</RimTalk.Settings.AllowMonologue>
     <RimTalk.Settings.AllowMonologueTooltip>啟用後，即使附近沒有其他 Pawn，Pawn 也可能生成由 AI 驅動的獨白。</RimTalk.Settings.AllowMonologueTooltip>

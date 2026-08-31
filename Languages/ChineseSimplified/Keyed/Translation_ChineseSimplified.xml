@@ -184,8 +184,6 @@ Scriban 魔法 (动态内容)
     <RimTalk.Settings.AllowCustomConversationTooltip>允许你通过输入台词在角色之间发起自定义对话，或直接与某个角色交谈。右键点击角色即可开始对话。</RimTalk.Settings.AllowCustomConversationTooltip>
     <RimTalk.Settings.ContinueDialogueWhileSleeping>睡觉时继续对话</RimTalk.Settings.ContinueDialogueWhileSleeping>
     <RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>启用后，即使角色入睡，也会继续显示所有生成的对话。</RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>
-    <RimTalk.Settings.EnableSleepDialogue>入睡与醒来对话</RimTalk.Settings.EnableSleepDialogue>
-    <RimTalk.Settings.EnableSleepDialogueTooltip>启用后，殖民者在就寝或醒来时会偶尔发表困倦的言论或独白。</RimTalk.Settings.EnableSleepDialogueTooltip>
 
     <RimTalk.Settings.AllowMonologue>允许独白</RimTalk.Settings.AllowMonologue>
     <RimTalk.Settings.AllowMonologueTooltip>启用后，即使没有其他角色在附近，角色也可能生成 AI 驱动的独白。</RimTalk.Settings.AllowMonologueTooltip>

@@ -103,7 +103,7 @@ public class PawnSelector
                     }
                 }
                 else if (canTalk && pawnWithSpecialRequest == null &&
-                         req.TalkType is TalkType.Interaction or TalkType.Other or TalkType.Urgent or TalkType.Event or TalkType.QuestOffer)
+                         req.TalkType is TalkType.Interaction or TalkType.Other or TalkType.Urgent or TalkType.Event or TalkType.QuestOffer or TalkType.Sleep)
                 {
                     pawnWithSpecialRequest = pawn;
                 }

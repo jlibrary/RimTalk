@@ -88,13 +88,7 @@ public class PawnState(Pawn pawn)
             LastTalkTick = 0;
             UserRequestPool.Add(Pawn, priority: false);
         }
-        else if (talkType == TalkType.Sleep)
-        {
-            TalkRequests.AddFirst(newRequest);
-            LastTalkTick = 0;
-            UserRequestPool.Add(Pawn, priority: false);
-        }
-        else if (talkType is TalkType.Event or TalkType.QuestOffer or TalkType.Other)
+        else if (talkType is TalkType.Sleep or TalkType.Event or TalkType.QuestOffer or TalkType.Other)
         {
             TalkRequests.AddFirst(newRequest);
         }
