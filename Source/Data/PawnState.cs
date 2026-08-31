@@ -146,8 +146,7 @@ public class PawnState(Pawn pawn)
     {
         if (Pawn.IsPlayer()) return true;
         
-        if (WorldRendererUtility.CurrentWorldRenderMode == WorldRenderMode.Planet || Find.CurrentMap == null ||
-            Pawn.Map != Find.CurrentMap || !Pawn.Spawned)
+        if (Pawn.Map == null || !Pawn.Spawned)
             return false;
         
         RimTalkSettings settings = Settings.Get();
@@ -161,6 +160,7 @@ public class PawnState(Pawn pawn)
     public bool CanGenerateTalk()
     {
         if (Pawn.IsPlayer()) return true;
+        if (WorldRendererUtility.CurrentWorldRenderMode == WorldRenderMode.Planet || Find.CurrentMap == null || Pawn.Map != Find.CurrentMap) return false;
         DrainIncomingTalkResponses();
         return !IsGeneratingTalk && CanDisplayTalk() && Pawn.Awake() && TalkResponses.Empty()
                && CommonUtil.HasPassed(LastTalkTick, Settings.Get().ReplyInterval);
