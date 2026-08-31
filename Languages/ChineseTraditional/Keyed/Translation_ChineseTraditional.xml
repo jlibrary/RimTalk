@@ -180,6 +180,11 @@ Scriban 魔法 (動態內容)
     <RimTalk.Settings.ReplyIntervalTooltip>對話中上一句與下一句回覆之間的延遲時間（秒）。</RimTalk.Settings.ReplyIntervalTooltip>
     <RimTalk.Settings.OverrideInteractions>使用 AI 對話覆蓋所有互動</RimTalk.Settings.OverrideInteractions>
     <RimTalk.Settings.OverrideInteractionsTooltip>啟用此選項以允許 AI 覆蓋並重新生成所有互動的對話（包括 vanilla RimWorld 和其他模組）。注意：AI 對話具有上方設定的冷卻期。要更頻繁地生成對話，請降低冷卻時間。</RimTalk.Settings.OverrideInteractionsTooltip>
+    <RimTalk.Settings.SettingsButton>設定</RimTalk.Settings.SettingsButton>
+    <RimTalk.Settings.FastTrackInteractionsTitle>快速互動</RimTalk.Settings.FastTrackInteractionsTitle>
+    <RimTalk.Settings.FastTrackInteractionsDesc>選擇哪些互動應立即觸發對話（跳過常規對話冷卻）。未選中的互動將遵循標準冷卻時間。</RimTalk.Settings.FastTrackInteractionsDesc>
+    <RimTalk.Settings.SelectAll>全選</RimTalk.Settings.SelectAll>
+    <RimTalk.Settings.DeselectAll>全部取消</RimTalk.Settings.DeselectAll>
     <RimTalk.Settings.AllowSimultaneousConversations>允許同時進行多個對話</RimTalk.Settings.AllowSimultaneousConversations>
     <RimTalk.Settings.AllowSimultaneousConversationsTooltip>啟用後，多組 Pawn 可以同時交談。如果您希望一次只看到一個對話，或者如果同時發生的對話太多，請關閉此選項。</RimTalk.Settings.AllowSimultaneousConversationsTooltip>
     <RimTalk.Settings.DisplayTalkWhenDrafted>徵召時顯示對話</RimTalk.Settings.DisplayTalkWhenDrafted>

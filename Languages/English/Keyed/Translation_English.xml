@@ -177,6 +177,11 @@ Crucial Tips:
     <RimTalk.Settings.ReplyIntervalTooltip>The delay (in seconds) between consecutive replies within a conversation.</RimTalk.Settings.ReplyIntervalTooltip>
     <RimTalk.Settings.OverrideInteractions>Override All Interactions with AI Dialogue</RimTalk.Settings.OverrideInteractions>
     <RimTalk.Settings.OverrideInteractionsTooltip>Enable this to allow AI to override and regenerate dialogue for all interactions (including vanilla RimWorld and other mods). Note: AI dialogue has a cooldown period set above. To generate dialogue more frequently, lower the cooldown.</RimTalk.Settings.OverrideInteractionsTooltip>
+    <RimTalk.Settings.SettingsButton>Settings</RimTalk.Settings.SettingsButton>
+    <RimTalk.Settings.FastTrackInteractionsTitle>Fast-Track Interactions</RimTalk.Settings.FastTrackInteractionsTitle>
+    <RimTalk.Settings.FastTrackInteractionsDesc>Select which interactions should trigger dialogue immediately, bypassing the normal conversation cooldown. Unselected interactions will follow the standard cooldown interval.</RimTalk.Settings.FastTrackInteractionsDesc>
+    <RimTalk.Settings.SelectAll>Select All</RimTalk.Settings.SelectAll>
+    <RimTalk.Settings.DeselectAll>Deselect All</RimTalk.Settings.DeselectAll>
     <RimTalk.Settings.AllowSimultaneousConversations>Allow Simultaneous Conversations</RimTalk.Settings.AllowSimultaneousConversations>
     <RimTalk.Settings.AllowSimultaneousConversationsTooltip>When enabled, multiple groups of pawns can talk at the same time. Turn this off if you prefer to see only one conversation at a time or if too many are happening at once.</RimTalk.Settings.AllowSimultaneousConversationsTooltip>
     <RimTalk.Settings.DisplayTalkWhenDrafted>Display Talk When Drafted</RimTalk.Settings.DisplayTalkWhenDrafted>

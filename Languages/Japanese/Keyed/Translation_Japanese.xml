@@ -180,6 +180,11 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Settings.ReplyIntervalTooltip>会話中の発言と次の返答の間の遅延時間（秒）です。</RimTalk.Settings.ReplyIntervalTooltip>
     <RimTalk.Settings.OverrideInteractions>すべてのインタラクションをAIの対話で上書きする</RimTalk.Settings.OverrideInteractions>
     <RimTalk.Settings.OverrideInteractionsTooltip>これを有効にすると、AIがすべてのインタラクション（バニラのRimWorldや他のMODを含む）の対話を上書きして再生成できるようになります。注意：AIの対話には上記で設定されたクールダウン期間があります。より頻繁に対話を生成するには、クールダウンを短くしてください。</RimTalk.Settings.OverrideInteractionsTooltip>
+    <RimTalk.Settings.SettingsButton>設定</RimTalk.Settings.SettingsButton>
+    <RimTalk.Settings.FastTrackInteractionsTitle>優先インタラクション</RimTalk.Settings.FastTrackInteractionsTitle>
+    <RimTalk.Settings.FastTrackInteractionsDesc>通常の会話クールダウンをスキップして即座に会話を生成するインタラクションを選択します。選択されていないインタラクションは通常のクールダウンに従います。</RimTalk.Settings.FastTrackInteractionsDesc>
+    <RimTalk.Settings.SelectAll>すべて選択</RimTalk.Settings.SelectAll>
+    <RimTalk.Settings.DeselectAll>すべて解除</RimTalk.Settings.DeselectAll>
     <RimTalk.Settings.AllowSimultaneousConversations>複数の同時会話を許可</RimTalk.Settings.AllowSimultaneousConversations>
     <RimTalk.Settings.AllowSimultaneousConversationsTooltip>有効にすると、複数の入植者グループが同時に会話できます。会話が多すぎる場合や、一度に一つの会話だけを見たい場合は無効にしてください。</RimTalk.Settings.AllowSimultaneousConversationsTooltip>
     <RimTalk.Settings.DisplayTalkWhenDrafted>徴兵中も会話を表示</RimTalk.Settings.DisplayTalkWhenDrafted>
