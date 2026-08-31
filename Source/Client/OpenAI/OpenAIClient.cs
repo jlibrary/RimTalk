@@ -23,7 +23,6 @@ public class OpenAIClient(
 {
     private const string DefaultPath = "/v1/chat/completions";
     private readonly string _endpointUrl = FormatEndpointUrl(baseUrl);
-    private readonly Random _random = new();
 
     private static string FormatEndpointUrl(string baseUrl)
     {
@@ -133,7 +132,7 @@ public class OpenAIClient(
                 mergedMessages.Add(new Message
                 {
                     Role = "user",
-                    Content = $"{_random.Next()} {systemText}"
+                    Content = systemText
                 });
                 rawMessages.RemoveAll(m => m.role == Role.System);
             }

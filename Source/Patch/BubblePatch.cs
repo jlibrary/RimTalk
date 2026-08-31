@@ -68,6 +68,12 @@ public static class Bubbler_Add
         if (pawnState == null || (isChitchat && pawnState.TalkRequests.Count > 0))
             return false;
 
+        // During the automatic dialogue cooldown, preserve the vanilla bubble instead of
+        // swallowing it and leaving a stale AI request queued for later. User-initiated talks
+        // remain exempt from the cooldown in TickManagerPatch.
+        if (AIService.IsBusy() || !TickManagerPatch.IsAutomaticTalkCooldownReady())
+            return true;
+
         // Otherwise, block normal bubble and generate talk
         prompt = $"{prompt} ({interactionDef.label})";
         pawnState.AddTalkRequest(prompt, recipient, isChitchat ? TalkType.Chitchat : TalkType.Interaction);

@@ -414,6 +414,18 @@ public static class ContextBuilder
 
             sb.Append(topicSb).Append(intentSb);
         }
+        else if (talkRequest.IsMonologue && talkRequest.TalkType.IsFromUser())
+        {
+            // A user-directed self talk is still a monologue. Handle it before the generic
+            // user-dialogue branch, which may otherwise prohibit further lines for the speaker.
+            intentSb.Append($"{shortName} monologue");
+            if (!string.IsNullOrWhiteSpace(talkRequest.RawPrompt))
+                topicSb.Append(talkRequest.RawPrompt);
+
+            sb.Append(intentSb);
+            if (topicSb.Length > 0)
+                sb.Append("\n").Append(topicSb);
+        }
         else if (talkRequest.TalkType.IsFromUser())
         {
             var speaker = talkRequest.Recipient ?? (pawns.Count > 1 ? pawns[1] : null);
