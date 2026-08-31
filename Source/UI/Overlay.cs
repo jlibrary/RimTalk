@@ -64,7 +64,7 @@ public class Overlay : MapComponent
     private const float OptionsBarHeight = 30f;
     private const float ResizeHandleSize = 24f;
     private const float DropdownWidth = 200f;
-    private const float DropdownHeight = 310f;
+    private const float DropdownHeight = 345f;
     private const int MaxMessagesInLog = 10;
     private const float TextPadding = 5f;
     private const float MaxNameColumnFraction = 0.45f;
@@ -336,6 +336,10 @@ public class Overlay : MapComponent
             foreach (var message in messages)
             {
                 SplitParticipantNames(message.Name, message.TargetName, out string speakerName, out string targetName);
+                if (!settings.OverlayShowTargetName)
+                {
+                    targetName = null;
+                }
 
                 CalculateParticipantLayout(speakerName, targetName, maxNameWidth,
                     out string speakerLabel, out string targetLabel,
@@ -633,6 +637,15 @@ public class Overlay : MapComponent
         DrawSettingsCheckbox(listing, "RimTalk.Overlay.ShowGroupColors".Translate(), settings.OverlayShowGroupColors, value =>
         {
             settings.OverlayShowGroupColors = value;
+            settings.Write();
+        });
+
+        listing.Gap(6);
+
+        DrawSettingsCheckbox(listing, "RimTalk.Overlay.ShowTargetName".Translate(), settings.OverlayShowTargetName, value =>
+        {
+            settings.OverlayShowTargetName = value;
+            _isCacheDirty = true;
             settings.Write();
         });
 

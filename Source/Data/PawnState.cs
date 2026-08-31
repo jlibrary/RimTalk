@@ -88,13 +88,7 @@ public class PawnState(Pawn pawn)
             LastTalkTick = 0;
             UserRequestPool.Add(Pawn, priority: false);
         }
-        else if (talkType == TalkType.Sleep)
-        {
-            TalkRequests.AddFirst(newRequest);
-            LastTalkTick = 0;
-            UserRequestPool.Add(Pawn, priority: false);
-        }
-        else if (talkType is TalkType.Event or TalkType.QuestOffer or TalkType.Other)
+        else if (talkType is TalkType.Sleep or TalkType.Event or TalkType.QuestOffer or TalkType.Other)
         {
             TalkRequests.AddFirst(newRequest);
         }
@@ -152,8 +146,7 @@ public class PawnState(Pawn pawn)
     {
         if (Pawn.IsPlayer()) return true;
         
-        if (WorldRendererUtility.CurrentWorldRenderMode == WorldRenderMode.Planet || Find.CurrentMap == null ||
-            Pawn.Map != Find.CurrentMap || !Pawn.Spawned)
+        if (Pawn.Map == null || !Pawn.Spawned)
             return false;
         
         RimTalkSettings settings = Settings.Get();
@@ -167,6 +160,7 @@ public class PawnState(Pawn pawn)
     public bool CanGenerateTalk()
     {
         if (Pawn.IsPlayer()) return true;
+        if (WorldRendererUtility.CurrentWorldRenderMode == WorldRenderMode.Planet || Find.CurrentMap == null || Pawn.Map != Find.CurrentMap) return false;
         DrainIncomingTalkResponses();
         return !IsGeneratingTalk && CanDisplayTalk() && Pawn.Awake() && TalkResponses.Empty()
                && CommonUtil.HasPassed(LastTalkTick, Settings.Get().ReplyInterval);

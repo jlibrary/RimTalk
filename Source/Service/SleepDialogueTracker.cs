@@ -20,7 +20,6 @@ public static class SleepDialogueTracker
 
     public static void Notify_GoingToBed(Pawn pawn)
     {
-        if (!Settings.Get().EnableSleepDialogue) return;
         if (!IsValidForSleepDialogue(pawn)) return;
         if (!IsGoingToSleep(pawn)) return;
 
@@ -60,7 +59,6 @@ public static class SleepDialogueTracker
         bool wasTrackedSleeping = SleepingPawns.Remove(pawn.thingIDNumber);
         if (!wasTrackedSleeping && !wasAsleep) return;
 
-        if (!Settings.Get().EnableSleepDialogue) return;
         if (!IsValidForSleepDialogue(pawn)) return;
 
         int ticks = GenTicks.TicksGame;

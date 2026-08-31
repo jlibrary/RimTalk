@@ -179,6 +179,11 @@
     <RimTalk.Settings.ReplyIntervalTooltip>Задержка (в секундах) между репликами в диалоге.</RimTalk.Settings.ReplyIntervalTooltip>
     <RimTalk.Settings.OverrideInteractions>Переопределять все взаимодействия диалогами ИИ</RimTalk.Settings.OverrideInteractions>
     <RimTalk.Settings.OverrideInteractionsTooltip>Включите, чтобы позволить ИИ переопределять и регенерировать диалоги для всех взаимодействий (включая ванильный RimWorld и другие моды). Примечание: диалоги ИИ имеют период восстановления, установленный выше. Чтобы генерировать диалоги чаще, уменьшите время восстановления.</RimTalk.Settings.OverrideInteractionsTooltip>
+    <RimTalk.Settings.SettingsButton>Настройки</RimTalk.Settings.SettingsButton>
+    <RimTalk.Settings.FastTrackInteractionsTitle>Приоритетные взаимодействия</RimTalk.Settings.FastTrackInteractionsTitle>
+    <RimTalk.Settings.FastTrackInteractionsDesc>Выберите взаимодействия, которые должны немедленно запускать диалог в обход обычной перезарядки. Невыбранные взаимодействия будут следовать стандартному интервалу.</RimTalk.Settings.FastTrackInteractionsDesc>
+    <RimTalk.Settings.SelectAll>Выбрать все</RimTalk.Settings.SelectAll>
+    <RimTalk.Settings.DeselectAll>Снять все</RimTalk.Settings.DeselectAll>
     <RimTalk.Settings.AllowSimultaneousConversations>Разрешить одновременные разговоры</RimTalk.Settings.AllowSimultaneousConversations>
     <RimTalk.Settings.AllowSimultaneousConversationsTooltip>Если включено, несколько групп поселенцев могут разговаривать одновременно. Отключите, если хотите видеть только один разговор за раз или если диалогов становится слишком много.</RimTalk.Settings.AllowSimultaneousConversationsTooltip>
     <RimTalk.Settings.DisplayTalkWhenDrafted>Отображать разговоры в режиме призыва</RimTalk.Settings.DisplayTalkWhenDrafted>
@@ -187,8 +192,6 @@
     <RimTalk.Settings.AllowCustomConversationTooltip>Позволяет вам начинать собственные диалоги между персонажами или напрямую разговаривать с выбранным персонажем, вводя свои реплики. Щёлкните правой кнопкой мыши по персонажу, чтобы начать разговор.</RimTalk.Settings.AllowCustomConversationTooltip>
     <RimTalk.Settings.ContinueDialogueWhileSleeping>Продолжать диалог во сне</RimTalk.Settings.ContinueDialogueWhileSleeping>
     <RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>Если включено, персонажи будут произносить все сгенерированные реплики, даже если они засыпают.</RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>
-    <RimTalk.Settings.EnableSleepDialogue>Диалоги при отходе ко сну и пробуждении</RimTalk.Settings.EnableSleepDialogue>
-    <RimTalk.Settings.EnableSleepDialogueTooltip>Если включено, поселенцы будут периодически произносить короткие реплики при отходе ко сну или пробуждении.</RimTalk.Settings.EnableSleepDialogueTooltip>
 
     <RimTalk.Settings.AllowMonologue>Разрешить монологи</RimTalk.Settings.AllowMonologue>
     <RimTalk.Settings.AllowMonologueTooltip>Если включено, персонажи могут генерировать монологи на основе ИИ, даже если рядом нет других персонажей.</RimTalk.Settings.AllowMonologueTooltip>
@@ -449,6 +452,7 @@
     <RimTalk.Overlay.Option>Опция наложения</RimTalk.Overlay.Option>
     <RimTalk.Overlay.DrawAboveUI>Отображать поверх UI</RimTalk.Overlay.DrawAboveUI>
     <RimTalk.Overlay.ShowGroupColors>Цвета групп диалогов</RimTalk.Overlay.ShowGroupColors>
+    <RimTalk.Overlay.ShowTargetName>Показывать собеседника [A -&gt; B]</RimTalk.Overlay.ShowTargetName>
     <RimTalk.Overlay.AlignNameColumn>Выравнивать колонку имен</RimTalk.Overlay.AlignNameColumn>
     <RimTalk.Overlay.Opacity>Прозрачность</RimTalk.Overlay.Opacity>
     <RimTalk.Overlay.FontSize>Размер шрифта</RimTalk.Overlay.FontSize>

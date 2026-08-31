@@ -180,6 +180,11 @@ Scriban 魔法 (動態內容)
     <RimTalk.Settings.ReplyIntervalTooltip>對話中上一句與下一句回覆之間的延遲時間（秒）。</RimTalk.Settings.ReplyIntervalTooltip>
     <RimTalk.Settings.OverrideInteractions>使用 AI 對話覆蓋所有互動</RimTalk.Settings.OverrideInteractions>
     <RimTalk.Settings.OverrideInteractionsTooltip>啟用此選項以允許 AI 覆蓋並重新生成所有互動的對話（包括 vanilla RimWorld 和其他模組）。注意：AI 對話具有上方設定的冷卻期。要更頻繁地生成對話，請降低冷卻時間。</RimTalk.Settings.OverrideInteractionsTooltip>
+    <RimTalk.Settings.SettingsButton>設定</RimTalk.Settings.SettingsButton>
+    <RimTalk.Settings.FastTrackInteractionsTitle>快速互動</RimTalk.Settings.FastTrackInteractionsTitle>
+    <RimTalk.Settings.FastTrackInteractionsDesc>選擇哪些互動應立即觸發對話（跳過常規對話冷卻）。未選中的互動將遵循標準冷卻時間。</RimTalk.Settings.FastTrackInteractionsDesc>
+    <RimTalk.Settings.SelectAll>全選</RimTalk.Settings.SelectAll>
+    <RimTalk.Settings.DeselectAll>全部取消</RimTalk.Settings.DeselectAll>
     <RimTalk.Settings.AllowSimultaneousConversations>允許同時進行多個對話</RimTalk.Settings.AllowSimultaneousConversations>
     <RimTalk.Settings.AllowSimultaneousConversationsTooltip>啟用後，多組 Pawn 可以同時交談。如果您希望一次只看到一個對話，或者如果同時發生的對話太多，請關閉此選項。</RimTalk.Settings.AllowSimultaneousConversationsTooltip>
     <RimTalk.Settings.DisplayTalkWhenDrafted>徵召時顯示對話</RimTalk.Settings.DisplayTalkWhenDrafted>
@@ -188,8 +193,6 @@ Scriban 魔法 (動態內容)
     <RimTalk.Settings.AllowCustomConversationTooltip>允許您在角色之間啟動自訂對話，或通過編寫自己的台詞直接與角色交談。右鍵點擊 Pawn 以開始對話。</RimTalk.Settings.AllowCustomConversationTooltip>
     <RimTalk.Settings.ContinueDialogueWhileSleeping>睡覺時繼續對話</RimTalk.Settings.ContinueDialogueWhileSleeping>
     <RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>如果啟用，即使 Pawn 入睡，他們也將繼續說完所有生成的台詞。</RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>
-    <RimTalk.Settings.EnableSleepDialogue>入睡與醒來對話</RimTalk.Settings.EnableSleepDialogue>
-    <RimTalk.Settings.EnableSleepDialogueTooltip>啟用後，殖民者在就寢或醒來時會偶爾發表睏倦的言論或獨白。</RimTalk.Settings.EnableSleepDialogueTooltip>
 
     <RimTalk.Settings.AllowMonologue>允許獨白</RimTalk.Settings.AllowMonologue>
     <RimTalk.Settings.AllowMonologueTooltip>啟用後，即使附近沒有其他 Pawn，Pawn 也可能生成由 AI 驅動的獨白。</RimTalk.Settings.AllowMonologueTooltip>
@@ -451,6 +454,7 @@ Scriban 魔法 (動態內容)
     <RimTalk.Overlay.Option>懸浮窗選項</RimTalk.Overlay.Option>
     <RimTalk.Overlay.DrawAboveUI>顯示在介面之上</RimTalk.Overlay.DrawAboveUI>
     <RimTalk.Overlay.ShowGroupColors>顯示對話組顏色</RimTalk.Overlay.ShowGroupColors>
+    <RimTalk.Overlay.ShowTargetName>顯示對話目標 [A -&gt; B]</RimTalk.Overlay.ShowTargetName>
     <RimTalk.Overlay.AlignNameColumn>對齊名稱欄</RimTalk.Overlay.AlignNameColumn>
     <RimTalk.Overlay.Opacity>不透明度</RimTalk.Overlay.Opacity>
     <RimTalk.Overlay.FontSize>字體大小</RimTalk.Overlay.FontSize>

@@ -18,7 +18,8 @@ namespace RimTalk.Patch;
 #endif
 public static class FloatMenuPatch
 {
-    private const int ClickRadiusCells = 1;
+    private const float MaxClickDistance = 0.65f;
+    private const float MaxClickDistanceSquared = MaxClickDistance * MaxClickDistance;
 
 #if V1_5
     [HarmonyPostfix]
@@ -55,9 +56,9 @@ public static class FloatMenuPatch
 
         HashSet<Pawn> processedPawns = [];
 
-        for (int dx = -ClickRadiusCells; dx <= ClickRadiusCells; dx++)
+        for (int dx = -1; dx <= 1; dx++)
         {
-            for (int dz = -ClickRadiusCells; dz <= ClickRadiusCells; dz++)
+            for (int dz = -1; dz <= 1; dz++)
             {
                 IntVec3 curCell = clickCell + new IntVec3(dx, 0, dz);
 
@@ -70,6 +71,10 @@ public static class FloatMenuPatch
                     if (thingList[i] is Pawn hitPawn)
                     {
                         if (!processedPawns.Add(hitPawn)) continue;
+
+                        Vector3 diff = clickPos - hitPawn.DrawPos;
+                        float distSq = diff.x * diff.x + diff.z * diff.z;
+                        if (distSq > MaxClickDistanceSquared) continue;
 
                         if (TryResolveForHitPawn(selectedPawn, hitPawn, out var initiator, out var target))
                         {

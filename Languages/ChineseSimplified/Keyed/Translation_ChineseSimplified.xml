@@ -176,6 +176,11 @@ Scriban 魔法 (动态内容)
     <RimTalk.Settings.ReplyIntervalTooltip>对话中上一句与下一句回复之间的延迟时间（秒）。</RimTalk.Settings.ReplyIntervalTooltip>
     <RimTalk.Settings.OverrideInteractions>使用 AI 对话覆盖所有互动</RimTalk.Settings.OverrideInteractions>
     <RimTalk.Settings.OverrideInteractionsTooltip>启用此项以允许 AI 覆盖并为所有互动（包括原版 RimWorld 和其他模组）重新生成对话。注意：AI 对话有上述设置的冷却时间。要更频繁地生成对话，请降低冷却时间。</RimTalk.Settings.OverrideInteractionsTooltip>
+    <RimTalk.Settings.SettingsButton>设置</RimTalk.Settings.SettingsButton>
+    <RimTalk.Settings.FastTrackInteractionsTitle>快速交互</RimTalk.Settings.FastTrackInteractionsTitle>
+    <RimTalk.Settings.FastTrackInteractionsDesc>选择哪些交互应立即触发对话（绕过常规对话冷却）。未选中的交互将遵循标准冷却时间。</RimTalk.Settings.FastTrackInteractionsDesc>
+    <RimTalk.Settings.SelectAll>全选</RimTalk.Settings.SelectAll>
+    <RimTalk.Settings.DeselectAll>全不选</RimTalk.Settings.DeselectAll>
     <RimTalk.Settings.AllowSimultaneousConversations>允许多组同时对话</RimTalk.Settings.AllowSimultaneousConversations>
     <RimTalk.Settings.AllowSimultaneousConversationsTooltip>启用后，多个殖民者小组可以同时交谈。如果你希望一次只显示一段对话，或觉得对话太多，可以关闭此选项。</RimTalk.Settings.AllowSimultaneousConversationsTooltip>
     <RimTalk.Settings.DisplayTalkWhenDrafted>征召时显示对话</RimTalk.Settings.DisplayTalkWhenDrafted>
@@ -184,8 +189,6 @@ Scriban 魔法 (动态内容)
     <RimTalk.Settings.AllowCustomConversationTooltip>允许你通过输入台词在角色之间发起自定义对话，或直接与某个角色交谈。右键点击角色即可开始对话。</RimTalk.Settings.AllowCustomConversationTooltip>
     <RimTalk.Settings.ContinueDialogueWhileSleeping>睡觉时继续对话</RimTalk.Settings.ContinueDialogueWhileSleeping>
     <RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>启用后，即使角色入睡，也会继续显示所有生成的对话。</RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>
-    <RimTalk.Settings.EnableSleepDialogue>入睡与醒来对话</RimTalk.Settings.EnableSleepDialogue>
-    <RimTalk.Settings.EnableSleepDialogueTooltip>启用后，殖民者在就寝或醒来时会偶尔发表困倦的言论或独白。</RimTalk.Settings.EnableSleepDialogueTooltip>
 
     <RimTalk.Settings.AllowMonologue>允许独白</RimTalk.Settings.AllowMonologue>
     <RimTalk.Settings.AllowMonologueTooltip>启用后，即使没有其他角色在附近，角色也可能生成 AI 驱动的独白。</RimTalk.Settings.AllowMonologueTooltip>
@@ -447,6 +450,7 @@ Scriban 魔法 (动态内容)
     <RimTalk.Overlay.Option>悬浮窗选项</RimTalk.Overlay.Option>
     <RimTalk.Overlay.DrawAboveUI>在 UI 之上绘制</RimTalk.Overlay.DrawAboveUI>
     <RimTalk.Overlay.ShowGroupColors>显示对话组颜色</RimTalk.Overlay.ShowGroupColors>
+    <RimTalk.Overlay.ShowTargetName>显示对话目标 [A -&gt; B]</RimTalk.Overlay.ShowTargetName>
     <RimTalk.Overlay.AlignNameColumn>对齐名称列</RimTalk.Overlay.AlignNameColumn>
     <RimTalk.Overlay.Opacity>不透明度</RimTalk.Overlay.Opacity>
     <RimTalk.Overlay.FontSize>字体大小</RimTalk.Overlay.FontSize>

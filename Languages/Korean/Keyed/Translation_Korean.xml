@@ -181,6 +181,11 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.Settings.ReplyIntervalTooltip>대화 중 이전 발언과 다음 답변 사이의 지연 시간(초)입니다.</RimTalk.Settings.ReplyIntervalTooltip>
     <RimTalk.Settings.OverrideInteractions>모든 상호작용을 AI 대화로 덮어쓰기</RimTalk.Settings.OverrideInteractions>
     <RimTalk.Settings.OverrideInteractionsTooltip>이 옵션을 활성화하면 AI가 모든 상호작용(바닐라 림월드 및 다른 모드 포함)의 대화를 덮어쓰고 다시 생성할 수 있습니다. 참고: AI 대화에는 위에 설정된 재사용 대기시간이 있습니다. 대화를 더 자주 생성하려면 재사용 대기시간을 줄이세요.</RimTalk.Settings.OverrideInteractionsTooltip>
+    <RimTalk.Settings.SettingsButton>설정</RimTalk.Settings.SettingsButton>
+    <RimTalk.Settings.FastTrackInteractionsTitle>빠른 처리 상호작용</RimTalk.Settings.FastTrackInteractionsTitle>
+    <RimTalk.Settings.FastTrackInteractionsDesc>일반 대화 쿨다운을 건너뛰고 즉시 대화를 생성할 상호작용을 선택합니다. 선택되지 않은 상호작용은 기본 쿨다운 주기를 따릅니다.</RimTalk.Settings.FastTrackInteractionsDesc>
+    <RimTalk.Settings.SelectAll>모두 선택</RimTalk.Settings.SelectAll>
+    <RimTalk.Settings.DeselectAll>모두 해제</RimTalk.Settings.DeselectAll>
     <RimTalk.Settings.AllowSimultaneousConversations>동시다발적 대화 허용</RimTalk.Settings.AllowSimultaneousConversations>
     <RimTalk.Settings.AllowSimultaneousConversationsTooltip>활성화하면 여러 캐릭터들이 동시에 대화를 나누는 모습을 볼 수 있습니다. 대화가 너무 많거나 한 번에 한 대화만 보고 싶다면 비활성화하세요.</RimTalk.Settings.AllowSimultaneousConversationsTooltip>
     <RimTalk.Settings.DisplayTalkWhenDrafted>소집 시 대화 표시</RimTalk.Settings.DisplayTalkWhenDrafted>
@@ -189,8 +194,6 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.Settings.AllowCustomConversationTooltip>사용자가 직접 대사를 작성해 캐릭터 간 대화를 시작하거나, 특정 캐릭터와 대화할 수 있습니다. 대화를 시작하려면 원하는 캐릭터를 우클릭하세요.</RimTalk.Settings.AllowCustomConversationTooltip>
     <RimTalk.Settings.ContinueDialogueWhileSleeping>자는 동안 대화 계속</RimTalk.Settings.ContinueDialogueWhileSleeping>
     <RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>활성화하면, 폰이 잠들어도 생성된 모든 대화를 계속 진행합니다.</RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>
-    <RimTalk.Settings.EnableSleepDialogue>수면 및 기상 대화</RimTalk.Settings.EnableSleepDialogue>
-    <RimTalk.Settings.EnableSleepDialogueTooltip>활성화하면, 폰이 잠자리에 들거나 잠에서 깰 때 짧은 대사나 혼잣말을 생성합니다.</RimTalk.Settings.EnableSleepDialogueTooltip>
 
     <RimTalk.Settings.AllowMonologue>독백 허용</RimTalk.Settings.AllowMonologue>
     <RimTalk.Settings.AllowMonologueTooltip>활성화하면 다른 폰이 근처에 없어도 폰이 AI 기반 독백을 생성할 수 있습니다.</RimTalk.Settings.AllowMonologueTooltip>
@@ -473,6 +476,7 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.Overlay.Option>오버레이 옵션</RimTalk.Overlay.Option>
     <RimTalk.Overlay.DrawAboveUI>UI 위에 표시</RimTalk.Overlay.DrawAboveUI>
     <RimTalk.Overlay.ShowGroupColors>대화 그룹 색상 표시</RimTalk.Overlay.ShowGroupColors>
+    <RimTalk.Overlay.ShowTargetName>대화 대상 표시 상A -&gt; B])</RimTalk.Overlay.ShowTargetName>
     <RimTalk.Overlay.AlignNameColumn>이름 컬럼 정렬</RimTalk.Overlay.AlignNameColumn>
     <RimTalk.Overlay.Opacity>투명도</RimTalk.Overlay.Opacity>
     <RimTalk.Overlay.FontSize>글꼴 크기</RimTalk.Overlay.FontSize>

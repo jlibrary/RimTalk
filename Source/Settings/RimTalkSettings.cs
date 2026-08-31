@@ -29,6 +29,7 @@ public class RimTalkSettings : ModSettings
     public PromptManager PromptSystem = new();
     public bool UseAdvancedPromptMode = false;  // Default to Simple Mode
     public Dictionary<string, bool> EnabledArchivableTypes = new();
+    public Dictionary<string, bool> FastTrackInteractions = new();
     public bool DisplayTalkWhenDrafted = true;
     public bool AllowMonologue = true;
     public bool AllowSlavesToTalk = true;
@@ -59,7 +60,8 @@ public class RimTalkSettings : ModSettings
     // Overlay settings
     public bool OverlayEnabled = true;
     public bool OverlayShowGroupColors = true;
-    public bool OverlayAlignNameColumn = true;
+    public bool OverlayAlignNameColumn = false;
+    public bool OverlayShowTargetName = false;
     public float OverlayOpacity = 0.5f;
     public float OverlayFontSize = 15f;
     public bool OverlayDrawAboveUI = true;
@@ -186,6 +188,8 @@ public class RimTalkSettings : ModSettings
         Scribe_Values.Look(ref EnableSleepDialogue, "enableSleepDialogue", true);
         Scribe_Values.Look(ref DisableAiAtSpeed, "DisableAiAtSpeed", 0);
         Scribe_Collections.Look(ref EnabledArchivableTypes, "enabledArchivableTypes", LookMode.Value, LookMode.Value);
+        Scribe_Collections.Look(ref FastTrackInteractions, "fastTrackInteractions", LookMode.Value, LookMode.Value);
+        FastTrackInteractions ??= new Dictionary<string, bool>();
         Scribe_Values.Look(ref AllowBabiesToTalk, "allowBabiesToTalk", true);
         Scribe_Values.Look(ref AllowNonHumanToTalk, "allowNonHumanToTalk", true);
         Scribe_Values.Look(ref AllowAnnouncement, "allowAnnouncement", true);
@@ -206,7 +210,8 @@ public class RimTalkSettings : ModSettings
         // Overlay settings
         Scribe_Values.Look(ref OverlayEnabled, "overlayEnabled", true);
         Scribe_Values.Look(ref OverlayShowGroupColors, "overlayShowGroupColors", true);
-        Scribe_Values.Look(ref OverlayAlignNameColumn, "overlayAlignNameColumn", true);
+        Scribe_Values.Look(ref OverlayAlignNameColumn, "overlayAlignNameColumn", false);
+        Scribe_Values.Look(ref OverlayShowTargetName, "overlayShowTargetName", false);
         Scribe_Values.Look(ref OverlayOpacity, "overlayOpacity", 0.5f);
         Scribe_Values.Look(ref OverlayFontSize, "overlayFontSize", 15f);
         Scribe_Values.Look(ref OverlayDrawAboveUI, "overlayDrawAboveUI", true);
@@ -341,5 +346,10 @@ public class RimTalkSettings : ModSettings
         };
         preset.Entries.Insert(0, entry);
         return entry;
+    }
+
+    public bool IsFastTrackInteraction(string defName)
+    {
+        return defName != null && FastTrackInteractions.TryGetValue(defName, out bool enabled) && enabled;
     }
 }

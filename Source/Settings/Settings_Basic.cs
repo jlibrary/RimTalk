@@ -88,9 +88,29 @@ public partial class Settings
         leftListing.Gap(6f);
 
         // 3. Checkboxes in Left Column
-        leftListing.CheckboxLabeled("RimTalk.Settings.OverrideInteractions".Translate().ToString(),
-            ref settings.ProcessNonRimTalkInteractions,
-            "RimTalk.Settings.OverrideInteractionsTooltip".Translate().ToString());
+        Rect overrideRowRect = leftListing.GetRect(24f);
+        if (settings.ProcessNonRimTalkInteractions)
+        {
+            const float btnWidth = 75f;
+            Rect checkboxRect = new Rect(overrideRowRect.x, overrideRowRect.y, overrideRowRect.width - btnWidth - 6f, overrideRowRect.height);
+            Rect btnRect = new Rect(checkboxRect.xMax + 6f, overrideRowRect.y, btnWidth, 24f);
+
+            Widgets.CheckboxLabeled(checkboxRect, "RimTalk.Settings.OverrideInteractions".Translate().ToString(),
+                ref settings.ProcessNonRimTalkInteractions);
+            TooltipHandler.TipRegion(checkboxRect, "RimTalk.Settings.OverrideInteractionsTooltip".Translate().ToString());
+
+            if (Widgets.ButtonText(btnRect, "RimTalk.Settings.SettingsButton".Translate().ToString()))
+            {
+                Find.WindowStack.Add(new Dialog_FastTrackInteractions());
+            }
+        }
+        else
+        {
+            Widgets.CheckboxLabeled(overrideRowRect, "RimTalk.Settings.OverrideInteractions".Translate().ToString(),
+                ref settings.ProcessNonRimTalkInteractions);
+            TooltipHandler.TipRegion(overrideRowRect, "RimTalk.Settings.OverrideInteractionsTooltip".Translate().ToString());
+        }
+
         leftListing.Gap(6f);
         leftListing.CheckboxLabeled("RimTalk.Settings.AllowSimultaneousConversations".Translate().ToString(),
             ref settings.AllowSimultaneousConversations,
@@ -103,10 +123,6 @@ public partial class Settings
         leftListing.CheckboxLabeled("RimTalk.Settings.ContinueDialogueWhileSleeping".Translate().ToString(),
             ref settings.ContinueDialogueWhileSleeping,
             "RimTalk.Settings.ContinueDialogueWhileSleepingTooltip".Translate().ToString());
-        leftListing.Gap(6f);
-        leftListing.CheckboxLabeled("RimTalk.Settings.EnableSleepDialogue".Translate().ToString(),
-            ref settings.EnableSleepDialogue,
-            "RimTalk.Settings.EnableSleepDialogueTooltip".Translate().ToString());
         leftListing.Gap(6f);
         leftListing.CheckboxLabeled("RimTalk.Settings.ApplyMoodAndSocialEffects".Translate().ToString(),
             ref settings.ApplyMoodAndSocialEffects,
