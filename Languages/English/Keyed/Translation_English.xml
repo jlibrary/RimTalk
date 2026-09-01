@@ -190,6 +190,8 @@ Crucial Tips:
     <RimTalk.Settings.AllowCustomConversationTooltip>Allows you to start custom dialogues between characters or talk directly to a character by writing your own lines. Right-click a pawn to begin a conversation.</RimTalk.Settings.AllowCustomConversationTooltip>
     <RimTalk.Settings.ContinueDialogueWhileSleeping>Continue Dialogue While Sleeping</RimTalk.Settings.ContinueDialogueWhileSleeping>
     <RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>If enabled, pawns will continue speaking all generated lines even if they fall asleep.</RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>
+    <RimTalk.Settings.EnableSleepDialogue>Sleep &amp; Wake Dialogue</RimTalk.Settings.EnableSleepDialogue>
+    <RimTalk.Settings.EnableSleepDialogueTooltip>If enabled, pawns will occasionally initiate sleepy remarks when going to bed or waking up.</RimTalk.Settings.EnableSleepDialogueTooltip>
 
     <RimTalk.Settings.AllowMonologue>Allow Monologues</RimTalk.Settings.AllowMonologue>
     <RimTalk.Settings.AllowMonologueTooltip>When enabled, pawns may generate AI-driven monologues even when no other pawn is nearby.</RimTalk.Settings.AllowMonologueTooltip>

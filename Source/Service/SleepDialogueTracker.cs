@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using RimTalk.Data;
 using RimTalk.Source.Data;
 using RimTalk.Util;
@@ -20,6 +21,7 @@ public static class SleepDialogueTracker
 
     public static void Notify_GoingToBed(Pawn pawn)
     {
+        if (!Settings.Get().EnableSleepDialogue) return;
         if (!IsValidForSleepDialogue(pawn)) return;
         if (!IsGoingToSleep(pawn)) return;
 
@@ -37,16 +39,10 @@ public static class SleepDialogueTracker
         var nearbyPawns = PawnSelector.GetNearByTalkablePawns(pawn);
         Pawn partner = nearbyPawns.Count > 0 && IsValidForSleepDialogue(nearbyPawns[0]) ? nearbyPawns[0] : null;
 
-        string timeStr = GetInGameTimeString(pawn);
-        if (partner != null)
-        {
-            LastBedtimeTicks[partner.thingIDNumber] = ticks;
-            pawnState.AddTalkRequest($"Heading to bed to sleep at {timeStr}, saying a brief sleepy remark to {partner.LabelShort}", partner, TalkType.Sleep);
-        }
-        else
-        {
-            pawnState.AddTalkRequest($"Heading to bed to sleep at {timeStr}, a short sleepy thought before resting", null, TalkType.Sleep);
-        }
+        if (partner != null) LastBedtimeTicks[partner.thingIDNumber] = ticks;
+
+        string prompt = BuildPrompt(SleepDialogueKind.Bedtime, partner);
+        pawnState.AddTalkRequest(prompt, partner, TalkType.Sleep, null, SleepDialogueKind.Bedtime);
     }
 
     public static void Notify_WokeUp(Pawn pawn)
@@ -59,6 +55,7 @@ public static class SleepDialogueTracker
         bool wasTrackedSleeping = SleepingPawns.Remove(pawn.thingIDNumber);
         if (!wasTrackedSleeping && !wasAsleep) return;
 
+        if (!Settings.Get().EnableSleepDialogue) return;
         if (!IsValidForSleepDialogue(pawn)) return;
 
         int ticks = GenTicks.TicksGame;
@@ -73,16 +70,10 @@ public static class SleepDialogueTracker
         var nearbyPawns = PawnSelector.GetNearByTalkablePawns(pawn);
         Pawn nearbyColonist = nearbyPawns.Count > 0 && IsValidForSleepDialogue(nearbyPawns[0]) ? nearbyPawns[0] : null;
 
-        string timeStr = GetInGameTimeString(pawn);
-        if (nearbyColonist != null)
-        {
-            LastWakeUpTicks[nearbyColonist.thingIDNumber] = ticks;
-            pawnState.AddTalkRequest($"Just woke up from sleep at {timeStr}, greeting {nearbyColonist.LabelShort}", nearbyColonist, TalkType.Sleep);
-        }
-        else
-        {
-            pawnState.AddTalkRequest($"Just woke up from sleep at {timeStr}, thinking about rest, mood, or what to do next", null, TalkType.Sleep);
-        }
+        if (nearbyColonist != null) LastWakeUpTicks[nearbyColonist.thingIDNumber] = ticks;
+
+        string prompt = BuildPrompt(SleepDialogueKind.WakeUp, nearbyColonist);
+        pawnState.AddTalkRequest(prompt, nearbyColonist, TalkType.Sleep, null, SleepDialogueKind.WakeUp);
     }
 
     public static bool IsGoingToSleep(Pawn pawn)
@@ -93,15 +84,35 @@ public static class SleepDialogueTracker
         return tired || sleepScheduled;
     }
 
-    private static string GetInGameTimeString(Pawn pawn)
+    public static void RefreshRequest(TalkRequest request)
     {
-        var map = pawn?.Map ?? Find.CurrentMap;
-        if (map != null && Find.WorldGrid != null && Find.TickManager != null)
+        if (request?.TalkType != TalkType.Sleep || request.SleepDialogueKind == SleepDialogueKind.None) return;
+
+        var nearbyPawns = PawnSelector.GetNearByTalkablePawns(request.Initiator);
+        Pawn partner = nearbyPawns.FirstOrDefault(p => p == request.Recipient && IsValidForSleepDialogue(p))
+                       ?? nearbyPawns.FirstOrDefault(IsValidForSleepDialogue);
+
+        string prompt = BuildPrompt(request.SleepDialogueKind, partner);
+        request.Recipient = partner;
+        request.IsMonologue = partner == null;
+        request.Prompt = prompt;
+        request.RawPrompt = prompt;
+    }
+
+    private static string BuildPrompt(SleepDialogueKind kind, Pawn partner)
+    {
+        return kind switch
         {
-            var longLat = Find.WorldGrid.LongLatOf(map.Tile);
-            return CommonUtil.GetInGameHour12HString(Find.TickManager.TicksAbs, longLat);
-        }
-        return CommonUtil.GetInGameData().Hour12HString;
+            SleepDialogueKind.Bedtime when partner != null =>
+                $"Heading to bed, saying a brief sleepy remark to {partner.LabelShort}",
+            SleepDialogueKind.Bedtime =>
+                "Heading to bed, making a brief sleepy remark before resting",
+            SleepDialogueKind.WakeUp when partner != null =>
+                $"Just woke up, greeting {partner.LabelShort} with a brief waking remark",
+            SleepDialogueKind.WakeUp =>
+                "Just woke up, making a brief waking remark about rest, mood, or what to do next",
+            _ => string.Empty
+        };
     }
 
     private static bool IsValidForSleepDialogue(Pawn pawn)

@@ -192,6 +192,8 @@
     <RimTalk.Settings.AllowCustomConversationTooltip>Позволяет вам начинать собственные диалоги между персонажами или напрямую разговаривать с выбранным персонажем, вводя свои реплики. Щёлкните правой кнопкой мыши по персонажу, чтобы начать разговор.</RimTalk.Settings.AllowCustomConversationTooltip>
     <RimTalk.Settings.ContinueDialogueWhileSleeping>Продолжать диалог во сне</RimTalk.Settings.ContinueDialogueWhileSleeping>
     <RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>Если включено, персонажи будут произносить все сгенерированные реплики, даже если они засыпают.</RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>
+    <RimTalk.Settings.EnableSleepDialogue>Диалоги при отходе ко сну и пробуждении</RimTalk.Settings.EnableSleepDialogue>
+    <RimTalk.Settings.EnableSleepDialogueTooltip>Если включено, поселенцы будут периодически произносить короткие реплики при отходе ко сну или пробуждении.</RimTalk.Settings.EnableSleepDialogueTooltip>
 
     <RimTalk.Settings.AllowMonologue>Разрешить монологи</RimTalk.Settings.AllowMonologue>
     <RimTalk.Settings.AllowMonologueTooltip>Если включено, персонажи могут генерировать монологи на основе ИИ, даже если рядом нет других персонажей.</RimTalk.Settings.AllowMonologueTooltip>

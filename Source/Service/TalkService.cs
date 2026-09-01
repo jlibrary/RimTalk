@@ -36,6 +36,8 @@ public static class TalkService
         
         if (!settings.AllowSimultaneousConversations && AnyPawnHasPendingResponses()) return false;
 
+        SleepDialogueTracker.RefreshRequest(talkRequest);
+
         // Ensure the recipient is valid and capable of talking.
         PawnState pawn2 = talkRequest.Recipient != null ? Cache.Get(talkRequest.Recipient) : null;
         if (pawn2 == null || talkRequest.Recipient?.Name == null || !pawn2.CanDisplayTalk())

@@ -14,6 +14,13 @@ public enum RequestStatus
     Expired
 }
 
+public enum SleepDialogueKind
+{
+    None,
+    Bedtime,
+    WakeUp
+}
+
 public class TalkRequest(string prompt, Pawn initiator, Pawn recipient = null, TalkType talkType = TalkType.Other)
 {
     public TalkType TalkType { get; set; } = talkType;
@@ -31,6 +38,7 @@ public class TalkRequest(string prompt, Pawn initiator, Pawn recipient = null, T
     public bool IsMonologue;
     public bool IsAnnouncement => TalkType == TalkType.Announcement;
     public string ImageBase64 { get; set; }
+    public SleepDialogueKind SleepDialogueKind { get; set; }
     
     /// <summary>
     /// All pawns participating in the dialogue (filled in sync layer)
