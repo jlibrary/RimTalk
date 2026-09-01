@@ -721,24 +721,30 @@ public class Overlay : MapComponent
     {
         float currentX = rowRect.x;
 
-        DrawCachedLabel(new Rect(currentX, rowRect.y, message.LeftBracketWidth, rowRect.height), LeftBracket);
-        currentX += message.LeftBracketWidth;
-
-        var speakerRect = new Rect(currentX, rowRect.y, message.SpeakerWidth, rowRect.height);
-        UIUtil.DrawClickablePawnName(speakerRect, message.SpeakerLabel, message.PawnInstance, false);
-        currentX += message.SpeakerWidth;
-
-        if (message.TargetName != null)
+        if (message.TargetName == null)
         {
+            float totalPawnLabelWidth = message.LeftBracketWidth + message.SpeakerWidth + message.RightBracketWidth;
+            var speakerRect = new Rect(currentX, rowRect.y, totalPawnLabelWidth, rowRect.height);
+            UIUtil.DrawClickablePawnName(speakerRect, message.SpeakerLabel, message.PawnInstance, includeBrackets: true);
+        }
+        else
+        {
+            DrawCachedLabel(new Rect(currentX, rowRect.y, message.LeftBracketWidth, rowRect.height), LeftBracket);
+            currentX += message.LeftBracketWidth;
+
+            var speakerRect = new Rect(currentX, rowRect.y, message.SpeakerWidth, rowRect.height);
+            UIUtil.DrawClickablePawnName(speakerRect, message.SpeakerLabel, message.PawnInstance, false);
+            currentX += message.SpeakerWidth;
+
             DrawCachedLabel(new Rect(currentX, rowRect.y, message.DirectionWidth, rowRect.height), Direction);
             currentX += message.DirectionWidth;
 
             var targetRect = new Rect(currentX, rowRect.y, message.TargetWidth, rowRect.height);
             UIUtil.DrawClickablePawnName(targetRect, message.TargetLabel, message.TargetPawnInstance, false);
             currentX += message.TargetWidth;
-        }
 
-        DrawCachedLabel(new Rect(currentX, rowRect.y, message.RightBracketWidth, rowRect.height), RightBracket);
+            DrawCachedLabel(new Rect(currentX, rowRect.y, message.RightBracketWidth, rowRect.height), RightBracket);
+        }
     }
 
     private void DrawMessageLog(Rect inRect)
