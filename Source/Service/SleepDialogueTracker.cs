@@ -153,7 +153,8 @@ public static class SleepDialogueTracker
         return request.SleepDialogueKind switch
         {
             SleepDialogueKind.Bedtime => pawn.Awake() && IsSleepJob(pawn.CurJobDef) && IsGoingToSleep(pawn),
-            SleepDialogueKind.WakeUp => pawn.Awake() && !IsSleepJob(pawn.CurJobDef),
+            SleepDialogueKind.WakeUp => pawn.Awake() && !IsSleepJob(pawn.CurJobDef)
+                                                     && !IsBedtimeInterruptionJob(pawn.CurJobDef),
             _ => true
         };
     }

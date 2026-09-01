@@ -23,18 +23,23 @@ public static class SleepPatch_StartJob
         bool prevWasSleep = SleepDialogueTracker.IsSleepJob(__state.prevJob);
         bool currIsSleep = SleepDialogueTracker.IsSleepJob(newJob.def);
 
+        // Some relationship jobs end LayDown before starting their own job, so the
+        // sleep-to-job transition is not always direct.
+        if (SleepDialogueTracker.IsBedtimeInterruptionJob(newJob.def))
+        {
+            SleepDialogueTracker.Notify_SleepInterrupted(___pawn);
+            return;
+        }
+
         // 1. Started sleeping (transition from non-sleep -> sleep)
         if (!prevWasSleep && currIsSleep)
         {
             SleepDialogueTracker.Notify_GoingToBed(___pawn);
         }
-        // 2. Left a sleep job, either by waking normally or for a bedtime interruption.
+        // 2. Left a sleep job without entering a recognized bedtime interruption.
         else if (prevWasSleep && !currIsSleep)
         {
-            if (SleepDialogueTracker.IsBedtimeInterruptionJob(newJob.def))
-                SleepDialogueTracker.Notify_SleepInterrupted(___pawn);
-            else
-                SleepDialogueTracker.Notify_WokeUp(___pawn, __state.wasAsleep);
+            SleepDialogueTracker.Notify_WokeUp(___pawn, __state.wasAsleep);
         }
     }
 }
