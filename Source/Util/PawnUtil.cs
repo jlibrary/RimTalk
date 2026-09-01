@@ -250,9 +250,9 @@ public static class PawnUtil
                 string activity = GetPawnActivity(p, relevantPawns, useOptimization);
                 string talkRequestStr = "";
                 var talkRequest = pawnState.GetNextTalkRequest();
-                if (talkRequest != null && !p.HostileTo(mainPawn))
+                if (talkRequest != null && !p.HostileTo(mainPawn) &&
+                    SleepDialogueTracker.TryRefreshRequest(talkRequest))
                 {
-                    SleepDialogueTracker.RefreshRequest(talkRequest);
                     pawnState.MarkRequestSpoken(talkRequest);
                     talkRequestStr = $" - {talkRequest.Prompt}";
                 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using RimTalk.Data;
@@ -14,6 +15,7 @@ namespace RimTalk.Service;
 public static class SleepDialogueTracker
 {
     private const int DailyCooldownTicks = 40000; // ~16 in-game hours (strictly once per daily sleep cycle)
+    private const string RelationshipJobDriverTypeName = "rjw.JobDriver_Sex";
 
     private static readonly Dictionary<int, int> LastBedtimeTicks = new();
     private static readonly Dictionary<int, int> LastWakeUpTicks = new();
@@ -78,6 +80,19 @@ public static class SleepDialogueTracker
         pawnState.AddTalkRequest(prompt, nearbyColonist, TalkType.Sleep, null, SleepDialogueKind.WakeUp);
     }
 
+    public static void Notify_SleepInterrupted(Pawn pawn)
+    {
+        if (pawn == null) return;
+
+        SleepingPawns.Remove(pawn.thingIDNumber);
+
+        var pawnState = Cache.Get(pawn);
+        if (pawnState == null) return;
+
+        ExpirePendingRequests(pawnState, SleepDialogueKind.Bedtime);
+        ExpirePendingRequests(pawnState, SleepDialogueKind.WakeUp);
+    }
+
     public static bool IsGoingToSleep(Pawn pawn)
     {
         if (pawn?.needs?.rest == null) return false;
@@ -86,9 +101,17 @@ public static class SleepDialogueTracker
         return tired || sleepScheduled;
     }
 
-    public static void RefreshRequest(TalkRequest request)
+    public static bool TryRefreshRequest(TalkRequest request)
     {
-        if (request?.TalkType != TalkType.Sleep || request.SleepDialogueKind == SleepDialogueKind.None) return;
+        if (request == null) return false;
+        if (request.TalkType != TalkType.Sleep || request.SleepDialogueKind == SleepDialogueKind.None) return true;
+
+        if (!IsRequestStillValid(request))
+        {
+            TalkRequestPool.AddToHistory(request, RequestStatus.Expired);
+            Cache.Get(request.Initiator)?.TalkRequests.Remove(request);
+            return false;
+        }
 
         var nearbyPawns = PawnSelector.GetNearByTalkablePawns(request.Initiator);
         Pawn partner = nearbyPawns.FirstOrDefault(p => p == request.Recipient && IsValidForSleepDialogue(p))
@@ -99,6 +122,40 @@ public static class SleepDialogueTracker
         request.IsMonologue = partner == null;
         request.Prompt = prompt;
         request.RawPrompt = prompt;
+        return true;
+    }
+
+    public static bool IsSleepJob(JobDef jobDef)
+    {
+        return jobDef == JobDefOf.LayDown || jobDef == JobDefOf.Wait_Asleep;
+    }
+
+    public static bool IsBedtimeInterruptionJob(JobDef jobDef)
+    {
+        if (jobDef == JobDefOf.Lovin) return true;
+
+        for (Type driverType = jobDef?.driverClass; driverType != null; driverType = driverType.BaseType)
+        {
+            if (driverType.FullName == RelationshipJobDriverTypeName)
+                return true;
+        }
+
+        return false;
+    }
+
+    private static bool IsRequestStillValid(TalkRequest request)
+    {
+        if (!Settings.Get().EnableSleepDialogue) return false;
+
+        Pawn pawn = request.Initiator;
+        if (!IsValidForSleepDialogue(pawn)) return false;
+
+        return request.SleepDialogueKind switch
+        {
+            SleepDialogueKind.Bedtime => pawn.Awake() && IsSleepJob(pawn.CurJobDef) && IsGoingToSleep(pawn),
+            SleepDialogueKind.WakeUp => pawn.Awake() && !IsSleepJob(pawn.CurJobDef),
+            _ => true
+        };
     }
 
     private static void ExpirePendingRequests(PawnState pawnState, SleepDialogueKind kind)

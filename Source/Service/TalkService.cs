@@ -31,12 +31,12 @@ public static class TalkService
         if (settings.GetActiveConfig() == null) return false;
         if (AIService.IsBusy()) return false;
 
+        if (!SleepDialogueTracker.TryRefreshRequest(talkRequest)) return false;
+
         PawnState pawn1 = Cache.Get(talkRequest.Initiator);
         if (!talkRequest.TalkType.IsFromUser() && (pawn1 == null || !pawn1.CanGenerateTalk())) return false;
         
         if (!settings.AllowSimultaneousConversations && AnyPawnHasPendingResponses()) return false;
-
-        SleepDialogueTracker.RefreshRequest(talkRequest);
 
         // Ensure the recipient is valid and capable of talking.
         PawnState pawn2 = talkRequest.Recipient != null ? Cache.Get(talkRequest.Recipient) : null;
@@ -84,7 +84,10 @@ public static class TalkService
             foreach (var p in pawns.Where(p => p != null && !p.IsPlayer()))
                 Cache.Get(p)?.IgnoreAllTalkResponses([TalkType.Urgent, TalkType.User, TalkType.Announcement]);
         
-        if (pawns.Count == 1) talkRequest.IsMonologue = true;
+        if (talkRequest.TalkType == TalkType.Sleep)
+            talkRequest.IsMonologue = pawns.Count == 1;
+        else if (pawns.Count == 1)
+            talkRequest.IsMonologue = true;
 
         if (!settings.AllowMonologue && talkRequest.IsMonologue && !talkRequest.TalkType.IsFromUser())
             return false;
