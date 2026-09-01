@@ -27,14 +27,15 @@ public static class SleepDialogueTracker
 
         SleepingPawns.Add(pawn.thingIDNumber);
 
+        var pawnState = Cache.Get(pawn);
+        if (pawnState == null) return;
+        ExpirePendingRequests(pawnState, SleepDialogueKind.WakeUp);
+
         int ticks = GenTicks.TicksGame;
         if (LastBedtimeTicks.TryGetValue(pawn.thingIDNumber, out int lastTick) && ticks - lastTick < DailyCooldownTicks)
             return;
 
         LastBedtimeTicks[pawn.thingIDNumber] = ticks;
-
-        var pawnState = Cache.Get(pawn);
-        if (pawnState == null) return;
 
         var nearbyPawns = PawnSelector.GetNearByTalkablePawns(pawn);
         Pawn partner = nearbyPawns.Count > 0 && IsValidForSleepDialogue(nearbyPawns[0]) ? nearbyPawns[0] : null;
@@ -55,6 +56,10 @@ public static class SleepDialogueTracker
         bool wasTrackedSleeping = SleepingPawns.Remove(pawn.thingIDNumber);
         if (!wasTrackedSleeping && !wasAsleep) return;
 
+        var pawnState = Cache.Get(pawn);
+        if (pawnState == null) return;
+        ExpirePendingRequests(pawnState, SleepDialogueKind.Bedtime);
+
         if (!Settings.Get().EnableSleepDialogue) return;
         if (!IsValidForSleepDialogue(pawn)) return;
 
@@ -63,9 +68,6 @@ public static class SleepDialogueTracker
             return;
 
         LastWakeUpTicks[pawn.thingIDNumber] = ticks;
-
-        var pawnState = Cache.Get(pawn);
-        if (pawnState == null) return;
 
         var nearbyPawns = PawnSelector.GetNearByTalkablePawns(pawn);
         Pawn nearbyColonist = nearbyPawns.Count > 0 && IsValidForSleepDialogue(nearbyPawns[0]) ? nearbyPawns[0] : null;
@@ -97,6 +99,22 @@ public static class SleepDialogueTracker
         request.IsMonologue = partner == null;
         request.Prompt = prompt;
         request.RawPrompt = prompt;
+    }
+
+    private static void ExpirePendingRequests(PawnState pawnState, SleepDialogueKind kind)
+    {
+        var node = pawnState.TalkRequests.First;
+        while (node != null)
+        {
+            var next = node.Next;
+            var request = node.Value;
+            if (request.TalkType == TalkType.Sleep && request.SleepDialogueKind == kind)
+            {
+                TalkRequestPool.AddToHistory(request, RequestStatus.Expired);
+                pawnState.TalkRequests.Remove(node);
+            }
+            node = next;
+        }
     }
 
     private static string BuildPrompt(SleepDialogueKind kind, Pawn partner)

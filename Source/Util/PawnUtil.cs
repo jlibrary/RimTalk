@@ -252,6 +252,7 @@ public static class PawnUtil
                 var talkRequest = pawnState.GetNextTalkRequest();
                 if (talkRequest != null && !p.HostileTo(mainPawn))
                 {
+                    SleepDialogueTracker.RefreshRequest(talkRequest);
                     pawnState.MarkRequestSpoken(talkRequest);
                     talkRequestStr = $" - {talkRequest.Prompt}";
                 }
