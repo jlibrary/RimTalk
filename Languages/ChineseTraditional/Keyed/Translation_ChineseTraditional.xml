@@ -521,4 +521,15 @@ Scriban 魔法 (動態內容)
     <RimTalk.PlayerSettings.NewPresetName>新對話預設</RimTalk.PlayerSettings.NewPresetName>
     <RimTalk.PlayerSettings.PresetTitleHeader>標題 / 選單名</RimTalk.PlayerSettings.PresetTitleHeader>
     <RimTalk.PlayerSettings.PresetTitlePlaceholder>對話預設標題...</RimTalk.PlayerSettings.PresetTitlePlaceholder>
+
+    <!-- VersionSwitcher.cs -->
+    <RimTalk.VersionSwitcher.RollbackLabel>回滾舊版本</RimTalk.VersionSwitcher.RollbackLabel>
+    <RimTalk.VersionSwitcher.SwitchToPrevious>複製舊版本（本地模組）</RimTalk.VersionSwitcher.SwitchToPrevious>
+    <RimTalk.VersionSwitcher.SwitchToSpecificVer>複製 {0}（本地模組）</RimTalk.VersionSwitcher.SwitchToSpecificVer>
+    <RimTalk.VersionSwitcher.NoPreviousDllFound>在模組目錄中未找到舊版本檔案 (LastVersion/)。</RimTalk.VersionSwitcher.NoPreviousDllFound>
+    <RimTalk.VersionSwitcher.ConfirmRollbackTitle>回滾至版本 ({0})</RimTalk.VersionSwitcher.ConfirmRollbackTitle>
+    <RimTalk.VersionSwitcher.ConfirmRollbackPrompt>將 RimTalk ({0}) 複製到本地 'RimWorld/Mods/RimTalk' 目錄？</RimTalk.VersionSwitcher.ConfirmRollbackPrompt>
+    <RimTalk.VersionSwitcher.ProceedRollback>複製</RimTalk.VersionSwitcher.ProceedRollback>
+    <RimTalk.VersionSwitcher.RestartRequiredTitle>複製完成</RimTalk.VersionSwitcher.RestartRequiredTitle>
+    <RimTalk.VersionSwitcher.LocalModCreatedPrompt>已複製到 'RimWorld/Mods/RimTalk'。\n\n請在模組選單中停用 Steam 版本，啟用本地模組後重新啟動 RimWorld。</RimTalk.VersionSwitcher.LocalModCreatedPrompt>
 </LanguageData>

@@ -521,4 +521,15 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.PlayerSettings.NewPresetName>새 대화 프리셋</RimTalk.PlayerSettings.NewPresetName>
     <RimTalk.PlayerSettings.PresetTitleHeader>제목 / 메뉴명</RimTalk.PlayerSettings.PresetTitleHeader>
     <RimTalk.PlayerSettings.PresetTitlePlaceholder>대화 프리셋 제목...</RimTalk.PlayerSettings.PresetTitlePlaceholder>
+
+    <!-- VersionSwitcher.cs -->
+    <RimTalk.VersionSwitcher.RollbackLabel>구버전 롤백</RimTalk.VersionSwitcher.RollbackLabel>
+    <RimTalk.VersionSwitcher.SwitchToPrevious>이전 버전 복사 (로컬 모드)</RimTalk.VersionSwitcher.SwitchToPrevious>
+    <RimTalk.VersionSwitcher.SwitchToSpecificVer>{0} 복사 (로컬 모드)</RimTalk.VersionSwitcher.SwitchToSpecificVer>
+    <RimTalk.VersionSwitcher.NoPreviousDllFound>이전 버전 파일(LastVersion/)을 찾을 수 없습니다.</RimTalk.VersionSwitcher.NoPreviousDllFound>
+    <RimTalk.VersionSwitcher.ConfirmRollbackTitle>이전 버전({0})으로 롤백</RimTalk.VersionSwitcher.ConfirmRollbackTitle>
+    <RimTalk.VersionSwitcher.ConfirmRollbackPrompt>RimTalk ({0})을 로컬 'RimWorld/Mods/RimTalk' 폴더로 복사하시겠습니까?</RimTalk.VersionSwitcher.ConfirmRollbackPrompt>
+    <RimTalk.VersionSwitcher.ProceedRollback>복사</RimTalk.VersionSwitcher.ProceedRollback>
+    <RimTalk.VersionSwitcher.RestartRequiredTitle>복사 완료</RimTalk.VersionSwitcher.RestartRequiredTitle>
+    <RimTalk.VersionSwitcher.LocalModCreatedPrompt>'RimWorld/Mods/RimTalk'에 복사되었습니다.\n\n스팀 버전을 비활성화하고 로컬 모드를 활성화한 뒤 림월드를 재시작하세요.</RimTalk.VersionSwitcher.LocalModCreatedPrompt>
 </LanguageData>

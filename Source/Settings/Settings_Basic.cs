@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using RimTalk.UI;
+using RimTalk.Util;
 using UnityEngine;
 using Verse;
 
@@ -235,6 +236,9 @@ public partial class Settings
         }
 
         TooltipHandler.TipRegion(buttonDisplayRect, "RimTalk.Settings.ButtonDisplayTooltip".Translate().ToString());
+
+        listingStandard.Gap(12f);
+        VersionSwitcher.DrawVersionSwitcher(listingStandard);
 
         listingStandard.Gap(24f);
         

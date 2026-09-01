@@ -53,34 +53,43 @@ public class CustomDialoguePreset : IExposable
         };
     }
 
+    private static string SafeTranslate(string key, string fallback)
+    {
+        if (LanguageDatabase.activeLanguage != null && key.CanTranslate())
+        {
+            return key.Translate().ToString();
+        }
+        return fallback;
+    }
+
     public static List<CustomDialoguePreset> CreateDefaultPresets()
     {
         return
         [
             new CustomDialoguePreset(
-                "RimTalk.PlayerSettings.Preset1.Title".Translate(),
-                "RimTalk.PlayerSettings.Preset1.Prompt".Translate(),
+                SafeTranslate("RimTalk.PlayerSettings.Preset1.Title", "Base & Life"),
+                SafeTranslate("RimTalk.PlayerSettings.Preset1.Prompt", "Looking around our base, how do you feel about our setup and daily life here?"),
                 includeVision: true,
                 isAnnouncement: false,
                 isEnabled: false),
 
             new CustomDialoguePreset(
-                "RimTalk.PlayerSettings.Preset2.Title".Translate(),
-                "RimTalk.PlayerSettings.Preset2.Prompt".Translate(),
+                SafeTranslate("RimTalk.PlayerSettings.Preset2.Title", "Mood & Well-being"),
+                SafeTranslate("RimTalk.PlayerSettings.Preset2.Prompt", "How are you holding up lately? Anything on your mind or bothering you?"),
                 includeVision: false,
                 isAnnouncement: false,
                 isEnabled: false),
 
             new CustomDialoguePreset(
-                "RimTalk.PlayerSettings.Preset3.Title".Translate(),
-                "RimTalk.PlayerSettings.Preset3.Prompt".Translate(),
+                SafeTranslate("RimTalk.PlayerSettings.Preset3.Title", "Defenses & Tactics"),
+                SafeTranslate("RimTalk.PlayerSettings.Preset3.Prompt", "Take a look at our defenses and gear. Spot any tactical weak points we should reinforce?"),
                 includeVision: true,
                 isAnnouncement: false,
                 isEnabled: false),
 
             new CustomDialoguePreset(
-                "RimTalk.PlayerSettings.Preset4.Title".Translate(),
-                "RimTalk.PlayerSettings.Preset4.Prompt".Translate(),
+                SafeTranslate("RimTalk.PlayerSettings.Preset4.Title", "Work & Safety Notice"),
+                SafeTranslate("RimTalk.PlayerSettings.Preset4.Prompt", "Attention everyone! Stay alert, mind your safety, and let's focus on our duties!"),
                 includeVision: false,
                 isAnnouncement: true,
                 isEnabled: false)
