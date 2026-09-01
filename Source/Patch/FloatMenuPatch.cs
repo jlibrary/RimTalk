@@ -72,9 +72,13 @@ public static class FloatMenuPatch
                     {
                         if (!processedPawns.Add(hitPawn)) continue;
 
-                        Vector3 diff = clickPos - hitPawn.DrawPos;
-                        float distSq = diff.x * diff.x + diff.z * diff.z;
-                        if (distSq > MaxClickDistanceSquared) continue;
+                        // If the pawn is on an adjacent cell, verify it is within click distance
+                        if (dx != 0 || dz != 0)
+                        {
+                            Vector3 diff = clickPos - hitPawn.DrawPos;
+                            float distSq = diff.x * diff.x + diff.z * diff.z;
+                            if (distSq > MaxClickDistanceSquared) continue;
+                        }
 
                         if (TryResolveForHitPawn(selectedPawn, hitPawn, out var initiator, out var target))
                         {
