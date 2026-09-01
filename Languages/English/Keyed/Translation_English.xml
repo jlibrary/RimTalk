@@ -477,7 +477,7 @@ Crucial Tips:
     <RimTalk.Overlay.Option>Overlay Option</RimTalk.Overlay.Option>
     <RimTalk.Overlay.DrawAboveUI>Draw Above UI</RimTalk.Overlay.DrawAboveUI>
     <RimTalk.Overlay.ShowGroupColors>Show Group Colors</RimTalk.Overlay.ShowGroupColors>
-    <RimTalk.Overlay.ShowTargetName>Show Target Name [A -&gt; B]</RimTalk.Overlay.ShowTargetName>
+    <RimTalk.Overlay.ShowTargetName>Show Target Name [A-&gt;B]</RimTalk.Overlay.ShowTargetName>
     <RimTalk.Overlay.AlignNameColumn>Align Name Column</RimTalk.Overlay.AlignNameColumn>
     <RimTalk.Overlay.Opacity>Opacity</RimTalk.Overlay.Opacity>
     <RimTalk.Overlay.FontSize>Font Size</RimTalk.Overlay.FontSize>
@@ -515,4 +515,15 @@ Crucial Tips:
     <RimTalk.PlayerSettings.NewPresetName>New Preset</RimTalk.PlayerSettings.NewPresetName>
     <RimTalk.PlayerSettings.PresetTitleHeader>Title / Menu Name</RimTalk.PlayerSettings.PresetTitleHeader>
     <RimTalk.PlayerSettings.PresetTitlePlaceholder>Preset title...</RimTalk.PlayerSettings.PresetTitlePlaceholder>
+
+    <!-- VersionSwitcher.cs -->
+    <RimTalk.VersionSwitcher.RollbackLabel>Previous Version Rollback</RimTalk.VersionSwitcher.RollbackLabel>
+    <RimTalk.VersionSwitcher.SwitchToPrevious>Install Previous Version (Local Mod)</RimTalk.VersionSwitcher.SwitchToPrevious>
+    <RimTalk.VersionSwitcher.SwitchToSpecificVer>Install {0} (Local Mod)</RimTalk.VersionSwitcher.SwitchToSpecificVer>
+    <RimTalk.VersionSwitcher.NoPreviousDllFound>Previous version files were not found in mod directory (LastVersion/).</RimTalk.VersionSwitcher.NoPreviousDllFound>
+    <RimTalk.VersionSwitcher.ConfirmRollbackTitle>Rollback to {0}</RimTalk.VersionSwitcher.ConfirmRollbackTitle>
+    <RimTalk.VersionSwitcher.ConfirmRollbackPrompt>Copy RimTalk ({0}) to local 'RimWorld/Mods/RimTalk' folder?</RimTalk.VersionSwitcher.ConfirmRollbackPrompt>
+    <RimTalk.VersionSwitcher.ProceedRollback>Copy</RimTalk.VersionSwitcher.ProceedRollback>
+    <RimTalk.VersionSwitcher.RestartRequiredTitle>Copied</RimTalk.VersionSwitcher.RestartRequiredTitle>
+    <RimTalk.VersionSwitcher.LocalModCreatedPrompt>Copied to 'RimWorld/Mods/RimTalk'.\n\nDisable the Steam version, enable the local mod, and restart RimWorld.</RimTalk.VersionSwitcher.LocalModCreatedPrompt>
 </LanguageData>

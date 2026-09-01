@@ -426,10 +426,7 @@ public static class ContextBuilder
             if (speaker != null && !speaker.IsPlayer())
             {
                 // Pawn to Pawn
-                bool multiTurn = mode != Settings.PlayerDialogueMode.Manual;
-                intentSb.Append(multiTurn
-                    ? $"Generate multi turn dialogues starting after this (do not repeat initial dialogue), beginning with {shortName}"
-                    : $"Generate dialogue starting after this. Do not generate any further lines for {speaker1Name}");
+                intentSb.Append($"Generate multi turn dialogues starting after this (do not repeat initial dialogue), beginning with {shortName}");
             }
             else
             {

@@ -453,7 +453,7 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Overlay.Option>オーバーレイオプション</RimTalk.Overlay.Option>
     <RimTalk.Overlay.DrawAboveUI>UI の上に表示</RimTalk.Overlay.DrawAboveUI>
     <RimTalk.Overlay.ShowGroupColors>会話グループの色を表示</RimTalk.Overlay.ShowGroupColors>
-    <RimTalk.Overlay.ShowTargetName>会話の対象を表示 [A -&gt; B]</RimTalk.Overlay.ShowTargetName>
+    <RimTalk.Overlay.ShowTargetName>会話の対象を表示 [A-&gt;B]</RimTalk.Overlay.ShowTargetName>
     <RimTalk.Overlay.AlignNameColumn>名前列を揃える</RimTalk.Overlay.AlignNameColumn>
     <RimTalk.Overlay.Opacity>不透明度</RimTalk.Overlay.Opacity>
     <RimTalk.Overlay.FontSize>フォントサイズ</RimTalk.Overlay.FontSize>
@@ -520,4 +520,15 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.PlayerSettings.NewPresetName>新しい対話プリセット</RimTalk.PlayerSettings.NewPresetName>
     <RimTalk.PlayerSettings.PresetTitleHeader>タイトル / メニュー名</RimTalk.PlayerSettings.PresetTitleHeader>
     <RimTalk.PlayerSettings.PresetTitlePlaceholder>対話プリセットのタイトル...</RimTalk.PlayerSettings.PresetTitlePlaceholder>
+
+    <!-- VersionSwitcher.cs -->
+    <RimTalk.VersionSwitcher.RollbackLabel>旧バージョンへのロールバック</RimTalk.VersionSwitcher.RollbackLabel>
+    <RimTalk.VersionSwitcher.SwitchToPrevious>旧バージョンをコピー（ローカルMod）</RimTalk.VersionSwitcher.SwitchToPrevious>
+    <RimTalk.VersionSwitcher.SwitchToSpecificVer>{0} をコピー（ローカルMod）</RimTalk.VersionSwitcher.SwitchToSpecificVer>
+    <RimTalk.VersionSwitcher.NoPreviousDllFound>Modフォルダ内に旧バージョンファイル（LastVersion/）が見つかりません。</RimTalk.VersionSwitcher.NoPreviousDllFound>
+    <RimTalk.VersionSwitcher.ConfirmRollbackTitle>バージョン（{0}）へロールバック</RimTalk.VersionSwitcher.ConfirmRollbackTitle>
+    <RimTalk.VersionSwitcher.ConfirmRollbackPrompt>RimTalk（{0}）をローカルの「RimWorld/Mods/RimTalk」フォルダにコピーしますか？</RimTalk.VersionSwitcher.ConfirmRollbackPrompt>
+    <RimTalk.VersionSwitcher.ProceedRollback>コピー</RimTalk.VersionSwitcher.ProceedRollback>
+    <RimTalk.VersionSwitcher.RestartRequiredTitle>コピー完了</RimTalk.VersionSwitcher.RestartRequiredTitle>
+    <RimTalk.VersionSwitcher.LocalModCreatedPrompt>「RimWorld/Mods/RimTalk」にコピーされました。\n\nSteam版を無効化し、ローカルModを有効化してRimWorldを再起動してください。</RimTalk.VersionSwitcher.LocalModCreatedPrompt>
 </LanguageData>

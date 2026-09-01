@@ -118,6 +118,7 @@ public class DebugWindow : Window
         draggable = true;
         resizeable = true;
         absorbInputAroundWindow = false;
+        preventCameraMotion = false;
 
         var settings = Settings.Get();
         _viewMode = 0;

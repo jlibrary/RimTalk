@@ -450,7 +450,7 @@ Scriban 魔法 (动态内容)
     <RimTalk.Overlay.Option>悬浮窗选项</RimTalk.Overlay.Option>
     <RimTalk.Overlay.DrawAboveUI>在 UI 之上绘制</RimTalk.Overlay.DrawAboveUI>
     <RimTalk.Overlay.ShowGroupColors>显示对话组颜色</RimTalk.Overlay.ShowGroupColors>
-    <RimTalk.Overlay.ShowTargetName>显示对话目标 [A -&gt; B]</RimTalk.Overlay.ShowTargetName>
+    <RimTalk.Overlay.ShowTargetName>显示对话目标 [A-&gt;B]</RimTalk.Overlay.ShowTargetName>
     <RimTalk.Overlay.AlignNameColumn>对齐名称列</RimTalk.Overlay.AlignNameColumn>
     <RimTalk.Overlay.Opacity>不透明度</RimTalk.Overlay.Opacity>
     <RimTalk.Overlay.FontSize>字体大小</RimTalk.Overlay.FontSize>
@@ -517,4 +517,15 @@ Scriban 魔法 (动态内容)
     <RimTalk.PlayerSettings.NewPresetName>新对话预设</RimTalk.PlayerSettings.NewPresetName>
     <RimTalk.PlayerSettings.PresetTitleHeader>标题 / 菜单名</RimTalk.PlayerSettings.PresetTitleHeader>
     <RimTalk.PlayerSettings.PresetTitlePlaceholder>对话预设标题...</RimTalk.PlayerSettings.PresetTitlePlaceholder>
+
+    <!-- VersionSwitcher.cs -->
+    <RimTalk.VersionSwitcher.RollbackLabel>回滚旧版本</RimTalk.VersionSwitcher.RollbackLabel>
+    <RimTalk.VersionSwitcher.SwitchToPrevious>复制旧版本（本地模组）</RimTalk.VersionSwitcher.SwitchToPrevious>
+    <RimTalk.VersionSwitcher.SwitchToSpecificVer>复制 {0}（本地模组）</RimTalk.VersionSwitcher.SwitchToSpecificVer>
+    <RimTalk.VersionSwitcher.NoPreviousDllFound>在模组目录中未找到旧版本文件 (LastVersion/)。</RimTalk.VersionSwitcher.NoPreviousDllFound>
+    <RimTalk.VersionSwitcher.ConfirmRollbackTitle>回滚至版本 ({0})</RimTalk.VersionSwitcher.ConfirmRollbackTitle>
+    <RimTalk.VersionSwitcher.ConfirmRollbackPrompt>将 RimTalk ({0}) 复制到本地 'RimWorld/Mods/RimTalk' 目录？</RimTalk.VersionSwitcher.ConfirmRollbackPrompt>
+    <RimTalk.VersionSwitcher.ProceedRollback>复制</RimTalk.VersionSwitcher.ProceedRollback>
+    <RimTalk.VersionSwitcher.RestartRequiredTitle>复制完成</RimTalk.VersionSwitcher.RestartRequiredTitle>
+    <RimTalk.VersionSwitcher.LocalModCreatedPrompt>已复制到 'RimWorld/Mods/RimTalk'。\n\n请在模组列表中禁用 Steam 版本，启用本地模组后重启 RimWorld。</RimTalk.VersionSwitcher.LocalModCreatedPrompt>
 </LanguageData>
