@@ -40,6 +40,12 @@ public class PawnState(Pawn pawn)
 
     public void AddTalkRequest(string prompt, Pawn recipient, TalkType talkType, string imageBase64)
     {
+        AddTalkRequest(prompt, recipient, talkType, imageBase64, SleepDialogueKind.None);
+    }
+
+    public void AddTalkRequest(string prompt, Pawn recipient, TalkType talkType, string imageBase64,
+        SleepDialogueKind sleepDialogueKind)
+    {
         // Enemies should never receive colony incident, quest, or thought prompts
         if (Pawn.IsEnemy() && talkType is TalkType.Event or TalkType.QuestOffer or TalkType.QuestEnd or TalkType.Thought)
         {
@@ -70,7 +76,8 @@ public class PawnState(Pawn pawn)
         {
             Status = RequestStatus.Pending,
             IsMonologue = recipient == null,
-            ImageBase64 = imageBase64
+            ImageBase64 = imageBase64,
+            SleepDialogueKind = sleepDialogueKind
         };
 
         if (talkType.IsFromUser())
