@@ -144,9 +144,10 @@ public static class ApiHistory
 
     public static IEnumerable<ApiLog> GetAll()
     {
-        foreach (var log in History)
+        foreach (var id in HistoryOrder)
         {
-            yield return log.Value;
+            if (History.TryGetValue(id, out var log))
+                yield return log;
         }
     }
 
