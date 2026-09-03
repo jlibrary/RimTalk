@@ -5,7 +5,6 @@ using System.Reflection;
 using HarmonyLib;
 using RimTalk.Data;
 using RimTalk.Source.Data;
-using RimTalk.Util;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -857,10 +856,6 @@ public static class OverlayPatch
     {
         if (Overlay.SuppressForScreenshot)
         {
-            if (Event.current.type == EventType.Repaint)
-            {
-                VisionUtil.DrawThingOverlays();
-            }
             return;
         }
 

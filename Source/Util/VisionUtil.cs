@@ -288,3 +288,16 @@ public class CoroutineRunner : MonoBehaviour
         }
     }
 }
+
+[HarmonyPatch(typeof(UIRoot_Play), nameof(UIRoot_Play.UIRootOnGUI))]
+public static class VisionOverlayPatch
+{
+    [HarmonyPostfix]
+    public static void Postfix()
+    {
+        if (UI.Overlay.SuppressForScreenshot && Event.current.type == EventType.Repaint)
+        {
+            VisionUtil.DrawThingOverlays();
+        }
+    }
+}
