@@ -17,65 +17,220 @@ public partial class Settings
 {
     private static readonly Dictionary<string, List<string>> ModelCache = new();
 
+    private bool DrawApiModeCard(Rect rect, string title, string desc, bool isSelected)
+    {
+        // Background
+        Widgets.DrawBoxSolid(rect, isSelected ? new Color(0.2f, 0.4f, 0.6f, 0.85f) : new Color(0.18f, 0.18f, 0.18f, 0.6f));
+
+        // Border
+        GUI.color = isSelected ? new Color(0.4f, 0.75f, 1f, 1f) : new Color(0.35f, 0.35f, 0.35f, 0.6f);
+        Widgets.DrawBox(rect, isSelected ? 2 : 1);
+        GUI.color = Color.white;
+
+        if (Mouse.IsOver(rect)) Widgets.DrawHighlight(rect);
+
+        bool clicked = Widgets.ButtonInvisible(rect);
+
+        Rect content = rect.ContractedBy(5f);
+        Text.Anchor = TextAnchor.UpperCenter;
+
+        // Title
+        Text.Font = GameFont.Small;
+        GUI.color = isSelected ? Color.white : new Color(0.85f, 0.85f, 0.85f);
+        Widgets.Label(new Rect(content.x, content.y + 2f, content.width, Text.LineHeight), title);
+
+        // Subtitle / Desc
+        Text.Font = GameFont.Tiny;
+        GUI.color = isSelected ? new Color(0.8f, 0.92f, 1f) : new Color(0.6f, 0.6f, 0.6f);
+        Widgets.Label(new Rect(content.x, content.y + Text.LineHeight + 2f, content.width, content.height - Text.LineHeight - 2f), desc);
+
+        Text.Anchor = TextAnchor.UpperLeft;
+        GUI.color = Color.white;
+        Text.Font = GameFont.Small;
+
+        return clicked;
+    }
+
+    private void DrawApiModeSelector(Listing_Standard listingStandard, RimTalkSettings settings)
+    {
+        // Guide Header
+        Rect headerRect = listingStandard.GetRect(Text.LineHeight);
+        GUI.color = Color.gray;
+        Text.Font = GameFont.Tiny;
+        Widgets.Label(headerRect, "RimTalk.Settings.ModeSelectorHeader".Translate());
+        GUI.color = Color.white;
+        Text.Font = GameFont.Small;
+        listingStandard.Gap(2f);
+
+        const float cardGap = 8f;
+        const float cardHeight = 52f;
+        float cardWidth = (listingStandard.ColumnWidth - cardGap * 2f) / 3f;
+        Rect rowRect = listingStandard.GetRect(cardHeight);
+
+        Rect googleCard = new Rect(rowRect.x, rowRect.y, cardWidth, cardHeight);
+        Rect player2Card = new Rect(rowRect.x + cardWidth + cardGap, rowRect.y, cardWidth, cardHeight);
+        Rect advancedCard = new Rect(rowRect.x + (cardWidth + cardGap) * 2f, rowRect.y, cardWidth, cardHeight);
+
+        bool isGoogle = settings.UseSimpleConfig && settings.SimpleProvider == AIProvider.Google;
+        bool isPlayer2 = settings.UseSimpleConfig && settings.SimpleProvider == AIProvider.Player2;
+        bool isAdvanced = !settings.UseSimpleConfig;
+
+        // 1. Google Gemini Card
+        if (DrawApiModeCard(googleCard, "RimTalk.Settings.ModeGoogleTitle".Translate(), "RimTalk.Settings.ModeGoogleDesc".Translate(), isGoogle))
+        {
+            settings.UseSimpleConfig = true;
+            settings.SimpleProvider = AIProvider.Google;
+        }
+
+        // 2. Player2 Card
+        if (DrawApiModeCard(player2Card, "RimTalk.Settings.ModePlayer2Title".Translate(), "RimTalk.Settings.ModePlayer2Desc".Translate(), isPlayer2))
+        {
+            settings.UseSimpleConfig = true;
+            settings.SimpleProvider = AIProvider.Player2;
+        }
+
+        // 3. Advanced Card
+        if (DrawApiModeCard(advancedCard, "RimTalk.Settings.ModeAdvancedTitle".Translate(), "RimTalk.Settings.ModeAdvancedDesc".Translate(), isAdvanced))
+        {
+            settings.UseSimpleConfig = false;
+        }
+    }
+
     private void DrawSimpleApiSettings(Listing_Standard listingStandard)
     {
         RimTalkSettings settings = Get();
 
-        // API Key section
-        listingStandard.Label("RimTalk.Settings.GoogleApiKeyLabel".Translate());
-
-        const float buttonWidth = 150f;
-        const float spacing = 5f;
-
-        Rect rowRect = listingStandard.GetRect(30f);
-        rowRect.width -= buttonWidth + spacing;
-
-        settings.SimpleApiKey = Widgets.TextField(rowRect, settings.SimpleApiKey);
-
-        Rect buttonRect = new Rect(rowRect.xMax + spacing, rowRect.y, buttonWidth, rowRect.height);
-        if (Widgets.ButtonText(buttonRect, "RimTalk.Settings.GetFreeApiKeyButton".Translate()))
+        if (settings.SimpleProvider == AIProvider.Google)
         {
-            Application.OpenURL("https://aistudio.google.com/app/apikey");
+            // Google Section (Default)
+            listingStandard.Label("RimTalk.Settings.GoogleApiKeyLabel".Translate());
+
+            const float buttonWidth = 150f;
+            const float spacing = 5f;
+
+            Rect rowRect = listingStandard.GetRect(30f);
+            rowRect.width -= buttonWidth + spacing;
+
+            settings.SimpleApiKey = Widgets.TextField(rowRect, settings.SimpleApiKey);
+
+            Rect buttonRect = new Rect(rowRect.xMax + spacing, rowRect.y, buttonWidth, rowRect.height);
+            if (Widgets.ButtonText(buttonRect, "RimTalk.Settings.GetFreeApiKeyButton".Translate()))
+            {
+                Application.OpenURL("https://aistudio.google.com/app/apikey");
+            }
+
+            // Description
+            Text.Font = GameFont.Tiny;
+            GUI.color = Color.gray;
+            Rect cloudDescRect = listingStandard.GetRect(Text.LineHeight);
+            Widgets.Label(cloudDescRect, "RimTalk.Settings.GoogleApiKeyDesc".Translate());
+            GUI.color = Color.white;
+            Text.Font = GameFont.Small;
         }
-
-        // Add description for free Google providers
-        Text.Font = GameFont.Tiny;
-        GUI.color = Color.gray;
-        Rect cloudDescRect = listingStandard.GetRect(Text.LineHeight);
-        Widgets.Label(cloudDescRect, "RimTalk.Settings.GoogleApiKeyDesc".Translate());
-        GUI.color = Color.white;
-        Text.Font = GameFont.Small;
-
-        listingStandard.Gap();
-
-        // Show Advanced Settings button
-        Rect advancedButtonRect = listingStandard.GetRect(30f);
-        if (Widgets.ButtonText(advancedButtonRect, "RimTalk.Settings.SwitchToAdvancedSettings".Translate()))
+        else
         {
-            settings.UseSimpleConfig = false;
+            // Player2 Section: Split Cards (Symmetrical Bottom Buttons)
+            const float boxHeight = 125f;
+            const float cardGap = 12f;
+            const float padding = 10f;
+            const float btnHeight = 28f;
+
+            Rect totalBox = listingStandard.GetRect(boxHeight);
+            // Left & Right Cards: symmetrical split aligning with listingStandard.ColumnWidth
+            float cardW = (listingStandard.ColumnWidth - cardGap) / 2f;
+
+            Rect leftCard = new Rect(totalBox.x, totalBox.y, cardW, boxHeight);
+            Rect rightCard = new Rect(totalBox.x + cardW + cardGap, totalBox.y, cardW, boxHeight);
+
+            bool? status = Player2Client.GetLocalAppStatusCached();
+
+            bool isLeftActive = (status == true);
+            bool isRightActive = !string.IsNullOrEmpty(settings.SimplePlayer2ApiKey);
+            bool isAppRunning = isLeftActive;
+
+            // Color palettes (Muted Emerald/Green theme for both cards)
+            Color greenActiveBg = new Color(0.12f, 0.24f, 0.20f, 0.5f);
+            Color greenActiveBorder = new Color(0.25f, 0.68f, 0.52f, 0.85f);
+
+            // Inactive & Dimmed
+            Color inactiveBg = new Color(0.12f, 0.14f, 0.17f, 0.5f);
+            Color inactiveBorder = new Color(0.3f, 0.35f, 0.42f, 0.5f);
+            Color dimmedBg = new Color(0.08f, 0.09f, 0.11f, 0.4f);
+            Color dimmedBorder = new Color(0.22f, 0.25f, 0.28f, 0.4f);
+
+            // 1. Left Card: Option 1 - Desktop App
+            Widgets.DrawBoxSolid(leftCard, isLeftActive ? greenActiveBg : inactiveBg);
+            GUI.color = isLeftActive ? greenActiveBorder : inactiveBorder;
+            Widgets.DrawBox(leftCard, 1);
+            GUI.color = Color.white;
+
+            Rect leftInner = leftCard.ContractedBy(padding);
+            // Left Content: Title
+            Rect leftTitleRect = new Rect(leftInner.x, leftInner.y, leftInner.width, 22f);
+            Text.Font = GameFont.Small;
+            Widgets.Label(leftTitleRect, "RimTalk.Settings.Player2AppTitle".Translate());
+
+            // Left Status Row (matches inputRow height 24f and Y position for alignment)
+            Rect statusRow = new Rect(leftInner.x, leftTitleRect.yMax + 1f, leftInner.width, 24f);
+            GUI.color = isLeftActive ? new Color(0.4f, 0.85f, 0.65f) : Color.gray;
+            Text.Font = GameFont.Tiny;
+            Text.Anchor = TextAnchor.MiddleLeft;
+            Widgets.Label(statusRow, isLeftActive ? "RimTalk.Settings.Player2StatusConnected".Translate() : "RimTalk.Settings.Player2StatusDisconnected".Translate());
+            Text.Anchor = TextAnchor.UpperLeft;
+            GUI.color = Color.white;
+
+            // Left Description Row (matches rightDescRect height 18f and Y position)
+            Rect leftDescRect = new Rect(leftInner.x, statusRow.yMax + 2f, leftInner.width, 18f);
+            Text.Font = GameFont.Tiny;
+            GUI.color = Color.gray;
+            Widgets.Label(leftDescRect, "RimTalk.Settings.Player2AppDesc".Translate());
+            GUI.color = Color.white;
+            Text.Font = GameFont.Small;
+
+            // Left Bottom Button
+            Rect leftBtnRect = new Rect(leftInner.x, leftCard.yMax - padding - btnHeight, leftInner.width, btnHeight);
+            if (Widgets.ButtonText(leftBtnRect, "RimTalk.Settings.Player2DownloadApp".Translate()))
+            {
+                Application.OpenURL("https://player2.game");
+            }
+
+            // 2. Right Card: Option 2 - Web API Key (shares same green theme)
+            Widgets.DrawBoxSolid(rightCard, isAppRunning ? dimmedBg : (isRightActive ? greenActiveBg : inactiveBg));
+            GUI.color = isAppRunning ? dimmedBorder : (isRightActive ? greenActiveBorder : inactiveBorder);
+            Widgets.DrawBox(rightCard, 1);
+            GUI.color = Color.white;
+
+            Rect rightInner = rightCard.ContractedBy(padding);
+            // Right Content
+            Rect rightTitleRect = new Rect(rightInner.x, rightInner.y, rightInner.width, 22f);
+            Text.Font = GameFont.Small;
+            if (isAppRunning) GUI.color = Color.gray;
+            Widgets.Label(rightTitleRect, "RimTalk.Settings.Player2WebTitle".Translate());
+            GUI.color = Color.white;
+
+            // Right Content: inputs and buttons remain usable even if visually subordinated
+            Rect inputRow = new Rect(rightInner.x, rightTitleRect.yMax + 1f, rightInner.width, 24f);
+            settings.SimplePlayer2ApiKey = Widgets.TextField(inputRow, settings.SimplePlayer2ApiKey);
+
+            Rect rightDescRect = new Rect(rightInner.x, inputRow.yMax + 2f, rightInner.width, 18f);
+            Text.Font = GameFont.Tiny;
+            GUI.color = Color.gray;
+            Widgets.Label(rightDescRect, "RimTalk.Settings.Player2WebDesc".Translate());
+            GUI.color = Color.white;
+
+            // Right Bottom Button
+            Rect rightBtnRect = new Rect(rightInner.x, rightCard.yMax - padding - btnHeight, rightInner.width, btnHeight);
+            Text.Font = GameFont.Small;
+            if (Widgets.ButtonText(rightBtnRect, "RimTalk.Settings.Player2GetWebKey".Translate()))
+            {
+                Application.OpenURL("https://gerikuylerk.com/RimTalk");
+            }
         }
     }
 
     private void DrawAdvancedApiSettings(Listing_Standard listingStandard)
     {
         RimTalkSettings settings = Get();
-
-        // Show Simple Settings button
-        Rect simpleButtonRect = listingStandard.GetRect(30f);
-        if (Widgets.ButtonText(simpleButtonRect, "RimTalk.Settings.SwitchToSimpleSettings".Translate()))
-        {
-            if (string.IsNullOrWhiteSpace(settings.SimpleApiKey))
-            {
-                var firstValidCloudConfig = settings.CloudConfigs.FirstOrDefault(c => c.IsValid());
-                if (firstValidCloudConfig != null)
-                {
-                    settings.SimpleApiKey = firstValidCloudConfig.ApiKey;
-                }
-            }
-            settings.UseSimpleConfig = true;
-        }
-
-        listingStandard.Gap();
 
         // Cloud providers option with description
         Rect radioRect1 = listingStandard.GetRect(24f);
@@ -346,7 +501,19 @@ public partial class Settings
         }
         else
         {
-            if (Widgets.ButtonText(modelRect, config.SelectedModel))
+            string label = config.SelectedModel;
+            if (config.Provider == AIProvider.Player2)
+            {
+                bool? status = Player2Client.GetLocalAppStatusCached();
+                if (status == true)
+                    label = "Desktop App";
+                else if (!string.IsNullOrEmpty(config.ApiKey))
+                    label = "Web API";
+                else
+                    label = "Default";
+            }
+
+            if (Widgets.ButtonText(modelRect, label))
             {
                 ShowModelSelectionMenu(config);
             }
@@ -375,16 +542,29 @@ public partial class Settings
         return result;
     }
 
+    private static readonly AIProvider[] DropdownProviders =
+    [
+        AIProvider.Google,
+        AIProvider.Player2,
+        AIProvider.OpenAI,
+        AIProvider.DeepSeek,
+        AIProvider.Grok,
+        AIProvider.GLM,
+        AIProvider.GLMCoding,
+        AIProvider.OpenRouter,
+        AIProvider.AlibabaIntl,
+        AIProvider.AlibabaCN,
+        AIProvider.Custom
+    ];
+
     private void DrawProviderDropdown(float x, float y, float height, float width, ApiConfig config)
     {
         Rect providerRect = new Rect(x, y, width, height);
         if (Widgets.ButtonText(providerRect, config.Provider.GetLabel()))
         {
             List<FloatMenuOption> providerOptions = [];
-            foreach (AIProvider provider in Enum.GetValues(typeof(AIProvider)))
+            foreach (AIProvider provider in DropdownProviders)
             {
-                if (provider is AIProvider.None or AIProvider.Local) continue;
-                
                 providerOptions.Add(new FloatMenuOption(provider.GetLabel(), () =>
                 {
                     config.Provider = provider;
@@ -392,7 +572,6 @@ public partial class Settings
                     {
                         case AIProvider.Player2:
                             config.SelectedModel = "Default";
-                            Player2Client.CheckPlayer2StatusAndNotify();
                             break;
                         case AIProvider.Custom:
                             config.SelectedModel = "Custom";

@@ -31,6 +31,10 @@ public partial class Settings
     {
         RimTalkSettings settings = Get();
 
+        // 3-Card Mode Selector Header (Google | Player2 | Advanced)
+        DrawApiModeSelector(listingStandard, settings);
+        listingStandard.Gap(8f);
+
         // API Configuration section
         if (!settings.UseSimpleConfig)
         {
@@ -41,7 +45,7 @@ public partial class Settings
             DrawSimpleApiSettings(listingStandard);
         }
 
-        listingStandard.Gap(30f);
+        listingStandard.Gap(42f);
 
         // Define column layout
         const float columnGap = 200f;

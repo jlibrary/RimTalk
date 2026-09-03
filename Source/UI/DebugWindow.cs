@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RimTalk.Client;
 using RimTalk.Data;
 using RimTalk.Service;
 using RimTalk.Source.Data;
@@ -658,7 +659,7 @@ public class DebugWindow : Window
                 count = 0;
         }
 
-        string tokenCountText = count > 0 ? count.ToString() : "";
+        string tokenCountText = count > 0 ? count.ToString() : (request.IsFirstDialogue ? "-" : "");
         Widgets.Label(new Rect(currentX, rowRect.y, TokensColumnWidth, RowHeight), tokenCountText);
         currentX += TokensColumnWidth + ColumnPadding;
 
@@ -725,6 +726,16 @@ public class DebugWindow : Window
             header.Append(_selectedLog.InteractionType);
         }
 
+        var payload = ApiHistory.GetPayload(_selectedLog);
+        if (!string.IsNullOrEmpty(payload?.Model) && payload.Model != "Canceled")
+        {
+            var pair = AIProviderRegistry.Defs.FirstOrDefault(d => payload.URL?.StartsWith(d.Value.EndpointUrl) == true);
+            string prov = pair.Value.EndpointUrl != null ? pair.Key.GetLabel() : null;
+            string tag = string.IsNullOrEmpty(prov) || payload.Model.StartsWith(prov) ? payload.Model : $"{prov} {payload.Model}";
+            header.Append("  |  ");
+            header.Append(tag.Colorize(new Color(0.70f, 0.73f, 0.77f)));
+        }
+
         Text.Font = GameFont.Tiny;
         GUI.color = Color.gray;
         Widgets.Label(new Rect(0f, y, inner.width, 24f), header.ToString());
@@ -747,7 +758,6 @@ public class DebugWindow : Window
         {
             btnX += btnW + 6f;
             Rect reportRect = new Rect(btnX, y, btnW, buttonsRowH);
-            var payload = ApiHistory.GetPayload(_selectedLog);
             GUI.enabled = payload != null;
             if (Widgets.ButtonText(reportRect, "RimTalk.DebugWindow.ApiLog".Translate()))
             {

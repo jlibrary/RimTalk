@@ -264,6 +264,21 @@ Conseils Cruciaux :
     <RimTalk.PersonaEditor.Clear>Effacer</RimTalk.PersonaEditor.Clear>
 
     <!-- Settings_Api.cs -->
+    <RimTalk.Settings.ModeSelectorHeader>Choisir le mode de connexion IA (un seul choix) :</RimTalk.Settings.ModeSelectorHeader>
+    <RimTalk.Settings.ModeGoogleTitle>Google Gemini</RimTalk.Settings.ModeGoogleTitle>
+    <RimTalk.Settings.ModeGoogleDesc>Clé API Web gratuite</RimTalk.Settings.ModeGoogleDesc>
+    <RimTalk.Settings.ModePlayer2Title>Player2</RimTalk.Settings.ModePlayer2Title>
+    <RimTalk.Settings.ModePlayer2Desc>Connexion auto · Multi-modèles</RimTalk.Settings.ModePlayer2Desc>
+    <RimTalk.Settings.ModeAdvancedTitle>Personnalisé</RimTalk.Settings.ModeAdvancedTitle>
+    <RimTalk.Settings.ModeAdvancedDesc>OpenAI, DeepSeek, LLM local</RimTalk.Settings.ModeAdvancedDesc>
+    <RimTalk.Settings.Player2AppTitle>Option 1 : Application de bureau</RimTalk.Settings.Player2AppTitle>
+    <RimTalk.Settings.Player2AppDesc>Lancez l'application pour vous connecter automatiquement sans clé API.</RimTalk.Settings.Player2AppDesc>
+    <RimTalk.Settings.Player2StatusConnected>[ Application de bureau connectée ]</RimTalk.Settings.Player2StatusConnected>
+    <RimTalk.Settings.Player2StatusDisconnected>[ Application de bureau non lancée ]</RimTalk.Settings.Player2StatusDisconnected>
+    <RimTalk.Settings.Player2DownloadApp>Obtenir l'application</RimTalk.Settings.Player2DownloadApp>
+    <RimTalk.Settings.Player2WebTitle>Option 2 : Clé API Web</RimTalk.Settings.Player2WebTitle>
+    <RimTalk.Settings.Player2WebDesc>Utilisez une clé API Web gratuite sans installer l'application de bureau.</RimTalk.Settings.Player2WebDesc>
+    <RimTalk.Settings.Player2GetWebKey>Obtenir une clé API gratuite</RimTalk.Settings.Player2GetWebKey>
     <RimTalk.Settings.GoogleApiKeyLabel>Clé API Google AI :</RimTalk.Settings.GoogleApiKeyLabel>
     <RimTalk.Settings.GoogleApiKeyDesc>Utilise le modèle gratuit gemma-4-31b. Pour d'autres modèles ou fournisseurs, utilisez les Paramètres Avancés.</RimTalk.Settings.GoogleApiKeyDesc>
     <RimTalk.Settings.GetFreeApiKeyButton>Obtenir une clé API gratuite</RimTalk.Settings.GetFreeApiKeyButton>

@@ -263,6 +263,21 @@
     <RimTalk.PersonaEditor.Clear>Очистить</RimTalk.PersonaEditor.Clear>
 
     <!-- Settings_Api.cs -->
+    <RimTalk.Settings.ModeSelectorHeader>Выберите способ подключения ИИ (только один):</RimTalk.Settings.ModeSelectorHeader>
+    <RimTalk.Settings.ModeGoogleTitle>Google Gemini</RimTalk.Settings.ModeGoogleTitle>
+    <RimTalk.Settings.ModeGoogleDesc>Бесплатный ключ веб-API</RimTalk.Settings.ModeGoogleDesc>
+    <RimTalk.Settings.ModePlayer2Title>Player2</RimTalk.Settings.ModePlayer2Title>
+    <RimTalk.Settings.ModePlayer2Desc>Авто-подключение · Мультимодели</RimTalk.Settings.ModePlayer2Desc>
+    <RimTalk.Settings.ModeAdvancedTitle>Пользовательский</RimTalk.Settings.ModeAdvancedTitle>
+    <RimTalk.Settings.ModeAdvancedDesc>OpenAI, DeepSeek, локальные LLM</RimTalk.Settings.ModeAdvancedDesc>
+    <RimTalk.Settings.Player2AppTitle>Вариант 1: Десктопное приложение</RimTalk.Settings.Player2AppTitle>
+    <RimTalk.Settings.Player2AppDesc>Запустите приложение для автоматического подключения без ключа API.</RimTalk.Settings.Player2AppDesc>
+    <RimTalk.Settings.Player2StatusConnected>[ Приложение подключено ]</RimTalk.Settings.Player2StatusConnected>
+    <RimTalk.Settings.Player2StatusDisconnected>[ Приложение не запущено ]</RimTalk.Settings.Player2StatusDisconnected>
+    <RimTalk.Settings.Player2DownloadApp>Скачать приложение</RimTalk.Settings.Player2DownloadApp>
+    <RimTalk.Settings.Player2WebTitle>Вариант 2: Ключ веб-API</RimTalk.Settings.Player2WebTitle>
+    <RimTalk.Settings.Player2WebDesc>Используйте бесплатный веб-ключ без установки приложения.</RimTalk.Settings.Player2WebDesc>
+    <RimTalk.Settings.Player2GetWebKey>Получить бесплатный ключ</RimTalk.Settings.Player2GetWebKey>
     <RimTalk.Settings.GoogleApiKeyLabel>Ключ API Google AI:</RimTalk.Settings.GoogleApiKeyLabel>
     <RimTalk.Settings.GoogleApiKeyDesc>Использует бесплатную модель gemma-4-31b. Для других моделей или провайдеров используйте расширенные настройки.</RimTalk.Settings.GoogleApiKeyDesc>
     <RimTalk.Settings.GetFreeApiKeyButton>Получить бесплатный ключ API</RimTalk.Settings.GetFreeApiKeyButton>

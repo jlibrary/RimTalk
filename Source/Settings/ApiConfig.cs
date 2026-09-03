@@ -54,16 +54,10 @@ public class ApiConfig : IExposable
     public bool IsValid()
     {
         if (!IsEnabled) return false;
-            
-        if (Settings.Get().UseCloudProviders)
-        {
-            // Player2 can work without API key (local app detection)
-            if (Provider == AIProvider.Player2)
-                return SelectedModel != Constant.ChooseModel;
-                
-            return !string.IsNullOrWhiteSpace(ApiKey) && SelectedModel != Constant.ChooseModel;
-        }
-        else
-            return !string.IsNullOrWhiteSpace(BaseUrl);
+        if (Provider == AIProvider.Local) return !string.IsNullOrWhiteSpace(BaseUrl);
+        bool hasKey = !string.IsNullOrWhiteSpace(ApiKey);
+        if (Provider == AIProvider.Player2)
+            return (hasKey || Client.Player2.Player2Client.GetLocalAppStatusCached() == true) && SelectedModel != Constant.ChooseModel;
+        return hasKey && SelectedModel != Constant.ChooseModel;
     }
 }

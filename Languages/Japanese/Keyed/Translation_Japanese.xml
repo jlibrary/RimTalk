@@ -264,6 +264,21 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.PersonaEditor.Clear>クリア</RimTalk.PersonaEditor.Clear>
 
     <!-- Settings_Api.cs -->
+    <RimTalk.Settings.ModeSelectorHeader>AI接続方式の選択（1つのみ選択）：</RimTalk.Settings.ModeSelectorHeader>
+    <RimTalk.Settings.ModeGoogleTitle>Google Gemini</RimTalk.Settings.ModeGoogleTitle>
+    <RimTalk.Settings.ModeGoogleDesc>無料のWeb APIキー</RimTalk.Settings.ModeGoogleDesc>
+    <RimTalk.Settings.ModePlayer2Title>Player2</RimTalk.Settings.ModePlayer2Title>
+    <RimTalk.Settings.ModePlayer2Desc>自動連携対応 · マルチモデル</RimTalk.Settings.ModePlayer2Desc>
+    <RimTalk.Settings.ModeAdvancedTitle>カスタム</RimTalk.Settings.ModeAdvancedTitle>
+    <RimTalk.Settings.ModeAdvancedDesc>OpenAI, DeepSeek, ローカルLLM</RimTalk.Settings.ModeAdvancedDesc>
+    <RimTalk.Settings.Player2AppTitle>方法 1: デスクトップアプリ連携</RimTalk.Settings.Player2AppTitle>
+    <RimTalk.Settings.Player2AppDesc>アプリを起動しておくだけで、APIキー不要で自動接続されます。</RimTalk.Settings.Player2AppDesc>
+    <RimTalk.Settings.Player2StatusConnected>[ デスクトップアプリ接続済み ]</RimTalk.Settings.Player2StatusConnected>
+    <RimTalk.Settings.Player2StatusDisconnected>[ デスクトップアプリ未起動 ]</RimTalk.Settings.Player2StatusDisconnected>
+    <RimTalk.Settings.Player2DownloadApp>デスクトップアプリを入手</RimTalk.Settings.Player2DownloadApp>
+    <RimTalk.Settings.Player2WebTitle>方法 2: Web APIキー入力</RimTalk.Settings.Player2WebTitle>
+    <RimTalk.Settings.Player2WebDesc>デスクトップアプリを使わず、Webで無料キーを取得して利用します。</RimTalk.Settings.Player2WebDesc>
+    <RimTalk.Settings.Player2GetWebKey>無料APIキーを取得</RimTalk.Settings.Player2GetWebKey>
     <RimTalk.Settings.GoogleApiKeyLabel>Google AI APIキー：</RimTalk.Settings.GoogleApiKeyLabel>
     <RimTalk.Settings.GoogleApiKeyDesc>無料のgemma-4-31bモデルを使用します。他のモデルやプロバイダーを使用する場合は、詳細設定を使用してください。</RimTalk.Settings.GoogleApiKeyDesc>
     <RimTalk.Settings.GetFreeApiKeyButton>無料APIキーを取得</RimTalk.Settings.GetFreeApiKeyButton>

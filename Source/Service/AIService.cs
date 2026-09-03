@@ -162,7 +162,7 @@ public static class AIService
         {
             apiLog.Response = "RimTalk.DebugWindow.Canceled".Translate();
             apiLog.SpokenTick = -1;
-            return new Payload("Canceled", "Canceled", "", null, 0, "Canceled");
+            return new Payload("Canceled", null, "", null, 0, null);
         }
         finally
         {
@@ -236,10 +236,6 @@ public static class AIService
     public static void Clear()
     {
         CancelCurrent();
-        _busy = false;
-        _busySince = null;
         _firstInstruction = true;
-        _currentCts = null;
-        _currentRequest = null;
     }
 }

@@ -15,7 +15,9 @@ public class RimTalkSettings : ModSettings
     public ApiConfig LocalConfig = new() { Provider = AIProvider.Local };
     public bool UseCloudProviders = true;
     public bool UseSimpleConfig = true;
+    public AIProvider SimpleProvider = AIProvider.Google;
     public string SimpleApiKey = "";
+    public string SimplePlayer2ApiKey = "";
     public bool IsUsingFallbackModel = false;
     public bool IsEnabled = true;
     public int TalkInterval = 10;
@@ -77,6 +79,21 @@ public class RimTalkSettings : ModSettings
     {
         if (UseSimpleConfig)
         {
+            if (SimpleProvider == AIProvider.Player2)
+            {
+                bool hasKey = !string.IsNullOrWhiteSpace(SimplePlayer2ApiKey);
+                bool isAppRunning = Client.Player2.Player2Client.GetLocalAppStatusCached() == true;
+                if (!hasKey && !isAppRunning) return null;
+
+                return new ApiConfig
+                {
+                    ApiKey = SimplePlayer2ApiKey,
+                    Provider = AIProvider.Player2,
+                    SelectedModel = "Default",
+                    IsEnabled = true
+                };
+            }
+
             if (!string.IsNullOrWhiteSpace(SimpleApiKey))
             {
                 return new ApiConfig
@@ -167,7 +184,9 @@ public class RimTalkSettings : ModSettings
         Scribe_Deep.Look(ref LocalConfig, "localConfig");
         Scribe_Values.Look(ref UseCloudProviders, "useCloudProviders", true);
         Scribe_Values.Look(ref UseSimpleConfig, "useSimpleConfig", true);
+        Scribe_Values.Look(ref SimpleProvider, "simpleProvider", AIProvider.Google);
         Scribe_Values.Look(ref SimpleApiKey, "simpleApiKey", "");
+        Scribe_Values.Look(ref SimplePlayer2ApiKey, "simplePlayer2ApiKey", "");
         Scribe_Values.Look(ref IsEnabled, "isEnabled", true);
         Scribe_Values.Look(ref TalkInterval, "talkInterval", 10);
         Scribe_Values.Look(ref ReplyInterval, "replyInterval", 4);

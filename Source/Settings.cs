@@ -60,9 +60,9 @@ public partial class Settings : Mod
     public Settings(ModContentPack content) : base(content)
     {
         var harmony = new Harmony("cj.rimtalk");
-        var settings = GetSettings<RimTalkSettings>();
+        _settings = GetSettings<RimTalkSettings>();
         harmony.PatchAll();
-        _apiSettingsHash = GetApiSettingsHash(settings);
+        _apiSettingsHash = GetApiSettingsHash(_settings);
     }
 
     public override string SettingsCategory() =>
@@ -86,24 +86,17 @@ public partial class Settings : Mod
     private int GetApiSettingsHash(RimTalkSettings settings)
     {
         var sb = new StringBuilder();
-            
-        if (settings.CloudConfigs != null)
+
+        var activeConfig = settings.GetActiveConfig();
+        if (activeConfig != null)
         {
-            foreach (var config in settings.CloudConfigs)
-            {
-                sb.AppendLine(config.Provider.ToString());
-                sb.AppendLine(config.ApiKey);
-                sb.AppendLine(config.SelectedModel);
-                sb.AppendLine(config.CustomModelName);
-                sb.AppendLine(config.IsEnabled.ToString());
-                sb.AppendLine(config.BaseUrl);
-            }
+            sb.AppendLine(activeConfig.Provider.ToString());
+            sb.AppendLine(activeConfig.GetEffectiveModelName());
+            sb.AppendLine(activeConfig.BaseUrl);
         }
-        if (settings.LocalConfig != null)
+        else
         {
-            sb.AppendLine(settings.LocalConfig.Provider.ToString());
-            sb.AppendLine(settings.LocalConfig.BaseUrl);
-            sb.AppendLine(settings.LocalConfig.CustomModelName);
+            sb.AppendLine("None");
         }
 
         sb.AppendLine(settings.AllowSimultaneousConversations.ToString());

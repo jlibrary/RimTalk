@@ -264,6 +264,21 @@ Scriban 魔法 (動態內容)
     <RimTalk.PersonaEditor.Clear>清除</RimTalk.PersonaEditor.Clear>
 
     <!-- Settings_Api.cs -->
+    <RimTalk.Settings.ModeSelectorHeader>選擇 AI 連接方式（僅選一項）：</RimTalk.Settings.ModeSelectorHeader>
+    <RimTalk.Settings.ModeGoogleTitle>Google Gemini</RimTalk.Settings.ModeGoogleTitle>
+    <RimTalk.Settings.ModeGoogleDesc>免費網頁 API 金鑰</RimTalk.Settings.ModeGoogleDesc>
+    <RimTalk.Settings.ModePlayer2Title>Player2</RimTalk.Settings.ModePlayer2Title>
+    <RimTalk.Settings.ModePlayer2Desc>自動連接 · 多模型支援</RimTalk.Settings.ModePlayer2Desc>
+    <RimTalk.Settings.ModeAdvancedTitle>自訂</RimTalk.Settings.ModeAdvancedTitle>
+    <RimTalk.Settings.ModeAdvancedDesc>OpenAI, DeepSeek, 本地 LLM</RimTalk.Settings.ModeAdvancedDesc>
+    <RimTalk.Settings.Player2AppTitle>方案 1：桌面應用連接</RimTalk.Settings.Player2AppTitle>
+    <RimTalk.Settings.Player2AppDesc>只需運行應用，無需 API 金鑰即可自動連接。</RimTalk.Settings.Player2AppDesc>
+    <RimTalk.Settings.Player2StatusConnected>[ 桌面應用已連接 ]</RimTalk.Settings.Player2StatusConnected>
+    <RimTalk.Settings.Player2StatusDisconnected>[ 桌面應用未運行 ]</RimTalk.Settings.Player2StatusDisconnected>
+    <RimTalk.Settings.Player2DownloadApp>取得桌面應用</RimTalk.Settings.Player2DownloadApp>
+    <RimTalk.Settings.Player2WebTitle>方案 2：輸入網頁 API 金鑰</RimTalk.Settings.Player2WebTitle>
+    <RimTalk.Settings.Player2WebDesc>無需桌面應用，直接在網頁獲取免費 API 金鑰使用。</RimTalk.Settings.Player2WebDesc>
+    <RimTalk.Settings.Player2GetWebKey>獲取免費 API 金鑰</RimTalk.Settings.Player2GetWebKey>
     <RimTalk.Settings.GoogleApiKeyLabel>Google AI API 金鑰：</RimTalk.Settings.GoogleApiKeyLabel>
     <RimTalk.Settings.GoogleApiKeyDesc>使用免費的 gemma-4-31b 模型。如需其他模型或提供商，請使用進階設定。</RimTalk.Settings.GoogleApiKeyDesc>
     <RimTalk.Settings.GetFreeApiKeyButton>獲取免費 API 金鑰</RimTalk.Settings.GetFreeApiKeyButton>
