@@ -308,6 +308,30 @@ public class RimTalkSettings : ModSettings
                     baseEntry.Content = Constant.DefaultInstruction;
                     changed = true;
                 }
+
+                // Built-in presets created before this version stored the Simple Mode
+                // monologue limit directly in Base Instruction. Remove it so Advanced Mode
+                // no longer inherits a fixed turn count. User-created presets are untouched.
+                if (baseEntry != null &&
+                    string.Equals(preset.Description, "RimTalk default prompt preset", StringComparison.Ordinal))
+                {
+                    string normalized = Constant.RemoveLegacyMonologueTurnInstruction(baseEntry.Content);
+                    if (!string.Equals(normalized, baseEntry.Content, StringComparison.Ordinal))
+                    {
+                        baseEntry.Content = normalized;
+                        changed = true;
+                    }
+                }
+            }
+
+            // Store Simple Mode's editable instruction without the injected rule. The rule is
+            // appended only to the rendered request by PromptManager.
+            string normalizedSimpleInstruction =
+                Constant.RemoveLegacyMonologueTurnInstruction(SimpleModeInstruction);
+            if (!string.Equals(normalizedSimpleInstruction, SimpleModeInstruction, StringComparison.Ordinal))
+            {
+                SimpleModeInstruction = normalizedSimpleInstruction;
+                changed = true;
             }
 
             if (changed)
@@ -332,7 +356,7 @@ public class RimTalkSettings : ModSettings
             // 2. Migrate from Legacy CustomInstruction
             if (!string.IsNullOrWhiteSpace(CustomInstruction))
             {
-                SimpleModeInstruction = CustomInstruction;
+                SimpleModeInstruction = Constant.RemoveLegacyMonologueTurnInstruction(CustomInstruction);
                 CustomInstruction = "";
             }
         }

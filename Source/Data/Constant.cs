@@ -28,8 +28,33 @@ public static class Constant
          Visitor: polite, curious, deferential; treat other visitors in the same group as companions
          Enemy: hostile, aggressive; terse commands/threats
 
-         Monologue = 1 turn. Conversation = 4-8 short turns
+         Conversation = 4-8 short turns
          """;
+
+    public const string SimpleModeMonologueInstruction = "Monologue = 1 turn.";
+
+    /// <summary>
+    /// Removes the legacy built-in monologue limit. The limit is now injected only while
+    /// rendering Simple Mode, so Advanced Mode presets can control monologue length themselves.
+    /// </summary>
+    public static string RemoveLegacyMonologueTurnInstruction(string instruction)
+    {
+        if (string.IsNullOrWhiteSpace(instruction)) return instruction;
+
+        return instruction
+            .Replace(SimpleModeMonologueInstruction + " ", "")
+            .Replace(SimpleModeMonologueInstruction, "")
+            .TrimEnd();
+    }
+
+    public static string GetSimpleModeInstruction(string instruction)
+    {
+        string normalized = RemoveLegacyMonologueTurnInstruction(instruction);
+        if (string.IsNullOrWhiteSpace(normalized))
+            normalized = DefaultInstruction;
+
+        return $"{normalized.TrimEnd()}\n{SimpleModeMonologueInstruction}";
+    }
 
     public const string JsonInstruction = """
                                            Output JSONL.

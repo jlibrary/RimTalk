@@ -90,15 +90,31 @@ internal static class TickManagerPatch
                     continue;
                 }
 
+                bool isUserInitiated = request.TalkType.IsFromUser();
+
                 if (AIService.IsBusy())
                 {
-                    if (AIService.CanCancelFor(request))
+                    // Keep the automatic cooldown anchored to the end of the active request.
+                    _lastTalkEndTick = GenTicks.TicksGame;
+
+                    // Automatic interactions must not bypass the cooldown by pre-empting another
+                    // automatic generation. Explicit user requests may still take priority.
+                    if (isUserInitiated && AIService.CanCancelFor(request))
                         AIService.CancelCurrent();
                     return;
                 }
 
-                TalkService.GenerateTalk(request);
-                UserRequestPool.Remove(pawn);
+                if (!isUserInitiated && !IsAutomaticTalkCooldownReady())
+                    return;
+
+                // Keep the request queued when generation is temporarily unavailable. This
+                // restores the v1.1 behavior and prevents fast-track requests from being lost.
+                if (TalkService.GenerateTalk(request))
+                {
+                    UserRequestPool.Remove(pawn);
+                    if (!isUserInitiated)
+                        _lastTalkEndTick = GenTicks.TicksGame;
+                }
                 return;
             }
         }
@@ -109,8 +125,7 @@ internal static class TickManagerPatch
             return;
         }
 
-        int intervalTicks = CommonUtil.GetTicksForDuration(TalkInterval);
-        if (intervalTicks > 0 && GenTicks.TicksGame - _lastTalkEndTick >= intervalTicks)
+        if (IsAutomaticTalkCooldownReady())
         {
             // Select a pawn based on the current iteration strategy
             Pawn selectedPawn = PawnSelector.SelectNextAvailablePawn();
@@ -138,6 +153,16 @@ internal static class TickManagerPatch
             
             _lastTalkEndTick = GenTicks.TicksGame;
         }
+    }
+
+    /// <summary>
+    /// Returns whether another automatically generated dialogue may start. Explicit user
+    /// requests intentionally bypass this gate.
+    /// </summary>
+    internal static bool IsAutomaticTalkCooldownReady()
+    {
+        int intervalTicks = CommonUtil.GetTicksForDuration(TalkInterval);
+        return intervalTicks > 0 && GenTicks.TicksGame - _lastTalkEndTick >= intervalTicks;
     }
 
     private static bool TryGenerateTalkFromPool(Pawn pawn)

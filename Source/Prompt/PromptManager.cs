@@ -270,6 +270,8 @@ public class PromptManager : IExposable
                     Name = "Context",
                     Role = PromptRole.System,
                     Position = PromptPosition.Relative,
+                    // Dynamic context deliberately follows the stable Base/JSON system entries
+                    // so providers can reuse the longest possible stable prompt prefix.
                     Content = "{{context}}"
                 },
                 // 2. History Section
@@ -390,9 +392,10 @@ public class PromptManager : IExposable
             if (baseEntry != null)
             {
                 originalBaseContent = baseEntry.Content;
-                baseEntry.Content = string.IsNullOrWhiteSpace(settings.SimpleModeInstruction) 
+                string simpleInstruction = string.IsNullOrWhiteSpace(settings.SimpleModeInstruction)
                     ? Constant.DefaultInstruction 
                     : settings.SimpleModeInstruction;
+                baseEntry.Content = Constant.GetSimpleModeInstruction(simpleInstruction);
             }
         }
 
