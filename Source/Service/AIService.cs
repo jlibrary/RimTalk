@@ -35,59 +35,54 @@ public static class AIService
         var apiLog = ApiHistory.AddRequest(request, Channel.Stream);
         var lastApiLog = apiLog;
 
+        Action<TalkResponse> onResponse = response =>
+        {
+            if (IsCancellationRequested()) return;
+            var pawnState = request.ResolvePawnState(response.Name);
+            if (pawnState == null) return;
+
+            response.TalkType = request.TalkType;
+
+            // Calculate timing relative to the correct previous log
+            int elapsedMs = (int)(DateTime.Now - lastApiLog.Timestamp).TotalMilliseconds;
+            if (lastApiLog == apiLog) elapsedMs -= lastApiLog.ElapsedMs;
+
+            var newLog = ApiHistory.AddResponse(apiLog.Id, response.Text, response.Name,
+                response.InteractionRaw, payload: null, elapsedMs: elapsedMs,
+                targetName: response.TargetName);
+
+            response.Id = newLog.Id;
+            lastApiLog = newLog;
+
+            onPlayerResponseReceived?.Invoke(response);
+        };
+
         var payload = await ExecuteWithRetry(apiLog, async client =>
         {
+            Payload result;
             if (!string.IsNullOrEmpty(request.ImageBase64) && client is OpenAIClient openAIClient)
             {
-                return await openAIClient.GetStreamingChatCompletionAsync<TalkResponse>(prefixMessages, [],
-                    request.ImageBase64,
-                    response =>
-                    {
-                        var pawnState = request.ResolvePawnState(response.Name);
-                        if (pawnState == null) return;
-
-                        response.TalkType = request.TalkType;
-
-                        // Calculate timing relative to the correct previous log
-                        int elapsedMs = (int)(DateTime.Now - lastApiLog.Timestamp).TotalMilliseconds;
-                        if (lastApiLog == apiLog) elapsedMs -= lastApiLog.ElapsedMs;
-
-                        var newLog = ApiHistory.AddResponse(apiLog.Id, response.Text, response.Name,
-                            response.InteractionRaw, elapsedMs: elapsedMs);
-
-                        response.Id = newLog.Id;
-                        lastApiLog = newLog;
-
-                        onPlayerResponseReceived?.Invoke(response);
-                    },
+                result = await openAIClient.GetStreamingChatCompletionAsync<TalkResponse>(prefixMessages, [],
+                    request.ImageBase64, onResponse,
+                    prep => ApiHistory.UpdatePayload(apiLog.Id, prep));
+            }
+            else
+            {
+                // All prompt messages are already in prefixMessages, pass empty list for messages
+                result = await client.GetStreamingChatCompletionAsync<TalkResponse>(prefixMessages, [],
+                    onResponse,
                     prep => ApiHistory.UpdatePayload(apiLog.Id, prep));
             }
 
-            // All prompt messages are already in prefixMessages, pass empty list for messages
-            return await client.GetStreamingChatCompletionAsync<TalkResponse>(prefixMessages, [],
-                response =>
-                {
-                    if (IsCancellationRequested()) return;
-                    var pawnState = request.ResolvePawnState(response.Name);
-                    if (pawnState == null) return; 
-                    
-                    response.TalkType = request.TalkType;
+            // Only adjust graph points when API returns real token counts (e.g. OpenAI)
+            if (result?.TokenCount > 0)
+            {
+                Stats.IncrementTokens(result.TokenCount);
+                Stats.AdjustActiveRequestPoints(result.TokenCount);
+            }
 
-                    // Calculate timing relative to the correct previous log
-                    int elapsedMs = (int)(DateTime.Now - lastApiLog.Timestamp).TotalMilliseconds;
-                    if (lastApiLog == apiLog) elapsedMs -= lastApiLog.ElapsedMs;
-
-                    var newLog = ApiHistory.AddResponse(apiLog.Id, response.Text, response.Name,
-                        response.InteractionRaw, payload: null, elapsedMs: elapsedMs,
-                        targetName: response.TargetName);
-                    
-                    response.Id = newLog.Id;
-                    lastApiLog = newLog;
-
-                    onPlayerResponseReceived?.Invoke(response);
-                },
-                prep => ApiHistory.UpdatePayload(apiLog.Id, prep));
-        });
+            return result;
+        }, skipTokenIncrement: true);
 
         HandleFinalStatus(apiLog, payload);
         _firstInstruction = false;
@@ -123,7 +118,7 @@ public static class AIService
         }
     }
 
-    private static async Task<Payload> ExecuteWithRetry(ApiLog apiLog, Func<IAIClient, Task<Payload>> action)
+    private static async Task<Payload> ExecuteWithRetry(ApiLog apiLog, Func<IAIClient, Task<Payload>> action, bool skipTokenIncrement = false)
     {
         _busy = true;
         _busySince = DateTime.Now;
@@ -153,15 +148,19 @@ public static class AIService
             else
             {
                 Stats.IncrementCalls();
-                Stats.IncrementTokens(payload.TokenCount);
+                if (!skipTokenIncrement && payload.TokenCount > 0)
+                    Stats.IncrementTokens(payload.TokenCount);
             }
 
             return payload;
         }
         catch (OperationCanceledException)
         {
-            apiLog.Response = "RimTalk.DebugWindow.Canceled".Translate();
-            apiLog.SpokenTick = -1;
+            if (apiLog.SpokenTick == 0 && string.IsNullOrEmpty(apiLog.Response))
+            {
+                apiLog.Response = "RimTalk.DebugWindow.Canceled".Translate();
+                apiLog.SpokenTick = -1;
+            }
             return new Payload("Canceled", null, "", null, 0, null);
         }
         finally

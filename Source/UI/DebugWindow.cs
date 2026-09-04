@@ -1419,7 +1419,6 @@ public class DebugWindow : Window
 
         Text.Font = GameFont.Tiny;
         GUI.color = Color.gray;
-        Widgets.Label(new Rect(rect.x + 5, rect.y, 40, 20), maxVal.ToString());
         Widgets.Label(new Rect(rect.x + 5, rect.y + rect.height - 15, 60, 20),
             "RimTalk.DebugWindow.SixtySecondsAgo".Translate());
         Widgets.Label(new Rect(rect.xMax - 35, rect.y + rect.height - 15, 40, 20),
@@ -1435,22 +1434,31 @@ public class DebugWindow : Window
             float graphHeight = graphArea.height - (2 * verticalPadding);
             if (graphHeight <= 0) continue;
 
-            var points = new List<Vector2>();
+            var points = new List<Vector2>(data.Count);
             for (int i = 0; i < data.Count; i++)
             {
                 float x = graphArea.x + (float)i / (data.Count - 1) * graphArea.width;
                 float y = (graphArea.y + graphArea.height - verticalPadding) - ((float)data[i] / maxVal * graphHeight);
                 points.Add(new Vector2(x, y));
-
-                if (data[i] > 0 && i > 0 && i % 6 == 0)
-                {
-                    GUI.color = color;
-                    Widgets.Label(new Rect(x - 10, y - 15, 40, 20), data[i].ToString());
-                    GUI.color = Color.white;
-                }
             }
 
             for (int i = 0; i < points.Count - 1; i++) Widgets.DrawLine(points[i], points[i + 1], color, 2f);
+
+            // Show token count at the end of each spike (where line drops to 0)
+            GUI.color = color;
+            Text.Font = GameFont.Tiny;
+            for (int i = 0; i < data.Count; i++)
+            {
+                if (i < Stats.TokenLabels.Count && Stats.TokenLabels[i] > 0)
+                {
+                    bool isEnd = (i == data.Count - 1) || data[i + 1] <= 0;
+                    if (isEnd && i < points.Count)
+                    {
+                        Widgets.Label(new Rect(points[i].x - 15, points[i].y - 15, 50, 20), Stats.TokenLabels[i].ToString());
+                    }
+                }
+            }
+            GUI.color = Color.white;
         }
 
         var legendRect = new Rect(rect.xMax - 100, rect.y + 10, 90, 30);

@@ -25,6 +25,7 @@ public class Player2Client : IAIClient
     private readonly string _customRequestJson;
     private static DateTime _lastHealthCheck = DateTime.MinValue;
     private static bool _healthCheckActive;
+    private DateTime _lastLocalProbe = DateTime.MinValue;
 
     private string CurrentApiUrl => _isLocalConnection ? LocalUrl : RemoteUrl;
     private string CurrentApiKey => _isLocalConnection ? _localApiKey : _fallbackApiKey;
@@ -176,6 +177,18 @@ public class Player2Client : IAIClient
 
     private async Task<string> SendRequestAsync(string url, string jsonContent, Func<DownloadHandler> handlerFactory)
     {
+        if (!_isLocalConnection && (DateTime.Now - _lastLocalProbe).TotalSeconds > 2)
+        {
+            _lastLocalProbe = DateTime.Now;
+            string key = await TryGetLocalPlayer2Key();
+            if (!string.IsNullOrEmpty(key))
+            {
+                _localApiKey = key;
+                _isLocalConnection = true;
+                url = $"{LocalUrl}/v1/chat/completions";
+            }
+        }
+
         Logger.Debug($"Player2 Request ({(_isLocalConnection ? "local" : "remote")}): {url}\n{jsonContent}");
 
         using var downloadHandler = handlerFactory();

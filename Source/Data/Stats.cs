@@ -17,6 +17,42 @@ public static class Stats
     // Per-second counters
     private static long _tokensThisSecond;
     private static long _callsThisSecond;
+    private static long _currentRequestHeight;
+    private static int _activeRequestPoints;
+    private static long _pendingRequestHeightThisSecond;
+    private static long _pendingRequestTokensThisSecond;
+    private static bool _justCompletedWithActivePoints;
+
+    public static void AdjustActiveRequestPoints(long actualTokens)
+    {
+        if (actualTokens <= 0) return;
+        _currentRequestHeight = actualTokens;
+        if (_activeRequestPoints > 0)
+        {
+            int startIdx = Math.Max(0, TokensPerSecondHistory.Count - _activeRequestPoints);
+            for (int i = startIdx; i < TokensPerSecondHistory.Count; i++)
+            {
+                TokensPerSecondHistory[i] = actualTokens;
+                if (i < TokenLabels.Count) TokenLabels[i] = actualTokens;
+            }
+            _justCompletedWithActivePoints = true;
+            _activeRequestPoints = 0;
+        }
+        else
+        {
+            _pendingRequestHeightThisSecond = actualTokens;
+            _pendingRequestTokensThisSecond = actualTokens;
+        }
+
+        // Scale prior fallback points (height 1 without tokens) so they don't collapse when real tokens arrive
+        for (int i = 0; i < TokensPerSecondHistory.Count; i++)
+        {
+            if (TokensPerSecondHistory[i] == 1 && (i >= TokenLabels.Count || TokenLabels[i] == 0))
+            {
+                TokensPerSecondHistory[i] = actualTokens;
+            }
+        }
+    }
 
     // Per-minute historical data (last 60 minutes)
     public static readonly List<long> TokensPerMinuteHistory = [];
@@ -25,6 +61,8 @@ public static class Stats
 
     // Per-second historical data (last 60 seconds)
     public static readonly List<long> TokensPerSecondHistory = [];
+    // Parallel to TokensPerSecondHistory: real token count for labels (0 = no label)
+    public static readonly List<long> TokenLabels = [];
     public static readonly List<long> AvgTokensPerCallPerSecondHistory = [];
 
     private static DateTime _nextMinuteRolloverTime;
@@ -54,6 +92,16 @@ public static class Stats
         _callsThisSecond++;
     }
 
+    private static long GetHistoryMax()
+    {
+        long max = 0;
+        for (int i = 0; i < TokensPerSecondHistory.Count; i++)
+        {
+            if (TokensPerSecondHistory[i] > max) max = TokensPerSecondHistory[i];
+        }
+        return max > 0 ? max : 1;
+    }
+
     public static void Update()
     {
         double elapsedMinutes = (DateTime.Now - StartTime).TotalMinutes;
@@ -67,12 +115,45 @@ public static class Stats
         // --- Handle per-second rollover ---
         if (DateTime.Now >= _nextSecondRolloverTime)
         {
-            TokensPerSecondHistory.Add(_tokensThisSecond);
+            bool isBusy = Service.AIService.IsBusy();
+            long valToRecord;
+            long labelToRecord = 0;
+
+            if (isBusy)
+            {
+                if (_currentRequestHeight <= 0)
+                    _currentRequestHeight = GetHistoryMax();
+                valToRecord = _currentRequestHeight;
+                _activeRequestPoints++;
+            }
+            else
+            {
+                if (_pendingRequestHeightThisSecond > 0)
+                {
+                    valToRecord = _pendingRequestHeightThisSecond;
+                    labelToRecord = _pendingRequestTokensThisSecond;
+                    _pendingRequestHeightThisSecond = 0;
+                    _pendingRequestTokensThisSecond = 0;
+                }
+                else if (!_justCompletedWithActivePoints && _activeRequestPoints == 0 && _callsThisSecond > 0)
+                {
+                    valToRecord = GetHistoryMax();
+                    labelToRecord = 0;
+                }
+                else
+                {
+                    valToRecord = 0;
+                    labelToRecord = 0;
+                }
+                _currentRequestHeight = 0;
+                _activeRequestPoints = 0;
+                _justCompletedWithActivePoints = false;
+            }
+
+            TokensPerSecondHistory.Add(valToRecord);
+            TokenLabels.Add(labelToRecord);
             long avgForLastSecond = _callsThisSecond > 0 ? _tokensThisSecond / _callsThisSecond : 0;
             AvgTokensPerCallPerSecondHistory.Add(avgForLastSecond);
-
-            while (TokensPerSecondHistory.Count > 60) TokensPerSecondHistory.RemoveAt(0);
-            while (AvgTokensPerCallPerSecondHistory.Count > 60) AvgTokensPerCallPerSecondHistory.RemoveAt(0);
 
             _tokensThisSecond = 0;
             _callsThisSecond = 0;
@@ -80,10 +161,15 @@ public static class Stats
 
             while (_nextSecondRolloverTime < DateTime.Now)
             {
-                TokensPerSecondHistory.Add(0);
+                long catchup = isBusy ? _currentRequestHeight : 0;
+                TokensPerSecondHistory.Add(catchup);
+                TokenLabels.Add(0);
                 AvgTokensPerCallPerSecondHistory.Add(0);
                 _nextSecondRolloverTime = _nextSecondRolloverTime.AddSeconds(1);
             }
+
+            while (TokensPerSecondHistory.Count > 60) { TokensPerSecondHistory.RemoveAt(0); TokenLabels.RemoveAt(0); }
+            while (AvgTokensPerCallPerSecondHistory.Count > 60) AvgTokensPerCallPerSecondHistory.RemoveAt(0);
         }
 
         // --- Handle per-minute rollover ---
@@ -125,6 +211,7 @@ public static class Stats
         CallsPerMinuteHistory.Clear();
         AvgTokensPerCallHistory.Clear();
         TokensPerSecondHistory.Clear();
+        TokenLabels.Clear();
         AvgTokensPerCallPerSecondHistory.Clear();
 
         _nextMinuteRolloverTime = DateTime.Now.AddMinutes(1);
@@ -132,5 +219,10 @@ public static class Stats
         AvgCallsPerMinute = 0;
         AvgTokensPerMinute = 0;
         AvgTokensPerCall = 0;
+        _currentRequestHeight = 0;
+        _activeRequestPoints = 0;
+        _pendingRequestHeightThisSecond = 0;
+        _pendingRequestTokensThisSecond = 0;
+        _justCompletedWithActivePoints = false;
     }
 }
