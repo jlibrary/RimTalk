@@ -43,7 +43,7 @@ public class Player2Client : IAIClient
         _isLocalConnection = isLocal;
         _customRequestJson = customRequestJson;
 
-        if (!_healthCheckActive && !string.IsNullOrEmpty(fallbackApiKey))
+        if (!_healthCheckActive)
         {
             _healthCheckActive = true;
             StartHealthCheckLoop();
@@ -86,8 +86,6 @@ public class Player2Client : IAIClient
         List<(Role role, string message)> messages, 
         Action<Payload> onRequestPrepared = null)
     {
-        await EnsureHealthCheck();
-
         string jsonContent = BuildRequestJson(prefixMessages, messages, stream: false);
         onRequestPrepared?.Invoke(new Payload(CurrentApiUrl, CurrentModelName, jsonContent, null, 0));
         string responseText = await SendRequestAsync($"{CurrentApiUrl}/v1/chat/completions", jsonContent,
@@ -105,8 +103,6 @@ public class Player2Client : IAIClient
         Action<T> onResponseParsed,
         Action<Payload> onRequestPrepared = null) where T : class
     {
-        await EnsureHealthCheck();
-
         string jsonContent = BuildRequestJson(prefixMessages, messages, stream: true);
         onRequestPrepared?.Invoke(new Payload(CurrentApiUrl, CurrentModelName, jsonContent, null, 0));
         var jsonParser = new JsonStreamParser<T>();
@@ -379,31 +375,33 @@ public class Player2Client : IAIClient
 
     private async void StartHealthCheckLoop()
     {
-        while (_healthCheckActive && Current.Game != null)
+        while (_healthCheckActive)
         {
-            await Task.Delay(60000);
-            if (_healthCheckActive) await EnsureHealthCheck(force: true);
+            if (Current.Game != null)
+            {
+                await SendHealthCheckAsync();
+                await Task.Delay(60000);
+            }
+            else
+            {
+                await Task.Delay(5000);
+            }
         }
     }
 
-    private async Task EnsureHealthCheck(bool force = false)
+    private async Task SendHealthCheckAsync()
     {
-        if (_isLocalConnection || string.IsNullOrEmpty(_fallbackApiKey)) return;
-        if (!force && (DateTime.Now - _lastHealthCheck).TotalSeconds < 60) return;
-
         try
         {
-            using var webRequest = new UnityWebRequest($"{RemoteUrl}/v1/health", "GET");
-            webRequest.downloadHandler = new DownloadHandlerBuffer();
-            webRequest.SetRequestHeader("Authorization", $"Bearer {_fallbackApiKey}");
+            using var webRequest = UnityWebRequest.Get($"{CurrentApiUrl}/v1/health");
+            webRequest.timeout = 5;
             webRequest.SetRequestHeader("player2-game-key", GameClientId);
-
-            var asyncOp = webRequest.SendWebRequest();
-            while (!asyncOp.isDone)
+            if (!string.IsNullOrEmpty(CurrentApiKey))
             {
-                if (Current.Game == null) return;
-                await Task.Delay(100);
+                webRequest.SetRequestHeader("Authorization", $"Bearer {CurrentApiKey}");
             }
+
+            await SendWebRequestAsync(webRequest);
 
             _lastHealthCheck = DateTime.Now;
             if (webRequest.responseCode == 200)
