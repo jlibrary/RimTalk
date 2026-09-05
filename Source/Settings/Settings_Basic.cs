@@ -94,26 +94,21 @@ public partial class Settings
 
         // 3. Checkboxes in Left Column
         Rect overrideRowRect = leftListing.GetRect(24f);
-        if (settings.ProcessNonRimTalkInteractions)
+        bool hasGear = settings.ProcessNonRimTalkInteractions;
+        Rect checkboxRect = new Rect(overrideRowRect.x, overrideRowRect.y, overrideRowRect.width - (hasGear ? 30f : 0f), 24f);
+        Widgets.CheckboxLabeled(checkboxRect, "RimTalk.Settings.OverrideInteractions".Translate().ToString(),
+            ref settings.ProcessNonRimTalkInteractions);
+        TooltipHandler.TipRegion(checkboxRect, "RimTalk.Settings.OverrideInteractionsTooltip".Translate().ToString());
+
+        if (hasGear)
         {
-            const float btnWidth = 75f;
-            Rect checkboxRect = new Rect(overrideRowRect.x, overrideRowRect.y, overrideRowRect.width - btnWidth - 6f, overrideRowRect.height);
-            Rect btnRect = new Rect(checkboxRect.xMax + 6f, overrideRowRect.y, btnWidth, 24f);
-
-            Widgets.CheckboxLabeled(checkboxRect, "RimTalk.Settings.OverrideInteractions".Translate().ToString(),
-                ref settings.ProcessNonRimTalkInteractions);
-            TooltipHandler.TipRegion(checkboxRect, "RimTalk.Settings.OverrideInteractionsTooltip".Translate().ToString());
-
-            if (Widgets.ButtonText(btnRect, "RimTalk.Settings.SettingsButton".Translate().ToString()))
+            Rect gearRect = new Rect(checkboxRect.xMax + 6f, overrideRowRect.y, 24f, 24f);
+            var gearIcon = ContentFinder<Texture2D>.Get("UI/Icons/Options/OptionsGeneral");
+            if (Widgets.ButtonImage(gearRect, gearIcon, new Color(0.85f, 0.85f, 0.85f), GenUI.MouseoverColor))
             {
                 Find.WindowStack.Add(new Dialog_FastTrackInteractions());
             }
-        }
-        else
-        {
-            Widgets.CheckboxLabeled(overrideRowRect, "RimTalk.Settings.OverrideInteractions".Translate().ToString(),
-                ref settings.ProcessNonRimTalkInteractions);
-            TooltipHandler.TipRegion(overrideRowRect, "RimTalk.Settings.OverrideInteractionsTooltip".Translate().ToString());
+            TooltipHandler.TipRegion(gearRect, "RimTalk.Settings.FastTrackInteractionsTitle".Translate());
         }
 
         leftListing.Gap(6f);

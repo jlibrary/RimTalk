@@ -4,6 +4,7 @@ using System.Linq;
 using RimWorld;
 using UnityEngine;
 using Verse;
+using Verse.Sound;
 
 namespace RimTalk.UI;
 
@@ -143,10 +144,65 @@ public class Dialog_FastTrackInteractions : Window
                 else _collapsedMods.Add(group.Key);
             }
 
-            Rect headerLabelRect = new Rect(toggleRect.xMax + 6f, groupHeaderRect.y, viewRect.width - 30f, 24f);
+            int totalCount = 0;
+            int enabledCount = 0;
+            foreach (var def in group)
+            {
+                totalCount++;
+                if (settings.IsFastTrackInteraction(def.defName))
+                {
+                    enabledCount++;
+                }
+            }
+
+            MultiCheckboxState state;
+            if (enabledCount == 0)
+            {
+                state = MultiCheckboxState.Off;
+            }
+            else if (enabledCount == totalCount)
+            {
+                state = MultiCheckboxState.On;
+            }
+            else
+            {
+                state = MultiCheckboxState.Partial;
+            }
+
+            Rect checkRect = new Rect(viewRect.width - 24f, groupHeaderRect.y, 24f, 24f);
+            MultiCheckboxState newState = Widgets.CheckboxMulti(checkRect, state);
+            if (newState != state)
+            {
+                bool target = state != MultiCheckboxState.On;
+                foreach (var def in group)
+                {
+                    settings.FastTrackInteractions[def.defName] = target;
+                }
+                settings.Write();
+            }
+
+            Rect headerLabelRect = new Rect(toggleRect.xMax + 6f, groupHeaderRect.y, checkRect.x - (toggleRect.xMax + 6f) - 6f, 24f);
             GUI.color = Color.cyan;
             Widgets.Label(headerLabelRect, $"{group.Key} ({group.Count()})");
             GUI.color = Color.white;
+
+            if (Widgets.ButtonInvisible(headerLabelRect))
+            {
+                bool target = state != MultiCheckboxState.On;
+                foreach (var def in group)
+                {
+                    settings.FastTrackInteractions[def.defName] = target;
+                }
+                settings.Write();
+                if (target)
+                {
+                    SoundDefOf.Checkbox_TurnedOn.PlayOneShotOnCamera();
+                }
+                else
+                {
+                    SoundDefOf.Checkbox_TurnedOff.PlayOneShotOnCamera();
+                }
+            }
 
             curY += 26f;
 
