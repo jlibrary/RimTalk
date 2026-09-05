@@ -56,6 +56,16 @@ public static class ApiHistory
         return log;
     }
 
+    /// <summary>
+    /// Backward-compatible overload for third-party addon mods.
+    /// </summary>
+    [Obsolete("Use AddRequest instead")]
+    public static ApiLog AddUserHistory(Pawn initiator, Pawn recipient, string prompt, TalkType talkType)
+    {
+        var request = new TalkRequest(prompt, initiator, recipient, talkType);
+        return AddRequest(request, Channel.User);
+    }
+
     public static void UpdatePayload(Guid id, Payload payload)
     {
         if (History.TryGetValue(id, out var log))

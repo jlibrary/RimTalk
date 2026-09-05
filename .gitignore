@@ -1,6 +1,8 @@
 /.config
-/*.sln 
-/obj
+/*.sln
+/*.slnx
+obj/
+bin/
 /*/Assemblies
 .idea
 .vscode

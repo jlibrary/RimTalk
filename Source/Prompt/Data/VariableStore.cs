@@ -10,19 +10,26 @@ public class VariableStore : IExposable
 {
     /// <summary>Global variables dictionary</summary>
     private Dictionary<string, string> _variables = new();
+    private readonly object _lock = new();
 
     /// <summary>Sets a variable</summary>
     public void SetVar(string key, string value)
     {
         if (string.IsNullOrEmpty(key)) return;
-        _variables[key.ToLowerInvariant()] = value ?? "";
+        lock (_lock)
+        {
+            _variables[key.ToLowerInvariant()] = value ?? "";
+        }
     }
 
     /// <summary>Gets a variable</summary>
     public string GetVar(string key)
     {
         if (string.IsNullOrEmpty(key)) return "";
-        return _variables.TryGetValue(key.ToLowerInvariant(), out var value) ? value : "";
+        lock (_lock)
+        {
+            return _variables.TryGetValue(key.ToLowerInvariant(), out var value) ? value : "";
+        }
     }
 
     /// <summary>Gets a variable, returns default value if not found</summary>
@@ -37,27 +44,51 @@ public class VariableStore : IExposable
     public bool HasVar(string key)
     {
         if (string.IsNullOrEmpty(key)) return false;
-        return _variables.ContainsKey(key.ToLowerInvariant());
+        lock (_lock)
+        {
+            return _variables.ContainsKey(key.ToLowerInvariant());
+        }
     }
 
     /// <summary>Removes a variable</summary>
     public bool RemoveVar(string key)
     {
         if (string.IsNullOrEmpty(key)) return false;
-        return _variables.Remove(key.ToLowerInvariant());
+        lock (_lock)
+        {
+            return _variables.Remove(key.ToLowerInvariant());
+        }
     }
 
     /// <summary>Clears all variables</summary>
     public void Clear()
     {
-        _variables.Clear();
+        lock (_lock)
+        {
+            _variables.Clear();
+        }
     }
 
     /// <summary>Gets all variables (for UI display)</summary>
-    public IReadOnlyDictionary<string, string> GetAllVariables() => _variables;
+    public IReadOnlyDictionary<string, string> GetAllVariables()
+    {
+        lock (_lock)
+        {
+            return new Dictionary<string, string>(_variables);
+        }
+    }
 
     /// <summary>Gets the variable count</summary>
-    public int Count => _variables.Count;
+    public int Count
+    {
+        get
+        {
+            lock (_lock)
+            {
+                return _variables.Count;
+            }
+        }
+    }
 
     public void ExposeData()
     {

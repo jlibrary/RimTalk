@@ -19,30 +19,9 @@ namespace RimTalk.Prompt;
 
 public static class ScribanParser
 {
-	private static Dictionary<string, object> _sessionVariables = new Dictionary<string, object>();
-
-	public static void ResetSessionVariables()
-	{
-		_sessionVariables.Clear();
-	}
-
-	public static void SetSessionVar(string key, object value)
-	{
-		if (!string.IsNullOrEmpty(key))
-		{
-			_sessionVariables[key.ToLowerInvariant()] = value;
-		}
-	}
-
-	public static object GetSessionVar(string key)
-	{
-		if (string.IsNullOrEmpty(key))
-		{
-			return "";
-		}
-		object value;
-		return _sessionVariables.TryGetValue(key.ToLowerInvariant(), out value) ? value : "";
-	}
+	public static void ResetSessionVariables() => SessionVariableStore.Reset();
+	public static void SetSessionVar(string key, object value) => SessionVariableStore.SetVar(key, value);
+	public static object GetSessionVar(string key) => SessionVariableStore.GetVar(key);
     public static string Render(string templateText, PromptContext context, bool logErrors = true)
     {
         if (string.IsNullOrWhiteSpace(templateText)) return "";

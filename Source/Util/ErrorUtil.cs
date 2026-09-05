@@ -30,6 +30,35 @@ public static class ErrorUtil
             }
         }
 
+        // 4. Try robust parsing via SimpleJsonParser { "error": "message" } or { "detail": "message" }
+        try
+        {
+            var parsed = JsonUtil.ParseJsonValue(jsonResponse.Trim(), out _);
+            if (parsed is Dictionary<string, object> dict)
+            {
+                if (dict.TryGetValue("error", out var errVal))
+                {
+                    if (errVal is string errStr && !string.IsNullOrEmpty(errStr)) return errStr;
+                    if (errVal is Dictionary<string, object> errObj && errObj.TryGetValue("message", out var mVal) && mVal is string mStr)
+                    {
+                        return mStr;
+                    }
+                }
+                if (dict.TryGetValue("detail", out var detailVal) && detailVal is string detailStr && !string.IsNullOrEmpty(detailStr))
+                {
+                    return detailStr;
+                }
+                if (dict.TryGetValue("message", out var msgVal) && msgVal is string msgStr && !string.IsNullOrEmpty(msgStr))
+                {
+                    return msgStr;
+                }
+            }
+        }
+        catch
+        {
+            // Ignore JSON parsing exceptions and return null
+        }
+
         return null;
     }
 

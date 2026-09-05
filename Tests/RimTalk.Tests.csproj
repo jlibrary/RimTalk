@@ -1,0 +1,61 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>disable</Nullable>
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
+        <RootNamespace>RimTalk.Tests</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="coverlet.msbuild" Version="10.0.1">
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+          <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+        <PackageReference Include="xunit" Version="2.9.2" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="3.0.0" />
+        <PackageReference Include="Mono.Cecil" Version="0.11.6" />
+        <PackageReference Include="coverlet.collector" Version="6.0.4">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Reference Include="Scriban">
+            <HintPath>../Libs/Scriban.dll</HintPath>
+            <Private>true</Private>
+        </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Include="../Source/Util/JsonStreamParser.cs" Link="Linked/JsonStreamParser.cs" />
+        <Compile Include="../Source/Util/JsonUtil.cs" Link="Linked/JsonUtil.cs" />
+        <Compile Include="../Source/API/ContextCategory.cs" Link="Linked/ContextCategory.cs" />
+        <Compile Include="../Source/API/ContextCategories.cs" Link="Linked/ContextCategories.cs" />
+        <Compile Include="../Source/API/ContextHookRegistry.cs" Link="Linked/ContextHookRegistry.cs" />
+        <Compile Include="../Source/Data/TalkType.cs" Link="Linked/TalkType.cs" />
+        <Compile Include="../Source/Data/Role.cs" Link="Linked/Role.cs" />
+        <Compile Include="../Source/Prompt/Data/PromptRole.cs" Link="Linked/PromptRole.cs" />
+        <Compile Include="../Source/Prompt/Data/PromptEntry.cs" Link="Linked/PromptEntry.cs" />
+        <Compile Include="../Source/Prompt/Data/PromptPreset.cs" Link="Linked/PromptPreset.cs" />
+        <Compile Include="../Source/Data/PromptMessageSegment.cs" Link="Linked/PromptMessageSegment.cs" />
+        <Compile Include="../Source/Client/Payload.cs" Link="Linked/Payload.cs" />
+        <Compile Include="../Source/Error/AIRequestException.cs" Link="Linked/AIRequestException.cs" />
+        <Compile Include="../Source/Error/QuotaExceededException.cs" Link="Linked/QuotaExceededException.cs" />
+        <Compile Include="../Source/Service/BusyGate.cs" Link="Linked/BusyGate.cs" />
+        <Compile Include="../Source/Prompt/Data/VariableStore.cs" Link="Linked/VariableStore.cs" />
+        <Compile Include="../Source/Prompt/Data/SessionVariableStore.cs" Link="Linked/SessionVariableStore.cs" />
+        <Compile Include="../Source/Prompt/Data/PromptMessageRoleMerger.cs" Link="Linked/PromptMessageRoleMerger.cs" />
+        <Compile Include="../Source/Prompt/Data/PromptPresetAssembler.cs" Link="Linked/PromptPresetAssembler.cs" />
+        <Compile Include="../Source/Prompt/Data/PresetDto.cs" Link="Linked/PresetDto.cs" />
+        <Compile Include="../Source/Prompt/PresetSerializer.cs" Link="Linked/PresetSerializer.cs" />
+        <Compile Include="../Source/Util/ErrorUtil.cs" Link="Linked/ErrorUtil.cs" />
+        <Compile Include="../Source/Client/OpenAI/OpenAIDto.cs" Link="Linked/OpenAIDto.cs" />
+        <Compile Include="../Source/Data/TopicKeywordPool.cs" Link="Linked/TopicKeywordPool.cs" />
+    </ItemGroup>
+
+</Project>
