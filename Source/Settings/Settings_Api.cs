@@ -96,6 +96,41 @@ public partial class Settings
         }
     }
 
+    private void DrawQuickApiModeSelector(Listing_Standard listingStandard, RimTalkSettings settings)
+    {
+        // Guide Header
+        Rect headerRect = listingStandard.GetRect(Text.LineHeight);
+        GUI.color = Color.gray;
+        Text.Font = GameFont.Tiny;
+        Widgets.Label(headerRect, "RimTalk.Settings.ModeSelectorHeader".Translate());
+        GUI.color = Color.white;
+        Text.Font = GameFont.Small;
+        listingStandard.Gap(2f);
+
+        const float cardGap = 12f;
+        const float cardHeight = 54f;
+        float cardWidth = (listingStandard.ColumnWidth - cardGap) / 2f;
+        Rect rowRect = listingStandard.GetRect(cardHeight);
+
+        Rect googleCard = new Rect(rowRect.x, rowRect.y, cardWidth, cardHeight);
+        Rect player2Card = new Rect(rowRect.x + cardWidth + cardGap, rowRect.y, cardWidth, cardHeight);
+
+        bool isGoogle = settings.UseSimpleConfig && settings.SimpleProvider == AIProvider.Google;
+        bool isPlayer2 = settings.UseSimpleConfig && settings.SimpleProvider == AIProvider.Player2;
+
+        if (DrawApiModeCard(googleCard, "RimTalk.Settings.ModeGoogleTitle".Translate(), "RimTalk.Settings.ModeGoogleDesc".Translate(), isGoogle))
+        {
+            settings.UseSimpleConfig = true;
+            settings.SimpleProvider = AIProvider.Google;
+        }
+
+        if (DrawApiModeCard(player2Card, "RimTalk.Settings.ModePlayer2Title".Translate(), "RimTalk.Settings.ModePlayer2Desc".Translate(), isPlayer2))
+        {
+            settings.UseSimpleConfig = true;
+            settings.SimpleProvider = AIProvider.Player2;
+        }
+    }
+
     private void DrawSimpleApiSettings(Listing_Standard listingStandard)
     {
         RimTalkSettings settings = Get();
@@ -144,9 +179,10 @@ public partial class Settings
 
             bool? status = Player2Client.GetLocalAppStatusCached();
 
-            bool isLeftActive = (status == true);
-            bool isRightActive = !string.IsNullOrEmpty(settings.SimplePlayer2ApiKey);
-            bool isAppRunning = isLeftActive;
+            bool isSimpleActive = settings.UseSimpleConfig && settings.SimpleProvider == AIProvider.Player2;
+            bool isLeftActive = isSimpleActive && (status == true);
+            bool isRightActive = isSimpleActive && !string.IsNullOrEmpty(settings.SimplePlayer2ApiKey);
+            bool isAppRunning = (status == true);
 
             // Color palettes (Muted Emerald/Green theme for both cards)
             Color greenActiveBg = new Color(0.12f, 0.24f, 0.20f, 0.5f);

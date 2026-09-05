@@ -288,6 +288,12 @@ Crucial Tips:
     <RimTalk.PersonaEditor.Clear>Clear</RimTalk.PersonaEditor.Clear>
 
     <!-- Settings_Api.cs -->
+    <RimTalk.Settings.QuickSetupSubtitle>Choose an AI connection to enable colonist dialogue.</RimTalk.Settings.QuickSetupSubtitle>
+    <RimTalk.Settings.QuickSetupButton>Quick Settings</RimTalk.Settings.QuickSetupButton>
+    <RimTalk.Settings.QuickSetupTooltip>Switch back to the simplified Quick Settings view.</RimTalk.Settings.QuickSetupTooltip>
+    <RimTalk.Settings.AllSettingsButton>All Settings</RimTalk.Settings.AllSettingsButton>
+    <RimTalk.Settings.AllSettingsTooltip>Show all configuration tabs including gameplay settings, prompt presets, context filters, and custom dialogues.</RimTalk.Settings.AllSettingsTooltip>
+    <RimTalk.Settings.CustomConfigActiveNotice>* Custom API configuration is currently active.</RimTalk.Settings.CustomConfigActiveNotice>
     <RimTalk.Settings.ModeSelectorHeader>Select AI Connection (Choose One):</RimTalk.Settings.ModeSelectorHeader>
     <RimTalk.Settings.ModeGoogleTitle>Google Gemini</RimTalk.Settings.ModeGoogleTitle>
     <RimTalk.Settings.ModeGoogleDesc>Free Web API Key</RimTalk.Settings.ModeGoogleDesc>
@@ -295,12 +301,12 @@ Crucial Tips:
     <RimTalk.Settings.ModePlayer2Desc>Auto-Connect · Multiple Models</RimTalk.Settings.ModePlayer2Desc>
     <RimTalk.Settings.ModeAdvancedTitle>Custom</RimTalk.Settings.ModeAdvancedTitle>
     <RimTalk.Settings.ModeAdvancedDesc>OpenAI, DeepSeek, Local LLM</RimTalk.Settings.ModeAdvancedDesc>
-    <RimTalk.Settings.Player2AppTitle>Option 1: Desktop App</RimTalk.Settings.Player2AppTitle>
+    <RimTalk.Settings.Player2AppTitle>Player2 Desktop App (Auto)</RimTalk.Settings.Player2AppTitle>
     <RimTalk.Settings.Player2AppDesc>Run the Player2 desktop app to connect automatically with no API key.</RimTalk.Settings.Player2AppDesc>
     <RimTalk.Settings.Player2StatusConnected>[ Desktop app connected ]</RimTalk.Settings.Player2StatusConnected>
     <RimTalk.Settings.Player2StatusDisconnected>[ Desktop app not running ]</RimTalk.Settings.Player2StatusDisconnected>
     <RimTalk.Settings.Player2DownloadApp>Get Desktop App</RimTalk.Settings.Player2DownloadApp>
-    <RimTalk.Settings.Player2WebTitle>Option 2: Web API Key</RimTalk.Settings.Player2WebTitle>
+    <RimTalk.Settings.Player2WebTitle>Player2 Web API Key</RimTalk.Settings.Player2WebTitle>
     <RimTalk.Settings.Player2WebDesc>Enter a free web API key without using the desktop app.</RimTalk.Settings.Player2WebDesc>
     <RimTalk.Settings.Player2AppRunningNotice>Desktop app is connected; web key is not needed.</RimTalk.Settings.Player2AppRunningNotice>
     <RimTalk.Settings.Player2GetWebKey>Get Free API Key</RimTalk.Settings.Player2GetWebKey>

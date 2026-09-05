@@ -117,13 +117,16 @@ public partial class Settings : Mod
 
     private void DrawTabButtons(Rect rect)
     {
-        float tabWidth = rect.width / 5f;
+        RimTalkSettings settings = Get();
+        float toggleWidth = 125f;
+        float tabWidth = (rect.width - toggleWidth - 10f) / 5f;
 
         Rect basicTabRect = new Rect(rect.x, rect.y, tabWidth, 30f);
         Rect promptTabRect = new Rect(rect.x + tabWidth, rect.y, tabWidth, 30f);
         Rect contextTabRect = new Rect(rect.x + tabWidth * 2, rect.y, tabWidth, 30f);
         Rect filterTabRect = new Rect(rect.x + tabWidth * 3, rect.y, tabWidth, 30f);
         Rect customTabRect = new Rect(rect.x + tabWidth * 4, rect.y, tabWidth, 30f);
+        Rect toggleRect = new Rect(rect.xMax - toggleWidth, rect.y, toggleWidth, 30f);
 
         GUI.color = _currentTab == SettingsTab.Basic ? Color.white : Color.gray;
         if (Widgets.ButtonText(basicTabRect, "RimTalk.Settings.BasicSettings".Translate()))
@@ -159,7 +162,60 @@ public partial class Settings : Mod
             _currentTab = SettingsTab.CustomDialogue;
         }
 
+        GUI.color = new Color(0.7f, 0.88f, 1f);
+        if (Widgets.ButtonText(toggleRect, "RimTalk.Settings.QuickSetupButton".Translate()))
+        {
+            settings.ShowQuickSettings = true;
+        }
+        TooltipHandler.TipRegion(toggleRect, "RimTalk.Settings.QuickSetupTooltip".Translate());
+
         GUI.color = Color.white;
+    }
+
+    private void DrawQuickSetup(Rect inRect, RimTalkSettings settings)
+    {
+        // 1. Top Bar
+        float toggleWidth = 125f;
+        const float headerHeight = 30f;
+        Rect headerRect = new Rect(inRect.x, inRect.y, inRect.width, headerHeight);
+        Rect subtitleRect = new Rect(headerRect.x, headerRect.y + 4f, headerRect.width - toggleWidth - 15f, 24f);
+        Rect toggleRect = new Rect(headerRect.xMax - toggleWidth, headerRect.y, toggleWidth, 30f);
+
+        GUI.color = new Color(0.8f, 0.8f, 0.8f);
+        Widgets.Label(subtitleRect, "RimTalk.Settings.QuickSetupSubtitle".Translate());
+        GUI.color = Color.white;
+
+        GUI.color = new Color(0.85f, 0.92f, 1f);
+        if (Widgets.ButtonText(toggleRect, "RimTalk.Settings.AllSettingsButton".Translate()))
+        {
+            settings.ShowQuickSettings = false;
+        }
+        TooltipHandler.TipRegion(toggleRect, "RimTalk.Settings.AllSettingsTooltip".Translate());
+        GUI.color = Color.white;
+
+        // 2. Content Area
+        Rect contentRect = new Rect(inRect.x, inRect.y + headerHeight + 10f, inRect.width, inRect.height - (headerHeight + 10f));
+        Listing_Standard listing = new Listing_Standard();
+        listing.Begin(contentRect);
+
+        // 2-card mode selector (Google Gemini vs Player2)
+        DrawQuickApiModeSelector(listing, settings);
+        listing.Gap(12f);
+
+        // API Key or Player2 connection settings
+        DrawSimpleApiSettings(listing);
+
+        if (!settings.UseSimpleConfig)
+        {
+            listing.Gap(10f);
+            GUI.color = new Color(1f, 0.85f, 0.4f);
+            Text.Font = GameFont.Tiny;
+            listing.Label("RimTalk.Settings.CustomConfigActiveNotice".Translate());
+            GUI.color = Color.white;
+            Text.Font = GameFont.Small;
+        }
+
+        listing.End();
     }
         
     public override void DoSettingsWindowContents(Rect inRect)
@@ -177,11 +233,15 @@ public partial class Settings : Mod
             settingsWindow.preventCameraMotion = false;
             settingsWindow.closeOnClickedOutside = false;
 
-            // Dynamically resize if in Advanced Prompt mode or Custom Dialogue mode
             float targetWidth;
             float targetHeight;
 
-            if (_currentTab == SettingsTab.PromptPreset && rtSettings.UseAdvancedPromptMode)
+            if (rtSettings.ShowQuickSettings == true)
+            {
+                targetWidth = 650f;
+                targetHeight = 600f;
+            }
+            else if (_currentTab == SettingsTab.PromptPreset && rtSettings.UseAdvancedPromptMode)
             {
                 targetWidth = Mathf.Min(Verse.UI.screenWidth * 0.9f, 1200f);
                 targetHeight = Mathf.Min(Verse.UI.screenHeight * 0.9f, 800f);
@@ -202,6 +262,13 @@ public partial class Settings : Mod
             }
         }
         
+        // 0. Quick Setup Mode (No tabs)
+        if (rtSettings.ShowQuickSettings == true)
+        {
+            DrawQuickSetup(inRect, rtSettings);
+            return;
+        }
+
         // 1. Draw Tabs
         Rect tabRect = new Rect(inRect.x, inRect.y, inRect.width, 35f);
         DrawTabButtons(tabRect);

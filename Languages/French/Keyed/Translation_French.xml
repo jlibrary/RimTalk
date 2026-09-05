@@ -264,6 +264,12 @@ Conseils Cruciaux :
     <RimTalk.PersonaEditor.Clear>Effacer</RimTalk.PersonaEditor.Clear>
 
     <!-- Settings_Api.cs -->
+    <RimTalk.Settings.QuickSetupSubtitle>Choisissez un mode de connexion IA pour activer les dialogues.</RimTalk.Settings.QuickSetupSubtitle>
+    <RimTalk.Settings.QuickSetupButton>Paramètres rapides</RimTalk.Settings.QuickSetupButton>
+    <RimTalk.Settings.QuickSetupTooltip>Revenir à la vue des paramètres rapides simplifiée.</RimTalk.Settings.QuickSetupTooltip>
+    <RimTalk.Settings.AllSettingsButton>Tous les paramètres</RimTalk.Settings.AllSettingsButton>
+    <RimTalk.Settings.AllSettingsTooltip>Afficher tous les onglets de configuration (gameplay, préréglages de prompt, filtres de contexte, etc.).</RimTalk.Settings.AllSettingsTooltip>
+    <RimTalk.Settings.CustomConfigActiveNotice>* La configuration d'API personnalisée est actuellement active.</RimTalk.Settings.CustomConfigActiveNotice>
     <RimTalk.Settings.ModeSelectorHeader>Choisir le mode de connexion IA (un seul choix) :</RimTalk.Settings.ModeSelectorHeader>
     <RimTalk.Settings.ModeGoogleTitle>Google Gemini</RimTalk.Settings.ModeGoogleTitle>
     <RimTalk.Settings.ModeGoogleDesc>Clé API Web gratuite</RimTalk.Settings.ModeGoogleDesc>
@@ -271,12 +277,12 @@ Conseils Cruciaux :
     <RimTalk.Settings.ModePlayer2Desc>Connexion auto · Multi-modèles</RimTalk.Settings.ModePlayer2Desc>
     <RimTalk.Settings.ModeAdvancedTitle>Personnalisé</RimTalk.Settings.ModeAdvancedTitle>
     <RimTalk.Settings.ModeAdvancedDesc>OpenAI, DeepSeek, LLM local</RimTalk.Settings.ModeAdvancedDesc>
-    <RimTalk.Settings.Player2AppTitle>Option 1 : Application de bureau</RimTalk.Settings.Player2AppTitle>
+    <RimTalk.Settings.Player2AppTitle>Application Player2 (auto)</RimTalk.Settings.Player2AppTitle>
     <RimTalk.Settings.Player2AppDesc>Lancez l'application pour vous connecter automatiquement sans clé API.</RimTalk.Settings.Player2AppDesc>
     <RimTalk.Settings.Player2StatusConnected>[ Application de bureau connectée ]</RimTalk.Settings.Player2StatusConnected>
     <RimTalk.Settings.Player2StatusDisconnected>[ Application de bureau non lancée ]</RimTalk.Settings.Player2StatusDisconnected>
     <RimTalk.Settings.Player2DownloadApp>Obtenir l'application</RimTalk.Settings.Player2DownloadApp>
-    <RimTalk.Settings.Player2WebTitle>Option 2 : Clé API Web</RimTalk.Settings.Player2WebTitle>
+    <RimTalk.Settings.Player2WebTitle>Clé API Web Player2</RimTalk.Settings.Player2WebTitle>
     <RimTalk.Settings.Player2WebDesc>Utilisez une clé API Web gratuite sans installer l'application de bureau.</RimTalk.Settings.Player2WebDesc>
     <RimTalk.Settings.Player2GetWebKey>Obtenir une clé API gratuite</RimTalk.Settings.Player2GetWebKey>
     <RimTalk.Settings.GoogleApiKeyLabel>Clé API Google AI :</RimTalk.Settings.GoogleApiKeyLabel>

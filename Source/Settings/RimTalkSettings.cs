@@ -30,6 +30,8 @@ public class RimTalkSettings : ModSettings
     // New Prompt System
     public PromptManager PromptSystem = new();
     public bool UseAdvancedPromptMode = false;  // Default to Simple Mode
+    
+    public bool? ShowQuickSettings = true;
     public Dictionary<string, bool> EnabledArchivableTypes = new();
     public Dictionary<string, bool> FastTrackInteractions = new();
     public bool DisplayTalkWhenDrafted = true;
@@ -219,6 +221,7 @@ public class RimTalkSettings : ModSettings
         // New Prompt System
         Scribe_Deep.Look(ref PromptSystem, "promptSystem");
         Scribe_Values.Look(ref UseAdvancedPromptMode, "useAdvancedPromptMode", false);
+        Scribe_Values.Look(ref ShowQuickSettings, "showQuickSettings", null);
 
         // Debug window settings
         Scribe_Values.Look(ref ButtonDisplay, "buttonDisplay", Settings.ButtonDisplayMode.Toggle, true);

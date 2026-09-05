@@ -260,6 +260,12 @@ Scriban 魔法 (动态内容)
     <RimTalk.PersonaEditor.Clear>清除</RimTalk.PersonaEditor.Clear>
 
     <!-- Settings_Api.cs -->
+    <RimTalk.Settings.QuickSetupSubtitle>选择 AI 连接方式即可启用殖民者对话。</RimTalk.Settings.QuickSetupSubtitle>
+    <RimTalk.Settings.QuickSetupButton>快速设置</RimTalk.Settings.QuickSetupButton>
+    <RimTalk.Settings.QuickSetupTooltip>返回简化的快速设置界面。</RimTalk.Settings.QuickSetupTooltip>
+    <RimTalk.Settings.AllSettingsButton>完整设置</RimTalk.Settings.AllSettingsButton>
+    <RimTalk.Settings.AllSettingsTooltip>显示包括游戏玩法、提示词预设、上下文过滤器等所有配置标签页。</RimTalk.Settings.AllSettingsTooltip>
+    <RimTalk.Settings.CustomConfigActiveNotice>※ 当前正在使用自定义 API。</RimTalk.Settings.CustomConfigActiveNotice>
     <RimTalk.Settings.ModeSelectorHeader>选择 AI 连接方式（仅选一项）：</RimTalk.Settings.ModeSelectorHeader>
     <RimTalk.Settings.ModeGoogleTitle>Google Gemini</RimTalk.Settings.ModeGoogleTitle>
     <RimTalk.Settings.ModeGoogleDesc>免费网页 API 密钥</RimTalk.Settings.ModeGoogleDesc>
@@ -267,12 +273,12 @@ Scriban 魔法 (动态内容)
     <RimTalk.Settings.ModePlayer2Desc>自动连接 · 多模型支持</RimTalk.Settings.ModePlayer2Desc>
     <RimTalk.Settings.ModeAdvancedTitle>自定义</RimTalk.Settings.ModeAdvancedTitle>
     <RimTalk.Settings.ModeAdvancedDesc>OpenAI, DeepSeek, 本地 LLM</RimTalk.Settings.ModeAdvancedDesc>
-    <RimTalk.Settings.Player2AppTitle>方案 1：桌面应用连接</RimTalk.Settings.Player2AppTitle>
+    <RimTalk.Settings.Player2AppTitle>Player2 桌面应用（自动）</RimTalk.Settings.Player2AppTitle>
     <RimTalk.Settings.Player2AppDesc>只需运行应用，无需 API 密钥即可自动连接。</RimTalk.Settings.Player2AppDesc>
     <RimTalk.Settings.Player2StatusConnected>[ 桌面应用已连接 ]</RimTalk.Settings.Player2StatusConnected>
     <RimTalk.Settings.Player2StatusDisconnected>[ 桌面应用未运行 ]</RimTalk.Settings.Player2StatusDisconnected>
     <RimTalk.Settings.Player2DownloadApp>获取桌面应用</RimTalk.Settings.Player2DownloadApp>
-    <RimTalk.Settings.Player2WebTitle>方案 2：输入网页 API 密钥</RimTalk.Settings.Player2WebTitle>
+    <RimTalk.Settings.Player2WebTitle>Player2 网页 API 密钥</RimTalk.Settings.Player2WebTitle>
     <RimTalk.Settings.Player2WebDesc>无需桌面应用，直接在网页获取免费 API 密钥使用。</RimTalk.Settings.Player2WebDesc>
     <RimTalk.Settings.Player2GetWebKey>获取免费 API 密钥</RimTalk.Settings.Player2GetWebKey>
     <RimTalk.Settings.GoogleApiKeyLabel>Google AI API 密钥：</RimTalk.Settings.GoogleApiKeyLabel>
