@@ -154,7 +154,8 @@ public static class PawnUtil
 
     public static bool IsEnemy(this Pawn pawn)
     {
-        return pawn?.Faction != null && Faction.OfPlayer != null && pawn.Faction != Faction.OfPlayer && pawn.HostileTo(Faction.OfPlayer) && !pawn.IsPrisoner;
+        return pawn?.Faction != null && Faction.OfPlayer != null && pawn.Faction != Faction.OfPlayer &&
+               pawn.Faction.RelationWith(Faction.OfPlayer, true)?.kind == FactionRelationKind.Hostile && !pawn.IsPrisoner;
     }
 
     public static bool IsBaby(this Pawn pawn)
