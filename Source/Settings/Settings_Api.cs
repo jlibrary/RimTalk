@@ -735,10 +735,10 @@ public partial class Settings
         float y = rowRect.y;
         float height = rowRect.height;
 
-        Rect baseUrlLabelRect = new Rect(x, y, 80f, height);
-        var labelText = "RimTalk.Settings.BaseUrlLabel".Translate() + " [?]";
-        Widgets.Label(baseUrlLabelRect, labelText);
-        TooltipHandler.TipRegion(baseUrlLabelRect, "RimTalk_Settings_Api_BaseUrlInfo".Translate());
+        Widgets.Label(new Rect(x, y, 45f, height), "RimTalk.Settings.BaseUrlLabel".Translate());
+        Rect infoRect = new Rect(x + 48f, y + 3f, 18f, 18f);
+        GUI.DrawTexture(infoRect, TexButton.Info);
+        TooltipHandler.TipRegion(infoRect, "RimTalk_Settings_Api_BaseUrlInfo".Translate());
         x += 85f;
 
         Rect urlRect = new Rect(x, y, 250f, height);

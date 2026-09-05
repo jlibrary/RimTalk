@@ -302,9 +302,9 @@ Scriban 魔法 (动态内容)
     <RimTalk.Settings.ModelLabel>模型：</RimTalk.Settings.ModelLabel>
     <RimTalk.Settings.EnterApiKey>（输入有效的 API 密钥以获取模型）</RimTalk.Settings.EnterApiKey>
     <RimTalk_Settings_Api_BaseUrlInfo>如果您只提供基础 URL（例如 http://localhost:1234），将自动添加 /v1/chat/completions。如果您输入完整路径，将完全按照输入使用。</RimTalk_Settings_Api_BaseUrlInfo>
-    <RimTalk.Settings.CustomizeRequestTooltip>自定义请求 JSON（温度、思考等级等）</RimTalk.Settings.CustomizeRequestTooltip>
+    <RimTalk.Settings.CustomizeRequestTooltip>高级设置：微调 AI 请求参数</RimTalk.Settings.CustomizeRequestTooltip>
     <RimTalk.Settings.CustomizeRequestTitle>自定义请求：{0} ({1})</RimTalk.Settings.CustomizeRequestTitle>
-    <RimTalk.Settings.CustomizeRequestDesc>为此 LLM 配置自定义 JSON 请求参数。这些值将合并到发送给 API 的请求载荷中（例如：temperature、reasoning_effort、max_tokens、thinking 参数等）。</RimTalk.Settings.CustomizeRequestDesc>
+    <RimTalk.Settings.CustomizeRequestDesc>正常情况下无需更改。仅在您需要微调模型行为（如关闭思考模式）或排查错误时选用。</RimTalk.Settings.CustomizeRequestDesc>
     <RimTalk.Settings.FormatJson>格式化 JSON</RimTalk.Settings.FormatJson>
     <RimTalk.Settings.ClearOverride>清空</RimTalk.Settings.ClearOverride>
     <RimTalk.Settings.CustomJsonSave>保存</RimTalk.Settings.CustomJsonSave>
@@ -313,6 +313,8 @@ Scriban 魔法 (动态内容)
     <RimTalk.Settings.CustomJsonInvalid>⚠ 无效的 JSON：{0}</RimTalk.Settings.CustomJsonInvalid>
     <RimTalk.Settings.CustomJsonEmpty>将使用默认请求参数。</RimTalk.Settings.CustomJsonEmpty>
     <RimTalk.Settings.CustomizeHelpButton>帮助与示例</RimTalk.Settings.CustomizeHelpButton>
+    <RimTalk.Settings.CustomizeTemplatesTitle>模板与示例</RimTalk.Settings.CustomizeTemplatesTitle>
+    <RimTalk.Settings.CustomizeTemplatesSubtitle>选择模板以预览并应用。</RimTalk.Settings.CustomizeTemplatesSubtitle>
     <RimTalk.Settings.CustomizeHelpTitle>API 请求自定义指南与示例</RimTalk.Settings.CustomizeHelpTitle>
     <RimTalk.Settings.CustomizeHelpDisclaimerTitle>⚠️ 重要兼容性提示</RimTalk.Settings.CustomizeHelpDisclaimerTitle>
     <RimTalk.Settings.CustomizeHelpDisclaimerText>以下模板仅作为参考起点。不同 LLM 提供商和模型的参数名称、支持值及功能差异较大。\n发送不受支持的参数（例如向不支持的模型发送 'thinking' 或 'response_format'）可能导致 API 报错拒绝请求（例如 HTTP 400 Bad Request）。\n请务必参考您所用服务商的官方 API 文档以获取支持的具体参数。</RimTalk.Settings.CustomizeHelpDisclaimerText>
@@ -320,24 +322,21 @@ Scriban 魔法 (动态内容)
     <RimTalk.Settings.SampleMergeTemplate>合并至当前</RimTalk.Settings.SampleMergeTemplate>
     <RimTalk.Settings.SampleCopy>复制</RimTalk.Settings.SampleCopy>
     <RimTalk.Settings.SampleCopied>JSON 模板已复制到剪贴板。</RimTalk.Settings.SampleCopied>
-    <RimTalk.Settings.SampleBasicTitle>1. 基础生成调优（大部分模型）</RimTalk.Settings.SampleBasicTitle>
-    <RimTalk.Settings.SampleBasicDesc>调整随机性、回复长度上限和重复惩罚。</RimTalk.Settings.SampleBasicDesc>
-    <RimTalk.Settings.SampleBasicNote>注意：推理模型（如 OpenAI o1/o3）可能要求 temperature 为 1.0 或省略。</RimTalk.Settings.SampleBasicNote>
-    <RimTalk.Settings.SampleReasoningEffortTitle>2. 推理强度 Reasoning Effort (Gemini / OpenAI)</RimTalk.Settings.SampleReasoningEffortTitle>
-    <RimTalk.Settings.SampleReasoningEffortDesc>控制思考/推理强度级别（"minimal"、"low"、"medium"、"high"）。</RimTalk.Settings.SampleReasoningEffortDesc>
-    <RimTalk.Settings.SampleReasoningEffortNote>注意：适用于 Gemini Flash/Pro 以及 OpenAI o 系列模型。</RimTalk.Settings.SampleReasoningEffortNote>
-    <RimTalk.Settings.SampleDisableThinkingTitle>3. 关闭思考模式 (DeepSeek / Anthropic)</RimTalk.Settings.SampleDisableThinkingTitle>
-    <RimTalk.Settings.SampleDisableThinkingDesc>关闭推理/思考以加快生成速度并降低 Token 消耗。</RimTalk.Settings.SampleDisableThinkingDesc>
-    <RimTalk.Settings.SampleDisableThinkingNote>注意：适用于 DeepSeek R1/V3 和支持 thinking 块的 Anthropic Claude 模型。</RimTalk.Settings.SampleDisableThinkingNote>
-    <RimTalk.Settings.SampleEnableThinkingTitle>4. 开启思考并限制预算</RimTalk.Settings.SampleEnableThinkingTitle>
-    <RimTalk.Settings.SampleEnableThinkingDesc>开启思考模式并指定最大推理 Token 预算。</RimTalk.Settings.SampleEnableThinkingDesc>
-    <RimTalk.Settings.SampleEnableThinkingNote>注意：请检查服务商 API 的预算范围要求（例如 Claude 要求最少 1024 tokens）。</RimTalk.Settings.SampleEnableThinkingNote>
-    <RimTalk.Settings.SampleStructuredOutputTitle>5. 结构化输出 / JSON Schema</RimTalk.Settings.SampleStructuredOutputTitle>
-    <RimTalk.Settings.SampleStructuredOutputDesc>为格式遵从能力较弱的小型模型强制使用严格的 JSON Schema 输出格式。</RimTalk.Settings.SampleStructuredOutputDesc>
-    <RimTalk.Settings.SampleStructuredOutputNote>注意：需要服务商支持 OpenAI 兼容的结构化输出 (response_format.json_schema)。</RimTalk.Settings.SampleStructuredOutputNote>
-    <RimTalk.Settings.SampleLocalTitle>6. 本地大模型 (Ollama / LM Studio / vLLM)</RimTalk.Settings.SampleLocalTitle>
-    <RimTalk.Settings.SampleLocalDesc>向本地推理服务传递专属调优参数（如 top_k、num_predict 等）。</RimTalk.Settings.SampleLocalDesc>
-    <RimTalk.Settings.SampleLocalNote>注意：具体参数名称取决于您运行的本地后端软件。</RimTalk.Settings.SampleLocalNote>
+    <RimTalk.Settings.SampleBasicTitle>1. 基础采样参数</RimTalk.Settings.SampleBasicTitle>
+    <RimTalk.Settings.SampleBasicDesc>调整响应的随机性、多样性及最大输出长度。</RimTalk.Settings.SampleBasicDesc>
+    <RimTalk.Settings.SampleBasicNote>注意：推理模型可能会忽略自定义温度或要求使用默认值。</RimTalk.Settings.SampleBasicNote>
+    <RimTalk.Settings.SampleReasoningEffortTitle>2. 推理强度级别 (Reasoning Effort)</RimTalk.Settings.SampleReasoningEffortTitle>
+    <RimTalk.Settings.SampleReasoningEffortDesc>控制模型思考/推理的强度级别 ("low", "medium", "high")。</RimTalk.Settings.SampleReasoningEffortDesc>
+    <RimTalk.Settings.SampleReasoningEffortNote>注意：适用于支持推理强度调节的推理模型。如需更快响应请设为 "low"。</RimTalk.Settings.SampleReasoningEffortNote>
+    <RimTalk.Settings.SampleDisableThinkingTitle>3. 禁用思考模式</RimTalk.Settings.SampleDisableThinkingTitle>
+    <RimTalk.Settings.SampleDisableThinkingDesc>关闭内部思考推理过程以提升生成速度并降低 Token 消耗。</RimTalk.Settings.SampleDisableThinkingDesc>
+    <RimTalk.Settings.SampleDisableThinkingNote>注意：适用于支持开关思考块 (Thinking block) 的模型。</RimTalk.Settings.SampleDisableThinkingNote>
+    <RimTalk.Settings.SampleEnableThinkingTitle>4. 限制思考 Token 预算</RimTalk.Settings.SampleEnableThinkingTitle>
+    <RimTalk.Settings.SampleEnableThinkingDesc>保持思考模式的同时限制用于推理的最大 Token 数量。</RimTalk.Settings.SampleEnableThinkingDesc>
+    <RimTalk.Settings.SampleEnableThinkingNote>注意：适用于支持设定推理 Token 预算的模型。请注意服务商要求的最低 Token 限制。</RimTalk.Settings.SampleEnableThinkingNote>
+    <RimTalk.Settings.SampleStructuredOutputTitle>5. 强制对话格式 (解决 JSON 错误)</RimTalk.Settings.SampleStructuredOutputTitle>
+    <RimTalk.Settings.SampleStructuredOutputDesc>当对话无法显示且持续出现 JSON 错误时使用（Json Deserialization Error）。强制 AI 严格遵循所需格式。</RimTalk.Settings.SampleStructuredOutputDesc>
+    <RimTalk.Settings.SampleStructuredOutputNote>注意：仅适用于支持结构化输出 (response_format) 的模型。</RimTalk.Settings.SampleStructuredOutputNote>
 
     <!-- Settings_Context.cs -->
     <RimTalk.Settings.ContextFilter>上下文过滤器</RimTalk.Settings.ContextFilter>

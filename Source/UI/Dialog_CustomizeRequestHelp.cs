@@ -13,7 +13,7 @@ public class Dialog_CustomizeRequestHelp : Window
     private Vector2 _scrollPos = Vector2.zero;
     private GUIStyle _monoStyle;
 
-    private struct SampleEntry
+    public struct SampleEntry
     {
         public string Title;
         public string Description;
@@ -21,21 +21,21 @@ public class Dialog_CustomizeRequestHelp : Window
         public string Json;
     }
 
-    private static readonly List<SampleEntry> Samples =
+    public static List<SampleEntry> GetSamples() =>
     [
         new SampleEntry
         {
             Title = "RimTalk.Settings.SampleBasicTitle".Translate(),
             Description = "RimTalk.Settings.SampleBasicDesc".Translate(),
             Note = "RimTalk.Settings.SampleBasicNote".Translate(),
-            Json = "{\n  \"temperature\": 0.7,\n  \"top_p\": 0.9,\n  \"max_tokens\": 2048,\n  \"presence_penalty\": 0.2\n}"
+            Json = "{\n  \"temperature\": 0.7,\n  \"top_p\": 0.9,\n  \"max_tokens\": 2048\n}"
         },
         new SampleEntry
         {
             Title = "RimTalk.Settings.SampleReasoningEffortTitle".Translate(),
             Description = "RimTalk.Settings.SampleReasoningEffortDesc".Translate(),
             Note = "RimTalk.Settings.SampleReasoningEffortNote".Translate(),
-            Json = "{\n  \"temperature\": 1.0,\n  \"reasoning_effort\": \"minimal\"\n}"
+            Json = "{\n  \"reasoning_effort\": \"low\"\n}"
         },
         new SampleEntry
         {
@@ -57,15 +57,10 @@ public class Dialog_CustomizeRequestHelp : Window
             Description = "RimTalk.Settings.SampleStructuredOutputDesc".Translate(),
             Note = "RimTalk.Settings.SampleStructuredOutputNote".Translate(),
             Json = "{\n  \"response_format\": {\n    \"type\": \"json_schema\",\n    \"json_schema\": {\n      \"name\": \"talk_response\",\n      \"strict\": true,\n      \"schema\": {\n        \"type\": \"array\",\n        \"items\": {\n          \"type\": \"object\",\n          \"required\": [\"name\", \"text\"],\n          \"properties\": {\n            \"name\": { \"type\": \"string\" },\n            \"text\": { \"type\": \"string\" },\n            \"act\": {\n              \"type\": \"string\",\n              \"enum\": [\"Insult\", \"Slight\", \"Chat\", \"Kind\"]\n            },\n            \"target\": { \"type\": \"string\" }\n          },\n          \"additionalProperties\": false\n        }\n      }\n    }\n  }\n}"
-        },
-        new SampleEntry
-        {
-            Title = "RimTalk.Settings.SampleLocalTitle".Translate(),
-            Description = "RimTalk.Settings.SampleLocalDesc".Translate(),
-            Note = "RimTalk.Settings.SampleLocalNote".Translate(),
-            Json = "{\n  \"temperature\": 0.8,\n  \"top_k\": 40,\n  \"num_predict\": 1024\n}"
         }
     ];
+
+    private static readonly List<SampleEntry> Samples = GetSamples();
 
     public Dialog_CustomizeRequestHelp(Action<string, bool> onApplySample = null)
     {
