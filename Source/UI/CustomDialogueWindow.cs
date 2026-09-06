@@ -1,9 +1,7 @@
 using RimTalk.Service;
 using RimTalk.Util;
-using RimWorld;
 using UnityEngine;
 using Verse;
-using Verse.AI;
 
 namespace RimTalk.UI;
 
@@ -23,12 +21,10 @@ public class CustomDialogueWindow : Window
     
     private DialogueMode _mode = DialogueMode.Direct;
     private bool _attachPhoto;
-    private static Texture2D _directIcon;
-    private static Texture2D DirectIcon => _directIcon ??= ContentFinder<Texture2D>.Get("UI/ChatGizmo");
-    private static Texture2D _announceIcon;
-    private static Texture2D AnnounceIcon => _announceIcon ??= ContentFinder<Texture2D>.Get("UI/AnnounceGizmo");
-    private static Texture2D _cameraIcon;
-    private static Texture2D CameraIcon => _cameraIcon ??= ContentFinder<Texture2D>.Get("UI/VisionGizmo");
+    private static Texture2D _directIcon, _announceIcon, _cameraIcon;
+    private static Texture2D DirectIcon => UIUtil.GetTexture(ref _directIcon, "UI/ChatGizmo");
+    private static Texture2D AnnounceIcon => UIUtil.GetTexture(ref _announceIcon, "UI/AnnounceGizmo");
+    private static Texture2D CameraIcon => UIUtil.GetTexture(ref _cameraIcon, "UI/VisionGizmo");
     private const float IconSize = 28f;
     private const float IconSpacing = 4f;
 

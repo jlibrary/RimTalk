@@ -15,7 +15,8 @@ namespace RimTalk.Patches;
 [StaticConstructorOnStartup]
 public static class BioTabPersonalityPatch
 {
-    private static readonly Texture2D RimTalkIcon = ContentFinder<Texture2D>.Get("UI/RimTalkIcon");
+    private static Texture2D _rimTalkIcon;
+    private static Texture2D RimTalkIcon => UIUtil.GetTexture(ref _rimTalkIcon, "UI/RimTalkIcon");
 
     private static void AddPersonaElement(Pawn pawn)
     {

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using HarmonyLib;
 using RimTalk.UI;
 using RimTalk.Util;
@@ -12,13 +11,11 @@ namespace RimTalk.Patch
     [HarmonyPatch(typeof(Pawn), "GetGizmos")]
     public static class PawnGizmoPatch
     {
-        private static Texture2D _chatGizmoIcon;
-        private static Texture2D _announceGizmoIcon;
-        private static Texture2D ChatGizmoIcon => _chatGizmoIcon ??= ContentFinder<Texture2D>.Get("UI/ChatGizmo");
-        private static Texture2D AnnounceGizmoIcon => _announceGizmoIcon ??= ContentFinder<Texture2D>.Get("UI/AnnounceGizmo");
+        private static Texture2D _chatGizmoIcon, _announceGizmoIcon;
+        private static Texture2D ChatGizmoIcon => UIUtil.GetTexture(ref _chatGizmoIcon, "UI/ChatGizmo");
+        private static Texture2D AnnounceGizmoIcon => UIUtil.GetTexture(ref _announceGizmoIcon, "UI/AnnounceGizmo");
 
-        private static TaggedString? _cachedAnnounceLabel;
-        private static TaggedString CachedAnnounceLabel => _cachedAnnounceLabel ??= "RimTalk.Gizmo.Announce".Translate();
+        private static TaggedString CachedAnnounceLabel => "RimTalk.Gizmo.Announce".Translate();
 
         [HarmonyPostfix]
         public static void Postfix(Pawn __instance, ref IEnumerable<Gizmo> __result)

@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using RimWorld;
+using RimTalk.UI;
 using UnityEngine;
 using Verse;
 using Cache = RimTalk.Data.Cache;
@@ -13,11 +10,9 @@ public partial class Settings
     private const int MaxPersonaLength = 500;
     private static Vector2 _personaScrollPos = Vector2.zero;
 
-    private static Texture2D _visionGizmoIcon;
-    private static Texture2D VisionGizmoIcon => _visionGizmoIcon ??= ContentFinder<Texture2D>.Get("UI/VisionGizmo");
-
-    private static Texture2D _announceGizmoIcon;
-    private static Texture2D AnnounceGizmoIcon => _announceGizmoIcon ??= ContentFinder<Texture2D>.Get("UI/AnnounceGizmo");
+    private static Texture2D _visionGizmoIcon, _announceGizmoIcon;
+    private static Texture2D VisionGizmoIcon => UIUtil.GetTexture(ref _visionGizmoIcon, "UI/VisionGizmo");
+    private static Texture2D AnnounceGizmoIcon => UIUtil.GetTexture(ref _announceGizmoIcon, "UI/AnnounceGizmo");
 
     private void DrawCustomDialogueSettings(Listing_Standard listing)
     {

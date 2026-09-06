@@ -10,7 +10,8 @@ namespace RimTalk.Patch
     [HarmonyPatch(typeof(PlaySettings), nameof(PlaySettings.DoPlaySettingsGlobalControls))]
     public static class TogglePatch
     {
-        private static readonly Texture2D RimTalkToggleIcon = ContentFinder<Texture2D>.Get("UI/RimTalkIcon");
+        private static Texture2D _rimTalkToggleIcon;
+        private static Texture2D RimTalkToggleIcon => UIUtil.GetTexture(ref _rimTalkToggleIcon, "UI/RimTalkIcon");
 
         public static void Postfix(WidgetRow row, bool worldView)
         {

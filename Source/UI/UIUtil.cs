@@ -25,6 +25,14 @@ public static class UIUtil
     ];
 
     /// <summary>
+    /// Gets a texture safely with Unity lifecycle protection, reloading it if destroyed by a language/content change.
+    /// </summary>
+    public static Texture2D GetTexture(ref Texture2D cache, string path)
+    {
+        return cache == null ? (cache = ContentFinder<Texture2D>.Get(path, false)) : cache;
+    }
+
+    /// <summary>
     /// Returns a distinct accent color for a given conversation ID.
     /// </summary>
     public static Color GetConversationColor(int conversationId, bool fallbackMuted = false)

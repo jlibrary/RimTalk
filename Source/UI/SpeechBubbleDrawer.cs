@@ -15,11 +15,12 @@ public static class SpeechBubbleDrawer
     private const int InitialPoolSize = 32;
     private const int MaxBubblesPerPawn = 3;
 
-    public static readonly Texture2D BubbleBgDark = ContentFinder<Texture2D>.Get("UI/SpeechBubble_BG", reportFailure: false);
-    public static readonly Texture2D BubbleBgLight = ContentFinder<Texture2D>.Get("UI/SpeechBubble_BG_Light", reportFailure: false);
-    public static readonly Texture2D BubbleBorder = ContentFinder<Texture2D>.Get("UI/SpeechBubble_Border", reportFailure: false);
-    public static readonly Texture2D BubbleBorderThin = ContentFinder<Texture2D>.Get("UI/SpeechBubble_Border_Thin", reportFailure: false);
-    public static readonly Texture2D BubbleBorderThick = ContentFinder<Texture2D>.Get("UI/SpeechBubble_Border_Thick", reportFailure: false);
+    private static Texture2D _bubbleBgDark, _bubbleBgLight, _bubbleBorder, _bubbleBorderThin, _bubbleBorderThick;
+    public static Texture2D BubbleBgDark => UIUtil.GetTexture(ref _bubbleBgDark, "UI/SpeechBubble_BG");
+    public static Texture2D BubbleBgLight => UIUtil.GetTexture(ref _bubbleBgLight, "UI/SpeechBubble_BG_Light");
+    public static Texture2D BubbleBorder => UIUtil.GetTexture(ref _bubbleBorder, "UI/SpeechBubble_Border");
+    public static Texture2D BubbleBorderThin => UIUtil.GetTexture(ref _bubbleBorderThin, "UI/SpeechBubble_Border_Thin");
+    public static Texture2D BubbleBorderThick => UIUtil.GetTexture(ref _bubbleBorderThick, "UI/SpeechBubble_Border_Thick");
 
     private static readonly List<SpeechBubble> Pool = new(InitialPoolSize);
     private static readonly List<SpeechBubble> ActiveBubbles = new(InitialPoolSize);
