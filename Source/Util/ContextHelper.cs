@@ -50,8 +50,19 @@ public static class ContextHelper
 
     public static string GetDecoratedName(Pawn pawn)
     {
+        if (pawn == null) return string.Empty;
+
+        // Avoid redundant "(0/Kind)" age and kind duplication for unnamed animals, insects, or mechanoids
         if (!pawn.RaceProps.Humanlike)
-            return $"{pawn.LabelShort}({pawn.ageTracker.AgeBiologicalYears}/{pawn.def.LabelCap})";
+        {
+            if (pawn.Name != null && !pawn.Name.Numerical &&
+                !pawn.LabelShort.Equals(pawn.def.label, StringComparison.OrdinalIgnoreCase) &&
+                !pawn.LabelShort.Equals(pawn.def.LabelCap.Resolve(), StringComparison.OrdinalIgnoreCase))
+            {
+                return $"{pawn.LabelShort}({pawn.def.LabelCap})";
+            }
+            return pawn.LabelShort;
+        }
 
         var race = ModsConfig.BiotechActive && pawn.genes?.Xenotype != null
             ? pawn.genes.XenotypeLabel

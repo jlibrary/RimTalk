@@ -204,10 +204,10 @@ public static class PawnUtil
                 ? Math.Max(settings.Context.MaxPawnContextCount, nearbyPawns.Count)
                 : settings.Context.MaxPawnContextCount;
 
-            string nearbyList = GetCombinedNearbyList(pawn, nearbyPawns, relevantPawns,
+            string nearbySection = GetCombinedNearbyList(pawn, nearbyPawns, relevantPawns,
                 useOptimization, maxCount, ref isInDanger);
 
-            lines.Add("Nearby: " + nearbyList);
+            lines.Add(nearbySection);
         }
         else
         {
@@ -218,31 +218,46 @@ public static class PawnUtil
         return (string.Join("\n", lines), isInDanger);
     }
 
+    // Strips verbose age/stats noise during combat, preserving only the name and essential status (e.g. Slave, Prisoner)
+    private static string GetCompactCombatLabel(Pawn p)
+    {
+        if (p.IsSlave) return $"{p.LabelShort}(Slave)";
+        if (p.IsPrisoner) return $"{p.LabelShort}(Prisoner)";
+        if (p.IsEnemy()) return $"{p.LabelShort}(Enemy)";
+        if (p.IsVisitor()) return $"{p.LabelShort}(Visitor)";
+        if (p.IsQuestLodger()) return $"{p.LabelShort}(Lodger)";
+        return p.LabelShort;
+    }
+
     private static string GetCombinedNearbyList(Pawn mainPawn, List<Pawn> nearbyPawns,
         HashSet<Pawn> relevantPawns, bool useOptimization, int maxCount, ref bool situationIsCritical)
     {
         if (nearbyPawns == null || !nearbyPawns.Any())
-            return "none";
-
-        var descriptions = new List<string>();
-        bool localDangerFound = false;
+            return "Nearby: none";
 
         var pawnsToScan = nearbyPawns.Take(maxCount);
+        var mainTarget = mainPawn.GetAttackTarget();
+
+        var sameTargetPawns = new List<Pawn>();
+        var otherDescriptions = new List<string>();
+        bool localDangerFound = false;
 
         foreach (var p in pawnsToScan)
         {
             if (p == null || p.IsPlayer()) continue;
 
-            string label = GetPawnLabel(p, relevantPawns, useOptimization);
-            string extraStatus = "";
+            if (p.IsInDanger(true) && p.Faction == mainPawn.Faction)
+                localDangerFound = true;
 
-            if (p.IsInDanger(true))
+            // Separate allies focusing the speaker's current target to group them together
+            if (mainTarget != null && p.GetAttackTarget() == mainTarget)
             {
-                if (p.Faction == mainPawn.Faction)
-                    localDangerFound = true;
-
-                extraStatus = " [!]";
+                sameTargetPawns.Add(p);
+                continue;
             }
+
+            string label = GetPawnLabel(p, relevantPawns, useOptimization);
+            string extraStatus = p.IsInDanger(true) ? " [!]" : "";
 
             string entry;
             var pawnState = Cache.Get(p);
@@ -250,12 +265,16 @@ public static class PawnUtil
             {
                 string activity = GetPawnActivity(p, relevantPawns, useOptimization);
                 string talkRequestStr = "";
-                var talkRequest = pawnState.GetNextTalkRequest();
-                if (talkRequest != null && !p.HostileTo(mainPawn) &&
-                    SleepDialogueTracker.TryRefreshRequest(talkRequest))
+                // Do not leak combat battle logs or consume urgent requests of nearby pawns during combat
+                if (!situationIsCritical && !p.IsInDanger() && !mainPawn.IsInCombat() && !p.IsInCombat())
                 {
-                    pawnState.MarkRequestSpoken(talkRequest);
-                    talkRequestStr = $" - {talkRequest.Prompt}";
+                    var talkRequest = pawnState.GetNextTalkRequest();
+                    if (talkRequest != null && talkRequest.TalkType != TalkType.Urgent && !p.HostileTo(mainPawn) &&
+                        SleepDialogueTracker.TryRefreshRequest(talkRequest))
+                    {
+                        pawnState.MarkRequestSpoken(talkRequest);
+                        talkRequestStr = $" - {talkRequest.Prompt}";
+                    }
                 }
                 entry = $"{label} {activity.StripTags()}{extraStatus}{talkRequestStr}";
             }
@@ -264,15 +283,26 @@ public static class PawnUtil
                 entry = $"{label}{extraStatus}";
             }
 
-            descriptions.Add(entry);
+            otherDescriptions.Add(entry);
         }
 
         if (localDangerFound)
             situationIsCritical = true;
 
-        string result = "\n- " + string.Join("\n- ", descriptions);
+        if (sameTargetPawns.Count == 0 && otherDescriptions.Count == 0)
+            return "Nearby: none";
 
-        return result;
+        // Group allies attacking the same target into a single concise line
+        if (sameTargetPawns.Count > 0)
+        {
+            string targets = string.Join(", ", sameTargetPawns.Select(GetCompactCombatLabel));
+            if (otherDescriptions.Count == 0)
+                return $"Nearby fighting same target: {targets}";
+
+            otherDescriptions.Insert(0, $"Fighting same target: {targets}");
+        }
+
+        return "Nearby:\n- " + string.Join("\n- ", otherDescriptions);
     }
 
     private static HashSet<Pawn> CollectRelevantPawns(Pawn mainPawn, List<Pawn> nearbyPawns)
@@ -594,6 +624,16 @@ public static class PawnUtil
 
     private static readonly string[] MovementJobPatterns = ["Goto", "Flee", "Wait", "Wander"];
 
+    // Resolves current attack target across ranged aiming stances and melee attack jobs
+    internal static Thing GetAttackTarget(this Pawn pawn)
+    {
+        if (pawn == null) return null;
+        if (pawn.IsAttacking()) return pawn.TargetCurrentlyAimingAt.Thing;
+        if (pawn.CurJob != null && (pawn.CurJob.def == JobDefOf.AttackMelee || pawn.CurJob.def == JobDefOf.AttackStatic))
+            return pawn.CurJob.targetA.Thing;
+        return null;
+    }
+
     internal static string GetActivity(this Pawn pawn)
     {
         if (pawn == null) return null;
@@ -604,11 +644,12 @@ public static class PawnUtil
         if (pawn.CurJobDef is null)
             return null;
 
-        var targetThing = pawn.IsAttacking() ? pawn.TargetCurrentlyAimingAt.Thing : null;
+        var targetThing = pawn.GetAttackTarget();
         if (targetThing != null)
         {
             string targetLabel = Describer.StripConditionSuffix(targetThing.LabelShortCap);
-            if (targetThing.Faction != null && targetThing.Faction != pawn.Faction)
+            // Only prepend faction owner for structures/items, not for pawns
+            if (targetThing is not Pawn && targetThing.Faction != null && targetThing.Faction != pawn.Faction)
             {
                 bool isTargetPlayer = targetThing.Faction == Faction.OfPlayer;
                 string ownerPrefix = isTargetPlayer ? "invader's" : $"{targetThing.Faction.Name}'s";
