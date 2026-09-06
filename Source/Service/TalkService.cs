@@ -19,6 +19,8 @@ namespace RimTalk.Service;
 /// </summary>
 public static class TalkService
 {
+    private static readonly List<TalkType> PriorityTalkTypes = [TalkType.Urgent, TalkType.User, TalkType.Announcement];
+
     /// <summary>
     /// Initiates the process of generating a conversation. It performs initial checks and then
     /// starts a background task to handle the actual AI communication.
@@ -82,7 +84,7 @@ public static class TalkService
 
         if (talkRequest.IsAnnouncement)
             foreach (var p in pawns.Where(p => p != null && !p.IsPlayer()))
-                Cache.Get(p)?.IgnoreAllTalkResponses([TalkType.Urgent, TalkType.User, TalkType.Announcement]);
+                Cache.Get(p)?.IgnoreAllTalkResponses(PriorityTalkTypes);
         
         if (talkRequest.TalkType == TalkType.Sleep)
             talkRequest.IsMonologue = pawns.Count == 1;
@@ -203,10 +205,14 @@ public static class TalkService
 
             if (pawnState.TalkResponses.Empty()) continue;
 
-            var talk = pawnState.TalkResponses.First();
+            if (pawn.IsInDanger())
+                pawnState.IgnoreAllTalkResponses(PriorityTalkTypes);
+
+            var talk = pawnState.TalkResponses.FirstOrDefault();
             if (talk == null)
             {
-                pawnState.TalkResponses.RemoveAt(0);
+                if (!pawnState.TalkResponses.Empty()) 
+                    pawnState.TalkResponses.RemoveAt(0);
                 continue;
             }
 
@@ -221,8 +227,6 @@ public static class TalkService
             if (pawn.IsInDanger() || talk.TalkType == TalkType.Announcement)
             {
                 replyInterval = Math.Min(replyInterval, 2);
-                if (pawn.IsInDanger())
-                    pawnState.IgnoreAllTalkResponses([TalkType.Urgent, TalkType.User, TalkType.Announcement]);
             }
 
             // Enforce a delay for replies to make conversations feel more natural.
