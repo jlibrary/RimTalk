@@ -14,7 +14,6 @@
         <OutputPath>$(GameVersion)/Assemblies</OutputPath>
         <ModFolderName>RimTalk</ModFolderName>
         <LangVersion>default</LangVersion>
-        <EnableBubbles>true</EnableBubbles>
     </PropertyGroup>
 
     <!-- Define version constants based on GameVersion -->
@@ -59,11 +58,6 @@
         </Reference>
     </ItemGroup>
 
-    <!-- Remove BubblePatch.cs when bubble is disabled -->
-    <ItemGroup Condition=" '$(EnableBubbles)' == 'false' ">
-        <Compile Remove="Source/Patch/BubblePatch.cs"/>
-    </ItemGroup>
-
     <!-- Exclude test source code from mod compilation, but keep folder visible in IDE -->
     <ItemGroup>
         <Compile Remove="Tests/**" />
@@ -72,10 +66,6 @@
 
     <!-- Include External Libraries -->
     <ItemGroup>
-        <Reference Include="Bubbles" Condition=" '$(EnableBubbles)' == 'true' ">
-            <HintPath>Libs/Bubbles.dll</HintPath>
-            <Private>false</Private>
-        </Reference>
         <Reference Include="Scriban">
             <HintPath>Libs/Scriban.dll</HintPath>
             <Private>true</Private>

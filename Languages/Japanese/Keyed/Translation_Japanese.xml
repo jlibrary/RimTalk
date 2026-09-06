@@ -239,6 +239,9 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Settings.Disabled>無効</RimTalk.Settings.Disabled>
     <RimTalk.Settings.ButtonDisplay>RimTalkボタンの表示</RimTalk.Settings.ButtonDisplay>
     <RimTalk.Settings.ButtonDisplayTooltip>デバッグインターフェースへのアクセス方法を制御します。「タブ」はメインタブを追加し、「トグル」は下部バーにアイコンを表示し、「なし」は非表示にします。</RimTalk.Settings.ButtonDisplayTooltip>
+    <RimTalk.Settings.BubbleMode>吹き出し表示モード</RimTalk.Settings.BubbleMode>
+    <RimTalk.Settings.BubbleModeTooltip>ポーンの頭上に会話の吹き出しを表示する方法を選択します。</RimTalk.Settings.BubbleModeTooltip>
+    <RimTalk.Settings.BubbleDuration>吹き出しの表示時間</RimTalk.Settings.BubbleDuration>
 
     <RimTalk.Settings.AIInstructionPrompt>AIへの指示プロンプト（モデル：{0}）</RimTalk.Settings.AIInstructionPrompt>
     <RimTalk.Settings.AutoIncludedTip>ヒント：ポーンの詳細（特性、関係、種族、年齢など）は自動的に含まれます。すべてのキャラクターやコロニーで機能する一般的な指示を作成してください。</RimTalk.Settings.AutoIncludedTip>
@@ -281,6 +284,7 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Settings.Player2AppDesc>アプリを起動しておくだけで、APIキー不要で自動接続されます。</RimTalk.Settings.Player2AppDesc>
     <RimTalk.Settings.Player2StatusConnected>[ デスクトップアプリ接続済み ]</RimTalk.Settings.Player2StatusConnected>
     <RimTalk.Settings.Player2StatusDisconnected>[ デスクトップアプリ未起動 ]</RimTalk.Settings.Player2StatusDisconnected>
+    <RimTalk.Settings.Player2AppRunningNotice>デスクトップアプリが接続されています。Webキーは不要です。</RimTalk.Settings.Player2AppRunningNotice>
     <RimTalk.Settings.Player2DownloadApp>デスクトップアプリを入手</RimTalk.Settings.Player2DownloadApp>
     <RimTalk.Settings.Player2WebTitle>Player2 Web APIキー</RimTalk.Settings.Player2WebTitle>
     <RimTalk.Settings.Player2WebDesc>デスクトップアプリを使わず、Webで無料キーを取得して利用します。</RimTalk.Settings.Player2WebDesc>
@@ -479,7 +483,7 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Overlay.AlignNameColumn>名前列を揃える</RimTalk.Overlay.AlignNameColumn>
     <RimTalk.Overlay.Opacity>不透明度</RimTalk.Overlay.Opacity>
     <RimTalk.Overlay.FontSize>フォントサイズ</RimTalk.Overlay.FontSize>
-    <RimTalk.Overlay.TurnOff>オーバーレイを非表示</RimTalk.Overlay.TurnOff>
+    <RimTalk.Overlay.TurnOff>非表示</RimTalk.Overlay.TurnOff>
     <RimTalk.Overlay.TurnOffTooltip>オーバーレイを非表示にします。\n設定に応じて右下のアイコンまたはタブをクリックして切り替えることができます。</RimTalk.Overlay.TurnOffTooltip>
 
     <!-- FloatMenuMakerMapGetOptionsPatch.cs -->
@@ -553,4 +557,34 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.VersionSwitcher.ProceedRollback>コピー</RimTalk.VersionSwitcher.ProceedRollback>
     <RimTalk.VersionSwitcher.RestartRequiredTitle>コピー完了</RimTalk.VersionSwitcher.RestartRequiredTitle>
     <RimTalk.VersionSwitcher.LocalModCreatedPrompt>「RimWorld/Mods/RimTalk」にコピーされました。\n\nSteam版を無効化し、ローカルModを有効化してRimWorldを再起動してください。</RimTalk.VersionSwitcher.LocalModCreatedPrompt>
+
+    <!-- Speech Bubble Customization -->
+    <RimTalk.BubbleSettings.Title>吹き出し詳細設定</RimTalk.BubbleSettings.Title>
+    <RimTalk.BubbleSettings.Button>吹き出し</RimTalk.BubbleSettings.Button>
+    <RimTalk.BubbleSettings.OpenTooltip>RimTalk専用の吹き出しを設定します。</RimTalk.BubbleSettings.OpenTooltip>
+    <RimTalk.BubbleSettings.Theme>テーマ</RimTalk.BubbleSettings.Theme>
+    <RimTalk.BubbleSettings.ThemeDark>ダーク</RimTalk.BubbleSettings.ThemeDark>
+    <RimTalk.BubbleSettings.ThemeLight>ライト</RimTalk.BubbleSettings.ThemeLight>
+    <RimTalk.BubbleSettings.FontSize>フォントサイズ</RimTalk.BubbleSettings.FontSize>
+    <RimTalk.BubbleSettings.Opacity>背景の不透明度</RimTalk.BubbleSettings.Opacity>
+    <RimTalk.BubbleSettings.Scale>吹き出しの大きさ</RimTalk.BubbleSettings.Scale>
+    <RimTalk.BubbleSettings.VerticalOffset>垂直位置</RimTalk.BubbleSettings.VerticalOffset>
+    <RimTalk.BubbleSettings.UrgentShake>緊急時の吹き出しの揺れ</RimTalk.BubbleSettings.UrgentShake>
+    <RimTalk.BubbleSettings.UrgentShakeTooltip>戦闘や危機的状況の会話時に吹き出しを揺らします。</RimTalk.BubbleSettings.UrgentShakeTooltip>
+    <RimTalk.BubbleSettings.PreviewText>吹き出しのプレビュー</RimTalk.BubbleSettings.PreviewText>
+    <RimTalk.BubbleSettings.Padding>吹き出しの余白</RimTalk.BubbleSettings.Padding>
+    <RimTalk.BubbleSettings.UseColors>会話グループの色を使用</RimTalk.BubbleSettings.UseColors>
+    <RimTalk.BubbleSettings.UseColorsTooltip>会話グループごとに枠線の色を変えて表示します。</RimTalk.BubbleSettings.UseColorsTooltip>
+    <RimTalk.BubbleSettings.ModeDisabled>無効</RimTalk.BubbleSettings.ModeDisabled>
+    <RimTalk.BubbleSettings.ModeNative>RimTalkバブル</RimTalk.BubbleSettings.ModeNative>
+    <RimTalk.BubbleSettings.NativeDesc>RimTalkに最適化された軽量な内蔵吹き出しです。</RimTalk.BubbleSettings.NativeDesc>
+    <RimTalk.BubbleSettings.ModeInteractionBubbles>Interaction Bubbles</RimTalk.BubbleSettings.ModeInteractionBubbles>
+    <RimTalk.BubbleSettings.InteractionBubblesNotLoaded>Interaction Bubbles Modがインストールまたは有効化されていません。</RimTalk.BubbleSettings.InteractionBubblesNotLoaded>
+    <RimTalk.BubbleSettings.PreviewDisabledMsg>吹き出しの表示が無効になっています。</RimTalk.BubbleSettings.PreviewDisabledMsg>
+    <RimTalk.BubbleSettings.PreviewIBMsg>Interaction Bubbles Modで表示中。</RimTalk.BubbleSettings.PreviewIBMsg>
+    <RimTalk.BubbleSettings.BorderThickness>枠線の太さ</RimTalk.BubbleSettings.BorderThickness>
+    <RimTalk.BubbleSettings.BorderThin>細い</RimTalk.BubbleSettings.BorderThin>
+    <RimTalk.BubbleSettings.BorderNormal>標準</RimTalk.BubbleSettings.BorderNormal>
+    <RimTalk.BubbleSettings.BorderThick>太い</RimTalk.BubbleSettings.BorderThick>
+    <RimTalk.BubbleSettings.OpenWindow>設定を開く...</RimTalk.BubbleSettings.OpenWindow>
 </LanguageData>

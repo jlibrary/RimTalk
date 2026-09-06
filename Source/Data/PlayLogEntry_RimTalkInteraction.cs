@@ -1,7 +1,8 @@
 using System.Collections.Generic;
+using RimTalk.Service;
+using RimTalk.Source.Data;
 using RimWorld;
 using Verse;
-using RimTalk.Service;
 
 namespace RimTalk;
 
@@ -29,6 +30,9 @@ public class PlayLogEntry_RimTalkInteraction : PlayLogEntry_Interaction
     public List<RulePackDef> ExtraSentencePacks => extraSentencePacks;
     public string CachedString => _cachedString;
     public int TicksAbs => ticksAbs;
+    public int ConversationId { get; set; } = -1;
+    public InteractionType InteractionType { get; set; } = InteractionType.None;
+    public TalkType TalkType { get; set; } = TalkType.Other;
 
     // Override this method to customize the log message
     protected override string ToGameStringFromPOV_Worker(Thing pov, bool forceLog)

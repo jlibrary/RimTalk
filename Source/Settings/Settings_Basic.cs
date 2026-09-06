@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using RimTalk.UI;
 using RimTalk.Util;
 using UnityEngine;
@@ -168,12 +167,32 @@ public partial class Settings
         float tallerColumnHeight = Mathf.Max(leftListing.CurHeight, rightListing.CurHeight);
         listingStandard.Gap(tallerColumnHeight - estimatedHeight); // Adjust for the initial GetRect height
 
-        listingStandard.Gap();
+        listingStandard.Gap(12f);
 
-        // --- Dropdown for PauseAtSpeed ---
+        const float dropdownWidth = 140f;
+        const float rowGap = 8f;
+
+        // 1. --- Open Bubble Settings Window ---
+        var bubbleRowRect = listingStandard.GetRect(30f);
+        var bubbleLabelRect = new Rect(bubbleRowRect.x, bubbleRowRect.y,
+            bubbleRowRect.width - dropdownWidth - 10f, bubbleRowRect.height);
+        originalAnchor = Text.Anchor;
+        Text.Anchor = TextAnchor.MiddleLeft;
+        Widgets.Label(bubbleLabelRect, "RimTalk.Settings.BubbleMode".Translate().ToString());
+        Text.Anchor = originalAnchor;
+
+        var bubbleBtnRect = new Rect(bubbleRowRect.xMax - dropdownWidth, bubbleRowRect.y, dropdownWidth,
+            bubbleRowRect.height);
+        if (Widgets.ButtonText(bubbleBtnRect, "RimTalk.BubbleSettings.OpenWindow".Translate().ToString()))
+        {
+            Find.WindowStack.Add(new Dialog_BubbleSettings());
+        }
+        TooltipHandler.TipRegion(bubbleRowRect, "RimTalk.Settings.BubbleModeTooltip".Translate().ToString());
+
+        listingStandard.Gap(rowGap);
+
+        // 2. --- Dropdown for PauseAtSpeed ---
         Rect pauseLineRect = listingStandard.GetRect(30f);
-        const float dropdownWidth = 120f;
-
         Rect labelRect = new Rect(pauseLineRect.x, pauseLineRect.y, pauseLineRect.width - dropdownWidth - 10f,
             pauseLineRect.height);
         originalAnchor = Text.Anchor;
@@ -181,7 +200,7 @@ public partial class Settings
         Widgets.Label(labelRect, "RimTalk.Settings.PauseAtSpeed".Translate().ToString());
         Text.Anchor = originalAnchor;
 
-        Rect dropdownRect = new Rect(labelRect.xMax + 10f, pauseLineRect.y, dropdownWidth, pauseLineRect.height);
+        Rect dropdownRect = new Rect(pauseLineRect.xMax - dropdownWidth, pauseLineRect.y, dropdownWidth, pauseLineRect.height);
 
         // Use the helper function to determine the current label for the button
         string currentSpeedLabel = settings.DisableAiAtSpeed > (int)TimeSpeed.Normal
@@ -213,17 +232,18 @@ public partial class Settings
 
         TooltipHandler.TipRegion(pauseLineRect, "RimTalk.Settings.DisableAiAtSpeedTooltip".Translate().ToString());
 
-        listingStandard.Gap();
+        listingStandard.Gap(rowGap);
 
-        // --- Dropdown for Button Display Mode ---
+        // 3. --- Dropdown for Button Display Mode ---
         var buttonDisplayRect = listingStandard.GetRect(30f);
         var buttonDisplayLabelRect = new Rect(buttonDisplayRect.x, buttonDisplayRect.y,
             buttonDisplayRect.width - dropdownWidth - 10f, buttonDisplayRect.height);
+        originalAnchor = Text.Anchor;
         Text.Anchor = TextAnchor.MiddleLeft;
         Widgets.Label(buttonDisplayLabelRect, "RimTalk.Settings.ButtonDisplay".Translate().ToString());
         Text.Anchor = originalAnchor;
 
-        var buttonDisplayDropdownRect = new Rect(buttonDisplayLabelRect.xMax + 10f, buttonDisplayRect.y, dropdownWidth,
+        var buttonDisplayDropdownRect = new Rect(buttonDisplayRect.xMax - dropdownWidth, buttonDisplayRect.y, dropdownWidth,
             buttonDisplayRect.height);
 
         if (Widgets.ButtonText(buttonDisplayDropdownRect, settings.ButtonDisplay.ToString()))
@@ -253,6 +273,8 @@ public partial class Settings
             _replyIntervalBuffer = "4";
             settings.ProcessNonRimTalkInteractions = true;
             settings.AllowSimultaneousConversations = false;
+            settings.ResetBubbleSettings();
+            SpeechBubbleDrawer.RecomputeAllBubbleDimensions();
             settings.DisplayTalkWhenDrafted = true;
             settings.AllowMonologue = true;
             settings.AllowSlavesToTalk = true;

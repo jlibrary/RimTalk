@@ -3,6 +3,7 @@ using System.Collections;
 using System.IO;
 using System.Linq;
 using HarmonyLib;
+using RimTalk.UI;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -36,6 +37,8 @@ public static class VisionUtil
     {
         try
         {
+            SpeechBubbleDrawer.Clear();
+
             var bubblerType = AccessTools.TypeByName("Bubbles.Core.Bubbler");
             if (bubblerType != null)
             {

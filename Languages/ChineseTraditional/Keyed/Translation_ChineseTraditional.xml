@@ -239,6 +239,9 @@ Scriban 魔法 (動態內容)
     <RimTalk.Settings.Disabled>已禁用</RimTalk.Settings.Disabled>
     <RimTalk.Settings.ButtonDisplay>RimTalk 按鈕顯示</RimTalk.Settings.ButtonDisplay>
     <RimTalk.Settings.ButtonDisplayTooltip>控制如何訪問除錯界面。「標籤」會添加一個主標籤，「切換」會在底部欄顯示一個圖標，「無」則隱藏它。</RimTalk.Settings.ButtonDisplayTooltip>
+    <RimTalk.Settings.BubbleMode>對話氣泡模式</RimTalk.Settings.BubbleMode>
+    <RimTalk.Settings.BubbleModeTooltip>選擇在角色頭頂顯示對話氣泡的方式。</RimTalk.Settings.BubbleModeTooltip>
+    <RimTalk.Settings.BubbleDuration>氣泡顯示時間</RimTalk.Settings.BubbleDuration>
     
     <RimTalk.Settings.AIInstructionPrompt>AI 指令提示詞（模型：{0}）</RimTalk.Settings.AIInstructionPrompt>
     <RimTalk.Settings.AutoIncludedTip>提示：Pawn 的詳細資訊（特性、關係、種族、年齡等）已自動包含。請編寫適用於所有角色和殖民地的通用指令。</RimTalk.Settings.AutoIncludedTip>
@@ -281,6 +284,7 @@ Scriban 魔法 (動態內容)
     <RimTalk.Settings.Player2AppDesc>只需運行應用，無需 API 金鑰即可自動連接。</RimTalk.Settings.Player2AppDesc>
     <RimTalk.Settings.Player2StatusConnected>[ 桌面應用已連接 ]</RimTalk.Settings.Player2StatusConnected>
     <RimTalk.Settings.Player2StatusDisconnected>[ 桌面應用未運行 ]</RimTalk.Settings.Player2StatusDisconnected>
+    <RimTalk.Settings.Player2AppRunningNotice>桌面應用程式已連接，無需網頁金鑰。</RimTalk.Settings.Player2AppRunningNotice>
     <RimTalk.Settings.Player2DownloadApp>取得桌面應用</RimTalk.Settings.Player2DownloadApp>
     <RimTalk.Settings.Player2WebTitle>Player2 網頁 API 金鑰</RimTalk.Settings.Player2WebTitle>
     <RimTalk.Settings.Player2WebDesc>無需桌面應用，直接在網頁獲取免費 API 金鑰使用。</RimTalk.Settings.Player2WebDesc>
@@ -433,7 +437,7 @@ Scriban 魔法 (動態內容)
     <RimTalk.DebugWindow.StatusDisabled>已禁用</RimTalk.DebugWindow.StatusDisabled>
     <RimTalk.DebugWindow.StatusProcessing>處理中</RimTalk.DebugWindow.StatusProcessing>
     <RimTalk.DebugWindow.StatusIdle>閒置</RimTalk.DebugWindow.StatusIdle>
-    <RimTalk.DebugWindow.ModSettings>設定</RimTalk.DebugWindow.ModSettings>
+    <RimTalk.DebugWindow.ModSettings>Mod設定</RimTalk.DebugWindow.ModSettings>
     <RimTalk.DebugWindow.Export>匯出</RimTalk.DebugWindow.Export>
     <RimTalk.DebugWindow.ResetLogs>重置日誌</RimTalk.DebugWindow.ResetLogs>
     <RimTalk.DebugWindow.EnableRimTalk>啟用 RimTalk</RimTalk.DebugWindow.EnableRimTalk>
@@ -480,7 +484,7 @@ Scriban 魔法 (動態內容)
     <RimTalk.Overlay.AlignNameColumn>對齊名稱欄</RimTalk.Overlay.AlignNameColumn>
     <RimTalk.Overlay.Opacity>不透明度</RimTalk.Overlay.Opacity>
     <RimTalk.Overlay.FontSize>字體大小</RimTalk.Overlay.FontSize>
-    <RimTalk.Overlay.TurnOff>關閉懸浮窗</RimTalk.Overlay.TurnOff>
+    <RimTalk.Overlay.TurnOff>關閉</RimTalk.Overlay.TurnOff>
     <RimTalk.Overlay.TurnOffTooltip>關閉懸浮窗。\n你可以根據設定點擊右下角圖示或底部標籤重新開啟。</RimTalk.Overlay.TurnOffTooltip>
 
     <!-- FloatMenuMakerMapGetOptionsPatch.cs -->
@@ -554,4 +558,34 @@ Scriban 魔法 (動態內容)
     <RimTalk.VersionSwitcher.ProceedRollback>複製</RimTalk.VersionSwitcher.ProceedRollback>
     <RimTalk.VersionSwitcher.RestartRequiredTitle>複製完成</RimTalk.VersionSwitcher.RestartRequiredTitle>
     <RimTalk.VersionSwitcher.LocalModCreatedPrompt>已複製到 'RimWorld/Mods/RimTalk'。\n\n請在模組選單中停用 Steam 版本，啟用本地模組後重新啟動 RimWorld。</RimTalk.VersionSwitcher.LocalModCreatedPrompt>
+
+    <!-- Speech Bubble Customization -->
+    <RimTalk.BubbleSettings.Title>對話氣泡詳細設定</RimTalk.BubbleSettings.Title>
+    <RimTalk.BubbleSettings.Button>氣泡</RimTalk.BubbleSettings.Button>
+    <RimTalk.BubbleSettings.OpenTooltip>設定 RimTalk 專屬對話氣泡。</RimTalk.BubbleSettings.OpenTooltip>
+    <RimTalk.BubbleSettings.Theme>主題</RimTalk.BubbleSettings.Theme>
+    <RimTalk.BubbleSettings.ThemeDark>深色</RimTalk.BubbleSettings.ThemeDark>
+    <RimTalk.BubbleSettings.ThemeLight>淺色</RimTalk.BubbleSettings.ThemeLight>
+    <RimTalk.BubbleSettings.FontSize>字體大小</RimTalk.BubbleSettings.FontSize>
+    <RimTalk.BubbleSettings.Opacity>背景不透明度</RimTalk.BubbleSettings.Opacity>
+    <RimTalk.BubbleSettings.Scale>氣泡縮放</RimTalk.BubbleSettings.Scale>
+    <RimTalk.BubbleSettings.VerticalOffset>垂直位置</RimTalk.BubbleSettings.VerticalOffset>
+    <RimTalk.BubbleSettings.UrgentShake>緊急情況氣泡晃動</RimTalk.BubbleSettings.UrgentShake>
+    <RimTalk.BubbleSettings.UrgentShakeTooltip>在戰鬥或危機對話時晃動氣泡。</RimTalk.BubbleSettings.UrgentShakeTooltip>
+    <RimTalk.BubbleSettings.PreviewText>對話氣泡預覽</RimTalk.BubbleSettings.PreviewText>
+    <RimTalk.BubbleSettings.Padding>氣泡內距</RimTalk.BubbleSettings.Padding>
+    <RimTalk.BubbleSettings.UseColors>使用對話群組顏色</RimTalk.BubbleSettings.UseColors>
+    <RimTalk.BubbleSettings.UseColorsTooltip>依對話群組顯示不同邊框顏色。</RimTalk.BubbleSettings.UseColorsTooltip>
+    <RimTalk.BubbleSettings.ModeDisabled>已停用</RimTalk.BubbleSettings.ModeDisabled>
+    <RimTalk.BubbleSettings.ModeNative>RimTalk 氣泡</RimTalk.BubbleSettings.ModeNative>
+    <RimTalk.BubbleSettings.NativeDesc>專為 RimTalk 最佳化的輕量原生對話氣泡。</RimTalk.BubbleSettings.NativeDesc>
+    <RimTalk.BubbleSettings.ModeInteractionBubbles>Interaction Bubbles</RimTalk.BubbleSettings.ModeInteractionBubbles>
+    <RimTalk.BubbleSettings.InteractionBubblesNotLoaded>未安裝或未啟用 Interaction Bubbles 模組。</RimTalk.BubbleSettings.InteractionBubblesNotLoaded>
+    <RimTalk.BubbleSettings.PreviewDisabledMsg>對話氣泡已停用。</RimTalk.BubbleSettings.PreviewDisabledMsg>
+    <RimTalk.BubbleSettings.PreviewIBMsg>正透過 Interaction Bubbles 模組顯示。</RimTalk.BubbleSettings.PreviewIBMsg>
+    <RimTalk.BubbleSettings.BorderThickness>邊框粗細</RimTalk.BubbleSettings.BorderThickness>
+    <RimTalk.BubbleSettings.BorderThin>細</RimTalk.BubbleSettings.BorderThin>
+    <RimTalk.BubbleSettings.BorderNormal>一般</RimTalk.BubbleSettings.BorderNormal>
+    <RimTalk.BubbleSettings.BorderThick>粗</RimTalk.BubbleSettings.BorderThick>
+    <RimTalk.BubbleSettings.OpenWindow>開啟設定...</RimTalk.BubbleSettings.OpenWindow>
 </LanguageData>

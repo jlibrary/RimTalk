@@ -238,6 +238,9 @@
     <RimTalk.Settings.Disabled>Отключено</RimTalk.Settings.Disabled>
     <RimTalk.Settings.ButtonDisplay>Отображение кнопки RimTalk</RimTalk.Settings.ButtonDisplay>
     <RimTalk.Settings.ButtonDisplayTooltip>Управляет доступом к интерфейсу отладки. 'Вкладка' добавляет основную вкладку, 'Переключатель' показывает значок на нижней панели, а 'Нет' скрывает его.</RimTalk.Settings.ButtonDisplayTooltip>
+    <RimTalk.Settings.BubbleMode>Режим облачков диалога</RimTalk.Settings.BubbleMode>
+    <RimTalk.Settings.BubbleModeTooltip>Выберите способ отображения облачков диалога над персонажами.</RimTalk.Settings.BubbleModeTooltip>
+    <RimTalk.Settings.BubbleDuration>Длительность отображения облачков</RimTalk.Settings.BubbleDuration>
 
     <RimTalk.Settings.AIInstructionPrompt>Инструкция для ИИ (модель: {0})</RimTalk.Settings.AIInstructionPrompt>
     <RimTalk.Settings.AutoIncludedTip>Совет: Детали пешки (черты, отношения, раса, возраст и т. д.) включаются автоматически. Пишите общие инструкции, которые работают для всех персонажей и колоний.</RimTalk.Settings.AutoIncludedTip>
@@ -280,6 +283,7 @@
     <RimTalk.Settings.Player2AppDesc>Запустите приложение для автоматического подключения без ключа API.</RimTalk.Settings.Player2AppDesc>
     <RimTalk.Settings.Player2StatusConnected>[ Приложение подключено ]</RimTalk.Settings.Player2StatusConnected>
     <RimTalk.Settings.Player2StatusDisconnected>[ Приложение не запущено ]</RimTalk.Settings.Player2StatusDisconnected>
+    <RimTalk.Settings.Player2AppRunningNotice>Приложение подключено, веб-ключ не требуется.</RimTalk.Settings.Player2AppRunningNotice>
     <RimTalk.Settings.Player2DownloadApp>Скачать приложение</RimTalk.Settings.Player2DownloadApp>
     <RimTalk.Settings.Player2WebTitle>Ключ веб-API Player2</RimTalk.Settings.Player2WebTitle>
     <RimTalk.Settings.Player2WebDesc>Используйте бесплатный веб-ключ без установки приложения.</RimTalk.Settings.Player2WebDesc>
@@ -432,7 +436,7 @@
     <RimTalk.DebugWindow.StatusDisabled>Отключено</RimTalk.DebugWindow.StatusDisabled>
     <RimTalk.DebugWindow.StatusProcessing>Обработка</RimTalk.DebugWindow.StatusProcessing>
     <RimTalk.DebugWindow.StatusIdle>Ожидание</RimTalk.DebugWindow.StatusIdle>
-    <RimTalk.DebugWindow.ModSettings>Настройки</RimTalk.DebugWindow.ModSettings>
+    <RimTalk.DebugWindow.ModSettings>Настройки мода</RimTalk.DebugWindow.ModSettings>
     <RimTalk.DebugWindow.Export>Экспорт</RimTalk.DebugWindow.Export>
     <RimTalk.DebugWindow.ResetLogs>Сброс лога</RimTalk.DebugWindow.ResetLogs>
     <RimTalk.DebugWindow.EnableRimTalk>Включить RimTalk</RimTalk.DebugWindow.EnableRimTalk>
@@ -478,7 +482,7 @@
     <RimTalk.Overlay.AlignNameColumn>Выравнивать колонку имен</RimTalk.Overlay.AlignNameColumn>
     <RimTalk.Overlay.Opacity>Прозрачность</RimTalk.Overlay.Opacity>
     <RimTalk.Overlay.FontSize>Размер шрифта</RimTalk.Overlay.FontSize>
-    <RimTalk.Overlay.TurnOff>Отключить оверлей</RimTalk.Overlay.TurnOff>
+    <RimTalk.Overlay.TurnOff>Отключить</RimTalk.Overlay.TurnOff>
     <RimTalk.Overlay.TurnOffTooltip>Отключить оверлей.\nВы можете переключать его, нажимая на значок в правом нижнем углу или на вкладку, в зависимости от настроек.</RimTalk.Overlay.TurnOffTooltip>
 
     <!-- FloatMenuMakerMapGetOptionsPatch.cs -->
@@ -552,4 +556,34 @@
     <RimTalk.VersionSwitcher.ProceedRollback>Скопировать</RimTalk.VersionSwitcher.ProceedRollback>
     <RimTalk.VersionSwitcher.RestartRequiredTitle>Скопировано</RimTalk.VersionSwitcher.RestartRequiredTitle>
     <RimTalk.VersionSwitcher.LocalModCreatedPrompt>Скопировано в 'RimWorld/Mods/RimTalk'.\n\nОтключите версию Steam, включите локальный мод и перезапустите RimWorld.</RimTalk.VersionSwitcher.LocalModCreatedPrompt>
+
+    <!-- Speech Bubble Customization -->
+    <RimTalk.BubbleSettings.Title>Настройки облачков диалога</RimTalk.BubbleSettings.Title>
+    <RimTalk.BubbleSettings.Button>Облачка</RimTalk.BubbleSettings.Button>
+    <RimTalk.BubbleSettings.OpenTooltip>Настроить облачка диалога RimTalk.</RimTalk.BubbleSettings.OpenTooltip>
+    <RimTalk.BubbleSettings.Theme>Тема</RimTalk.BubbleSettings.Theme>
+    <RimTalk.BubbleSettings.ThemeDark>Темная</RimTalk.BubbleSettings.ThemeDark>
+    <RimTalk.BubbleSettings.ThemeLight>Светлая</RimTalk.BubbleSettings.ThemeLight>
+    <RimTalk.BubbleSettings.FontSize>Размер шрифта</RimTalk.BubbleSettings.FontSize>
+    <RimTalk.BubbleSettings.Opacity>Непрозрачность фона</RimTalk.BubbleSettings.Opacity>
+    <RimTalk.BubbleSettings.Scale>Масштаб облачка</RimTalk.BubbleSettings.Scale>
+    <RimTalk.BubbleSettings.VerticalOffset>Позиция по вертикали</RimTalk.BubbleSettings.VerticalOffset>
+    <RimTalk.BubbleSettings.UrgentShake>Дрожание в опасных ситуациях</RimTalk.BubbleSettings.UrgentShake>
+    <RimTalk.BubbleSettings.UrgentShakeTooltip>Встряхивать облачка диалога во время боя или опасности.</RimTalk.BubbleSettings.UrgentShakeTooltip>
+    <RimTalk.BubbleSettings.PreviewText>Предпросмотр облачка</RimTalk.BubbleSettings.PreviewText>
+    <RimTalk.BubbleSettings.Padding>Внутренний отступ</RimTalk.BubbleSettings.Padding>
+    <RimTalk.BubbleSettings.UseColors>Цвета групп диалогов</RimTalk.BubbleSettings.UseColors>
+    <RimTalk.BubbleSettings.UseColorsTooltip>Окрашивать рамки в цвет группы диалога.</RimTalk.BubbleSettings.UseColorsTooltip>
+    <RimTalk.BubbleSettings.ModeDisabled>Отключено</RimTalk.BubbleSettings.ModeDisabled>
+    <RimTalk.BubbleSettings.ModeNative>RimTalk Native</RimTalk.BubbleSettings.ModeNative>
+    <RimTalk.BubbleSettings.NativeDesc>Легкие облачка диалога, оптимизированные для RimTalk.</RimTalk.BubbleSettings.NativeDesc>
+    <RimTalk.BubbleSettings.ModeInteractionBubbles>Interaction Bubbles</RimTalk.BubbleSettings.ModeInteractionBubbles>
+    <RimTalk.BubbleSettings.InteractionBubblesNotLoaded>Мод Interaction Bubbles не установлен или отключен.</RimTalk.BubbleSettings.InteractionBubblesNotLoaded>
+    <RimTalk.BubbleSettings.PreviewDisabledMsg>Облачка диалога отключены.</RimTalk.BubbleSettings.PreviewDisabledMsg>
+    <RimTalk.BubbleSettings.PreviewIBMsg>Отображение через мод Interaction Bubbles.</RimTalk.BubbleSettings.PreviewIBMsg>
+    <RimTalk.BubbleSettings.BorderThickness>Толщина рамки</RimTalk.BubbleSettings.BorderThickness>
+    <RimTalk.BubbleSettings.BorderThin>Тонкая</RimTalk.BubbleSettings.BorderThin>
+    <RimTalk.BubbleSettings.BorderNormal>Обычная</RimTalk.BubbleSettings.BorderNormal>
+    <RimTalk.BubbleSettings.BorderThick>Толстая</RimTalk.BubbleSettings.BorderThick>
+    <RimTalk.BubbleSettings.OpenWindow>Открыть настройки...</RimTalk.BubbleSettings.OpenWindow>
 </LanguageData>

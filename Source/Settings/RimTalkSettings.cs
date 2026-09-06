@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using RimTalk.Client.Player2;
 using RimTalk.Data;
 using RimTalk.Prompt;
 using UnityEngine;
@@ -31,6 +31,54 @@ public class RimTalkSettings : ModSettings
     public PromptManager PromptSystem = new();
     public bool UseAdvancedPromptMode = false;  // Default to Simple Mode
     
+    public enum BubbleDisplayMode
+    {
+        Native = 0,
+        InteractionBubbles = 1,
+        Disabled = 2
+    }
+
+    public enum SpeechBubbleTheme
+    {
+        Dark = 0,
+        Light = 1
+    }
+
+    public enum BorderThicknessMode
+    {
+        Thin = 0,
+        Normal = 1,
+        Thick = 2
+    }
+
+    public BubbleDisplayMode BubbleMode = BubbleDisplayMode.Native;
+    public SpeechBubbleTheme BubbleTheme = SpeechBubbleTheme.Light;
+    public BorderThicknessMode BubbleBorderThickness = BorderThicknessMode.Normal;
+    public GameFont BubbleFontSize = GameFont.Tiny;
+    public float BubbleCustomFontSize = 11f;
+    public float BubbleDurationMultiplier = 1f;
+    public float BubbleScale = 1f;
+    public float BubbleOpacity = 0.90f;
+    public float BubbleVerticalOffset = 1.0f;
+    public float BubblePadding = 0.5f;
+    public bool BubbleUseColors = true;
+    public bool BubbleUrgentShake = true;
+
+    public void ResetBubbleSettings()
+    {
+        BubbleTheme = SpeechBubbleTheme.Light;
+        BubbleBorderThickness = BorderThicknessMode.Normal;
+        BubbleFontSize = GameFont.Tiny;
+        BubbleCustomFontSize = 11f;
+        BubbleDurationMultiplier = 1f;
+        BubbleScale = 1f;
+        BubbleOpacity = 0.90f;
+        BubbleVerticalOffset = 1.0f;
+        BubblePadding = 0.5f;
+        BubbleUseColors = true;
+        BubbleUrgentShake = true;
+    }
+
     public bool? ShowQuickSettings = true;
     public Dictionary<string, bool> EnabledArchivableTypes = new();
     public Dictionary<string, bool> FastTrackInteractions = new();
@@ -84,7 +132,7 @@ public class RimTalkSettings : ModSettings
             if (SimpleProvider == AIProvider.Player2)
             {
                 bool hasKey = !string.IsNullOrWhiteSpace(SimplePlayer2ApiKey);
-                bool isAppRunning = Client.Player2.Player2Client.GetLocalAppStatusCached() == true;
+                bool isAppRunning = Player2Client.GetLocalAppStatusCached() == true;
                 if (!hasKey && !isAppRunning) return null;
 
                 return new ApiConfig
@@ -194,6 +242,33 @@ public class RimTalkSettings : ModSettings
         Scribe_Values.Look(ref ReplyInterval, "replyInterval", 4);
         Scribe_Values.Look(ref ProcessNonRimTalkInteractions, "processNonRimTalkInteractions", true);
         Scribe_Values.Look(ref AllowSimultaneousConversations, "allowSimultaneousConversations", false);
+        BubbleDisplayMode? savedMode = BubbleMode;
+        Scribe_Values.Look(ref savedMode, "bubbleMode", null, true);
+        if (Scribe.mode == LoadSaveMode.LoadingVars)
+        {
+            if (savedMode == null)
+            {
+                // Existing user upgrading from v1.2: seamlessly preserve Interaction Bubbles if active
+                BubbleMode = ModsConfig.IsActive("Jaxe.Bubbles")
+                    ? BubbleDisplayMode.InteractionBubbles
+                    : BubbleDisplayMode.Native;
+            }
+            else
+            {
+                BubbleMode = savedMode.Value;
+            }
+        }
+        Scribe_Values.Look(ref BubbleTheme, "bubbleTheme", SpeechBubbleTheme.Light, true);
+        Scribe_Values.Look(ref BubbleBorderThickness, "bubbleBorderThickness", BorderThicknessMode.Normal, true);
+        Scribe_Values.Look(ref BubbleFontSize, "bubbleFontSize", GameFont.Tiny, true);
+        Scribe_Values.Look(ref BubbleCustomFontSize, "bubbleCustomFontSize", 11f, true);
+        Scribe_Values.Look(ref BubbleDurationMultiplier, "bubbleDurationMultiplier", 1f, true);
+        Scribe_Values.Look(ref BubbleScale, "bubbleScale", 1f, true);
+        Scribe_Values.Look(ref BubbleOpacity, "bubbleOpacity", 0.90f, true);
+        Scribe_Values.Look(ref BubbleVerticalOffset, "bubbleVerticalOffset", 1.0f, true);
+        Scribe_Values.Look(ref BubblePadding, "bubblePadding", 0.5f, true);
+        Scribe_Values.Look(ref BubbleUseColors, "bubbleUseColors", true, true);
+        Scribe_Values.Look(ref BubbleUrgentShake, "bubbleUrgentShake", true, true);
         Scribe_Values.Look(ref DisplayTalkWhenDrafted, "displayTalkWhenDrafted", true);
         Scribe_Values.Look(ref AllowMonologue, "allowMonologue", true);
         Scribe_Values.Look(ref AllowSlavesToTalk, "allowSlavesToTalk", true);

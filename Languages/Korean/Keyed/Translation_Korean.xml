@@ -262,6 +262,9 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.Settings.Disabled>비활성화됨</RimTalk.Settings.Disabled>
     <RimTalk.Settings.ButtonDisplay>RimTalk 버튼 표시</RimTalk.Settings.ButtonDisplay>
     <RimTalk.Settings.ButtonDisplayTooltip>디버그 인터페이스 접근 방식을 제어합니다. '탭'은 주 탭을 추가하고, '토글'은 하단 바에 아이콘을 표시하며, '없음'은 숨깁니다.</RimTalk.Settings.ButtonDisplayTooltip>
+    <RimTalk.Settings.BubbleMode>말풍선 표시 모드</RimTalk.Settings.BubbleMode>
+    <RimTalk.Settings.BubbleModeTooltip>캐릭터 머리 위에 대화 말풍선을 띄우는 방식을 선택합니다.</RimTalk.Settings.BubbleModeTooltip>
+    <RimTalk.Settings.BubbleDuration>말풍선 표시 시간</RimTalk.Settings.BubbleDuration>
 
     <RimTalk.Settings.AIInstructionPrompt>AI 지침 프롬프트 (모델: {0})</RimTalk.Settings.AIInstructionPrompt>
     <RimTalk.Settings.AutoIncludedTip>팁: 정착민 세부 정보(특성, 관계, 종족, 나이 등)는 자동으로 포함됩니다. 모든 캐릭터와 정착지에 적용될 수 있는 일반적인 지침을 작성하세요.</RimTalk.Settings.AutoIncludedTip>
@@ -503,7 +506,7 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.Overlay.AlignNameColumn>이름 컬럼 정렬</RimTalk.Overlay.AlignNameColumn>
     <RimTalk.Overlay.Opacity>투명도</RimTalk.Overlay.Opacity>
     <RimTalk.Overlay.FontSize>글꼴 크기</RimTalk.Overlay.FontSize>
-    <RimTalk.Overlay.TurnOff>오버레이 끄기</RimTalk.Overlay.TurnOff>
+    <RimTalk.Overlay.TurnOff>끄기</RimTalk.Overlay.TurnOff>
     <RimTalk.Overlay.TurnOffTooltip>오버레이를 끕니다.\n설정에 따라 우측 하단 아이콘 또는 탭을 클릭하여 다시 켤 수 있습니다.</RimTalk.Overlay.TurnOffTooltip>
 
     <!-- FloatMenuMakerMapGetOptionsPatch.cs -->
@@ -555,4 +558,34 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.VersionSwitcher.ProceedRollback>복사</RimTalk.VersionSwitcher.ProceedRollback>
     <RimTalk.VersionSwitcher.RestartRequiredTitle>복사 완료</RimTalk.VersionSwitcher.RestartRequiredTitle>
     <RimTalk.VersionSwitcher.LocalModCreatedPrompt>'RimWorld/Mods/RimTalk'에 복사되었습니다.\n\n스팀 버전을 비활성화하고 로컬 모드를 활성화한 뒤 림월드를 재시작하세요.</RimTalk.VersionSwitcher.LocalModCreatedPrompt>
+
+    <!-- Speech Bubble Customization -->
+    <RimTalk.BubbleSettings.Title>말풍선 상세 설정</RimTalk.BubbleSettings.Title>
+    <RimTalk.BubbleSettings.Button>말풍선</RimTalk.BubbleSettings.Button>
+    <RimTalk.BubbleSettings.OpenTooltip>림톡 전용 말풍선을 설정합니다.</RimTalk.BubbleSettings.OpenTooltip>
+    <RimTalk.BubbleSettings.Theme>배경 테마</RimTalk.BubbleSettings.Theme>
+    <RimTalk.BubbleSettings.ThemeDark>다크 모드</RimTalk.BubbleSettings.ThemeDark>
+    <RimTalk.BubbleSettings.ThemeLight>라이트 모드</RimTalk.BubbleSettings.ThemeLight>
+    <RimTalk.BubbleSettings.FontSize>글자 크기</RimTalk.BubbleSettings.FontSize>
+    <RimTalk.BubbleSettings.Opacity>배경 불투명도</RimTalk.BubbleSettings.Opacity>
+    <RimTalk.BubbleSettings.Scale>말풍선 크기</RimTalk.BubbleSettings.Scale>
+    <RimTalk.BubbleSettings.VerticalOffset>수직 위치</RimTalk.BubbleSettings.VerticalOffset>
+    <RimTalk.BubbleSettings.UrgentShake>긴급 상황 말풍선 흔들림</RimTalk.BubbleSettings.UrgentShake>
+    <RimTalk.BubbleSettings.UrgentShakeTooltip>위기나 전투 대화 시 말풍선을 흔듭니다.</RimTalk.BubbleSettings.UrgentShakeTooltip>
+    <RimTalk.BubbleSettings.PreviewText>말풍선 미리보기</RimTalk.BubbleSettings.PreviewText>
+    <RimTalk.BubbleSettings.Padding>말풍선 여백</RimTalk.BubbleSettings.Padding>
+    <RimTalk.BubbleSettings.UseColors>대화 그룹 색상 사용</RimTalk.BubbleSettings.UseColors>
+    <RimTalk.BubbleSettings.UseColorsTooltip>대화 그룹별로 테두리 색상을 다르게 표시합니다.</RimTalk.BubbleSettings.UseColorsTooltip>
+    <RimTalk.BubbleSettings.ModeDisabled>말풍선 없음</RimTalk.BubbleSettings.ModeDisabled>
+    <RimTalk.BubbleSettings.ModeNative>림톡 버블</RimTalk.BubbleSettings.ModeNative>
+    <RimTalk.BubbleSettings.NativeDesc>림톡에 최적화된 가벼운 기본 말풍선입니다.</RimTalk.BubbleSettings.NativeDesc>
+    <RimTalk.BubbleSettings.ModeInteractionBubbles>인터랙션 버블</RimTalk.BubbleSettings.ModeInteractionBubbles>
+    <RimTalk.BubbleSettings.InteractionBubblesNotLoaded>Interaction Bubbles 모드가 설치 및 활성화되어 있지 않습니다.</RimTalk.BubbleSettings.InteractionBubblesNotLoaded>
+    <RimTalk.BubbleSettings.PreviewDisabledMsg>말풍선 표시가 꺼져 있습니다.</RimTalk.BubbleSettings.PreviewDisabledMsg>
+    <RimTalk.BubbleSettings.PreviewIBMsg>Interaction Bubbles 모드로 표시 중입니다.</RimTalk.BubbleSettings.PreviewIBMsg>
+    <RimTalk.BubbleSettings.BorderThickness>테두리 두께</RimTalk.BubbleSettings.BorderThickness>
+    <RimTalk.BubbleSettings.BorderThin>얇게</RimTalk.BubbleSettings.BorderThin>
+    <RimTalk.BubbleSettings.BorderNormal>보통</RimTalk.BubbleSettings.BorderNormal>
+    <RimTalk.BubbleSettings.BorderThick>굵게</RimTalk.BubbleSettings.BorderThick>
+    <RimTalk.BubbleSettings.OpenWindow>설정 창 열기...</RimTalk.BubbleSettings.OpenWindow>
 </LanguageData>

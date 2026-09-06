@@ -4,18 +4,18 @@
 	<name>RimTalk</name>
 	<modVersion>1.2.5</modVersion>
 	<author>juicy</author>
-	<description>Bring your colonists to life with RimTalk! This revolutionary mod uses Google's AI to generate dynamic, context-aware dialogue for your pawns in real-time.
+	<description>Ever wonder what your colonists are actually talking about when they chat around the campfire or pass each other in the hallway?
 
-Key Features:
-• AI-powered conversations that reflect each pawn's current mood, thoughts, and situation
-• Context-aware dialogue based on what colonists are doing and thinking
-• Multi-language support for diverse colony experiences
-• Configurable conversation frequency and message suppression options
-• Easy setup - just get a free API key from Google AI Studio
+		RimTalk replaces repetitive preset interactions with real conversations. Every chat is generated dynamically, shaped by each colonist's personality, mood, current thoughts, and whatever chaos is happening around the colony.
 
-Every conversation is unique and emergent, creating immersive storytelling experiences that evolve with your colony. Gone are the days of repetitive interactions - your pawns will now speak with personality and purpose!
+		A grumpy brawler complaining about eating without a table, a tired cook bragging about a simple meal, or a sarcastic doctor checking in on a patient—colonists talk with distinct voices that reflect who they are and what they're experiencing.
 
-Setup: Get your free API key at aistudio.google.com, enable the mod, and paste your key in mod settings. Compatible with most other mods and respects API rate limits automatically.
+		Features:
+		- Context-aware dialogue that reacts to jobs, health, thoughts, and surroundings
+		- Distinct, customizable personalities for every colonist
+		- Multi-language support so pawns can chat in any language
+		- Runs asynchronously in the background without blocking game ticks
+		- Works with Gemini, Player2, OpenAI, DeepSeek, OpenRouter, and local models (Ollama, LM Studio)
 	</description>
 	<supportedVersions>
 		<li>1.5</li>
@@ -27,11 +27,6 @@ Setup: Get your free API key at aistudio.google.com, enable the mod, and paste y
 			<displayName>Harmony</displayName>
 			<steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
 			<downloadUrl>https://github.com/pardeike/HarmonyRimWorld/releases/latest</downloadUrl>
-		</li>
-		<li>
-			<packageId>Jaxe.Bubbles</packageId>
-			<displayName>Interaction Bubbles</displayName>
-			<steamWorkshopUrl>steam://url/CommunityFilePage/1516158345</steamWorkshopUrl>
 		</li>
 	</modDependencies>
 	<loadAfter>

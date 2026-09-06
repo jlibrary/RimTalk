@@ -63,7 +63,7 @@ public class Overlay : MapComponent
     private const float OptionsBarHeight = 30f;
     private const float ResizeHandleSize = 24f;
     private const float DropdownWidth = 200f;
-    private const float DropdownHeight = 345f;
+    private const float DropdownHeight = 325f;
     private const int MaxMessagesInLog = 10;
     private const float TextPadding = 5f;
     private const float MaxNameColumnFraction = 0.45f;
@@ -598,8 +598,22 @@ public class Overlay : MapComponent
         TooltipHandler.TipRegion(localIconRect, "RimTalk.Overlay.Option".Translate());
     }
 
+    private static bool DrawTinyButtonText(Rect rect, string label)
+    {
+        bool clicked = Widgets.ButtonText(rect, string.Empty);
+        var prevAnchor = Text.Anchor;
+        var prevFont = Text.Font;
+        Text.Anchor = TextAnchor.MiddleCenter;
+        Text.Font = GameFont.Tiny;
+        Widgets.Label(rect, label);
+        Text.Font = prevFont;
+        Text.Anchor = prevAnchor;
+        return clicked;
+    }
+
     private void DrawSettingsCheckbox(Listing_Standard listing, string label, bool initialValue, Action<bool> onValueChanged)
     {
+        Text.Font = GameFont.Tiny;
         bool currentValue = initialValue;
         listing.CheckboxLabeled(label, ref currentValue);
         if (currentValue != initialValue)
@@ -614,99 +628,120 @@ public class Overlay : MapComponent
 
         Widgets.DrawBoxSolid(_settingsDropdownRect, new Color(0.15f, 0.15f, 0.15f, 0.95f));
 
-        var listing = new Listing_Standard();
-        listing.Begin(_settingsDropdownRect.ContractedBy(10f));
+        var originalFont = Text.Font;
 
-        DrawSettingsCheckbox(listing, "RimTalk.DebugWindow.EnableRimTalk".Translate(), settings.IsEnabled, value =>
+        try
         {
-            settings.IsEnabled = value;
-            settings.Write();
-        });
-        
-        listing.Gap(6);
-        
-        DrawSettingsCheckbox(listing, "RimTalk.Overlay.DrawAboveUI".Translate(), settings.OverlayDrawAboveUI, value =>
-        {
-            settings.OverlayDrawAboveUI = value;
-            settings.Write();
-        });
+            var listing = new Listing_Standard();
+            listing.Begin(_settingsDropdownRect.ContractedBy(10f));
+            Text.Font = GameFont.Tiny;
 
-        listing.Gap(6);
-
-        DrawSettingsCheckbox(listing, "RimTalk.Overlay.ShowGroupColors".Translate(), settings.OverlayShowGroupColors, value =>
-        {
-            settings.OverlayShowGroupColors = value;
-            settings.Write();
-        });
-
-        listing.Gap(6);
-
-        DrawSettingsCheckbox(listing, "RimTalk.Overlay.ShowTargetName".Translate(), settings.OverlayShowTargetName, value =>
-        {
-            settings.OverlayShowTargetName = value;
-            _isCacheDirty = true;
-            settings.Write();
-        });
-
-        listing.Gap(6);
-
-        DrawSettingsCheckbox(listing, "RimTalk.Overlay.AlignNameColumn".Translate(), settings.OverlayAlignNameColumn, value =>
-        {
-            settings.OverlayAlignNameColumn = value;
-            _isCacheDirty = true;
-            settings.Write();
-        });
-
-        listing.Gap(6);
-
-        listing.Label("RimTalk.Overlay.Opacity".Translate() + ": " + settings.OverlayOpacity.ToString("P0"));
-        settings.OverlayOpacity = listing.Slider(settings.OverlayOpacity, 0f, 1.0f);
-
-        listing.Label("RimTalk.Overlay.FontSize".Translate() + ": " + settings.OverlayFontSize.ToString("F0"));
-        float newFontSize = listing.Slider(Mathf.Round(settings.OverlayFontSize), 10f, 24f);
-        if (Mathf.Round(newFontSize) != Mathf.Round(settings.OverlayFontSize))
-        {
-            _isCacheDirty = true;
-            settings.OverlayFontSize = newFontSize;
-        }
-
-        listing.Gap(10);
-
-        Rect buttonRowRect = listing.GetRect(28f);
-        const float buttonGap = 4f;
-        float buttonWidth = (buttonRowRect.width - buttonGap) / 2f;
-
-        var debugRect = new Rect(buttonRowRect.x, buttonRowRect.y, buttonWidth, buttonRowRect.height);
-        var settingsButtonRect = new Rect(debugRect.xMax + buttonGap, buttonRowRect.y, buttonWidth, buttonRowRect.height);
-
-        if (Widgets.ButtonText(debugRect, "RimTalk.Overlay.Debug".Translate()))
-        {
-            if (!Find.WindowStack.IsOpen<DebugWindow>())
+            DrawSettingsCheckbox(listing, "RimTalk.DebugWindow.EnableRimTalk".Translate(), settings.IsEnabled, value =>
             {
-                Find.WindowStack.Add(new DebugWindow());
+                settings.IsEnabled = value;
+                settings.Write();
+            });
+        
+            listing.Gap(6);
+        
+            DrawSettingsCheckbox(listing, "RimTalk.Overlay.DrawAboveUI".Translate(), settings.OverlayDrawAboveUI, value =>
+            {
+                settings.OverlayDrawAboveUI = value;
+                settings.Write();
+            });
+
+            listing.Gap(6);
+
+            DrawSettingsCheckbox(listing, "RimTalk.Overlay.ShowGroupColors".Translate(), settings.OverlayShowGroupColors, value =>
+            {
+                settings.OverlayShowGroupColors = value;
+                settings.Write();
+            });
+
+            listing.Gap(6);
+
+            DrawSettingsCheckbox(listing, "RimTalk.Overlay.ShowTargetName".Translate(), settings.OverlayShowTargetName, value =>
+            {
+                settings.OverlayShowTargetName = value;
+                _isCacheDirty = true;
+                settings.Write();
+            });
+
+            listing.Gap(6);
+
+            DrawSettingsCheckbox(listing, "RimTalk.Overlay.AlignNameColumn".Translate(), settings.OverlayAlignNameColumn, value =>
+            {
+                settings.OverlayAlignNameColumn = value;
+                _isCacheDirty = true;
+                settings.Write();
+            });
+
+            listing.Gap(6);
+
+            Text.Font = GameFont.Tiny;
+            listing.Label("RimTalk.Overlay.Opacity".Translate() + ": " + settings.OverlayOpacity.ToString("P0"));
+            settings.OverlayOpacity = listing.Slider(settings.OverlayOpacity, 0f, 1.0f);
+
+            Text.Font = GameFont.Tiny;
+            listing.Label("RimTalk.Overlay.FontSize".Translate() + ": " + settings.OverlayFontSize.ToString("F0"));
+            float newFontSize = listing.Slider(Mathf.Round(settings.OverlayFontSize), 10f, 24f);
+            if (Mathf.Round(newFontSize) != Mathf.Round(settings.OverlayFontSize))
+            {
+                _isCacheDirty = true;
+                settings.OverlayFontSize = newFontSize;
             }
-            _showSettingsDropdown = false;
-        }
 
-        if (Widgets.ButtonText(settingsButtonRect, "RimTalk.DebugWindow.ModSettings".Translate()))
+            listing.Gap(10);
+
+            Rect buttonRowRect = listing.GetRect(28f);
+            const float buttonGap = 4f;
+            float buttonWidth = (buttonRowRect.width - buttonGap) / 2f;
+
+            var bubbleSettingsBtnRect = new Rect(buttonRowRect.x, buttonRowRect.y, buttonWidth, buttonRowRect.height);
+            var settingsButtonRect = new Rect(bubbleSettingsBtnRect.xMax + buttonGap, buttonRowRect.y, buttonWidth, buttonRowRect.height);
+
+            if (DrawTinyButtonText(bubbleSettingsBtnRect, "RimTalk.BubbleSettings.Button".Translate()))
+            {
+                Find.WindowStack.Add(new Dialog_BubbleSettings());
+                _showSettingsDropdown = false;
+            }
+            TooltipHandler.TipRegion(bubbleSettingsBtnRect, "RimTalk.BubbleSettings.OpenTooltip".Translate());
+
+            if (DrawTinyButtonText(settingsButtonRect, "RimTalk.DebugWindow.ModSettings".Translate()))
+            {
+                Find.WindowStack.Add(new Dialog_ModSettings(LoadedModManager.GetMod<Settings>()));
+                _showSettingsDropdown = false;
+            }
+
+            listing.Gap(6);
+
+            Rect bottomRowRect = listing.GetRect(28f);
+            var debugRect = new Rect(bottomRowRect.x, bottomRowRect.y, buttonWidth, bottomRowRect.height);
+            var turnOffRect = new Rect(debugRect.xMax + buttonGap, bottomRowRect.y, buttonWidth, bottomRowRect.height);
+
+            if (DrawTinyButtonText(debugRect, "RimTalk.Overlay.Debug".Translate()))
+            {
+                if (!Find.WindowStack.IsOpen<DebugWindow>())
+                {
+                    Find.WindowStack.Add(new DebugWindow());
+                }
+                _showSettingsDropdown = false;
+            }
+
+            if (DrawTinyButtonText(turnOffRect, "RimTalk.Overlay.TurnOff".Translate()))
+            {
+                settings.OverlayEnabled = false;
+                settings.Write();
+                _showSettingsDropdown = false;
+            }
+            TooltipHandler.TipRegion(turnOffRect, "RimTalk.Overlay.TurnOffTooltip".Translate());
+
+            listing.End();
+        }
+        finally
         {
-            Find.WindowStack.Add(new Dialog_ModSettings(LoadedModManager.GetMod<Settings>()));
-            _showSettingsDropdown = false;
+            Text.Font = originalFont;
         }
-
-
-        listing.Gap(6);
-
-        Rect turnOffRect = listing.GetRect(28f);
-        if (Widgets.ButtonText(turnOffRect, "RimTalk.Overlay.TurnOff".Translate()))
-        {
-            settings.OverlayEnabled = false;
-            settings.Write();
-            _showSettingsDropdown = false;
-        }
-        TooltipHandler.TipRegion(turnOffRect, "RimTalk.Overlay.TurnOffTooltip".Translate());
-
-        listing.End();
     }
 
     private static void DrawCachedLabel(Rect rect, string text)

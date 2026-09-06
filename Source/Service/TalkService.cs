@@ -143,6 +143,13 @@ public static class TalkService
                         talkResponse.ParentTalkId = receivedResponses.Last().Id;
                     }
 
+                    // All LLM-generated dialogue in response to an announcement are conversational replies,
+                    // NOT announcements themselves (the actual announcement is the initiator's user prompt).
+                    if (talkRequest.IsAnnouncement || talkResponse.TalkType == TalkType.Announcement)
+                    {
+                        talkResponse.TalkType = TalkType.Interaction;
+                    }
+
                     receivedResponses.Add(talkResponse);
 
                     // Hand off to the main thread for display later; PawnState.TalkResponses itself must only ever be touched from the main thread.
@@ -288,6 +295,13 @@ public static class TalkService
         InteractionDef intDef = DefDatabase<InteractionDef>.GetNamed("RimTalkInteraction");
         var recipient = talk.GetTarget() ?? pawn;
         var playLogEntryInteraction = new PlayLogEntry_RimTalkInteraction(intDef, pawn, recipient, null);
+        var apiLog = ApiHistory.GetApiLog(talk.Id);
+        if (apiLog != null)
+        {
+            playLogEntryInteraction.ConversationId = apiLog.ConversationId;
+        }
+        playLogEntryInteraction.InteractionType = talk.GetInteractionType();
+        playLogEntryInteraction.TalkType = talk.TalkType;
 
         if (playLogEntryInteraction.CachedString.NullOrEmpty())
             return;

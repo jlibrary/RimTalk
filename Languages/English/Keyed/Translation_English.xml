@@ -263,6 +263,9 @@ Crucial Tips:
     <RimTalk.Settings.Disabled>Disabled</RimTalk.Settings.Disabled>
     <RimTalk.Settings.ButtonDisplay>RimTalk Button Display</RimTalk.Settings.ButtonDisplay>
     <RimTalk.Settings.ButtonDisplayTooltip>Controls how the debug interface is accessed. 'Tab' adds a main tab, 'Toggle' shows an icon on the bottom bar, and 'None' hides it.</RimTalk.Settings.ButtonDisplayTooltip>
+    <RimTalk.Settings.BubbleMode>Speech Bubble Mode</RimTalk.Settings.BubbleMode>
+    <RimTalk.Settings.BubbleModeTooltip>Select how speech bubbles are displayed above pawns.</RimTalk.Settings.BubbleModeTooltip>
+    <RimTalk.Settings.BubbleDuration>Speech Bubble Duration</RimTalk.Settings.BubbleDuration>
     
     <RimTalk.Settings.AIInstructionPrompt>AI Instruction Prompt (Model: {0})</RimTalk.Settings.AIInstructionPrompt>
     <RimTalk.Settings.AutoIncludedTip>Tip: Pawn details (traits, relationships, race, age, etc.) are auto-included. Write generic instructions that work across all characters and colonies.</RimTalk.Settings.AutoIncludedTip>
@@ -458,7 +461,7 @@ Crucial Tips:
     <RimTalk.DebugWindow.StatusDisabled>Disabled</RimTalk.DebugWindow.StatusDisabled>
     <RimTalk.DebugWindow.StatusProcessing>Processing</RimTalk.DebugWindow.StatusProcessing>
     <RimTalk.DebugWindow.StatusIdle>Idle</RimTalk.DebugWindow.StatusIdle>
-    <RimTalk.DebugWindow.ModSettings>Settings</RimTalk.DebugWindow.ModSettings>
+    <RimTalk.DebugWindow.ModSettings>Mod Settings</RimTalk.DebugWindow.ModSettings>
     <RimTalk.DebugWindow.Export>Export</RimTalk.DebugWindow.Export>
     <RimTalk.DebugWindow.ResetLogs>Reset Logs</RimTalk.DebugWindow.ResetLogs>
     <RimTalk.DebugWindow.EnableRimTalk>Enable RimTalk</RimTalk.DebugWindow.EnableRimTalk>
@@ -504,7 +507,7 @@ Crucial Tips:
     <RimTalk.Overlay.AlignNameColumn>Align Name Column</RimTalk.Overlay.AlignNameColumn>
     <RimTalk.Overlay.Opacity>Opacity</RimTalk.Overlay.Opacity>
     <RimTalk.Overlay.FontSize>Font Size</RimTalk.Overlay.FontSize>
-    <RimTalk.Overlay.TurnOff>Turn Off Overlay</RimTalk.Overlay.TurnOff>
+    <RimTalk.Overlay.TurnOff>Turn Off</RimTalk.Overlay.TurnOff>
     <RimTalk.Overlay.TurnOffTooltip>Turn off overlay.\nYou can toggle it by clicking the bottom right icon or tab depending on setting.</RimTalk.Overlay.TurnOffTooltip>
 
     <!-- FloatMenuMakerMapGetOptionsPatch.cs -->
@@ -549,4 +552,34 @@ Crucial Tips:
     <RimTalk.VersionSwitcher.ProceedRollback>Copy</RimTalk.VersionSwitcher.ProceedRollback>
     <RimTalk.VersionSwitcher.RestartRequiredTitle>Copied</RimTalk.VersionSwitcher.RestartRequiredTitle>
     <RimTalk.VersionSwitcher.LocalModCreatedPrompt>Copied to 'RimWorld/Mods/RimTalk'.\n\nDisable the Steam version, enable the local mod, and restart RimWorld.</RimTalk.VersionSwitcher.LocalModCreatedPrompt>
+
+    <!-- Speech Bubble Customization -->
+    <RimTalk.BubbleSettings.Title>Speech Bubble Settings</RimTalk.BubbleSettings.Title>
+    <RimTalk.BubbleSettings.Button>Bubbles</RimTalk.BubbleSettings.Button>
+    <RimTalk.BubbleSettings.OpenTooltip>Configure RimTalk speech bubbles.</RimTalk.BubbleSettings.OpenTooltip>
+    <RimTalk.BubbleSettings.Theme>Theme</RimTalk.BubbleSettings.Theme>
+    <RimTalk.BubbleSettings.ThemeDark>Dark</RimTalk.BubbleSettings.ThemeDark>
+    <RimTalk.BubbleSettings.ThemeLight>Light</RimTalk.BubbleSettings.ThemeLight>
+    <RimTalk.BubbleSettings.FontSize>Font Size</RimTalk.BubbleSettings.FontSize>
+    <RimTalk.BubbleSettings.Opacity>Background Opacity</RimTalk.BubbleSettings.Opacity>
+    <RimTalk.BubbleSettings.Scale>Bubble Scale</RimTalk.BubbleSettings.Scale>
+    <RimTalk.BubbleSettings.VerticalOffset>Vertical Position</RimTalk.BubbleSettings.VerticalOffset>
+    <RimTalk.BubbleSettings.UrgentShake>Enable Urgent Shaking</RimTalk.BubbleSettings.UrgentShake>
+    <RimTalk.BubbleSettings.UrgentShakeTooltip>Shake speech bubbles in combat or danger situations.</RimTalk.BubbleSettings.UrgentShakeTooltip>
+    <RimTalk.BubbleSettings.PreviewText>Speech Bubble Preview</RimTalk.BubbleSettings.PreviewText>
+    <RimTalk.BubbleSettings.Padding>Bubble Padding</RimTalk.BubbleSettings.Padding>
+    <RimTalk.BubbleSettings.UseColors>Use Conversation Group Colors</RimTalk.BubbleSettings.UseColors>
+    <RimTalk.BubbleSettings.UseColorsTooltip>Color borders by conversation group.</RimTalk.BubbleSettings.UseColorsTooltip>
+    <RimTalk.BubbleSettings.ModeDisabled>Disabled</RimTalk.BubbleSettings.ModeDisabled>
+    <RimTalk.BubbleSettings.ModeNative>RimTalk Native</RimTalk.BubbleSettings.ModeNative>
+    <RimTalk.BubbleSettings.NativeDesc>Lightweight speech bubbles optimized for RimTalk.</RimTalk.BubbleSettings.NativeDesc>
+    <RimTalk.BubbleSettings.ModeInteractionBubbles>Interaction Bubbles</RimTalk.BubbleSettings.ModeInteractionBubbles>
+    <RimTalk.BubbleSettings.InteractionBubblesNotLoaded>Interaction Bubbles mod is not installed or enabled.</RimTalk.BubbleSettings.InteractionBubblesNotLoaded>
+    <RimTalk.BubbleSettings.PreviewDisabledMsg>Speech bubbles are disabled.</RimTalk.BubbleSettings.PreviewDisabledMsg>
+    <RimTalk.BubbleSettings.PreviewIBMsg>Rendering via Interaction Bubbles mod.</RimTalk.BubbleSettings.PreviewIBMsg>
+    <RimTalk.BubbleSettings.BorderThickness>Border Thickness</RimTalk.BubbleSettings.BorderThickness>
+    <RimTalk.BubbleSettings.BorderThin>Thin</RimTalk.BubbleSettings.BorderThin>
+    <RimTalk.BubbleSettings.BorderNormal>Normal</RimTalk.BubbleSettings.BorderNormal>
+    <RimTalk.BubbleSettings.BorderThick>Thick</RimTalk.BubbleSettings.BorderThick>
+    <RimTalk.BubbleSettings.OpenWindow>Open Settings...</RimTalk.BubbleSettings.OpenWindow>
 </LanguageData>
