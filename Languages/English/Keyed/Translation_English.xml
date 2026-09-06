@@ -354,21 +354,21 @@ Crucial Tips:
     <RimTalk.Settings.SampleMergeTemplate>Merge with Current</RimTalk.Settings.SampleMergeTemplate>
     <RimTalk.Settings.SampleCopy>Copy</RimTalk.Settings.SampleCopy>
     <RimTalk.Settings.SampleCopied>JSON template copied to clipboard.</RimTalk.Settings.SampleCopied>
-    <RimTalk.Settings.SampleBasicTitle>1. Basic Sampling Parameters</RimTalk.Settings.SampleBasicTitle>
-    <RimTalk.Settings.SampleBasicDesc>Adjust randomness, diversity, and maximum response length.</RimTalk.Settings.SampleBasicDesc>
-    <RimTalk.Settings.SampleBasicNote>Note: Reasoning models may ignore custom temperature or require default values.</RimTalk.Settings.SampleBasicNote>
-    <RimTalk.Settings.SampleReasoningEffortTitle>2. Reasoning Effort Level</RimTalk.Settings.SampleReasoningEffortTitle>
-    <RimTalk.Settings.SampleReasoningEffortDesc>Controls how much thinking or reasoning the model performs ("low", "medium", "high").</RimTalk.Settings.SampleReasoningEffortDesc>
-    <RimTalk.Settings.SampleReasoningEffortNote>Note: Supported by reasoning models with configurable effort settings. Use "low" for faster responses.</RimTalk.Settings.SampleReasoningEffortNote>
-    <RimTalk.Settings.SampleDisableThinkingTitle>3. Disable Thinking Mode</RimTalk.Settings.SampleDisableThinkingTitle>
-    <RimTalk.Settings.SampleDisableThinkingDesc>Turns off internal reasoning steps for faster response generation and lower token usage.</RimTalk.Settings.SampleDisableThinkingDesc>
-    <RimTalk.Settings.SampleDisableThinkingNote>Note: Supported by models that feature a toggleable thinking block.</RimTalk.Settings.SampleDisableThinkingNote>
-    <RimTalk.Settings.SampleEnableThinkingTitle>4. Set Thinking Budget</RimTalk.Settings.SampleEnableThinkingTitle>
-    <RimTalk.Settings.SampleEnableThinkingDesc>Enables thinking mode while capping the maximum tokens spent on reasoning.</RimTalk.Settings.SampleEnableThinkingDesc>
-    <RimTalk.Settings.SampleEnableThinkingNote>Note: Supported by models that accept a reasoning token budget. Check your provider's minimum token limits.</RimTalk.Settings.SampleEnableThinkingNote>
-    <RimTalk.Settings.SampleStructuredOutputTitle>5. Structured Output (Fix JSON Errors)</RimTalk.Settings.SampleStructuredOutputTitle>
+    <RimTalk.Settings.SampleStructuredOutputTitle>1. Structured Output (Fix JSON Errors)</RimTalk.Settings.SampleStructuredOutputTitle>
     <RimTalk.Settings.SampleStructuredOutputDesc>Use this if dialogue fails to appear and JSON errors persist (Json Deserialization Error). Forces the AI to strictly follow the required format.</RimTalk.Settings.SampleStructuredOutputDesc>
     <RimTalk.Settings.SampleStructuredOutputNote>Note: Only works with models that support structured outputs (response_format).</RimTalk.Settings.SampleStructuredOutputNote>
+    <RimTalk.Settings.SampleBasicTitle>2. Basic Sampling Parameters</RimTalk.Settings.SampleBasicTitle>
+    <RimTalk.Settings.SampleBasicDesc>Adjust randomness, diversity, and maximum response length.</RimTalk.Settings.SampleBasicDesc>
+    <RimTalk.Settings.SampleBasicNote>Note: Reasoning models may ignore custom temperature or require default values.</RimTalk.Settings.SampleBasicNote>
+    <RimTalk.Settings.SampleReasoningEffortTitle>3. Reasoning Effort Level</RimTalk.Settings.SampleReasoningEffortTitle>
+    <RimTalk.Settings.SampleReasoningEffortDesc>Controls how much thinking or reasoning the model performs ("low", "medium", "high").</RimTalk.Settings.SampleReasoningEffortDesc>
+    <RimTalk.Settings.SampleReasoningEffortNote>Note: Supported by reasoning models with configurable effort settings. Use "low" for faster responses.</RimTalk.Settings.SampleReasoningEffortNote>
+    <RimTalk.Settings.SampleDisableThinkingTitle>4. Disable Thinking Mode</RimTalk.Settings.SampleDisableThinkingTitle>
+    <RimTalk.Settings.SampleDisableThinkingDesc>Turns off internal reasoning steps for faster response generation and lower token usage.</RimTalk.Settings.SampleDisableThinkingDesc>
+    <RimTalk.Settings.SampleDisableThinkingNote>Note: Supported by models that feature a toggleable thinking block.</RimTalk.Settings.SampleDisableThinkingNote>
+    <RimTalk.Settings.SampleEnableThinkingTitle>5. Set Thinking Budget</RimTalk.Settings.SampleEnableThinkingTitle>
+    <RimTalk.Settings.SampleEnableThinkingDesc>Enables thinking mode while capping the maximum tokens spent on reasoning.</RimTalk.Settings.SampleEnableThinkingDesc>
+    <RimTalk.Settings.SampleEnableThinkingNote>Note: Supported by models that accept a reasoning token budget. Check your provider's minimum token limits.</RimTalk.Settings.SampleEnableThinkingNote>
 
     <!-- Settings_Context.cs -->
     <RimTalk.Settings.ContextFilter>Context Filter</RimTalk.Settings.ContextFilter>
@@ -449,6 +449,7 @@ Crucial Tips:
     <RimTalk.DebugWindow.ResendError>AI is currently busy. Retry when status is Idle.</RimTalk.DebugWindow.ResendError>
     <RimTalk.DebugWindow.ApiLog>API Log</RimTalk.DebugWindow.ApiLog>
     <RimTalk.DebugWindow.FailMsg>Request failed. Click "API Log" to generate a log for support.</RimTalk.DebugWindow.FailMsg>
+    <RimTalk.DebugWindow.JsonDeserializationFailedTip>(If persistent, check API Settings -> Gear icon -> Sample #1 Structured Output)</RimTalk.DebugWindow.JsonDeserializationFailedTip>
     <RimTalk.DebugWindow.CopyAll>Copy All</RimTalk.DebugWindow.CopyAll>
     <RimTalk.DebugWindow.Copy>Copy</RimTalk.DebugWindow.Copy>
     <RimTalk.DebugWindow.Copied>Copied</RimTalk.DebugWindow.Copied>

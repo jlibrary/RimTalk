@@ -276,6 +276,8 @@ public static class PromptService
         if (AIService.IsFirstInstruction())
             sb.Append($"\nin {Constant.Lang}");
 
+        sb.Append($"\n\n{Constant.GetJsonInstruction(Settings.Get().ApplyMoodAndSocialEffects)}");
+
         talkRequest.Prompt = sb.ToString();
     }
     

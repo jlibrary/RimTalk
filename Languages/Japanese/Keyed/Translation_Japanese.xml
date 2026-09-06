@@ -330,21 +330,21 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Settings.SampleMergeTemplate>現在設定とマージ</RimTalk.Settings.SampleMergeTemplate>
     <RimTalk.Settings.SampleCopy>コピー</RimTalk.Settings.SampleCopy>
     <RimTalk.Settings.SampleCopied>JSONテンプレートをクリップボードにコピーしました。</RimTalk.Settings.SampleCopied>
-    <RimTalk.Settings.SampleBasicTitle>1. 基本サンプリングパラメータ</RimTalk.Settings.SampleBasicTitle>
-    <RimTalk.Settings.SampleBasicDesc>応答のランダム性、多様性、および最大トークン長を調整します。</RimTalk.Settings.SampleBasicDesc>
-    <RimTalk.Settings.SampleBasicNote>注意: 推論（Reasoning）モデルはカスタム温度設定を無視するか、デフォルト値を要求する場合があります。</RimTalk.Settings.SampleBasicNote>
-    <RimTalk.Settings.SampleReasoningEffortTitle>2. 推論強度レベル (Reasoning Effort)</RimTalk.Settings.SampleReasoningEffortTitle>
-    <RimTalk.Settings.SampleReasoningEffortDesc>モデルが実行する思考/推論の深さ ("low", "medium", "high") を調整します。</RimTalk.Settings.SampleReasoningEffortDesc>
-    <RimTalk.Settings.SampleReasoningEffortNote>注意: 推論強度の調整に対応しているモデルで利用可能です。高速な応答には "low" を推奨します。</RimTalk.Settings.SampleReasoningEffortNote>
-    <RimTalk.Settings.SampleDisableThinkingTitle>3. 思考モードの無効化</RimTalk.Settings.SampleDisableThinkingTitle>
-    <RimTalk.Settings.SampleDisableThinkingDesc>内部思考プロセスをオフにして、生成速度を向上させトークン消費を抑えます。</RimTalk.Settings.SampleDisableThinkingDesc>
-    <RimTalk.Settings.SampleDisableThinkingNote>注意: 思考ブロック（Thinking block）のオン/オフに対応しているモデルで利用可能です。</RimTalk.Settings.SampleDisableThinkingNote>
-    <RimTalk.Settings.SampleEnableThinkingTitle>4. 思考トークン予算の制限</RimTalk.Settings.SampleEnableThinkingTitle>
-    <RimTalk.Settings.SampleEnableThinkingDesc>思考モードを維持したまま、推論に消費される最大トークン数を制限します。</RimTalk.Settings.SampleEnableThinkingDesc>
-    <RimTalk.Settings.SampleEnableThinkingNote>注意: 推論トークン予算の指定に対応しているモデルで利用可能です。プロバイダーの最小トークン要件をご確認ください。</RimTalk.Settings.SampleEnableThinkingNote>
-    <RimTalk.Settings.SampleStructuredOutputTitle>5. 対話形式の強制 (JSONエラー解決)</RimTalk.Settings.SampleStructuredOutputTitle>
+    <RimTalk.Settings.SampleStructuredOutputTitle>1. 対話形式の強制 (JSONエラー解決)</RimTalk.Settings.SampleStructuredOutputTitle>
     <RimTalk.Settings.SampleStructuredOutputDesc>対話が表示されずJSONエラー（Json Deserialization Error）が頻繁に発生する場合に使用してください。AIに規定の形式を厳格に守らせます。</RimTalk.Settings.SampleStructuredOutputDesc>
     <RimTalk.Settings.SampleStructuredOutputNote>注意: 構造化出力（response_format）に対応しているモデルでのみ動作します。</RimTalk.Settings.SampleStructuredOutputNote>
+    <RimTalk.Settings.SampleBasicTitle>2. 基本サンプリングパラメータ</RimTalk.Settings.SampleBasicTitle>
+    <RimTalk.Settings.SampleBasicDesc>応答のランダム性、多様性、および最大トークン長を調整します。</RimTalk.Settings.SampleBasicDesc>
+    <RimTalk.Settings.SampleBasicNote>注意: 推論（Reasoning）モデルはカスタム温度設定を無視するか、デフォルト値を要求する場合があります。</RimTalk.Settings.SampleBasicNote>
+    <RimTalk.Settings.SampleReasoningEffortTitle>3. 推論強度レベル (Reasoning Effort)</RimTalk.Settings.SampleReasoningEffortTitle>
+    <RimTalk.Settings.SampleReasoningEffortDesc>モデルが実行する思考/推論の深さ ("low", "medium", "high") を調整します。</RimTalk.Settings.SampleReasoningEffortDesc>
+    <RimTalk.Settings.SampleReasoningEffortNote>注意: 推論強度の調整に対応しているモデルで利用可能です。高速な応答には "low" を推奨します。</RimTalk.Settings.SampleReasoningEffortNote>
+    <RimTalk.Settings.SampleDisableThinkingTitle>4. 思考モードの無効化</RimTalk.Settings.SampleDisableThinkingTitle>
+    <RimTalk.Settings.SampleDisableThinkingDesc>内部思考プロセスをオフにして、生成速度を向上させトークン消費を抑えます。</RimTalk.Settings.SampleDisableThinkingDesc>
+    <RimTalk.Settings.SampleDisableThinkingNote>注意: 思考ブロック（Thinking block）のオン/オフに対応しているモデルで利用可能です。</RimTalk.Settings.SampleDisableThinkingNote>
+    <RimTalk.Settings.SampleEnableThinkingTitle>5. 思考トークン予算の制限</RimTalk.Settings.SampleEnableThinkingTitle>
+    <RimTalk.Settings.SampleEnableThinkingDesc>思考モードを維持したまま、推論に消費される最大トークン数を制限します。</RimTalk.Settings.SampleEnableThinkingDesc>
+    <RimTalk.Settings.SampleEnableThinkingNote>注意: 推論トークン予算の指定に対応しているモデルで利用可能です。プロバイダーの最小トークン要件をご確認ください。</RimTalk.Settings.SampleEnableThinkingNote>
 
     <!-- Settings_Context.cs -->
     <RimTalk.Settings.ContextFilter>コンテキストフィルター</RimTalk.Settings.ContextFilter>
@@ -425,6 +425,7 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.DebugWindow.ResendError>AIは現在処理中です。ステータスがIdleになったら再試行してください。</RimTalk.DebugWindow.ResendError>
     <RimTalk.DebugWindow.ApiLog>API ログ</RimTalk.DebugWindow.ApiLog>
     <RimTalk.DebugWindow.FailMsg>リクエストに失敗しました。「API ログ」をクリックしてサポート用ログを生成してください。</RimTalk.DebugWindow.FailMsg>
+    <RimTalk.DebugWindow.JsonDeserializationFailedTip>(解決しない場合は、API設定 -> 歯車アイコン -> 1. 対話形式の強制 をご確認ください)</RimTalk.DebugWindow.JsonDeserializationFailedTip>
     <RimTalk.DebugWindow.CopyAll>すべてコピー</RimTalk.DebugWindow.CopyAll>
     <RimTalk.DebugWindow.Copy>コピー</RimTalk.DebugWindow.Copy>
     <RimTalk.DebugWindow.Copied>コピーしました</RimTalk.DebugWindow.Copied>

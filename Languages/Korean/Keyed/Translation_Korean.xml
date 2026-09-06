@@ -353,21 +353,21 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.Settings.SampleMergeTemplate>현재 설정과 병합</RimTalk.Settings.SampleMergeTemplate>
     <RimTalk.Settings.SampleCopy>복사</RimTalk.Settings.SampleCopy>
     <RimTalk.Settings.SampleCopied>JSON 템플릿이 클립보드에 복사되었습니다.</RimTalk.Settings.SampleCopied>
-    <RimTalk.Settings.SampleBasicTitle>1. 기본 샘플링 매개변수</RimTalk.Settings.SampleBasicTitle>
-    <RimTalk.Settings.SampleBasicDesc>응답의 무작위성, 다양성 및 최대 응답 길이를 조절합니다.</RimTalk.Settings.SampleBasicDesc>
-    <RimTalk.Settings.SampleBasicNote>참고: 추론(Reasoning) 모델은 사용자 정의 온도를 무시하거나 기본값을 요구할 수 있습니다.</RimTalk.Settings.SampleBasicNote>
-    <RimTalk.Settings.SampleReasoningEffortTitle>2. 추론 강도 수준 (Reasoning Effort)</RimTalk.Settings.SampleReasoningEffortTitle>
-    <RimTalk.Settings.SampleReasoningEffortDesc>모델이 수행하는 사고/추론의 강도 수준("low", "medium", "high")을 제어합니다.</RimTalk.Settings.SampleReasoningEffortDesc>
-    <RimTalk.Settings.SampleReasoningEffortNote>참고: 추론 강도 설정을 지원하는 추론 모델에서 사용 가능합니다. 빠른 응답을 원하면 "low"를 사용하세요.</RimTalk.Settings.SampleReasoningEffortNote>
-    <RimTalk.Settings.SampleDisableThinkingTitle>3. 사고 모드 비활성화</RimTalk.Settings.SampleDisableThinkingTitle>
-    <RimTalk.Settings.SampleDisableThinkingDesc>생성 속도를 높이고 토큰 소모를 줄이기 위해 모델의 내부 사고(Thinking) 과정을 끕니다.</RimTalk.Settings.SampleDisableThinkingDesc>
-    <RimTalk.Settings.SampleDisableThinkingNote>참고: 사고(Thinking) 블록 토글을 지원하는 모델에서 사용 가능합니다.</RimTalk.Settings.SampleDisableThinkingNote>
-    <RimTalk.Settings.SampleEnableThinkingTitle>4. 사고 토큰 예산 제한</RimTalk.Settings.SampleEnableThinkingTitle>
-    <RimTalk.Settings.SampleEnableThinkingDesc>사고 모드를 유지하면서 추론에 소모되는 최대 토큰 수를 제한합니다.</RimTalk.Settings.SampleEnableThinkingDesc>
-    <RimTalk.Settings.SampleEnableThinkingNote>참고: 추론 토큰 예산 지정을 지원하는 모델에서 사용 가능합니다. 제공자별 최소 토큰 요구치를 확인하세요.</RimTalk.Settings.SampleEnableThinkingNote>
-    <RimTalk.Settings.SampleStructuredOutputTitle>5. 대화 형식 강제 (JSON 오류 해결)</RimTalk.Settings.SampleStructuredOutputTitle>
+    <RimTalk.Settings.SampleStructuredOutputTitle>1. 대화 형식 강제 (JSON 오류 해결)</RimTalk.Settings.SampleStructuredOutputTitle>
     <RimTalk.Settings.SampleStructuredOutputDesc>대화가 안 나오고 JSON 오류가 계속 발생할 때 사용하세요 (json deserialization error). AI가 무조건 형식을 지키도록 강제합니다.</RimTalk.Settings.SampleStructuredOutputDesc>
     <RimTalk.Settings.SampleStructuredOutputNote>참고: 구조화된 출력(response_format)을 지원하는 모델에서만 작동합니다.</RimTalk.Settings.SampleStructuredOutputNote>
+    <RimTalk.Settings.SampleBasicTitle>2. 기본 샘플링 매개변수</RimTalk.Settings.SampleBasicTitle>
+    <RimTalk.Settings.SampleBasicDesc>응답의 무작위성, 다양성 및 최대 응답 길이를 조절합니다.</RimTalk.Settings.SampleBasicDesc>
+    <RimTalk.Settings.SampleBasicNote>참고: 추론(Reasoning) 모델은 사용자 정의 온도를 무시하거나 기본값을 요구할 수 있습니다.</RimTalk.Settings.SampleBasicNote>
+    <RimTalk.Settings.SampleReasoningEffortTitle>3. 추론 강도 수준 (Reasoning Effort)</RimTalk.Settings.SampleReasoningEffortTitle>
+    <RimTalk.Settings.SampleReasoningEffortDesc>모델이 수행하는 사고/추론의 강도 수준("low", "medium", "high")을 제어합니다.</RimTalk.Settings.SampleReasoningEffortDesc>
+    <RimTalk.Settings.SampleReasoningEffortNote>참고: 추론 강도 설정을 지원하는 추론 모델에서 사용 가능합니다. 빠른 응답을 원하면 "low"를 사용하세요.</RimTalk.Settings.SampleReasoningEffortNote>
+    <RimTalk.Settings.SampleDisableThinkingTitle>4. 사고 모드 비활성화</RimTalk.Settings.SampleDisableThinkingTitle>
+    <RimTalk.Settings.SampleDisableThinkingDesc>생성 속도를 높이고 토큰 소모를 줄이기 위해 모델의 내부 사고(Thinking) 과정을 끕니다.</RimTalk.Settings.SampleDisableThinkingDesc>
+    <RimTalk.Settings.SampleDisableThinkingNote>참고: 사고(Thinking) 블록 토글을 지원하는 모델에서 사용 가능합니다.</RimTalk.Settings.SampleDisableThinkingNote>
+    <RimTalk.Settings.SampleEnableThinkingTitle>5. 사고 토큰 예산 제한</RimTalk.Settings.SampleEnableThinkingTitle>
+    <RimTalk.Settings.SampleEnableThinkingDesc>사고 모드를 유지하면서 추론에 소모되는 최대 토큰 수를 제한합니다.</RimTalk.Settings.SampleEnableThinkingDesc>
+    <RimTalk.Settings.SampleEnableThinkingNote>참고: 추론 토큰 예산 지정을 지원하는 모델에서 사용 가능합니다. 제공자별 최소 토큰 요구치를 확인하세요.</RimTalk.Settings.SampleEnableThinkingNote>
 
     <!-- Settings_Context.cs -->
     <RimTalk.Settings.ContextFilter>컨텍스트 필터</RimTalk.Settings.ContextFilter>
@@ -448,6 +448,7 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.DebugWindow.ResendError>AI가 현재 사용 중입니다. 상태가 Idle일 때 다시 시도하세요.</RimTalk.DebugWindow.ResendError>
     <RimTalk.DebugWindow.ApiLog>API 로그</RimTalk.DebugWindow.ApiLog>
     <RimTalk.DebugWindow.FailMsg>요청에 실패했습니다. 지원을 위해 "API 로그"를 클릭하여 로그를 생성하세요.</RimTalk.DebugWindow.FailMsg>
+    <RimTalk.DebugWindow.JsonDeserializationFailedTip>(계속 발생 시 API 설정 -> 톱니바퀴 -> 1번 대화 형식 강제 적용 확인)</RimTalk.DebugWindow.JsonDeserializationFailedTip>
     <RimTalk.DebugWindow.CopyAll>모두 복사</RimTalk.DebugWindow.CopyAll>
     <RimTalk.DebugWindow.Copy>복사</RimTalk.DebugWindow.Copy>
     <RimTalk.DebugWindow.Copied>복사 완료</RimTalk.DebugWindow.Copied>

@@ -330,21 +330,21 @@ Scriban 魔法 (動態內容)
     <RimTalk.Settings.SampleMergeTemplate>合併至目前</RimTalk.Settings.SampleMergeTemplate>
     <RimTalk.Settings.SampleCopy>複製</RimTalk.Settings.SampleCopy>
     <RimTalk.Settings.SampleCopied>JSON 範本已複製到剪貼簿。</RimTalk.Settings.SampleCopied>
-    <RimTalk.Settings.SampleBasicTitle>1. 基礎採樣參數</RimTalk.Settings.SampleBasicTitle>
-    <RimTalk.Settings.SampleBasicDesc>調整回應的隨機性、多樣性及最大輸出長度。</RimTalk.Settings.SampleBasicDesc>
-    <RimTalk.Settings.SampleBasicNote>注意：推理模型可能會忽略自訂溫度或要求使用預設值。</RimTalk.Settings.SampleBasicNote>
-    <RimTalk.Settings.SampleReasoningEffortTitle>2. 推理強度級別 (Reasoning Effort)</RimTalk.Settings.SampleReasoningEffortTitle>
-    <RimTalk.Settings.SampleReasoningEffortDesc>控制模型思考/推理的強度級別 ("low", "medium", "high")。</RimTalk.Settings.SampleReasoningEffortDesc>
-    <RimTalk.Settings.SampleReasoningEffortNote>注意：適用於支援推理強度調節的推理模型。如需更快回應請設為 "low"。</RimTalk.Settings.SampleReasoningEffortNote>
-    <RimTalk.Settings.SampleDisableThinkingTitle>3. 停用思考模式</RimTalk.Settings.SampleDisableThinkingTitle>
-    <RimTalk.Settings.SampleDisableThinkingDesc>關閉內部思考推理過程以提升生成速度並降低 Token 消耗。</RimTalk.Settings.SampleDisableThinkingDesc>
-    <RimTalk.Settings.SampleDisableThinkingNote>注意：適用於支援開關思考塊 (Thinking block) 的模型。</RimTalk.Settings.SampleDisableThinkingNote>
-    <RimTalk.Settings.SampleEnableThinkingTitle>4. 限制思考 Token 預算</RimTalk.Settings.SampleEnableThinkingTitle>
-    <RimTalk.Settings.SampleEnableThinkingDesc>保持思考模式的同時限制用於推理的最大 Token 數量。</RimTalk.Settings.SampleEnableThinkingDesc>
-    <RimTalk.Settings.SampleEnableThinkingNote>注意：適用於支援設定推理 Token 預算的範本。請注意服務商要求的最低 Token 限制。</RimTalk.Settings.SampleEnableThinkingNote>
-    <RimTalk.Settings.SampleStructuredOutputTitle>5. 強制對話格式 (解決 JSON 錯誤)</RimTalk.Settings.SampleStructuredOutputTitle>
+    <RimTalk.Settings.SampleStructuredOutputTitle>1. 強制對話格式 (解決 JSON 錯誤)</RimTalk.Settings.SampleStructuredOutputTitle>
     <RimTalk.Settings.SampleStructuredOutputDesc>當對話無法顯示且持續出現 JSON 錯誤時使用（Json Deserialization Error）。強制 AI 嚴格遵循所需格式。</RimTalk.Settings.SampleStructuredOutputDesc>
     <RimTalk.Settings.SampleStructuredOutputNote>注意：僅適用於支援結構化輸出 (response_format) 的模型。</RimTalk.Settings.SampleStructuredOutputNote>
+    <RimTalk.Settings.SampleBasicTitle>2. 基礎採樣參數</RimTalk.Settings.SampleBasicTitle>
+    <RimTalk.Settings.SampleBasicDesc>調整回應的隨機性、多樣性及最大輸出長度。</RimTalk.Settings.SampleBasicDesc>
+    <RimTalk.Settings.SampleBasicNote>注意：推理模型可能會忽略自訂溫度或要求使用預設值。</RimTalk.Settings.SampleBasicNote>
+    <RimTalk.Settings.SampleReasoningEffortTitle>3. 推理強度級別 (Reasoning Effort)</RimTalk.Settings.SampleReasoningEffortTitle>
+    <RimTalk.Settings.SampleReasoningEffortDesc>控制模型思考/推理的強度級別 ("low", "medium", "high")。</RimTalk.Settings.SampleReasoningEffortDesc>
+    <RimTalk.Settings.SampleReasoningEffortNote>注意：適用於支援推理強度調節的推理模型。如需更快回應請設為 "low"。</RimTalk.Settings.SampleReasoningEffortNote>
+    <RimTalk.Settings.SampleDisableThinkingTitle>4. 停用思考模式</RimTalk.Settings.SampleDisableThinkingTitle>
+    <RimTalk.Settings.SampleDisableThinkingDesc>關閉內部思考推理過程以提升生成速度並降低 Token 消耗。</RimTalk.Settings.SampleDisableThinkingDesc>
+    <RimTalk.Settings.SampleDisableThinkingNote>注意：適用於支援開關思考塊 (Thinking block) 的模型。</RimTalk.Settings.SampleDisableThinkingNote>
+    <RimTalk.Settings.SampleEnableThinkingTitle>5. 限制思考 Token 預算</RimTalk.Settings.SampleEnableThinkingTitle>
+    <RimTalk.Settings.SampleEnableThinkingDesc>保持思考模式的同時限制用於推理的最大 Token 數量。</RimTalk.Settings.SampleEnableThinkingDesc>
+    <RimTalk.Settings.SampleEnableThinkingNote>注意：適用於支援設定推理 Token 預算的範本。請注意服務商要求的最低 Token 限制。</RimTalk.Settings.SampleEnableThinkingNote>
 
     <!-- Settings_Context.cs -->
     <RimTalk.Settings.ContextFilter>上下文過濾器</RimTalk.Settings.ContextFilter>
@@ -425,6 +425,7 @@ Scriban 魔法 (動態內容)
     <RimTalk.DebugWindow.ResendError>AI 目前正忙。請在狀態為 Idle 時重試。</RimTalk.DebugWindow.ResendError>
     <RimTalk.DebugWindow.ApiLog>API 日誌</RimTalk.DebugWindow.ApiLog>
     <RimTalk.DebugWindow.FailMsg>請求失敗。點擊「API 日誌」以產生支援用的日誌。</RimTalk.DebugWindow.FailMsg>
+    <RimTalk.DebugWindow.JsonDeserializationFailedTip>(若持續出現，請查看 API 設定 -> 齒輪圖示 -> 1. 強制對話格式)</RimTalk.DebugWindow.JsonDeserializationFailedTip>
     <RimTalk.DebugWindow.CopyAll>複製</RimTalk.DebugWindow.CopyAll>
     <RimTalk.DebugWindow.Copy>複製</RimTalk.DebugWindow.Copy>
     <RimTalk.DebugWindow.Copied>已複製</RimTalk.DebugWindow.Copied>

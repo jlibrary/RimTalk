@@ -329,21 +329,21 @@
     <RimTalk.Settings.SampleMergeTemplate>Объединить с текущим</RimTalk.Settings.SampleMergeTemplate>
     <RimTalk.Settings.SampleCopy>Копировать</RimTalk.Settings.SampleCopy>
     <RimTalk.Settings.SampleCopied>Шаблон JSON скопирован в буфер обмена.</RimTalk.Settings.SampleCopied>
-    <RimTalk.Settings.SampleBasicTitle>1. Базовые параметры сэмплинга</RimTalk.Settings.SampleBasicTitle>
-    <RimTalk.Settings.SampleBasicDesc>Настройка случайности, вариативности и максимальной длины ответа.</RimTalk.Settings.SampleBasicDesc>
-    <RimTalk.Settings.SampleBasicNote>Примечание: Модели рассуждения могут игнорировать пользовательскую температуру или требовать значения по умолчанию.</RimTalk.Settings.SampleBasicNote>
-    <RimTalk.Settings.SampleReasoningEffortTitle>2. Уровень усилий рассуждения (Reasoning Effort)</RimTalk.Settings.SampleReasoningEffortTitle>
-    <RimTalk.Settings.SampleReasoningEffortDesc>Управляет глубиной мышления/рассуждения модели ("low", "medium", "high").</RimTalk.Settings.SampleReasoningEffortDesc>
-    <RimTalk.Settings.SampleReasoningEffortNote>Примечание: Поддерживается моделями рассуждения с настройкой усилий. Используйте "low" для более быстрых ответов.</RimTalk.Settings.SampleReasoningEffortNote>
-    <RimTalk.Settings.SampleDisableThinkingTitle>3. Отключение режима размышления</RimTalk.Settings.SampleDisableThinkingTitle>
-    <RimTalk.Settings.SampleDisableThinkingDesc>Отключает внутренний процесс рассуждения для ускорения генерации и снижения расхода токенов.</RimTalk.Settings.SampleDisableThinkingDesc>
-    <RimTalk.Settings.SampleDisableThinkingNote>Примечание: Поддерживается моделями с переключаемым блоком размышлений.</RimTalk.Settings.SampleDisableThinkingNote>
-    <RimTalk.Settings.SampleEnableThinkingTitle>4. Лимит бюджета размышлений</RimTalk.Settings.SampleEnableThinkingTitle>
-    <RimTalk.Settings.SampleEnableThinkingDesc>Включает режим размышления с ограничением максимального количества токенов на рассуждения.</RimTalk.Settings.SampleEnableThinkingDesc>
-    <RimTalk.Settings.SampleEnableThinkingNote>Примечание: Поддерживается моделями, принимающими бюджет токенов. Проверьте минимальные лимиты вашего провайдера.</RimTalk.Settings.SampleEnableThinkingNote>
-    <RimTalk.Settings.SampleStructuredOutputTitle>5. Фиксация формата диалога (Исправление ошибок JSON)</RimTalk.Settings.SampleStructuredOutputTitle>
+    <RimTalk.Settings.SampleStructuredOutputTitle>1. Фиксация формата диалога (Исправление ошибок JSON)</RimTalk.Settings.SampleStructuredOutputTitle>
     <RimTalk.Settings.SampleStructuredOutputDesc>Используйте, если диалоги не появляются и возникают ошибки JSON (Json Deserialization Error). Принудительно заставляет ИИ строго следовать нужному формату.</RimTalk.Settings.SampleStructuredOutputDesc>
     <RimTalk.Settings.SampleStructuredOutputNote>Примечание: Работает только с моделями, поддерживающими структурированный вывод (response_format).</RimTalk.Settings.SampleStructuredOutputNote>
+    <RimTalk.Settings.SampleBasicTitle>2. Базовые параметры сэмплинга</RimTalk.Settings.SampleBasicTitle>
+    <RimTalk.Settings.SampleBasicDesc>Настройка случайности, вариативности и максимальной длины ответа.</RimTalk.Settings.SampleBasicDesc>
+    <RimTalk.Settings.SampleBasicNote>Примечание: Модели рассуждения могут игнорировать пользовательскую температуру или требовать значения по умолчанию.</RimTalk.Settings.SampleBasicNote>
+    <RimTalk.Settings.SampleReasoningEffortTitle>3. Уровень усилий рассуждения (Reasoning Effort)</RimTalk.Settings.SampleReasoningEffortTitle>
+    <RimTalk.Settings.SampleReasoningEffortDesc>Управляет глубиной мышления/рассуждения модели ("low", "medium", "high").</RimTalk.Settings.SampleReasoningEffortDesc>
+    <RimTalk.Settings.SampleReasoningEffortNote>Примечание: Поддерживается моделями рассуждения с настройкой усилий. Используйте "low" для более быстрых ответов.</RimTalk.Settings.SampleReasoningEffortNote>
+    <RimTalk.Settings.SampleDisableThinkingTitle>4. Отключение режима размышления</RimTalk.Settings.SampleDisableThinkingTitle>
+    <RimTalk.Settings.SampleDisableThinkingDesc>Отключает внутренний процесс рассуждения для ускорения генерации и снижения расхода токенов.</RimTalk.Settings.SampleDisableThinkingDesc>
+    <RimTalk.Settings.SampleDisableThinkingNote>Примечание: Поддерживается моделями с переключаемым блоком размышлений.</RimTalk.Settings.SampleDisableThinkingNote>
+    <RimTalk.Settings.SampleEnableThinkingTitle>5. Лимит бюджета размышлений</RimTalk.Settings.SampleEnableThinkingTitle>
+    <RimTalk.Settings.SampleEnableThinkingDesc>Включает режим размышления с ограничением максимального количества токенов на рассуждения.</RimTalk.Settings.SampleEnableThinkingDesc>
+    <RimTalk.Settings.SampleEnableThinkingNote>Примечание: Поддерживается моделями, принимающими бюджет токенов. Проверьте минимальные лимиты вашего провайдера.</RimTalk.Settings.SampleEnableThinkingNote>
 
     <!-- Settings_Context.cs -->
     <RimTalk.Settings.ContextFilter>Фильтр контекста</RimTalk.Settings.ContextFilter>
@@ -424,6 +424,7 @@
     <RimTalk.DebugWindow.ResendError>ИИ в данный момент занят. Повторите попытку, когда статус будет Idle.</RimTalk.DebugWindow.ResendError>
     <RimTalk.DebugWindow.ApiLog>Журнал API</RimTalk.DebugWindow.ApiLog>
     <RimTalk.DebugWindow.FailMsg>Запрос не выполнен. Нажмите «Журнал API», чтобы создать журнал для поддержки.</RimTalk.DebugWindow.FailMsg>
+    <RimTalk.DebugWindow.JsonDeserializationFailedTip>(Если ошибка повторяется, проверьте Настройки API -> Значок шестеренки -> 1. Фиксация формата диалога)</RimTalk.DebugWindow.JsonDeserializationFailedTip>
     <RimTalk.DebugWindow.CopyAll>Копировать всё</RimTalk.DebugWindow.CopyAll>
     <RimTalk.DebugWindow.Copy>Копировать</RimTalk.DebugWindow.Copy>
     <RimTalk.DebugWindow.Copied>Скопировано</RimTalk.DebugWindow.Copied>

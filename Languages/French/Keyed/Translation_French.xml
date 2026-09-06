@@ -330,21 +330,21 @@ Conseils Cruciaux :
     <RimTalk.Settings.SampleMergeTemplate>Fusionner avec actuel</RimTalk.Settings.SampleMergeTemplate>
     <RimTalk.Settings.SampleCopy>Copier</RimTalk.Settings.SampleCopy>
     <RimTalk.Settings.SampleCopied>Modèle JSON copié dans le presse-papier.</RimTalk.Settings.SampleCopied>
-    <RimTalk.Settings.SampleBasicTitle>1. Paramètres d'échantillonnage de base</RimTalk.Settings.SampleBasicTitle>
-    <RimTalk.Settings.SampleBasicDesc>Ajuste l'aléatoire, la diversité et la longueur maximale des réponses.</RimTalk.Settings.SampleBasicDesc>
-    <RimTalk.Settings.SampleBasicNote>Remarque : Les modèles de raisonnement peuvent ignorer la température personnalisée ou exiger les valeurs par défaut.</RimTalk.Settings.SampleBasicNote>
-    <RimTalk.Settings.SampleReasoningEffortTitle>2. Niveau d'effort de raisonnement (Reasoning Effort)</RimTalk.Settings.SampleReasoningEffortTitle>
-    <RimTalk.Settings.SampleReasoningEffortDesc>Contrôle l'intensité de réflexion/raisonnement du modèle ("low", "medium", "high").</RimTalk.Settings.SampleReasoningEffortDesc>
-    <RimTalk.Settings.SampleReasoningEffortNote>Remarque : Pris en charge par les modèles de raisonnement avec réglage d'effort. Choisissez "low" pour des réponses plus rapides.</RimTalk.Settings.SampleReasoningEffortNote>
-    <RimTalk.Settings.SampleDisableThinkingTitle>3. Désactiver le mode réflexion</RimTalk.Settings.SampleDisableThinkingTitle>
-    <RimTalk.Settings.SampleDisableThinkingDesc>Désactive les étapes de raisonnement interne pour une génération plus rapide et un coût en tokens réduit.</RimTalk.Settings.SampleDisableThinkingDesc>
-    <RimTalk.Settings.SampleDisableThinkingNote>Remarque : Pris en charge par les modèles dotés d'un bloc de réflexion commutable.</RimTalk.Settings.SampleDisableThinkingNote>
-    <RimTalk.Settings.SampleEnableThinkingTitle>4. Définir un budget de réflexion</RimTalk.Settings.SampleEnableThinkingTitle>
-    <RimTalk.Settings.SampleEnableThinkingDesc>Active la réflexion tout en plafonnant le nombre maximal de tokens alloués au raisonnement.</RimTalk.Settings.SampleEnableThinkingDesc>
-    <RimTalk.Settings.SampleEnableThinkingNote>Remarque : Pris en charge par les modèles acceptant un budget de raisonnement. Vérifiez les limites minimales de votre fournisseur.</RimTalk.Settings.SampleEnableThinkingNote>
-    <RimTalk.Settings.SampleStructuredOutputTitle>5. Forcer le format de dialogue (Erreurs JSON)</RimTalk.Settings.SampleStructuredOutputTitle>
+    <RimTalk.Settings.SampleStructuredOutputTitle>1. Forcer le format de dialogue (Erreurs JSON)</RimTalk.Settings.SampleStructuredOutputTitle>
     <RimTalk.Settings.SampleStructuredOutputDesc>À utiliser si les dialogues n'apparaissent pas et que des erreurs JSON persistent (Json Deserialization Error). Force l'IA à respecter strictement le format requis.</RimTalk.Settings.SampleStructuredOutputDesc>
     <RimTalk.Settings.SampleStructuredOutputNote>Remarque : Fonctionne uniquement avec les modèles prenant en charge les sorties structurées (response_format).</RimTalk.Settings.SampleStructuredOutputNote>
+    <RimTalk.Settings.SampleBasicTitle>2. Paramètres d'échantillonnage de base</RimTalk.Settings.SampleBasicTitle>
+    <RimTalk.Settings.SampleBasicDesc>Ajuste l'aléatoire, la diversité et la longueur maximale des réponses.</RimTalk.Settings.SampleBasicDesc>
+    <RimTalk.Settings.SampleBasicNote>Remarque : Les modèles de raisonnement peuvent ignorer la température personnalisée ou exiger les valeurs par défaut.</RimTalk.Settings.SampleBasicNote>
+    <RimTalk.Settings.SampleReasoningEffortTitle>3. Niveau d'effort de raisonnement (Reasoning Effort)</RimTalk.Settings.SampleReasoningEffortTitle>
+    <RimTalk.Settings.SampleReasoningEffortDesc>Contrôle l'intensité de réflexion/raisonnement du modèle ("low", "medium", "high").</RimTalk.Settings.SampleReasoningEffortDesc>
+    <RimTalk.Settings.SampleReasoningEffortNote>Remarque : Pris en charge par les modèles de raisonnement avec réglage d'effort. Choisissez "low" pour des réponses plus rapides.</RimTalk.Settings.SampleReasoningEffortNote>
+    <RimTalk.Settings.SampleDisableThinkingTitle>4. Désactiver le mode réflexion</RimTalk.Settings.SampleDisableThinkingTitle>
+    <RimTalk.Settings.SampleDisableThinkingDesc>Désactive les étapes de raisonnement interne pour une génération plus rapide et un coût en tokens réduit.</RimTalk.Settings.SampleDisableThinkingDesc>
+    <RimTalk.Settings.SampleDisableThinkingNote>Remarque : Pris en charge par les modèles dotés d'un bloc de réflexion commutable.</RimTalk.Settings.SampleDisableThinkingNote>
+    <RimTalk.Settings.SampleEnableThinkingTitle>5. Définir un budget de réflexion</RimTalk.Settings.SampleEnableThinkingTitle>
+    <RimTalk.Settings.SampleEnableThinkingDesc>Active la réflexion tout en plafonnant le nombre maximal de tokens alloués au raisonnement.</RimTalk.Settings.SampleEnableThinkingDesc>
+    <RimTalk.Settings.SampleEnableThinkingNote>Remarque : Pris en charge par les modèles acceptant un budget de raisonnement. Vérifiez les limites minimales de votre fournisseur.</RimTalk.Settings.SampleEnableThinkingNote>
 
     <!-- Settings_Context.cs -->
     <RimTalk.Settings.ContextFilter>Filtre de contexte</RimTalk.Settings.ContextFilter>
@@ -425,6 +425,7 @@ Conseils Cruciaux :
     <RimTalk.DebugWindow.ResendError>L’IA est actuellement occupée. Réessayez lorsque le statut est Idle.</RimTalk.DebugWindow.ResendError>
     <RimTalk.DebugWindow.ApiLog>Journal API</RimTalk.DebugWindow.ApiLog>
     <RimTalk.DebugWindow.FailMsg>La requête a échoué. Cliquez sur « Journal API » pour générer un journal pour le support.</RimTalk.DebugWindow.FailMsg>
+    <RimTalk.DebugWindow.JsonDeserializationFailedTip>(Si le problème persiste, vérifiez Paramètres API -> Icône d’engrenage -> 1. Forcer le format de dialogue)</RimTalk.DebugWindow.JsonDeserializationFailedTip>
     <RimTalk.DebugWindow.CopyAll>Tout copier</RimTalk.DebugWindow.CopyAll>
     <RimTalk.DebugWindow.Copy>Copier</RimTalk.DebugWindow.Copy>
     <RimTalk.DebugWindow.Copied>Copié</RimTalk.DebugWindow.Copied>

@@ -7,6 +7,7 @@ using RimTalk.Data;
 using RimTalk.Error;
 using RimTalk.Source.Data;
 using RimTalk.Util;
+using RimWorld;
 using Verse;
 
 namespace RimTalk.Service;
@@ -113,7 +114,7 @@ public static class AIService
         }
         catch (Exception)
         {
-            ReportError(apiLog, payload, "Json Deserialization Failed");
+            ReportDeserializationError(apiLog, payload);
             return null;
         }
     }
@@ -178,11 +179,17 @@ public static class AIService
         // If response is empty but no explicit error yet, mark as deserialization failure (or empty response)
         if (string.IsNullOrEmpty(apiLog.Response) && !apiLog.IsError && string.IsNullOrEmpty(payload.ErrorMessage))
         {
-            ReportError(apiLog, payload, "Json Deserialization Failed");
+            ReportDeserializationError(apiLog, payload);
             return;
         }
         
         ApiHistory.UpdatePayload(apiLog.Id, payload);
+    }
+
+    private static void ReportDeserializationError(ApiLog apiLog, Payload payload)
+    {
+        var tip = "RimTalk.DebugWindow.JsonDeserializationFailedTip".Translate();
+        ReportError(apiLog, payload, $"Json Deserialization Failed {tip}");
     }
 
     private static void ReportError(ApiLog apiLog, Payload payload, string errorMsg)
@@ -191,6 +198,7 @@ public static class AIService
         apiLog.IsError = true;
         payload.ErrorMessage = errorMsg;
         ApiHistory.UpdatePayload(apiLog.Id, payload);
+        AIErrorHandler.EnqueueMessage(() => Messages.Message(errorMsg, MessageTypeDefOf.CautionInput, false));
     }
 
     public static bool IsCancellationRequested() => _currentCts != null && _currentCts.IsCancellationRequested;
