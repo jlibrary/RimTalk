@@ -21,10 +21,13 @@ public class PawnSelector
     }
 
     private static List<Pawn> GetNearbyPawnsInternal(Pawn pawn1, Pawn pawn2 = null,
-        DetectionType detectionType = DetectionType.Hearing, bool onlyTalkable = false, int maxResults = 10, bool isAnnouncement = false)
+        DetectionType detectionType = DetectionType.Hearing, bool onlyTalkable = false, bool isAnnouncement = false)
     {
+        int configuredCount = Settings.Get()?.Context?.MaxPawnContextCount ?? 0;
+        int effectiveMaxResults = Math.Max(10, configuredCount);
+
         float baseRange = detectionType == DetectionType.Hearing 
-            ? (isAnnouncement ? AnnouncementHearingRange : HearingRange) 
+            ? isAnnouncement ? AnnouncementHearingRange : HearingRange 
             : ViewingRange;
         PawnCapacityDef capacityDef = detectionType == DetectionType.Hearing
             ? PawnCapacityDefOf.Hearing
@@ -54,7 +57,7 @@ public class PawnSelector
                 ? pawn1.Position.DistanceTo(p.Position)
                 : Math.Min(pawn1.Position.DistanceTo(p.Position),
                     pawn2.Position.DistanceTo(p.Position)))
-            .Take(maxResults)
+            .Take(effectiveMaxResults)
             .ToList();
     }
 
