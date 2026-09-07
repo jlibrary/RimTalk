@@ -2,20 +2,20 @@
 <ModMetaData>
 	<packageId>cj.rimtalk</packageId>
 	<name>RimTalk</name>
-	<modVersion>1.2.7</modVersion>
+	<modVersion>1.2.8</modVersion>
 	<author>juicy</author>
 	<description>Ever wonder what your colonists are actually talking about when they chat around the campfire or pass each other in the hallway?
 
-		RimTalk replaces repetitive preset interactions with real conversations. Every chat is generated dynamically, shaped by each colonist's personality, mood, current thoughts, and whatever chaos is happening around the colony.
+RimTalk replaces repetitive preset interactions with real conversations. Every chat is generated dynamically, shaped by each colonist's personality, mood, current thoughts, and whatever chaos is happening around the colony.
 
-		A grumpy brawler complaining about eating without a table, a tired cook bragging about a simple meal, or a sarcastic doctor checking in on a patient—colonists talk with distinct voices that reflect who they are and what they're experiencing.
+A grumpy brawler complaining about eating without a table, a tired cook bragging about a simple meal, or a sarcastic doctor checking in on a patient, colonists talk with distinct voices that reflect who they are and what they're experiencing.
 
-		Features:
-		- Context-aware dialogue that reacts to jobs, health, thoughts, and surroundings
-		- Distinct, customizable personalities for every colonist
-		- Multi-language support so pawns can chat in any language
-		- Runs asynchronously in the background without blocking game ticks
-		- Works with Gemini, Player2, OpenAI, DeepSeek, OpenRouter, and local models (Ollama, LM Studio)
+Features:
+- Context-aware dialogue that reacts to jobs, health, thoughts, and surroundings
+- Distinct, customizable personalities for every colonist
+- Multi-language support so pawns can chat in any language
+- Runs asynchronously in the background without blocking game ticks
+- Works with Gemini, Player2, OpenAI, DeepSeek, OpenRouter, and local models (Ollama, LM Studio)
 	</description>
 	<supportedVersions>
 		<li>1.5</li>
