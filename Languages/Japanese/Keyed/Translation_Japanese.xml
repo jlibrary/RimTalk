@@ -572,6 +572,8 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.BubbleSettings.VerticalOffset>垂直位置</RimTalk.BubbleSettings.VerticalOffset>
     <RimTalk.BubbleSettings.UrgentShake>緊急時の吹き出しの揺れ</RimTalk.BubbleSettings.UrgentShake>
     <RimTalk.BubbleSettings.UrgentShakeTooltip>戦闘や危機的状況の会話時に吹き出しを揺らします。</RimTalk.BubbleSettings.UrgentShakeTooltip>
+    <RimTalk.BubbleSettings.ScaleWithZoom>カメラズームに合わせて拡大縮小</RimTalk.BubbleSettings.ScaleWithZoom>
+    <RimTalk.BubbleSettings.ScaleWithZoomTooltip>カメラのズーム倍率に合わせて吹き出しと文字サイズを動的に拡大縮小します。</RimTalk.BubbleSettings.ScaleWithZoomTooltip>
     <RimTalk.BubbleSettings.PreviewText>吹き出しのプレビュー</RimTalk.BubbleSettings.PreviewText>
     <RimTalk.BubbleSettings.Padding>吹き出しの余白</RimTalk.BubbleSettings.Padding>
     <RimTalk.BubbleSettings.UseColors>会話グループの色を使用</RimTalk.BubbleSettings.UseColors>

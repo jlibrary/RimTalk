@@ -567,6 +567,8 @@ Crucial Tips:
     <RimTalk.BubbleSettings.VerticalOffset>Vertical Position</RimTalk.BubbleSettings.VerticalOffset>
     <RimTalk.BubbleSettings.UrgentShake>Enable Urgent Shaking</RimTalk.BubbleSettings.UrgentShake>
     <RimTalk.BubbleSettings.UrgentShakeTooltip>Shake speech bubbles in combat or danger situations.</RimTalk.BubbleSettings.UrgentShakeTooltip>
+    <RimTalk.BubbleSettings.ScaleWithZoom>Scale With Camera Zoom</RimTalk.BubbleSettings.ScaleWithZoom>
+    <RimTalk.BubbleSettings.ScaleWithZoomTooltip>Dynamically scale speech bubbles and font size based on camera zoom level.</RimTalk.BubbleSettings.ScaleWithZoomTooltip>
     <RimTalk.BubbleSettings.PreviewText>Speech Bubble Preview</RimTalk.BubbleSettings.PreviewText>
     <RimTalk.BubbleSettings.Padding>Bubble Padding</RimTalk.BubbleSettings.Padding>
     <RimTalk.BubbleSettings.UseColors>Use Conversation Group Colors</RimTalk.BubbleSettings.UseColors>

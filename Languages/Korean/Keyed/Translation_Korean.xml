@@ -573,6 +573,8 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.BubbleSettings.VerticalOffset>수직 위치</RimTalk.BubbleSettings.VerticalOffset>
     <RimTalk.BubbleSettings.UrgentShake>긴급 상황 말풍선 흔들림</RimTalk.BubbleSettings.UrgentShake>
     <RimTalk.BubbleSettings.UrgentShakeTooltip>위기나 전투 대화 시 말풍선을 흔듭니다.</RimTalk.BubbleSettings.UrgentShakeTooltip>
+    <RimTalk.BubbleSettings.ScaleWithZoom>카메라 줌 연동 크기 조절</RimTalk.BubbleSettings.ScaleWithZoom>
+    <RimTalk.BubbleSettings.ScaleWithZoomTooltip>카메라 줌 배율에 맞춰 말풍선과 글자 크기를 동적으로 조절합니다.</RimTalk.BubbleSettings.ScaleWithZoomTooltip>
     <RimTalk.BubbleSettings.PreviewText>말풍선 미리보기</RimTalk.BubbleSettings.PreviewText>
     <RimTalk.BubbleSettings.Padding>말풍선 여백</RimTalk.BubbleSettings.Padding>
     <RimTalk.BubbleSettings.UseColors>대화 그룹 색상 사용</RimTalk.BubbleSettings.UseColors>

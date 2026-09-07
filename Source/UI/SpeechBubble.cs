@@ -76,7 +76,7 @@ public class SpeechBubble
     public void ComputeDimensions()
     {
         var settings = Settings.Get();
-        float scale = settings?.BubbleScale ?? 1f;
+        float scale = SpeechBubbleDrawer.GetEffectiveBubbleScale(settings);
         ComputeDimensions(scale);
     }
 
@@ -87,7 +87,7 @@ public class SpeechBubble
         float softLineWidth = Mathf.Clamp((maxWidthBase - CornerClearance * 2f) * scale, 100f, 650f);
 
         var settings = Settings.Get();
-        float baseFontSize = settings?.BubbleCustomFontSize ?? 11f;
+        float baseFontSize = SpeechBubbleDrawer.GetEffectiveFontSize(settings);
         int customSize = Mathf.RoundToInt(IsAnnouncement ? baseFontSize * 1.25f : baseFontSize);
 
         GameFont prevFont = Verse.Text.Font;

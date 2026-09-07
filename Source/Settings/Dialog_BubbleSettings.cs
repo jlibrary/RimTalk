@@ -212,9 +212,15 @@ public class Dialog_BubbleSettings : Window
 
         listing.Gap(4f);
 
-        // 9. Toggles: Emotion/Group Colors & Urgent Shake
+        // 9. Toggles: Emotion/Group Colors, Urgent Shake & Zoom Scaling
         listing.CheckboxLabeled("RimTalk.BubbleSettings.UseColors".Translate(), ref settings.BubbleUseColors, "RimTalk.BubbleSettings.UseColorsTooltip".Translate());
         listing.CheckboxLabeled("RimTalk.BubbleSettings.UrgentShake".Translate(), ref settings.BubbleUrgentShake, "RimTalk.BubbleSettings.UrgentShakeTooltip".Translate());
+        bool prevScaleWithZoom = settings.BubbleScaleWithZoom;
+        listing.CheckboxLabeled("RimTalk.BubbleSettings.ScaleWithZoom".Translate(), ref settings.BubbleScaleWithZoom, "RimTalk.BubbleSettings.ScaleWithZoomTooltip".Translate());
+        if (prevScaleWithZoom != settings.BubbleScaleWithZoom)
+        {
+            SpeechBubbleDrawer.RecomputeAllBubbleDimensions();
+        }
 
         GUI.enabled = true;
         listing.End();

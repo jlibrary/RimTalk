@@ -63,6 +63,7 @@ public class RimTalkSettings : ModSettings
     public float BubblePadding = 0.5f;
     public bool BubbleUseColors = true;
     public bool BubbleUrgentShake = true;
+    public bool BubbleScaleWithZoom = false;
 
     public void ResetBubbleSettings()
     {
@@ -77,6 +78,7 @@ public class RimTalkSettings : ModSettings
         BubblePadding = 0.5f;
         BubbleUseColors = true;
         BubbleUrgentShake = true;
+        BubbleScaleWithZoom = false;
     }
 
     public bool? ShowQuickSettings = true;
@@ -269,6 +271,7 @@ public class RimTalkSettings : ModSettings
         Scribe_Values.Look(ref BubblePadding, "bubblePadding", 0.5f, true);
         Scribe_Values.Look(ref BubbleUseColors, "bubbleUseColors", true, true);
         Scribe_Values.Look(ref BubbleUrgentShake, "bubbleUrgentShake", true, true);
+        Scribe_Values.Look(ref BubbleScaleWithZoom, "bubbleScaleWithZoom", false);
         Scribe_Values.Look(ref DisplayTalkWhenDrafted, "displayTalkWhenDrafted", true);
         Scribe_Values.Look(ref AllowMonologue, "allowMonologue", true);
         Scribe_Values.Look(ref AllowSlavesToTalk, "allowSlavesToTalk", true);

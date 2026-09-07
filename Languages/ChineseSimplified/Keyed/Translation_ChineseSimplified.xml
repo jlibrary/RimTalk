@@ -569,6 +569,8 @@ Scriban 魔法 (动态内容)
     <RimTalk.BubbleSettings.VerticalOffset>垂直位置</RimTalk.BubbleSettings.VerticalOffset>
     <RimTalk.BubbleSettings.UrgentShake>紧急情况气泡抖动</RimTalk.BubbleSettings.UrgentShake>
     <RimTalk.BubbleSettings.UrgentShakeTooltip>在战斗或危险情况对话时晃动气泡。</RimTalk.BubbleSettings.UrgentShakeTooltip>
+    <RimTalk.BubbleSettings.ScaleWithZoom>随镜头缩放</RimTalk.BubbleSettings.ScaleWithZoom>
+    <RimTalk.BubbleSettings.ScaleWithZoomTooltip>根据镜头缩放级别动态缩放气泡和字体大小。</RimTalk.BubbleSettings.ScaleWithZoomTooltip>
     <RimTalk.BubbleSettings.PreviewText>对话气泡预览</RimTalk.BubbleSettings.PreviewText>
     <RimTalk.BubbleSettings.Padding>气泡内边距</RimTalk.BubbleSettings.Padding>
     <RimTalk.BubbleSettings.UseColors>使用对话组颜色</RimTalk.BubbleSettings.UseColors>

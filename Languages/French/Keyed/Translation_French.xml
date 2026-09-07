@@ -572,6 +572,8 @@ Conseils Cruciaux :
     <RimTalk.BubbleSettings.VerticalOffset>Position verticale</RimTalk.BubbleSettings.VerticalOffset>
     <RimTalk.BubbleSettings.UrgentShake>Secousse en cas d'urgence</RimTalk.BubbleSettings.UrgentShake>
     <RimTalk.BubbleSettings.UrgentShakeTooltip>Fait trembler les bulles de dialogue en situation de combat ou de danger.</RimTalk.BubbleSettings.UrgentShakeTooltip>
+    <RimTalk.BubbleSettings.ScaleWithZoom>Mise à l'échelle selon le zoom</RimTalk.BubbleSettings.ScaleWithZoom>
+    <RimTalk.BubbleSettings.ScaleWithZoomTooltip>Ajuste dynamiquement la taille des bulles et de la police selon le zoom de la caméra.</RimTalk.BubbleSettings.ScaleWithZoomTooltip>
     <RimTalk.BubbleSettings.PreviewText>Aperçu de la bulle</RimTalk.BubbleSettings.PreviewText>
     <RimTalk.BubbleSettings.Padding>Marge intérieure</RimTalk.BubbleSettings.Padding>
     <RimTalk.BubbleSettings.UseColors>Utiliser les couleurs de groupe de discussion</RimTalk.BubbleSettings.UseColors>

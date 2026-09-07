@@ -83,6 +83,64 @@ public static class SpeechBubbleDrawer
         AddBubble(initiator, dialogue, rt?.ConversationId ?? -1, rt?.InteractionType ?? InteractionType.None, rt?.TalkType ?? TalkType.Other);
     }
 
+    private static int _lastZoomTier = 2;
+
+    public static int GetCurrentZoomTier()
+    {
+        var settings = Settings.Get();
+        if (settings == null || !settings.BubbleScaleWithZoom) return 2;
+
+        CameraDriver cameraDriver = Find.CameraDriver;
+        if (cameraDriver == null) return 2;
+
+        float rootSize = cameraDriver.ZoomRootSize;
+
+        // 5-tier hysteresis: 0 (Closest), 1 (Close), 2 (Middle), 3 (Far), 4 (Very Far)
+        return _lastZoomTier switch
+        {
+            0 => rootSize > 16.0f ? (rootSize > 24.0f ? (rootSize > 37.0f ? (rootSize > 49.0f ? 4 : 3) : 2) : 1) : 0,
+            1 => rootSize < 14.0f ? 0 : (rootSize > 24.0f ? (rootSize > 37.0f ? (rootSize > 49.0f ? 4 : 3) : 2) : 1),
+            2 => rootSize < 14.0f ? 0 : (rootSize < 22.0f ? 1 : (rootSize > 37.0f ? (rootSize > 49.0f ? 4 : 3) : 2)),
+            3 => rootSize < 22.0f ? (rootSize < 14.0f ? 0 : 1) : (rootSize < 35.0f ? 2 : (rootSize > 49.0f ? 4 : 3)),
+            4 => rootSize < 47.0f ? (rootSize < 35.0f ? (rootSize < 22.0f ? (rootSize < 14.0f ? 0 : 1) : 2) : 3) : 4,
+            _ => rootSize < 15.0f ? 0 : (rootSize < 23.0f ? 1 : (rootSize < 36.0f ? 2 : (rootSize < 48.0f ? 3 : 4)))
+        };
+    }
+
+    public static float GetEffectiveBubbleScale(RimTalkSettings settings)
+    {
+        float baseScale = settings?.BubbleScale ?? 1f;
+        if (settings == null || !settings.BubbleScaleWithZoom) return baseScale;
+
+        int tier = GetCurrentZoomTier();
+        float mult = tier switch
+        {
+            0 => 1.40f,
+            1 => 1.20f,
+            3 => 0.70f,
+            4 => 0.55f,
+            _ => 1.00f
+        };
+        return Mathf.Clamp(baseScale * mult, 0.35f, 2.00f);
+    }
+
+    public static float GetEffectiveFontSize(RimTalkSettings settings)
+    {
+        float baseSize = settings?.BubbleCustomFontSize ?? 11f;
+        if (settings == null || !settings.BubbleScaleWithZoom) return baseSize;
+
+        int tier = GetCurrentZoomTier();
+        float delta = tier switch
+        {
+            0 => 4f,
+            1 => 2f,
+            3 => -3f,
+            4 => -4f,
+            _ => 0f
+        };
+        return Mathf.Clamp(baseSize + delta, 6f, 26f);
+    }
+
     public static void Clear()
     {
         for (int i = 0; i < ActiveBubbles.Count; i++)
@@ -90,6 +148,7 @@ public static class SpeechBubbleDrawer
             ActiveBubbles[i].Deactivate();
         }
         ActiveBubbles.Clear();
+        _lastZoomTier = 2;
     }
 
     public static void DrawBubbles()
@@ -106,9 +165,9 @@ public static class SpeechBubbleDrawer
         if (cameraDriver == null) return;
 
         float zoomRootSize = cameraDriver.ZoomRootSize;
-        if (zoomRootSize > 65f) return; // Zoomed out too far, do not render
+        float zoomFade = zoomRootSize > 35f ? Mathf.Clamp01(1f - (zoomRootSize - 35f) / 12f) : 1f;
+        if (zoomFade <= 0.01f) return; // Zoomed out to max or beyond, do not render
 
-        float zoomFade = zoomRootSize > 45f ? Mathf.Clamp01(1f - (zoomRootSize - 45f) / 20f) : 1f;
         CellRect currentViewRect = cameraDriver.CurrentViewRect.ExpandedBy(2);
         int curTicks = GenTicks.TicksGame;
 
@@ -126,12 +185,27 @@ public static class SpeechBubbleDrawer
 
         if (ActiveBubbles.Count == 0) return;
 
+        // Approach B: Dynamic stepped zoom scaling without GUI matrix manipulation
+        if (settings != null && settings.BubbleScaleWithZoom)
+        {
+            int currentTier = GetCurrentZoomTier();
+            if (currentTier != _lastZoomTier)
+            {
+                _lastZoomTier = currentTier;
+                RecomputeAllBubbleDimensions();
+            }
+        }
+        else
+        {
+            _lastZoomTier = 2;
+        }
+
         TextAnchor originalAnchor = Text.Anchor;
         GameFont originalFont = Text.Font;
         Color originalColor = GUI.color;
         GameFont targetFont = GameFont.Small;
         int originalSize = Text.fontStyles[(int)targetFont].fontSize;
-        float baseFontSize = settings?.BubbleCustomFontSize ?? 11f;
+        float baseFontSize = GetEffectiveFontSize(settings);
 
         try
         {

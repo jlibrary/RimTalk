@@ -573,6 +573,8 @@ Scriban 魔法 (動態內容)
     <RimTalk.BubbleSettings.VerticalOffset>垂直位置</RimTalk.BubbleSettings.VerticalOffset>
     <RimTalk.BubbleSettings.UrgentShake>緊急情況氣泡晃動</RimTalk.BubbleSettings.UrgentShake>
     <RimTalk.BubbleSettings.UrgentShakeTooltip>在戰鬥或危機對話時晃動氣泡。</RimTalk.BubbleSettings.UrgentShakeTooltip>
+    <RimTalk.BubbleSettings.ScaleWithZoom>隨鏡頭縮放</RimTalk.BubbleSettings.ScaleWithZoom>
+    <RimTalk.BubbleSettings.ScaleWithZoomTooltip>根據鏡頭縮放級別動態縮放氣泡和字體大小。</RimTalk.BubbleSettings.ScaleWithZoomTooltip>
     <RimTalk.BubbleSettings.PreviewText>對話氣泡預覽</RimTalk.BubbleSettings.PreviewText>
     <RimTalk.BubbleSettings.Padding>氣泡內距</RimTalk.BubbleSettings.Padding>
     <RimTalk.BubbleSettings.UseColors>使用對話群組顏色</RimTalk.BubbleSettings.UseColors>

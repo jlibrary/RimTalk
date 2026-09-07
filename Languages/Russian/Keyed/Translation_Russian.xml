@@ -571,6 +571,8 @@
     <RimTalk.BubbleSettings.VerticalOffset>Позиция по вертикали</RimTalk.BubbleSettings.VerticalOffset>
     <RimTalk.BubbleSettings.UrgentShake>Дрожание в опасных ситуациях</RimTalk.BubbleSettings.UrgentShake>
     <RimTalk.BubbleSettings.UrgentShakeTooltip>Встряхивать облачка диалога во время боя или опасности.</RimTalk.BubbleSettings.UrgentShakeTooltip>
+    <RimTalk.BubbleSettings.ScaleWithZoom>Масштабирование с зумом</RimTalk.BubbleSettings.ScaleWithZoom>
+    <RimTalk.BubbleSettings.ScaleWithZoomTooltip>Динамически масштабировать облачка и шрифт в зависимости от приближения камеры.</RimTalk.BubbleSettings.ScaleWithZoomTooltip>
     <RimTalk.BubbleSettings.PreviewText>Предпросмотр облачка</RimTalk.BubbleSettings.PreviewText>
     <RimTalk.BubbleSettings.Padding>Внутренний отступ</RimTalk.BubbleSettings.Padding>
     <RimTalk.BubbleSettings.UseColors>Цвета групп диалогов</RimTalk.BubbleSettings.UseColors>
