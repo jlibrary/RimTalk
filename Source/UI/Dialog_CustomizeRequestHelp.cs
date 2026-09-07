@@ -28,7 +28,7 @@ public class Dialog_CustomizeRequestHelp : Window
             Title = "RimTalk.Settings.SampleStructuredOutputTitle".Translate(),
             Description = "RimTalk.Settings.SampleStructuredOutputDesc".Translate(),
             Note = "RimTalk.Settings.SampleStructuredOutputNote".Translate(),
-            Json = "{\n  \"response_format\": {\n    \"type\": \"json_schema\",\n    \"json_schema\": {\n      \"name\": \"talk_response\",\n      \"strict\": true,\n      \"schema\": {\n        \"type\": \"array\",\n        \"items\": {\n          \"type\": \"object\",\n          \"required\": [\"name\", \"text\"],\n          \"properties\": {\n            \"name\": { \"type\": \"string\" },\n            \"text\": { \"type\": \"string\" },\n            \"act\": {\n              \"type\": \"string\",\n              \"enum\": [\"Insult\", \"Slight\", \"Chat\", \"Kind\"]\n            },\n            \"target\": { \"type\": \"string\" }\n          },\n          \"additionalProperties\": false\n        }\n      }\n    }\n  }\n}"
+            Json = "{\n  \"response_format\": {\n    \"type\": \"json_schema\",\n    \"json_schema\": {\n      \"name\": \"talk_response\",\n      \"strict\": true,\n      \"schema\": {\n        \"type\": \"array\",\n        \"items\": {\n          \"type\": \"object\",\n          \"required\": [\"name\", \"text\"],\n          \"properties\": {\n            \"name\": { \"type\": \"string\" },\n            \"text\": { \"type\": \"string\" }\n          },\n          \"additionalProperties\": false\n        }\n      }\n    }\n  }\n}"
         },
         new SampleEntry
         {

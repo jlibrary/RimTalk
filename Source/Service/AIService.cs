@@ -7,7 +7,6 @@ using RimTalk.Data;
 using RimTalk.Error;
 using RimTalk.Source.Data;
 using RimTalk.Util;
-using RimWorld;
 using Verse;
 
 namespace RimTalk.Service;
@@ -198,7 +197,6 @@ public static class AIService
         apiLog.IsError = true;
         payload.ErrorMessage = errorMsg;
         ApiHistory.UpdatePayload(apiLog.Id, payload);
-        AIErrorHandler.EnqueueMessage(() => Messages.Message(errorMsg, MessageTypeDefOf.CautionInput, false));
     }
 
     public static bool IsCancellationRequested() => _currentCts != null && _currentCts.IsCancellationRequested;
