@@ -49,8 +49,6 @@ public static class InteractionLogPatch
         bool isChitchat = interactionDef == InteractionDefOf.Chitchat ||
                           interactionDef == InteractionDefOf.DeepTalk;
 
-        if (!isFastTrack && !isChitchat) return;
-
         Pawn initiator = InitiatorField?.GetValue(interaction) as Pawn;
         if (initiator == null || initiator.Map != Find.CurrentMap) return;
 
@@ -86,6 +84,10 @@ public static class InteractionLogPatch
         if (entry is PlayLogEntry_Interaction)
         {
             return IntDefField?.GetValue(entry) as InteractionDef;
+        }
+        if (entry != null)
+        {
+            return AccessTools.Field(entry.GetType(), "intDef")?.GetValue(entry) as InteractionDef;
         }
         return null;
     }

@@ -23,7 +23,10 @@ public static class Bubbler_Add
         return BubbleCompatibilityPatch.OnBubblerAddPrefix(entry);
     }
 
-    public static void Postfix() { } // Preserved for external addon ABI
+    public static void Postfix()
+    {
+        BubbleCompatibilityPatch.OnBubblerAddPostfix();
+    }
 }
 
 // Maintained for strict ABI / Harmony addon backward compatibility
