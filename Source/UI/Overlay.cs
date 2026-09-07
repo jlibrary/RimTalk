@@ -63,7 +63,7 @@ public class Overlay : MapComponent
     private const float OptionsBarHeight = 30f;
     private const float ResizeHandleSize = 24f;
     private const float DropdownWidth = 200f;
-    private const float DropdownHeight = 325f;
+    private const float DropdownHeight = 340f;
     private const int MaxMessagesInLog = 10;
     private const float TextPadding = 5f;
     private const float MaxNameColumnFraction = 0.45f;

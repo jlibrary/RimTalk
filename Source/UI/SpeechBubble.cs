@@ -37,6 +37,8 @@ public class SpeechBubble
         Text = text ?? string.Empty;
         if (Text.IndexOf('\u00a0') >= 0)
             Text = Text.Replace('\u00a0', ' ');
+        if (Text.IndexOf('\r') >= 0)
+            Text = Text.Replace("\r\n", "\n").Replace('\r', '\n');
         WrappedText = Text;
         StartTick = GenTicks.TicksGame;
         StartRealTime = Time.realtimeSinceStartup;
@@ -144,34 +146,59 @@ public class SpeechBubble
         maxMeasuredLineWidth = 0f;
         if (string.IsNullOrEmpty(text)) return string.Empty;
 
-        string normalized = text.Replace("\r\n", " ").Replace('\n', ' ');
         StringBuilder sb = new();
-        string currentLine = "";
+        string current = "";
 
-        foreach (string word in normalized.Split(' '))
+        for (int i = 0; i < text.Length; i++)
         {
-            if (string.IsNullOrEmpty(word)) continue;
-            string candidate = string.IsNullOrEmpty(currentLine) ? word : currentLine + " " + word;
-
-            if (Verse.Text.CalcSize(candidate).x <= maxLineWidth)
+            char c = text[i];
+            if (c == '\r') continue;
+            if (c == '\n')
             {
-                currentLine = candidate;
+                sb.Append(current).Append('\n');
+                maxMeasuredLineWidth = Mathf.Max(maxMeasuredLineWidth, Verse.Text.CalcSize(current).x);
+                current = "";
                 continue;
             }
 
-            if (!string.IsNullOrEmpty(currentLine))
+            string candidate = current + c;
+            if (Verse.Text.CalcSize(candidate).x <= maxLineWidth)
             {
-                sb.AppendLine(currentLine);
-                maxMeasuredLineWidth = Mathf.Max(maxMeasuredLineWidth, Verse.Text.CalcSize(currentLine).x);
+                current = candidate;
+                continue;
             }
 
-            currentLine = word;
+            int lastSpace = current.LastIndexOf(' ');
+            if (lastSpace > 0 && c < 0x2E80)
+            {
+                string line = current.Substring(0, lastSpace);
+                sb.Append(line).Append('\n');
+                maxMeasuredLineWidth = Mathf.Max(maxMeasuredLineWidth, Verse.Text.CalcSize(line).x);
+                current = current.Substring(lastSpace + 1) + c;
+            }
+            else
+            {
+                bool isPunct = c is '、' or '。' or '！' or '？' or '!' or '?' or '.' or ',' or ')' or '」';
+                if (isPunct && current.Length > 1)
+                {
+                    string line = current.Substring(0, current.Length - 1);
+                    sb.Append(line).Append('\n');
+                    maxMeasuredLineWidth = Mathf.Max(maxMeasuredLineWidth, Verse.Text.CalcSize(line).x);
+                    current = current[current.Length - 1].ToString() + c;
+                }
+                else
+                {
+                    sb.Append(current).Append('\n');
+                    maxMeasuredLineWidth = Mathf.Max(maxMeasuredLineWidth, Verse.Text.CalcSize(current).x);
+                    current = c.ToString();
+                }
+            }
         }
 
-        if (!string.IsNullOrEmpty(currentLine))
+        if (!string.IsNullOrEmpty(current))
         {
-            sb.Append(currentLine);
-            maxMeasuredLineWidth = Mathf.Max(maxMeasuredLineWidth, Verse.Text.CalcSize(currentLine).x);
+            sb.Append(current);
+            maxMeasuredLineWidth = Mathf.Max(maxMeasuredLineWidth, Verse.Text.CalcSize(current).x);
         }
 
         return sb.ToString();
