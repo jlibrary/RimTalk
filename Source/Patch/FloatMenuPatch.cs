@@ -175,7 +175,9 @@ public static class FloatMenuPatch
             target
         ));
 
-        var presets = Settings.Get()?.DialoguePresets;
+        var settings = Settings.Get();
+        settings?.EnsureDialoguePresetsLanguage();
+        var presets = settings?.DialoguePresets;
         if (presets != null && presets.Count > 0)
         {
             for (int i = 0; i < presets.Count; i++)

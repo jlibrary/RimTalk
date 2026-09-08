@@ -91,6 +91,7 @@ public class RimTalkSettings : ModSettings
     public bool AllowOtherFactionsToTalk = false;
     public bool AllowEnemiesToTalk = false;
     public bool AllowCustomConversation = true;
+    public string LastLoadedLanguage = null;
     public List<CustomDialoguePreset> DialoguePresets = [];
     public Settings.PlayerDialogueMode PlayerDialogueMode = Settings.PlayerDialogueMode.Manual;
     public string PlayerName = "Player";
@@ -345,6 +346,7 @@ public class RimTalkSettings : ModSettings
         }
 
         Scribe_Collections.Look(ref DialoguePresets, "dialoguePresets", LookMode.Deep);
+        Scribe_Values.Look(ref LastLoadedLanguage, "lastLoadedLanguage");
 
         // Initialize collections if null
         if (CloudConfigs == null)
@@ -355,6 +357,8 @@ public class RimTalkSettings : ModSettings
                 
         if (DialoguePresets == null || DialoguePresets.Count == 0)
             DialoguePresets = CustomDialoguePreset.CreateDefaultPresets();
+
+        EnsureDialoguePresetsLanguage();
 
         if (EnabledArchivableTypes == null)
             EnabledArchivableTypes = new Dictionary<string, bool>();
@@ -451,5 +455,33 @@ public class RimTalkSettings : ModSettings
     public bool IsFastTrackInteraction(string defName)
     {
         return defName != null && FastTrackInteractions.TryGetValue(defName, out bool enabled) && enabled;
+    }
+
+    /// <summary>
+    /// Synchronizes unmodified default dialogue presets with the active language.
+    /// </summary>
+    public void EnsureDialoguePresetsLanguage()
+    {
+        string currentLang = LanguageDatabase.activeLanguage?.folderName;
+        if (string.IsNullOrEmpty(currentLang) || LastLoadedLanguage == currentLang) return;
+        LastLoadedLanguage = currentLang;
+
+        if (DialoguePresets == null) return;
+        for (int i = 0; i < DialoguePresets.Count; i++)
+        {
+            var preset = DialoguePresets[i];
+            if (preset == null || string.IsNullOrEmpty(preset.DefaultKey)) continue;
+
+            if (!preset.IsCustomTitle)
+            {
+                string titleKey = $"RimTalk.PlayerSettings.{preset.DefaultKey}.Title";
+                if (titleKey.CanTranslate()) preset.Title = titleKey.Translate();
+            }
+            if (!preset.IsCustomPrompt)
+            {
+                string promptKey = $"RimTalk.PlayerSettings.{preset.DefaultKey}.Prompt";
+                if (promptKey.CanTranslate()) preset.Prompt = promptKey.Translate();
+            }
+        }
     }
 }

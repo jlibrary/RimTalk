@@ -7,6 +7,9 @@ namespace RimTalk;
 public class CustomDialoguePreset : IExposable
 {
     public string Id = Guid.NewGuid().ToString("N");
+    public string DefaultKey = null;
+    public bool IsCustomTitle = false;
+    public bool IsCustomPrompt = false;
     public string Title = "";
     public string Prompt = "";
     public bool IncludeVision = false;
@@ -32,6 +35,9 @@ public class CustomDialoguePreset : IExposable
     public void ExposeData()
     {
         Scribe_Values.Look(ref Id, "id", Guid.NewGuid().ToString("N"));
+        Scribe_Values.Look(ref DefaultKey, "defaultKey");
+        Scribe_Values.Look(ref IsCustomTitle, "isCustomTitle", false);
+        Scribe_Values.Look(ref IsCustomPrompt, "isCustomPrompt", false);
         Scribe_Values.Look(ref Title, "title", "");
         Scribe_Values.Look(ref Prompt, "prompt", "");
         Scribe_Values.Look(ref IncludeVision, "includeVision", false);
@@ -45,6 +51,9 @@ public class CustomDialoguePreset : IExposable
         return new CustomDialoguePreset
         {
             Id = Guid.NewGuid().ToString("N"),
+            DefaultKey = DefaultKey,
+            IsCustomTitle = IsCustomTitle,
+            IsCustomPrompt = IsCustomPrompt,
             Title = Title,
             Prompt = Prompt,
             IncludeVision = IncludeVision,
@@ -71,21 +80,30 @@ public class CustomDialoguePreset : IExposable
                 SafeTranslate("RimTalk.PlayerSettings.Preset1.Prompt", "Looking around our base, how do you feel about our setup and daily life here?"),
                 includeVision: true,
                 isAnnouncement: false,
-                isEnabled: false),
+                isEnabled: false)
+            {
+                DefaultKey = "Preset1"
+            },
 
             new CustomDialoguePreset(
                 SafeTranslate("RimTalk.PlayerSettings.Preset2.Title", "Mood & Well-being"),
                 SafeTranslate("RimTalk.PlayerSettings.Preset2.Prompt", "How are you holding up lately? Anything on your mind or bothering you?"),
                 includeVision: false,
                 isAnnouncement: false,
-                isEnabled: false),
+                isEnabled: false)
+            {
+                DefaultKey = "Preset2"
+            },
 
             new CustomDialoguePreset(
                 SafeTranslate("RimTalk.PlayerSettings.Preset3.Title", "Defenses & Tactics"),
                 SafeTranslate("RimTalk.PlayerSettings.Preset3.Prompt", "Take a look at our defenses and gear. Spot any tactical weak points we should reinforce?"),
                 includeVision: true,
                 isAnnouncement: false,
-                isEnabled: false),
+                isEnabled: false)
+            {
+                DefaultKey = "Preset3"
+            },
 
             new CustomDialoguePreset(
                 SafeTranslate("RimTalk.PlayerSettings.Preset4.Title", "Work & Safety Notice"),
@@ -93,6 +111,9 @@ public class CustomDialoguePreset : IExposable
                 includeVision: false,
                 isAnnouncement: true,
                 isEnabled: false)
+            {
+                DefaultKey = "Preset4"
+            }
         ];
     }
 }

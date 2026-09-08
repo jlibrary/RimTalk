@@ -17,6 +17,7 @@ public partial class Settings
     private void DrawCustomDialogueSettings(Listing_Standard listing)
     {
         RimTalkSettings settings = Get();
+        settings.EnsureDialoguePresetsLanguage();
         if (settings.DialoguePresets == null || settings.DialoguePresets.Count == 0)
         {
             settings.DialoguePresets = CustomDialoguePreset.CreateDefaultPresets();
@@ -189,7 +190,11 @@ public partial class Settings
                 "",
                 includeVision: false,
                 isAnnouncement: false,
-                isEnabled: false));
+                isEnabled: false)
+            {
+                IsCustomTitle = true,
+                IsCustomPrompt = true
+            });
         }
         GUI.color = Color.white;
 
@@ -255,7 +260,12 @@ public partial class Settings
 
             // Title TextField
             Rect titleRect = new Rect(inner.x + enabledWidth, innerY, titleWidth, row1Height);
-            preset.Title = DrawTextFieldWithPlaceholder(titleRect, preset.Title, "RimTalk.PlayerSettings.PresetTitlePlaceholder".Translate());
+            string newTitle = DrawTextFieldWithPlaceholder(titleRect, preset.Title, "RimTalk.PlayerSettings.PresetTitlePlaceholder".Translate());
+            if (newTitle != preset.Title)
+            {
+                preset.Title = newTitle;
+                preset.IsCustomTitle = true;
+            }
             TooltipHandler.TipRegion(titleRect, "RimTalk.PlayerSettings.PresetTitleTooltip".Translate());
 
             float currentBtnX = titleRect.xMax + 10f;
@@ -297,8 +307,13 @@ public partial class Settings
 
             // Row 2: Scrollable Prompt TextArea with Horizontal & Vertical scroll
             Rect promptBoxRect = new Rect(inner.x + 4f, innerY, inner.width - 8f, promptBoxHeight);
-            preset.Prompt = DrawScrollableTextArea(promptBoxRect, preset.Prompt ?? "",
+            string newPrompt = DrawScrollableTextArea(promptBoxRect, preset.Prompt ?? "",
                 ref preset.ScrollPosition, $"PresetPrompt_{preset.Id}");
+            if (newPrompt != preset.Prompt)
+            {
+                preset.Prompt = newPrompt;
+                preset.IsCustomPrompt = true;
+            }
 
             listing.Gap(4f);
         }
