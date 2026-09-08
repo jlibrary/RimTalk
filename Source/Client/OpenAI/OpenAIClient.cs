@@ -156,16 +156,7 @@ public class OpenAIClient(
             }
         }
         
-        string reasoningEffort = null;
-
-        if (!string.IsNullOrEmpty(model))
-        {
-            string m = model.ToLower();
-            if (m.Contains("gemini") && (m.Contains("pro") || m.Contains("3.7-flash")))
-                reasoningEffort = "low";
-            else if ((m.Contains("gemini") && m.Contains("flash")) || m.Contains("gemma-4"))
-                reasoningEffort = "minimal";
-        }
+        string reasoningEffort = ApiConfig.GetDefaultReasoningEffort(model);
 
         string baseJson;
         if (!string.IsNullOrEmpty(imageBase64))

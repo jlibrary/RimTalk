@@ -35,20 +35,22 @@ public class ApiConfig : IExposable
     public string GetDefaultRequestJson()
     {
         var model = GetEffectiveModelName();
-        if (!string.IsNullOrEmpty(model))
+        var reasoningEffort = GetDefaultReasoningEffort(model);
+        if (!string.IsNullOrEmpty(reasoningEffort))
         {
-            string m = model.ToLower();
-            if (m.Contains("gemini") && (m.Contains("pro") || m.Contains("3.7-flash")))
-            {
-                return "{\n  \"reasoning_effort\": \"low\"\n}";
-            }
-            if ((m.Contains("gemini") && m.Contains("flash")) || m.Contains("gemma-4"))
-            {
-                return "{\n  \"reasoning_effort\": \"minimal\"\n}";
-            }
+            return $"{{\n  \"reasoning_effort\": \"{reasoningEffort}\"\n}}";
         }
 
         return "{}";
+    }
+
+    public static string GetDefaultReasoningEffort(string model)
+    {
+        if (string.IsNullOrEmpty(model)) return null;
+        string m = model.ToLower();
+        if (m.Contains("gemini")) return "low";
+        if (m.Contains("gemma")) return "minimal";
+        return null;
     }
 
     public bool IsValid()
