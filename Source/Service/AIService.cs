@@ -206,16 +206,7 @@ public static class AIService
     public static bool CanCancelFor(TalkRequest incomingRequest)
     {
         if (!_busy || _currentRequest == null || incomingRequest == null) return false;
-
-        // User talks and announcements always preempt any ongoing generation
-        if (incomingRequest.TalkType.IsFromUser())
-            return true;
-
-        // Interactions and Urgent can cancel low-priority background talks (Other, Sleep, Thought, etc.)
-        if (incomingRequest.TalkType is TalkType.Interaction or TalkType.Urgent)
-            return !_currentRequest.TalkType.IsFastTrack();
-
-        return false;
+        return incomingRequest.TalkType.CanPreempt(_currentRequest.TalkType);
     }
 
     public static void CancelCurrent()

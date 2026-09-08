@@ -28,4 +28,12 @@ public static class TalkTypeExtensions
     {
         return talkType is TalkType.User or TalkType.Announcement or TalkType.Interaction or TalkType.Urgent;
     }
+
+    public static bool CanPreempt(this TalkType incomingType, TalkType currentType)
+    {
+        if (incomingType.IsFromUser()) return true;
+        if (incomingType is TalkType.Interaction or TalkType.Urgent)
+            return !currentType.IsFastTrack();
+        return false;
+    }
 }

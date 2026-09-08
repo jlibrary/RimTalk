@@ -63,9 +63,24 @@ public static class InteractionLogPatch
             return;
         }
 
-        PawnState pawnState = Cache.Get(initiator);
+        var pawnState = Cache.Get(initiator);
         if (pawnState == null || (!isFastTrack && isChitchat && pawnState.TalkRequests.Count > 0))
             return;
+
+        if (isFastTrack)
+        {
+            pawnState.DrainIncomingTalkResponses();
+            if (pawnState.IsGeneratingTalk || pawnState.TalkResponses.Count > 0)
+                return;
+
+            if (recipient != null)
+            {
+                PawnState recipientState = Cache.Get(recipient);
+                recipientState?.DrainIncomingTalkResponses();
+                if (recipientState != null && (recipientState.IsGeneratingTalk || recipientState.TalkResponses.Count > 0))
+                    return;
+            }
+        }
 
         string prompt = interaction.ToGameStringFromPOV(initiator).StripTags();
         prompt = $"{prompt} ({interactionDef.label})";

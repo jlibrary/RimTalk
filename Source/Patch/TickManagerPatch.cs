@@ -73,71 +73,91 @@ internal static class TickManagerPatch
 
         if (IsNow(1))
         {
-            // Fast-track requests: User-initiated talks (priority 1), Interactions (priority 2)
-            while (UserRequestPool.GetNextUserRequest() is { } pawn)
-            {
-                var pawnState = Cache.Get(pawn);
-                if (pawnState == null)
-                {
-                    UserRequestPool.Remove(pawn);
-                    continue;
-                }
-                var request = pawnState.GetNextTalkRequest();
-                
-                if (request == null)
-                {
-                    UserRequestPool.Remove(pawn);
-                    continue;
-                }
-
-                if (AIService.IsBusy())
-                {
-                    if (AIService.CanCancelFor(request))
-                        AIService.CancelCurrent();
-                    return;
-                }
-
-                TalkService.GenerateTalk(request);
-                UserRequestPool.Remove(pawn);
-                return;
-            }
+            ProcessFastTrackRequests();
         }
 
+        ProcessRegularTalkRequests();
+    }
+
+    private static void ProcessRegularTalkRequests()
+    {
         if (AIService.IsBusy())
-        {
-            _lastTalkEndTick = GenTicks.TicksGame;
             return;
-        }
 
         int intervalTicks = CommonUtil.GetTicksForDuration(TalkInterval);
-        if (intervalTicks > 0 && GenTicks.TicksGame - _lastTalkEndTick >= intervalTicks)
+        if (intervalTicks <= 0 || GenTicks.TicksGame - _lastTalkEndTick < intervalTicks)
+            return;
+
+        // Select a pawn based on the current iteration strategy
+        Pawn selectedPawn = PawnSelector.SelectNextAvailablePawn();
+
+        if (selectedPawn != null)
         {
-            // Select a pawn based on the current iteration strategy
-            Pawn selectedPawn = PawnSelector.SelectNextAvailablePawn();
+            // 1. ALWAYS try to get from the general pool first.
+            var talkGenerated = TryGenerateTalkFromPool(selectedPawn);
 
-            if (selectedPawn != null)
+            // 2. If the pawn has a specific talk request, try generating it
+            if (!talkGenerated)
             {
-                // 1. ALWAYS try to get from the general pool first.
-                var talkGenerated = TryGenerateTalkFromPool(selectedPawn);
-
-                // 2. If the pawn has a specific talk request, try generating it
-                if (!talkGenerated)
-                {
-                    var pawnState = Cache.Get(selectedPawn);
-                    if (pawnState?.GetNextTalkRequest() != null)
-                        talkGenerated = TalkService.GenerateTalk(pawnState.GetNextTalkRequest());
-                }
-
-                // 3. Fallback: generate based on current context if nothing else worked
-                if (!talkGenerated)
-                {
-                    TalkRequest talkRequest = new TalkRequest(null, selectedPawn);
-                    TalkService.GenerateTalk(talkRequest);
-                }
+                var pawnState = Cache.Get(selectedPawn);
+                if (pawnState?.GetNextTalkRequest() != null)
+                    talkGenerated = TalkService.GenerateTalk(pawnState.GetNextTalkRequest());
             }
-            
-            _lastTalkEndTick = GenTicks.TicksGame;
+
+            // 3. Fallback: generate based on current context if nothing else worked
+            if (!talkGenerated)
+            {
+                TalkRequest talkRequest = new TalkRequest(null, selectedPawn);
+                TalkService.GenerateTalk(talkRequest);
+            }
         }
+
+        _lastTalkEndTick = GenTicks.TicksGame;
+    }
+
+    private static void ProcessFastTrackRequests()
+    {
+        while (UserRequestPool.GetNextUserRequest() is { } pawn)
+        {
+            var pawnState = Cache.Get(pawn);
+            if (pawnState == null)
+            {
+                UserRequestPool.Remove(pawn);
+                continue;
+            }
+            var request = pawnState.GetNextTalkRequest();
+
+            if (request == null)
+            {
+                UserRequestPool.Remove(pawn);
+                continue;
+            }
+
+            if (AIService.IsBusy())
+            {
+                if (AIService.CanCancelFor(request))
+                {
+                    AIService.CancelCurrent();
+                }
+                else if (request.TalkType == TalkType.Interaction)
+                {
+                    DropQueuedRequest(pawn, pawnState, request);
+                    continue;
+                }
+                return;
+            }
+
+            TalkService.GenerateTalk(request);
+            UserRequestPool.Remove(pawn);
+            return;
+        }
+    }
+
+    private static void DropQueuedRequest(Pawn pawn, PawnState state, TalkRequest request)
+    {
+        UserRequestPool.Remove(pawn);
+        state.TalkRequests.Remove(request);
+        TalkRequestPool.AddToHistory(request, RequestStatus.Expired);
     }
 
     private static bool TryGenerateTalkFromPool(Pawn pawn)
