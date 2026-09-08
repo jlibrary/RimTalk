@@ -232,6 +232,7 @@ public partial class Settings : Mod
             settingsWindow.absorbInputAroundWindow = false;
             settingsWindow.preventCameraMotion = false;
             settingsWindow.closeOnClickedOutside = false;
+            settingsWindow.forcePause = false;
 
             float targetWidth;
             float targetHeight;

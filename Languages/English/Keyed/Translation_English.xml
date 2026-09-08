@@ -243,8 +243,8 @@ Crucial Tips:
     <RimTalk.PlayerSettings.AnnounceTooltip>When enabled, broadcasts the dialogue to all nearby pawns as an announcement.</RimTalk.PlayerSettings.AnnounceTooltip>
     <RimTalk.PlayerSettings.AllowCustomConversation>Enable Custom Dialogue</RimTalk.PlayerSettings.AllowCustomConversation>
     <RimTalk.PlayerSettings.AllowCustomConversationTooltip>Enable pawn dialogue commands, gizmos, and right-click dialogue presets.</RimTalk.PlayerSettings.AllowCustomConversationTooltip>
-    <RimTalk.PlayerSettings.AllowDirectPlayerTalk>Allow Direct Player ↔ Pawn Dialogue</RimTalk.PlayerSettings.AllowDirectPlayerTalk>
-    <RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>Allow the player to talk directly with pawns or receive direct responses. If disabled, only pawn-to-pawn conversations can be directed.</RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>
+    <RimTalk.PlayerSettings.AllowDirectPlayerTalk>Allow Direct Player ↔ Pawn Dialogue (Pawn Gizmos)</RimTalk.PlayerSettings.AllowDirectPlayerTalk>
+    <RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>Displays the Chat and Announce gizmo buttons at the bottom when a pawn is selected, allowing direct conversations or announcements. If disabled, both gizmos are hidden and only pawn-to-pawn dialogues via right-click are available.</RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>
     <RimTalk.PlayerSettings.AllowPlayerAiGen>AI-Generated Player Responses (Apply Persona)</RimTalk.PlayerSettings.AllowPlayerAiGen>
     <RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>When enabled, AI generates subsequent responses for the player matching the player's persona. When disabled, the player only speaks text manually entered by you.</RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>
     <RimTalk.PlayerSettings.PromptLabel>Prompt to send (Question / Instruction):</RimTalk.PlayerSettings.PromptLabel>

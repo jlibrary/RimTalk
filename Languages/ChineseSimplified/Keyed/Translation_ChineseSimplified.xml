@@ -529,8 +529,8 @@ Scriban 魔法 (动态内容)
     <RimTalk.PlayerSettings.AnnounceTooltip>勾选时，将以向附近所有殖民者喊话的公告形式进行对话。</RimTalk.PlayerSettings.AnnounceTooltip>
     <RimTalk.PlayerSettings.AllowCustomConversation>启用自定义对话</RimTalk.PlayerSettings.AllowCustomConversation>
     <RimTalk.PlayerSettings.AllowCustomConversationTooltip>启用殖民者对话指令、Gizmo以及右键对话预设菜单。</RimTalk.PlayerSettings.AllowCustomConversationTooltip>
-    <RimTalk.PlayerSettings.AllowDirectPlayerTalk>允许玩家 ↔ 殖民者直接对话</RimTalk.PlayerSettings.AllowDirectPlayerTalk>
-    <RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>允许玩家以“Player”身份直接向殖民者搭话或接收回应。取消勾选时只能指示殖民者之间进行对话。</RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>
+    <RimTalk.PlayerSettings.AllowDirectPlayerTalk>允许玩家 ↔ 殖民者直接对话 (底部指令图标)</RimTalk.PlayerSettings.AllowDirectPlayerTalk>
+    <RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>选中殖民者时在底部显示直接对话与通告指令图标(Gizmo)。取消勾选时将隐藏这两个图标，只能通过右键指示殖民者之间进行对话。</RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>
     <RimTalk.PlayerSettings.AllowPlayerAiGen>AI自动生成玩家台词（应用人设）</RimTalk.PlayerSettings.AllowPlayerAiGen>
     <RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>勾选时，AI将在对话中根据玩家人设自动生成玩家的后续台词。取消勾选时，玩家只说出用户手动输入的台词。</RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>
     <RimTalk.PlayerSettings.PromptLabel>发送的对话提示词（问题 / 指示）：</RimTalk.PlayerSettings.PromptLabel>

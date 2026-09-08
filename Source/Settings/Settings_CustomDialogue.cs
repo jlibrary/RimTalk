@@ -10,9 +10,10 @@ public partial class Settings
     private const int MaxPersonaLength = 500;
     private static Vector2 _personaScrollPos = Vector2.zero;
 
-    private static Texture2D _visionGizmoIcon, _announceGizmoIcon;
+    private static Texture2D _visionGizmoIcon, _announceGizmoIcon, _chatGizmoIcon;
     private static Texture2D VisionGizmoIcon => UIUtil.GetTexture(ref _visionGizmoIcon, "UI/VisionGizmo");
     private static Texture2D AnnounceGizmoIcon => UIUtil.GetTexture(ref _announceGizmoIcon, "UI/AnnounceGizmo");
+    private static Texture2D ChatGizmoIcon => UIUtil.GetTexture(ref _chatGizmoIcon, "UI/ChatGizmo");
 
     private void DrawCustomDialogueSettings(Listing_Standard listing)
     {
@@ -63,12 +64,18 @@ public partial class Settings
         bool allowDirectPlayerTalk = settings.PlayerDialogueMode != PlayerDialogueMode.Disabled;
         bool allowPlayerAiGen = settings.PlayerDialogueMode == PlayerDialogueMode.AIDriven;
 
-        // Direct Player Talk Checkbox
+        // Direct Player Talk Checkbox with Gizmo Previews
         bool prevDirectTalk = allowDirectPlayerTalk;
-        listing.CheckboxLabeled(
-            "RimTalk.PlayerSettings.AllowDirectPlayerTalk".Translate(),
-            ref allowDirectPlayerTalk,
-            "RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip".Translate());
+        Rect row = listing.GetRect(24f);
+        string label = "RimTalk.PlayerSettings.AllowDirectPlayerTalk".Translate();
+        Widgets.CheckboxLabeled(row, label, ref allowDirectPlayerTalk);
+        TooltipHandler.TipRegion(row, "RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip".Translate());
+
+        float x = row.x + Text.CalcSize(label).x + 8f;
+        if (!allowDirectPlayerTalk) GUI.color = new Color(1f, 1f, 1f, 0.4f);
+        GUI.DrawTexture(new Rect(x, row.y + 2f, 20f, 20f), ChatGizmoIcon);
+        GUI.DrawTexture(new Rect(x + 24f, row.y + 2f, 20f, 20f), AnnounceGizmoIcon);
+        GUI.color = Color.white;
 
         if (prevDirectTalk != allowDirectPlayerTalk)
         {

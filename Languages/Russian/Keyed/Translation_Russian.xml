@@ -531,8 +531,8 @@
     <RimTalk.PlayerSettings.AnnounceTooltip>При включении диалог озвучивается как громкое объявление для всех поселенцев поблизости.</RimTalk.PlayerSettings.AnnounceTooltip>
     <RimTalk.PlayerSettings.AllowCustomConversation>Разрешить пользовательские диалоги</RimTalk.PlayerSettings.AllowCustomConversation>
     <RimTalk.PlayerSettings.AllowCustomConversationTooltip>Включает команды диалога, гизмо и пресеты при клике правой кнопкой мыши.</RimTalk.PlayerSettings.AllowCustomConversationTooltip>
-    <RimTalk.PlayerSettings.AllowDirectPlayerTalk>Разрешить прямой диалог Игрок ↔ Поселенец</RimTalk.PlayerSettings.AllowDirectPlayerTalk>
-    <RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>Позволяет игроку напрямую общаться с поселенцами в роли «Player». Если отключено, доступны только диалоги между поселенцами.</RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>
+    <RimTalk.PlayerSettings.AllowDirectPlayerTalk>Разрешить прямой диалог Игрок ↔ Поселенец (Гизмо)</RimTalk.PlayerSettings.AllowDirectPlayerTalk>
+    <RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>Отображает кнопки гизмо диалога и объявления внизу экрана при выборе поселенца. Если отключено, оба гизмо скрываются, и доступны только диалоги между поселенцами по правому клику.</RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>
     <RimTalk.PlayerSettings.AllowPlayerAiGen>Автогенерация реплик игрока ИИ (применяет персону)</RimTalk.PlayerSettings.AllowPlayerAiGen>
     <RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>При включении ИИ автоматически генерирует последующие ответы игрока согласно персоне. При отключении игрок говорит только введенные вручную фразы.</RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>
     <RimTalk.PlayerSettings.PromptLabel>Промпт диалога для отправки (Вопрос / Указание):</RimTalk.PlayerSettings.PromptLabel>

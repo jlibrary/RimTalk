@@ -532,8 +532,8 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.PlayerSettings.AnnounceTooltip>チェックすると、周囲のすべてのポーンに呼びかける周知形式で対話します。</RimTalk.PlayerSettings.AnnounceTooltip>
     <RimTalk.PlayerSettings.AllowCustomConversation>カスタム対話を有効化</RimTalk.PlayerSettings.AllowCustomConversation>
     <RimTalk.PlayerSettings.AllowCustomConversationTooltip>ポーンへの対話指示、ギズモ、および右クリック対話プリセットメニューを有効にします。</RimTalk.PlayerSettings.AllowCustomConversationTooltip>
-    <RimTalk.PlayerSettings.AllowDirectPlayerTalk>プレイヤー ↔ ポーンの直接対話を許可</RimTalk.PlayerSettings.AllowDirectPlayerTalk>
-    <RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>プレイヤーが「Player」としてポーンに直接話しかけたり返答を受けたりできます。オフにするとポーン同士の対話指示のみ可能になります。</RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>
+    <RimTalk.PlayerSettings.AllowDirectPlayerTalk>プレイヤー ↔ ポーンの直接対話を許可 (下部ギズモ)</RimTalk.PlayerSettings.AllowDirectPlayerTalk>
+    <RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>ポーン選択時に下部に対話およびアナウンスのギズモボタンを表示します。オフにすると両方のギズモが非表示になり、右クリックによるポーン同士の対話指示のみ可能になります。</RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>
     <RimTalk.PlayerSettings.AllowPlayerAiGen>プレイヤーのセリフもAIが自動生成（ペルソナ適用）</RimTalk.PlayerSettings.AllowPlayerAiGen>
     <RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>チェックすると、AIがプレイヤーペルソナに合わせて会話中のプレイヤーの後続セリフを自動生成します。オフの場合、手動入力したセリフのみ発言します。</RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>
     <RimTalk.PlayerSettings.PromptLabel>送信する対話プロンプト（質問 / 指示）：</RimTalk.PlayerSettings.PromptLabel>

@@ -247,8 +247,8 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.PlayerSettings.AnnounceTooltip>체크 시 주변 모든 폰에게 외치는 공지 형태로 대화합니다.</RimTalk.PlayerSettings.AnnounceTooltip>
     <RimTalk.PlayerSettings.AllowCustomConversation>커스텀 대화 활성화</RimTalk.PlayerSettings.AllowCustomConversation>
     <RimTalk.PlayerSettings.AllowCustomConversationTooltip>폰 대화 지시, 기즈모 및 우클릭 대화 프리셋 메뉴를 활성화합니다.</RimTalk.PlayerSettings.AllowCustomConversationTooltip>
-    <RimTalk.PlayerSettings.AllowDirectPlayerTalk>플레이어 ↔ 폰 직접 대화 허용</RimTalk.PlayerSettings.AllowDirectPlayerTalk>
-    <RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>플레이어가 'Player'로서 폰에게 직접 말을 걸거나 응답을 받습니다. 체크 해제 시 폰들끼리의 대화 지시만 가능합니다.</RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>
+    <RimTalk.PlayerSettings.AllowDirectPlayerTalk>플레이어 ↔ 폰 직접 대화 허용 (하단 기즈모)</RimTalk.PlayerSettings.AllowDirectPlayerTalk>
+    <RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>폰 선택 시 하단에 직접 대화 및 공지 기즈모 버튼을 표시하여 플레이어가 직접 대화하거나 공지할 수 있게 합니다. 체크 해제 시 두 기즈모가 모두 숨겨지며, 우클릭을 통한 폰 간 대화 지시만 가능합니다.</RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>
     <RimTalk.PlayerSettings.AllowPlayerAiGen>플레이어 대사도 AI가 자동 생성 (페르소나 적용)</RimTalk.PlayerSettings.AllowPlayerAiGen>
     <RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>체크 시 AI가 플레이어의 페르소나에 맞춰 대화 중 플레이어의 후속 대사를 자동으로 생성합니다. 체크 해제 시 플레이어는 사용자가 직접 입력한 대사만 말합니다.</RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>
     <RimTalk.PlayerSettings.PromptLabel>전송할 대화 프롬프트 (질문 / 지시문):</RimTalk.PlayerSettings.PromptLabel>
