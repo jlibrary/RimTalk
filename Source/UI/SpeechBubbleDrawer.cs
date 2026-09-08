@@ -98,12 +98,12 @@ public static class SpeechBubbleDrawer
         // 5-tier hysteresis: 0 (Closest), 1 (Close), 2 (Middle), 3 (Far), 4 (Very Far)
         return _lastZoomTier switch
         {
-            0 => rootSize > 16.0f ? (rootSize > 24.0f ? (rootSize > 37.0f ? (rootSize > 49.0f ? 4 : 3) : 2) : 1) : 0,
-            1 => rootSize < 14.0f ? 0 : (rootSize > 24.0f ? (rootSize > 37.0f ? (rootSize > 49.0f ? 4 : 3) : 2) : 1),
-            2 => rootSize < 14.0f ? 0 : (rootSize < 22.0f ? 1 : (rootSize > 37.0f ? (rootSize > 49.0f ? 4 : 3) : 2)),
-            3 => rootSize < 22.0f ? (rootSize < 14.0f ? 0 : 1) : (rootSize < 35.0f ? 2 : (rootSize > 49.0f ? 4 : 3)),
-            4 => rootSize < 47.0f ? (rootSize < 35.0f ? (rootSize < 22.0f ? (rootSize < 14.0f ? 0 : 1) : 2) : 3) : 4,
-            _ => rootSize < 15.0f ? 0 : (rootSize < 23.0f ? 1 : (rootSize < 36.0f ? 2 : (rootSize < 48.0f ? 3 : 4)))
+            0 => rootSize > 16.0f ? (rootSize > 24.0f ? (rootSize > 32.0f ? (rootSize > 41.0f ? 4 : 3) : 2) : 1) : 0,
+            1 => rootSize < 14.0f ? 0 : (rootSize > 24.0f ? (rootSize > 32.0f ? (rootSize > 41.0f ? 4 : 3) : 2) : 1),
+            2 => rootSize < 14.0f ? 0 : (rootSize < 22.0f ? 1 : (rootSize > 32.0f ? (rootSize > 41.0f ? 4 : 3) : 2)),
+            3 => rootSize < 22.0f ? (rootSize < 14.0f ? 0 : 1) : (rootSize < 30.0f ? 2 : (rootSize > 41.0f ? 4 : 3)),
+            4 => rootSize < 30.0f ? (rootSize < 22.0f ? (rootSize < 14.0f ? 0 : 1) : 2) : (rootSize < 39.0f ? 3 : 4),
+            _ => rootSize < 15.0f ? 0 : (rootSize < 23.0f ? 1 : (rootSize < 31.0f ? 2 : (rootSize < 40.0f ? 3 : 4)))
         };
     }
 
@@ -117,11 +117,11 @@ public static class SpeechBubbleDrawer
         {
             0 => 1.40f,
             1 => 1.20f,
-            3 => 0.70f,
-            4 => 0.55f,
+            3 => 0.65f,
+            4 => 0.45f,
             _ => 1.00f
         };
-        return Mathf.Clamp(baseScale * mult, 0.35f, 2.00f);
+        return Mathf.Clamp(baseScale * mult, 0.30f, 2.00f);
     }
 
     public static float GetEffectiveFontSize(RimTalkSettings settings)
@@ -135,10 +135,10 @@ public static class SpeechBubbleDrawer
             0 => 4f,
             1 => 2f,
             3 => -3f,
-            4 => -4f,
+            4 => -5f,
             _ => 0f
         };
-        return Mathf.Clamp(baseSize + delta, 6f, 26f);
+        return Mathf.Clamp(baseSize + delta, 5f, 26f);
     }
 
     public static void Clear()
@@ -165,8 +165,8 @@ public static class SpeechBubbleDrawer
         if (cameraDriver == null) return;
 
         float zoomRootSize = cameraDriver.ZoomRootSize;
-        float zoomFade = zoomRootSize > 35f ? Mathf.Clamp01(1f - (zoomRootSize - 35f) / 12f) : 1f;
-        if (zoomFade <= 0.01f) return; // Zoomed out to max or beyond, do not render
+        float zoomFade = zoomRootSize > 38f ? Mathf.Clamp01(1f - (zoomRootSize - 38f) / 9f) : 1f;
+        if (zoomFade <= 0.01f) return; // Zoomed out to max or beyond (47f+), do not render
 
         CellRect currentViewRect = cameraDriver.CurrentViewRect.ExpandedBy(2);
         int curTicks = GenTicks.TicksGame;
