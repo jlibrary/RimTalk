@@ -96,6 +96,12 @@ public static class AIErrorHandler
                 onFailure?.Invoke(retryEx);
                 return default;
             }
+            finally
+            {
+                // Reset so the next request tries the primary model again
+                if (settings.UseSimpleConfig)
+                    settings.IsUsingFallbackModel = false;
+            }
         }
     }
 
