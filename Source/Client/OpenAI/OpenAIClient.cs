@@ -9,7 +9,6 @@ using RimTalk.Service;
 using RimTalk.Util;
 using UnityEngine.Networking;
 using Verse;
-using Enumerable = System.Linq.Enumerable;
 
 namespace RimTalk.Client.OpenAI;
 
@@ -53,10 +52,7 @@ public class OpenAIClient(
         string responseText = await SendRequestAsync(jsonContent, new DownloadHandlerBuffer());
 
         var response = JsonUtil.DeserializeFromJson<OpenAIResponse>(responseText);
-        var content = response?.Choices?[0]?.Message?.Content;
-        var tokens = response?.Usage?.TotalTokens ?? 0;
-
-        return new Payload(_endpointUrl, model, jsonContent, content, tokens);
+        return new Payload(_endpointUrl, model, jsonContent, response?.Choices?[0]?.Message?.Content, response?.Usage?.TotalTokens ?? 0);
     }
 
     public async Task<Payload> GetStreamingChatCompletionAsync<T>(List<(Role role, string message)> prefixMessages,
@@ -73,20 +69,12 @@ public class OpenAIClient(
         Action<T> onResponseParsed,
         Action<Payload> onRequestPrepared = null) where T : class
     {
-        string jsonContent = BuildRequestJson(prefixMessages, messages, stream: true, imageBase64: imageBase64);
-        onRequestPrepared?.Invoke(new Payload(_endpointUrl, model, jsonContent, null, 0));
-        var jsonParser = new JsonStreamParser<T>();
-
-        var streamHandler = new OpenAIStreamHandler(chunk =>
+        var parser = new JsonStreamParser<T>();
+        return await StreamAsync(prefixMessages, messages, imageBase64, chunk =>
         {
-            foreach (var response in jsonParser.Parse(chunk))
+            foreach (var response in parser.Parse(chunk))
                 onResponseParsed?.Invoke(response);
-        });
-
-        await SendRequestAsync(jsonContent, streamHandler);
-
-        return new Payload(_endpointUrl, model, jsonContent, streamHandler.GetFullText(),
-            streamHandler.GetTotalTokens());
+        }, onRequestPrepared);
     }
 
     public async Task<Payload> GetStreamingTextCompletionAsync(
@@ -96,17 +84,24 @@ public class OpenAIClient(
         Action<string> onChunkReceived,
         Action<Payload> onRequestPrepared = null)
     {
+        return await StreamAsync(prefixMessages, messages, imageBase64, chunk =>
+        {
+            if (!string.IsNullOrEmpty(chunk))
+                onChunkReceived?.Invoke(chunk);
+        }, onRequestPrepared);
+    }
+
+    private async Task<Payload> StreamAsync(
+        List<(Role role, string message)> prefixMessages,
+        List<(Role role, string message)> messages,
+        string imageBase64,
+        Action<string> onChunk,
+        Action<Payload> onRequestPrepared)
+    {
         string jsonContent = BuildRequestJson(prefixMessages, messages, stream: true, imageBase64: imageBase64);
         onRequestPrepared?.Invoke(new Payload(_endpointUrl, model, jsonContent, null, 0));
 
-        var streamHandler = new OpenAIStreamHandler(chunk =>
-        {
-            if (!string.IsNullOrEmpty(chunk))
-            {
-                onChunkReceived?.Invoke(chunk);
-            }
-        });
-
+        var streamHandler = new OpenAIStreamHandler(onChunk);
         await SendRequestAsync(jsonContent, streamHandler);
 
         return new Payload(_endpointUrl, model, jsonContent, streamHandler.GetFullText(),
@@ -116,149 +111,60 @@ public class OpenAIClient(
     private string BuildRequestJson(List<(Role role, string message)> prefixMessages,
         List<(Role role, string message)> messages, bool stream, string imageBase64 = null)
     {
+        var request = new ChatRequest
+        {
+            Model = model,
+            Stream = stream,
+            ReasoningEffort = ApiConfig.GetDefaultReasoningEffort(model),
+            Messages = BuildMessages(prefixMessages, messages, imageBase64)
+        };
+
+        string baseJson = JsonUtil.SerializeJsonValue(request.ToPayload());
+        return string.IsNullOrWhiteSpace(customRequestJson)
+            ? baseJson
+            : JsonUtil.MergeJson(baseJson, customRequestJson);
+    }
+
+    private List<ChatMessage> BuildMessages(List<(Role role, string message)> prefixMessages,
+        List<(Role role, string message)> messages, string imageBase64)
+    {
         var rawMessages = new List<(Role role, string message)>();
         if (prefixMessages != null) rawMessages.AddRange(prefixMessages);
         if (messages != null) rawMessages.AddRange(messages);
 
-        var mergedMessages = new List<Message>();
+        var merged = new List<ChatMessage>();
 
-        bool isGemma3 = !string.IsNullOrEmpty(model) && model.Contains("gemma-3");
-        if (isGemma3)
+        // Gemma-3 workaround: convert system messages into an initial user message
+        if (!string.IsNullOrEmpty(model) && model.Contains("gemma-3"))
         {
-            var systemMessages = Enumerable.ToList(Enumerable.Where(rawMessages, m => m.role == Role.System));
-            if (systemMessages.Any())
+            var systemMessages = rawMessages.Where(m => m.role == Role.System).ToList();
+            if (systemMessages.Count > 0)
             {
-                var systemText = string.Join("\n\n", Enumerable.Select(systemMessages, m => m.message));
-
-                mergedMessages.Add(new Message
-                {
-                    Role = "user",
-                    Content = $"{_random.Next()} {systemText}"
-                });
+                var systemText = string.Join("\n\n", systemMessages.Select(m => m.message));
+                merged.Add(new ChatMessage("user", $"{_random.Next()} {systemText}"));
                 rawMessages.RemoveAll(m => m.role == Role.System);
             }
         }
 
-        foreach (var m in rawMessages)
+        foreach (var (role, text) in rawMessages)
         {
-            var roleStr = RoleToString(m.role);
-            if (mergedMessages.Count > 0 && mergedMessages.Last().Role == roleStr)
-            {
-                mergedMessages.Last().Content += "\n\n" + m.message;
-            }
+            var roleStr = RoleToString(role);
+            if (merged.Count > 0 && merged.Last().Role == roleStr)
+                merged.Last().Text += "\n\n" + text;
             else
-            {
-                mergedMessages.Add(new Message
-                {
-                    Role = roleStr,
-                    Content = m.message
-                });
-            }
+                merged.Add(new ChatMessage(roleStr, text));
         }
-        
-        string reasoningEffort = ApiConfig.GetDefaultReasoningEffort(model);
 
-        string baseJson;
         if (!string.IsNullOrEmpty(imageBase64))
         {
-            var messageDicts = new List<object>();
-            bool imageAttached = false;
-
-            for (int i = 0; i < mergedMessages.Count; i++)
-            {
-                var msg = mergedMessages[i];
-                if (i == mergedMessages.Count - 1 && msg.Role == "user")
-                {
-                    imageAttached = true;
-                    messageDicts.Add(new Dictionary<string, object>
-                    {
-                        ["role"] = msg.Role,
-                        ["content"] = new List<object>
-                        {
-                            new Dictionary<string, object>
-                            {
-                                ["type"] = "text",
-                                ["text"] = msg.Content ?? ""
-                            },
-                            new Dictionary<string, object>
-                            {
-                                ["type"] = "image_url",
-                                ["image_url"] = new Dictionary<string, object>
-                                {
-                                    ["url"] = $"data:image/jpeg;base64,{imageBase64}",
-                                    ["detail"] = "auto"
-                                }
-                            }
-                        }
-                    });
-                }
-                else
-                {
-                    messageDicts.Add(new Dictionary<string, object>
-                    {
-                        ["role"] = msg.Role,
-                        ["content"] = msg.Content ?? ""
-                    });
-                }
-            }
-
-            if (!imageAttached)
-            {
-                messageDicts.Add(new Dictionary<string, object>
-                {
-                    ["role"] = "user",
-                    ["content"] = new List<object>
-                    {
-                        new Dictionary<string, object>
-                        {
-                            ["type"] = "image_url",
-                            ["image_url"] = new Dictionary<string, object>
-                            {
-                                ["url"] = $"data:image/jpeg;base64,{imageBase64}",
-                                ["detail"] = "auto"
-                            }
-                        }
-                    }
-                });
-            }
-
-            var rootDict = new Dictionary<string, object>
-            {
-                ["model"] = model,
-                ["messages"] = messageDicts,
-                ["stream"] = stream
-            };
-            if (stream)
-            {
-                rootDict["stream_options"] = new Dictionary<string, object> { ["include_usage"] = true };
-            }
-            if (!string.IsNullOrEmpty(reasoningEffort))
-            {
-                rootDict["reasoning_effort"] = reasoningEffort;
-            }
-
-            baseJson = JsonUtil.SerializeJsonValue(rootDict);
-        }
-        else
-        {
-            var request = new OpenAIRequest
-            {
-                Model = model,
-                Messages = mergedMessages,
-                Stream = stream,
-                StreamOptions = stream ? new StreamOptions { IncludeUsage = true } : null,
-                ReasoningEffort = reasoningEffort
-            };
-
-            baseJson = JsonUtil.SerializeToJson(request);
+            var lastUser = merged.LastOrDefault(m => m.Role == "user");
+            if (lastUser != null && lastUser == merged.Last())
+                lastUser.ImageBase64 = imageBase64;
+            else
+                merged.Add(new ChatMessage("user", "", imageBase64));
         }
 
-        if (!string.IsNullOrWhiteSpace(customRequestJson))
-        {
-            return JsonUtil.MergeJson(baseJson, customRequestJson);
-        }
-
-        return baseJson;
+        return merged;
     }
 
     private static string RoleToString(Role role)

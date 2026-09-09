@@ -21,9 +21,7 @@ public class Dialog_CustomizeRequest : Window
     public Dialog_CustomizeRequest(ApiConfig config)
     {
         _config = config;
-        _jsonText = string.IsNullOrWhiteSpace(config.CustomRequestJson)
-            ? config.GetDefaultRequestJson()
-            : config.CustomRequestJson;
+        _jsonText = config.CustomRequestJson ?? "";
 
         _samples = Dialog_CustomizeRequestHelp.GetSamples();
         _selectedSampleIndex = 0;
@@ -250,7 +248,7 @@ public class Dialog_CustomizeRequest : Window
         const float resetWidth = 115f;
         if (Widgets.ButtonText(new Rect(x, y, resetWidth, h), "RimTalk.Settings.ResetToDefault".Translate()))
         {
-            _jsonText = _config.GetDefaultRequestJson();
+            _jsonText = "";
         }
         x += resetWidth + 6f;
 
@@ -306,7 +304,13 @@ public class Dialog_CustomizeRequest : Window
         if (string.IsNullOrWhiteSpace(_jsonText))
         {
             GUI.color = Color.gray;
-            Widgets.Label(rect, "RimTalk.Settings.CustomJsonEmpty".Translate());
+            string defaultJson = _config.GetDefaultRequestJson();
+            string status = "RimTalk.Settings.CustomJsonEmpty".Translate();
+            if (!string.IsNullOrEmpty(defaultJson) && defaultJson != "{}")
+            {
+                status += $" ({defaultJson.Replace("\n", " ").Replace("  ", " ").Trim()})";
+            }
+            Widgets.Label(rect, status);
         }
         else if (JsonUtil.IsValidJson(_jsonText, out var err))
         {

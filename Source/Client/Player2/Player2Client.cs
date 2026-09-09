@@ -86,7 +86,15 @@ public class Player2Client : IAIClient
         List<(Role role, string message)> messages, 
         Action<Payload> onRequestPrepared = null)
     {
-        string jsonContent = BuildRequestJson(prefixMessages, messages, stream: false);
+        return await GetChatCompletionAsync(prefixMessages, messages, null, onRequestPrepared);
+    }
+
+    public async Task<Payload> GetChatCompletionAsync(List<(Role role, string message)> prefixMessages, 
+        List<(Role role, string message)> messages, 
+        string imageBase64,
+        Action<Payload> onRequestPrepared = null)
+    {
+        string jsonContent = BuildRequestJson(prefixMessages, messages, stream: false, imageBase64: imageBase64);
         onRequestPrepared?.Invoke(new Payload(CurrentApiUrl, CurrentModelName, jsonContent, null, 0));
         string responseText = await SendRequestAsync($"{CurrentApiUrl}/v1/chat/completions", jsonContent,
             () => new DownloadHandlerBuffer());
@@ -103,7 +111,16 @@ public class Player2Client : IAIClient
         Action<T> onResponseParsed,
         Action<Payload> onRequestPrepared = null) where T : class
     {
-        string jsonContent = BuildRequestJson(prefixMessages, messages, stream: true);
+        return await GetStreamingChatCompletionAsync(prefixMessages, messages, null, onResponseParsed, onRequestPrepared);
+    }
+
+    public async Task<Payload> GetStreamingChatCompletionAsync<T>(List<(Role role, string message)> prefixMessages,
+        List<(Role role, string message)> messages, 
+        string imageBase64,
+        Action<T> onResponseParsed,
+        Action<Payload> onRequestPrepared = null) where T : class
+    {
+        string jsonContent = BuildRequestJson(prefixMessages, messages, stream: true, imageBase64: imageBase64);
         onRequestPrepared?.Invoke(new Payload(CurrentApiUrl, CurrentModelName, jsonContent, null, 0));
         var jsonParser = new JsonStreamParser<T>();
         Player2StreamHandler streamHandler = null;
@@ -122,35 +139,15 @@ public class Player2Client : IAIClient
             streamHandler?.GetTotalTokens() ?? 0);
     }
 
-    private string BuildRequestJson(List<(Role role, string message)> prefixMessages, List<(Role role, string message)> messages, bool stream)
+    private string BuildRequestJson(List<(Role role, string message)> prefixMessages, List<(Role role, string message)> messages, bool stream, string imageBase64 = null)
     {
-        var rawMessages = new List<(Role role, string message)>();
-        if (prefixMessages != null) rawMessages.AddRange(prefixMessages);
-        if (messages != null) rawMessages.AddRange(messages);
-
-        var mergedMessages = new List<Message>();
-        foreach (var m in rawMessages)
+        var request = new ChatRequest
         {
-            var roleStr = RoleToString(m.role);
-            if (mergedMessages.Count > 0 && mergedMessages.Last().Role == roleStr)
-            {
-                mergedMessages.Last().Content += "\n\n" + m.message;
-            }
-            else
-            {
-                mergedMessages.Add(new Message
-                {
-                    Role = roleStr,
-                    Content = m.message
-                });
-            }
-        }
+            Stream = stream,
+            Messages = BuildMessages(prefixMessages, messages, imageBase64)
+        };
 
-        string baseJson = JsonUtil.SerializeToJson(new Player2Request
-        {
-            Messages = mergedMessages,
-            Stream = stream
-        });
+        string baseJson = JsonUtil.SerializeJsonValue(request.ToPayload());
 
         if (!string.IsNullOrWhiteSpace(_customRequestJson))
         {
@@ -158,6 +155,34 @@ public class Player2Client : IAIClient
         }
 
         return baseJson;
+    }
+
+    private static List<ChatMessage> BuildMessages(List<(Role role, string message)> prefixMessages, List<(Role role, string message)> messages, string imageBase64)
+    {
+        var rawMessages = new List<(Role role, string message)>();
+        if (prefixMessages != null) rawMessages.AddRange(prefixMessages);
+        if (messages != null) rawMessages.AddRange(messages);
+
+        var merged = new List<ChatMessage>();
+        foreach (var (role, text) in rawMessages)
+        {
+            var roleStr = RoleToString(role);
+            if (merged.Count > 0 && merged.Last().Role == roleStr)
+                merged.Last().Text += "\n\n" + text;
+            else
+                merged.Add(new ChatMessage(roleStr, text));
+        }
+
+        if (!string.IsNullOrEmpty(imageBase64))
+        {
+            var lastUser = merged.LastOrDefault(m => m.Role == "user");
+            if (lastUser != null && lastUser == merged.Last())
+                lastUser.ImageBase64 = imageBase64;
+            else
+                merged.Add(new ChatMessage("user", "", imageBase64));
+        }
+
+        return merged;
     }
 
     private static string RoleToString(Role role)

@@ -1,4 +1,7 @@
+using System;
+using System.Collections.Generic;
 using RimTalk.Data;
+using RimTalk.Util;
 using Verse;
 
 namespace RimTalk;
@@ -22,6 +25,14 @@ public class ApiConfig : IExposable
         Scribe_Values.Look(ref CustomModelName, "customModelName", "");
         Scribe_Values.Look(ref BaseUrl, "baseUrl", "");
         Scribe_Values.Look(ref CustomRequestJson, "customRequestJson", "");
+
+        if (Scribe.mode == LoadSaveMode.PostLoadInit && !string.IsNullOrWhiteSpace(CustomRequestJson))
+        {
+            if (CustomRequestJson.Trim() == GetDefaultRequestJson().Trim())
+            {
+                CustomRequestJson = "";
+            }
+        }
     }
 
     public string GetEffectiveModelName()
@@ -32,25 +43,38 @@ public class ApiConfig : IExposable
         return SelectedModel == "Custom" ? CustomModelName : SelectedModel;
     }
 
-    public string GetDefaultRequestJson()
+    public static Dictionary<string, object> GetDefaultRequestDict(string model)
     {
-        var model = GetEffectiveModelName();
-        var reasoningEffort = GetDefaultReasoningEffort(model);
-        if (!string.IsNullOrEmpty(reasoningEffort))
+        var dict = new Dictionary<string, object>();
+        if (string.IsNullOrEmpty(model)) return dict;
+
+        string m = model.ToLower();
+        if (m.Contains("gemini"))
         {
-            return $"{{\n  \"reasoning_effort\": \"{reasoningEffort}\"\n}}";
+            dict["reasoning_effort"] = "low";
+        }
+        else if (m.Contains("gemma"))
+        {
+            dict["reasoning_effort"] = "minimal";
         }
 
-        return "{}";
+        return dict;
+    }
+
+    public string GetDefaultRequestJson()
+    {
+        return GetDefaultRequestJson(GetEffectiveModelName());
+    }
+
+    public static string GetDefaultRequestJson(string model)
+    {
+        var dict = GetDefaultRequestDict(model);
+        return dict.Count > 0 ? JsonUtil.SerializeJsonValue(dict, indent: true) : "{}";
     }
 
     public static string GetDefaultReasoningEffort(string model)
     {
-        if (string.IsNullOrEmpty(model)) return null;
-        string m = model.ToLower();
-        if (m.Contains("gemini")) return "low";
-        if (m.Contains("gemma")) return "minimal";
-        return null;
+        return GetDefaultRequestDict(model).TryGetValue("reasoning_effort", out var val) ? val?.ToString() : null;
     }
 
     public bool IsValid()

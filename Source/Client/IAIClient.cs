@@ -18,6 +18,11 @@ namespace RimTalk.Client
             List<(Role role, string message)> messages, 
             Action<Payload> onRequestPrepared = null);
 
+        Task<Payload> GetChatCompletionAsync(List<(Role role, string message)> prefixMessages, 
+            List<(Role role, string message)> messages, 
+            string imageBase64,
+            Action<Payload> onRequestPrepared = null);
+
         /// <summary>
         /// Streams chat completion and invokes a callback for each response chunk.
         /// </summary>
@@ -27,6 +32,12 @@ namespace RimTalk.Client
         /// <param name="onRequestPrepared">Callback invoked as soon as the request JSON is built</param>
         Task<Payload> GetStreamingChatCompletionAsync<T>(List<(Role role, string message)> prefixMessages, 
             List<(Role role, string message)> messages, 
+            Action<T> onResponseParsed,
+            Action<Payload> onRequestPrepared = null) where T : class;
+
+        Task<Payload> GetStreamingChatCompletionAsync<T>(List<(Role role, string message)> prefixMessages, 
+            List<(Role role, string message)> messages, 
+            string imageBase64,
             Action<T> onResponseParsed,
             Action<Payload> onRequestPrepared = null) where T : class;
     }

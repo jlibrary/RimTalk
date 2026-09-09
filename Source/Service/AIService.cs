@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using RimTalk.Client;
-using RimTalk.Client.OpenAI;
 using RimTalk.Data;
 using RimTalk.Error;
 using RimTalk.Source.Data;
@@ -59,20 +58,10 @@ public static class AIService
 
         var payload = await ExecuteWithRetry(apiLog, async client =>
         {
-            Payload result;
-            if (!string.IsNullOrEmpty(request.ImageBase64) && client is OpenAIClient openAIClient)
-            {
-                result = await openAIClient.GetStreamingChatCompletionAsync<TalkResponse>(prefixMessages, [],
-                    request.ImageBase64, onResponse,
-                    prep => ApiHistory.UpdatePayload(apiLog.Id, prep));
-            }
-            else
-            {
-                // All prompt messages are already in prefixMessages, pass empty list for messages
-                result = await client.GetStreamingChatCompletionAsync<TalkResponse>(prefixMessages, [],
-                    onResponse,
-                    prep => ApiHistory.UpdatePayload(apiLog.Id, prep));
-            }
+            // All prompt messages are already in prefixMessages, pass empty list for messages
+            var result = await client.GetStreamingChatCompletionAsync<TalkResponse>(prefixMessages, [],
+                request.ImageBase64, onResponse,
+                prep => ApiHistory.UpdatePayload(apiLog.Id, prep));
 
             // Only adjust graph points when API returns real token counts (e.g. OpenAI)
             if (result?.TokenCount > 0)
