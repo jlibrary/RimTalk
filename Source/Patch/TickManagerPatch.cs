@@ -107,7 +107,7 @@ internal static class TickManagerPatch
             // 3. Fallback: generate based on current context if nothing else worked
             if (!talkGenerated)
             {
-                TalkRequest talkRequest = new TalkRequest(null, selectedPawn);
+                TalkRequest talkRequest = new TalkRequest(null, selectedPawn, talkType: TalkType.Chitchat);
                 TalkService.GenerateTalk(talkRequest);
             }
         }
