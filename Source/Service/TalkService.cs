@@ -47,7 +47,7 @@ public static class TalkService
             talkRequest.Recipient = null;
         }
 
-        bool isPlayerAnnouncement = talkRequest.IsAnnouncement && talkRequest.Recipient.IsPlayer();
+        bool isPlayerAnnouncement = talkRequest.IsAnnouncement && talkRequest.Recipient?.IsPlayer() == true;
         Pawn mainPawn = isPlayerAnnouncement ? talkRequest.Recipient : talkRequest.Initiator;
 
         List<Pawn> nearbyPawns = PawnSelector.GetAllNearByPawns(talkRequest.Initiator, isAnnouncement: talkRequest.IsAnnouncement);

@@ -111,6 +111,15 @@ public static class AIService
     {
         _busy = true;
         _busySince = DateTime.Now;
+        if (_currentCts != null)
+        {
+            try
+            {
+                if (!_currentCts.IsCancellationRequested) _currentCts.Cancel();
+                _currentCts.Dispose();
+            }
+            catch (Exception) { /* ignored */ }
+        }
         _currentCts = new System.Threading.CancellationTokenSource();
         try
         {

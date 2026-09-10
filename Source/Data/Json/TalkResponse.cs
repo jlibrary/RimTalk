@@ -11,6 +11,7 @@ public class TalkResponse(TalkType talkType, string name, string text) : IJsonDa
 {
     public Guid Id { get; set; } = Guid.NewGuid();
 
+    [DataMember(Name = "talkType", EmitDefaultValue = false)]
     public TalkType TalkType { get; set; } = talkType;
     
     [DataMember(Name = "name")] 

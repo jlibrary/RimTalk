@@ -10,6 +10,7 @@ namespace RimTalk.Client.OpenAI;
 /// </summary>
 public class OpenAIStreamHandler(Action<string> onContentReceived) : DownloadHandlerScript
 {
+    private readonly Decoder _decoder = Encoding.UTF8.GetDecoder();
     private readonly StringBuilder _buffer = new();
     private readonly StringBuilder _fullText = new();
     private readonly StringBuilder _allReceivedData = new();
@@ -27,7 +28,10 @@ public class OpenAIStreamHandler(Action<string> onContentReceived) : DownloadHan
     {
         if (data == null || dataLength == 0) return false;
 
-        string chunk = Encoding.UTF8.GetString(data, 0, dataLength);
+        int charCount = _decoder.GetCharCount(data, 0, dataLength, false);
+        char[] chars = new char[charCount];
+        _decoder.GetChars(data, 0, dataLength, chars, 0, false);
+        string chunk = new string(chars);
         _buffer.Append(chunk);
         _allReceivedData.Append(chunk);
         
