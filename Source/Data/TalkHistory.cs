@@ -22,6 +22,8 @@ public static class TalkHistory
     public static void AddIgnored(Guid id)
     {
         IgnoredCache.Add(id);
+        var log = ApiHistory.GetApiLog(id);
+        log?.SpokenTick = -1;
     }
 
     public static int GetSpokenTick(Guid id)
