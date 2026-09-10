@@ -63,14 +63,13 @@ public class Overlay : MapComponent
     private const float OptionsBarHeight = 30f;
     private const float ResizeHandleSize = 24f;
     private const float DropdownWidth = 200f;
-    private const float DropdownHeight = 340f;
+    private const float DropdownHeight = 310f;
     private const int MaxMessagesInLog = 10;
     private const float TextPadding = 5f;
     private const float MaxNameColumnFraction = 0.45f;
     private const float MinimumDialogueWidth = 120f;
     private const float LineVerticalPadding = 2f;
     private const string LeftBracket = "[";
-    private const string Direction = " -> ";
     private const string RightBracket = "]";
 
     private static bool _externalDialogueFormatterResolved;
@@ -124,11 +123,9 @@ public class Overlay : MapComponent
         }
     }
 
-    private static void SplitParticipantNames(string combinedName, string explicitTargetName,
-        out string speakerName, out string targetName)
+    private static string ExtractSpeakerName(string combinedName)
     {
         string candidate = TrimOuterBrackets(combinedName);
-        targetName = TrimOuterBrackets(explicitTargetName);
 
         int separatorIndex = candidate.IndexOf("->", StringComparison.Ordinal);
         int separatorLength = 2;
@@ -138,21 +135,18 @@ public class Overlay : MapComponent
             separatorLength = 1;
         }
 
-        if (separatorIndex > 0 && separatorIndex + separatorLength < candidate.Length)
-        {
-            speakerName = candidate[..separatorIndex].Trim();
-            if (string.IsNullOrWhiteSpace(targetName))
-            {
-                targetName = candidate[(separatorIndex + separatorLength)..].Trim();
-            }
-        }
-        else
-        {
-            speakerName = candidate;
-        }
+        string speakerName = separatorIndex > 0 && separatorIndex + separatorLength < candidate.Length
+            ? candidate[..separatorIndex].Trim()
+            : candidate;
 
-        if (string.IsNullOrWhiteSpace(speakerName)) speakerName = "Unknown";
-        if (string.IsNullOrWhiteSpace(targetName) || string.Equals(speakerName, targetName, StringComparison.OrdinalIgnoreCase)) targetName = null;
+        return string.IsNullOrWhiteSpace(speakerName) ? "Unknown" : speakerName;
+    }
+
+    private static void SplitParticipantNames(string combinedName, string explicitTargetName,
+        out string speakerName, out string targetName)
+    {
+        speakerName = ExtractSpeakerName(combinedName);
+        targetName = null;
     }
 
     private static string TrimOuterBrackets(string value)
@@ -255,46 +249,17 @@ public class Overlay : MapComponent
         return bestDialogue;
     }
 
-    private static void CalculateParticipantLayout(string speakerName, string targetName, float maxNameWidth,
-        out string speakerLabel, out string targetLabel, out float leftBracketWidth, out float speakerWidth,
-        out float directionWidth, out float targetWidth, out float rightBracketWidth, out float nameWidth)
+    private static void CalculateParticipantLayout(string speakerName, float maxNameWidth,
+        out string speakerLabel, out float leftBracketWidth, out float speakerWidth,
+        out float rightBracketWidth, out float nameWidth)
     {
         leftBracketWidth = Text.CalcSize(LeftBracket).x;
-        directionWidth = targetName == null ? 0f : Text.CalcSize(Direction).x;
         rightBracketWidth = Text.CalcSize(RightBracket).x;
 
-        float availableNameWidth = Mathf.Max(1f,
-            maxNameWidth - leftBracketWidth - directionWidth - rightBracketWidth);
-        float naturalSpeakerWidth = Text.CalcSize(speakerName).x;
-        float naturalTargetWidth = targetName == null ? 0f : Text.CalcSize(targetName).x;
-
-        float speakerLimit = availableNameWidth;
-        float targetLimit = 0f;
-        if (targetName != null)
-        {
-            float halfWidth = availableNameWidth * 0.5f;
-            if (naturalSpeakerWidth <= halfWidth)
-            {
-                speakerLimit = naturalSpeakerWidth;
-                targetLimit = availableNameWidth - speakerLimit;
-            }
-            else if (naturalTargetWidth <= halfWidth)
-            {
-                targetLimit = naturalTargetWidth;
-                speakerLimit = availableNameWidth - targetLimit;
-            }
-            else
-            {
-                speakerLimit = halfWidth;
-                targetLimit = halfWidth;
-            }
-        }
-
-        speakerLabel = ClampSingleLineWithEllipsis(speakerName, speakerLimit);
-        targetLabel = targetName == null ? null : ClampSingleLineWithEllipsis(targetName, targetLimit);
+        float availableNameWidth = Mathf.Max(1f, maxNameWidth - leftBracketWidth - rightBracketWidth);
+        speakerLabel = ClampSingleLineWithEllipsis(speakerName, availableNameWidth);
         speakerWidth = Text.CalcSize(speakerLabel).x;
-        targetWidth = targetLabel == null ? 0f : Text.CalcSize(targetLabel).x;
-        nameWidth = leftBracketWidth + speakerWidth + directionWidth + targetWidth + rightBracketWidth;
+        nameWidth = leftBracketWidth + speakerWidth + rightBracketWidth;
     }
 
     public override void MapRemoved()
@@ -334,16 +299,12 @@ public class Overlay : MapComponent
 
             foreach (var message in messages)
             {
-                SplitParticipantNames(message.Name, message.TargetName, out string speakerName, out string targetName);
-                if (!settings.OverlayShowTargetName)
-                {
-                    targetName = null;
-                }
+                string speakerName = ExtractSpeakerName(message.Name);
 
-                CalculateParticipantLayout(speakerName, targetName, maxNameWidth,
-                    out string speakerLabel, out string targetLabel,
-                    out float leftBracketWidth, out float speakerWidth, out float directionWidth,
-                    out float targetWidth, out float rightBracketWidth, out float nameWidth);
+                CalculateParticipantLayout(speakerName, maxNameWidth,
+                    out string speakerLabel,
+                    out float leftBracketWidth, out float speakerWidth,
+                    out float rightBracketWidth, out float nameWidth);
 
                 newCache.Add(new CachedMessageLine
                 {
@@ -351,14 +312,14 @@ public class Overlay : MapComponent
                     PawnInstance = FindPawn(speakerName, message.TalkRequest),
                     SpeakerName = speakerName,
                     SpeakerLabel = speakerLabel,
-                    TargetName = targetName,
-                    TargetLabel = targetLabel,
-                    TargetPawnInstance = FindPawn(targetName, message.TalkRequest),
+                    TargetName = null,
+                    TargetLabel = null,
+                    TargetPawnInstance = null,
                     RawDialogue = message.Response ?? string.Empty,
                     LeftBracketWidth = leftBracketWidth,
                     SpeakerWidth = speakerWidth,
-                    DirectionWidth = directionWidth,
-                    TargetWidth = targetWidth,
+                    DirectionWidth = 0f,
+                    TargetWidth = 0f,
                     RightBracketWidth = rightBracketWidth,
                     NameWidth = nameWidth,
                     TalkType = message.TalkRequest?.TalkType ?? TalkType.Other,
@@ -388,8 +349,7 @@ public class Overlay : MapComponent
                         : BuildFinalRichText(line.RawDialogue);
 
                     float dialogueHeight = CalcRichTextHeight(line.Dialogue, dialogueWidth);
-                    float nameHeight = Text.CalcSize(LeftBracket + line.SpeakerLabel +
-                        (line.TargetLabel == null ? string.Empty : Direction + line.TargetLabel) + RightBracket).y;
+                    float nameHeight = Text.CalcSize(LeftBracket + line.SpeakerLabel + RightBracket).y;
                     line.LineHeight = Mathf.Max(dialogueHeight, nameHeight) + LineVerticalPadding;
 
                     if (i == 0) line.LineHeight = Mathf.Min(line.LineHeight, contentHeight);
@@ -660,15 +620,6 @@ public class Overlay : MapComponent
 
             listing.Gap(6);
 
-            DrawSettingsCheckbox(listing, "RimTalk.Overlay.ShowTargetName".Translate(), settings.OverlayShowTargetName, value =>
-            {
-                settings.OverlayShowTargetName = value;
-                _isCacheDirty = true;
-                settings.Write();
-            });
-
-            listing.Gap(6);
-
             DrawSettingsCheckbox(listing, "RimTalk.Overlay.AlignNameColumn".Translate(), settings.OverlayAlignNameColumn, value =>
             {
                 settings.OverlayAlignNameColumn = value;
@@ -753,32 +704,9 @@ public class Overlay : MapComponent
 
     private static void DrawParticipants(Rect rowRect, CachedMessageLine message)
     {
-        float currentX = rowRect.x;
-
-        if (message.TargetName == null)
-        {
-            float totalPawnLabelWidth = message.LeftBracketWidth + message.SpeakerWidth + message.RightBracketWidth;
-            var speakerRect = new Rect(currentX, rowRect.y, totalPawnLabelWidth, rowRect.height);
-            UIUtil.DrawClickablePawnName(speakerRect, message.SpeakerLabel, message.PawnInstance, includeBrackets: true);
-        }
-        else
-        {
-            DrawCachedLabel(new Rect(currentX, rowRect.y, message.LeftBracketWidth, rowRect.height), LeftBracket);
-            currentX += message.LeftBracketWidth;
-
-            var speakerRect = new Rect(currentX, rowRect.y, message.SpeakerWidth, rowRect.height);
-            UIUtil.DrawClickablePawnName(speakerRect, message.SpeakerLabel, message.PawnInstance, false);
-            currentX += message.SpeakerWidth;
-
-            DrawCachedLabel(new Rect(currentX, rowRect.y, message.DirectionWidth, rowRect.height), Direction);
-            currentX += message.DirectionWidth;
-
-            var targetRect = new Rect(currentX, rowRect.y, message.TargetWidth, rowRect.height);
-            UIUtil.DrawClickablePawnName(targetRect, message.TargetLabel, message.TargetPawnInstance, false);
-            currentX += message.TargetWidth;
-
-            DrawCachedLabel(new Rect(currentX, rowRect.y, message.RightBracketWidth, rowRect.height), RightBracket);
-        }
+        float totalPawnLabelWidth = message.LeftBracketWidth + message.SpeakerWidth + message.RightBracketWidth;
+        var speakerRect = new Rect(rowRect.x, rowRect.y, totalPawnLabelWidth, rowRect.height);
+        UIUtil.DrawClickablePawnName(speakerRect, message.SpeakerLabel, message.PawnInstance, includeBrackets: true);
     }
 
     private void DrawMessageLog(Rect inRect)
