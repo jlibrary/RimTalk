@@ -23,8 +23,8 @@ public class PawnSelector
     private static List<Pawn> GetNearbyPawnsInternal(Pawn pawn1, Pawn pawn2 = null,
         DetectionType detectionType = DetectionType.Hearing, bool onlyTalkable = false, bool isAnnouncement = false)
     {
-        int configuredCount = Settings.Get()?.Context?.MaxPawnContextCount ?? 0;
-        int effectiveMaxResults = Math.Max(10, configuredCount);
+        int configuredCount = Settings.Get()?.Context?.MaxPawnContextCount ?? 3;
+        int effectiveMaxResults = isAnnouncement ? Math.Max(configuredCount, 8) : configuredCount;
 
         float baseRange = detectionType == DetectionType.Hearing 
             ? isAnnouncement ? AnnouncementHearingRange : HearingRange 
