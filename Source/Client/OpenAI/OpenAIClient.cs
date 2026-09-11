@@ -200,7 +200,10 @@ public class OpenAIClient(
         webRequest.SetRequestHeader("Content-Type", "application/json");
 
         if (!string.IsNullOrEmpty(apiKey))
+        {
             webRequest.SetRequestHeader("Authorization", $"Bearer {apiKey}");
+            webRequest.SetRequestHeader("x-api-key", apiKey);
+        }
 
         if (extraHeaders != null)
         {
@@ -301,7 +304,12 @@ public class OpenAIClient(
     public static async Task<List<string>> FetchModelsAsync(string apiKey, string url)
     {
         using var webRequest = UnityWebRequest.Get(url);
-        webRequest.SetRequestHeader("Authorization", "Bearer " + apiKey);
+        if (!string.IsNullOrEmpty(apiKey))
+        {
+            webRequest.SetRequestHeader("Authorization", "Bearer " + apiKey);
+            webRequest.SetRequestHeader("x-api-key", apiKey);
+            webRequest.SetRequestHeader("anthropic-version", "2023-06-01");
+        }
 
         var asyncOp = webRequest.SendWebRequest();
         while (!asyncOp.isDone) await Task.Delay(100);

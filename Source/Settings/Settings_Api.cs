@@ -583,6 +583,7 @@ public partial class Settings
         AIProvider.Google,
         AIProvider.Player2,
         AIProvider.OpenAI,
+        AIProvider.Claude,
         AIProvider.DeepSeek,
         AIProvider.Grok,
         AIProvider.GLM,
@@ -590,6 +591,7 @@ public partial class Settings
         AIProvider.OpenRouter,
         AIProvider.AlibabaIntl,
         AIProvider.AlibabaCN,
+        AIProvider.Moonshot,
         AIProvider.Custom
     ];
 
@@ -702,16 +704,6 @@ public partial class Settings
                 }
                 OpenMenu(models);
             }, TaskScheduler.FromCurrentSynchronizationContext());
-        }
-    }
-
-    private void DrawEnableToggle(Rect rowRect, float y, float height, ApiConfig config)
-    {
-        Rect toggleRect = new Rect(rowRect.xMax - 70f, y, 24f, height);
-        Widgets.Checkbox(new Vector2(toggleRect.x, toggleRect.y), ref config.IsEnabled);
-        if (Mouse.IsOver(toggleRect))
-        {
-            TooltipHandler.TipRegion(toggleRect, "RimTalk.Settings.EnableDisableApiConfigTooltip".Translate());
         }
     }
 

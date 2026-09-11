@@ -16,7 +16,9 @@ public enum AIProvider
     Player2,
     Local,
     Custom,
-    None
+    None,
+    Claude,
+    Moonshot
 }
 
 public struct ProviderDef
@@ -106,6 +108,24 @@ public static class AIProviderRegistry
             AIProvider.Player2, new ProviderDef
             {
                 EndpointUrl = "https://api.player2.game"
+            }
+        },
+        {
+            AIProvider.Claude, new ProviderDef
+            {
+                EndpointUrl = "https://api.anthropic.com/v1/chat/completions",
+                ListModelsUrl = "https://api.anthropic.com/v1/models",
+                ExtraHeaders = new Dictionary<string, string>
+                {
+                    { "anthropic-version", "2023-06-01" }
+                }
+            }
+        },
+        {
+            AIProvider.Moonshot, new ProviderDef
+            {
+                EndpointUrl = "https://api.moonshot.ai/v1/chat/completions",
+                ListModelsUrl = "https://api.moonshot.ai/v1/models"
             }
         }
     };
