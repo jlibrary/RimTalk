@@ -423,12 +423,27 @@ Scriban 魔法 (動態內容)
     <RimTalk.DebugWindow.ResendTooltip>編輯上下文與提示詞，然後重新傳送以測試對話。</RimTalk.DebugWindow.ResendTooltip>
     <RimTalk.DebugWindow.ResendSuccess>請求已成功重新傳送。</RimTalk.DebugWindow.ResendSuccess>
     <RimTalk.DebugWindow.ResendError>AI 目前正忙。請在狀態為 Idle 時重試。</RimTalk.DebugWindow.ResendError>
+    <RimTalk.DebugWindow.JsonParseError>無法解析修改後的 JSON，請檢查 JSON 語法。</RimTalk.DebugWindow.JsonParseError>
     <RimTalk.DebugWindow.ApiLog>API 日誌</RimTalk.DebugWindow.ApiLog>
     <RimTalk.DebugWindow.FailMsg>請求失敗。點擊「API 日誌」以產生支援用的日誌。</RimTalk.DebugWindow.FailMsg>
     <RimTalk.DebugWindow.JsonDeserializationFailedTip>(若持續出現，請查看 API 設定 -> 齒輪圖示 -> 1. 強制對話格式)</RimTalk.DebugWindow.JsonDeserializationFailedTip>
     <RimTalk.DebugWindow.CopyAll>複製</RimTalk.DebugWindow.CopyAll>
     <RimTalk.DebugWindow.Copy>複製</RimTalk.DebugWindow.Copy>
     <RimTalk.DebugWindow.Copied>已複製</RimTalk.DebugWindow.Copied>
+    <RimTalk.DebugWindow.CopyClipboard>複製到剪貼簿</RimTalk.DebugWindow.CopyClipboard>
+    <RimTalk.DebugWindow.CopyClipboardTooltip>以有效的原始 JSON 格式複製到剪貼簿。</RimTalk.DebugWindow.CopyClipboardTooltip>
+    <RimTalk.DebugWindow.UnescapeNewlines>展開換行顯示</RimTalk.DebugWindow.UnescapeNewlines>
+    <RimTalk.DebugWindow.UnescapeNewlinesTooltip>在畫面上展開換行以便閱讀。複製按鈕將始終複製有效的原始 JSON。</RimTalk.DebugWindow.UnescapeNewlinesTooltip>
+    <RimTalk.DebugWindow.EditMode>編輯模式</RimTalk.DebugWindow.EditMode>
+    <RimTalk.DebugWindow.EditModeTooltip>切換到編輯模式，可以在重新發送前直接修改文字。</RimTalk.DebugWindow.EditModeTooltip>
+    <RimTalk.DebugWindow.Report>錯誤回報</RimTalk.DebugWindow.Report>
+    <RimTalk.DebugWindow.ReportTooltip>打開錯誤回報視窗。</RimTalk.DebugWindow.ReportTooltip>
+    <RimTalk.DebugWindow.ReportConfirmation>[API 錯誤回報前確認]\n\n為了排查原因，需要包含請求與回應的完整原始 JSON 結構。\n\n- 回報前必讀：\n• 401（金鑰無效）、429（額度耗盡）及 5xx（服務商伺服器故障）等外部 API/伺服器錯誤非 Mod 缺陷。\n• 因設定錯誤或 AI 服務商臨時故障導致的回報可能會被直接關閉而不予回覆。\n\n- 隱私與回報說明：\n• 殖民者名稱、提示詞和對話內容將被公開上傳至網路。\n• 如包含敏感內容，可透過視窗頂部的【全部複製】自行檢查並手動提交。\n• 但請注意：分析需要保持格式完整的全部原始 JSON，且 Steam 討論區查看長篇文字極不方便，因此強烈建議使用連結形式進行回報。\n\n- 回報步驟：\n1. 首先點擊下方的【上傳日誌】，將連結複製到剪貼簿。\n2. 然後點擊【打開 Steam 討論區】，在打開的討論區中貼上（Ctrl+V）並發布。</RimTalk.DebugWindow.ReportConfirmation>
+    <RimTalk.DebugWindow.ReportSuccess>日誌連結已複製到剪貼簿，請貼上至 Steam 討論區！</RimTalk.DebugWindow.ReportSuccess>
+    <RimTalk.DebugWindow.ReportUploading>正在上傳日誌...</RimTalk.DebugWindow.ReportUploading>
+    <RimTalk.DebugWindow.ReportFailed>上傳失敗，完整日誌已複製到剪貼簿。</RimTalk.DebugWindow.ReportFailed>
+    <RimTalk.DebugWindow.UploadLog>上傳日誌</RimTalk.DebugWindow.UploadLog>
+    <RimTalk.DebugWindow.OpenSteamDiscussion>打開 Steam 討論區</RimTalk.DebugWindow.OpenSteamDiscussion>
     <RimTalk.DebugWindow.Undo>撤銷</RimTalk.DebugWindow.Undo>
     <RimTalk.DebugWindow.Prompt>提示詞 (Prompt)</RimTalk.DebugWindow.Prompt>
     <RimTalk.DebugWindow.Response>回應 (Response)</RimTalk.DebugWindow.Response>

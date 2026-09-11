@@ -446,12 +446,27 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.DebugWindow.ResendTooltip>컨텍스트와 프롬프트를 수정한 뒤 재전송하여 대화를 테스트합니다.</RimTalk.DebugWindow.ResendTooltip>
     <RimTalk.DebugWindow.ResendSuccess>요청이 성공적으로 재전송되었습니다.</RimTalk.DebugWindow.ResendSuccess>
     <RimTalk.DebugWindow.ResendError>AI가 현재 사용 중입니다. 상태가 Idle일 때 다시 시도하세요.</RimTalk.DebugWindow.ResendError>
+    <RimTalk.DebugWindow.JsonParseError>수정된 JSON을 파싱할 수 없습니다. JSON 문법을 확인해주세요.</RimTalk.DebugWindow.JsonParseError>
     <RimTalk.DebugWindow.ApiLog>API 로그</RimTalk.DebugWindow.ApiLog>
     <RimTalk.DebugWindow.FailMsg>요청에 실패했습니다. 지원을 위해 "API 로그"를 클릭하여 로그를 생성하세요.</RimTalk.DebugWindow.FailMsg>
     <RimTalk.DebugWindow.JsonDeserializationFailedTip>(계속 발생 시 API 설정 -> 톱니바퀴 -> 1번 대화 형식 강제 적용 확인)</RimTalk.DebugWindow.JsonDeserializationFailedTip>
     <RimTalk.DebugWindow.CopyAll>모두 복사</RimTalk.DebugWindow.CopyAll>
     <RimTalk.DebugWindow.Copy>복사</RimTalk.DebugWindow.Copy>
     <RimTalk.DebugWindow.Copied>복사 완료</RimTalk.DebugWindow.Copied>
+    <RimTalk.DebugWindow.CopyClipboard>클립보드에 복사</RimTalk.DebugWindow.CopyClipboard>
+    <RimTalk.DebugWindow.CopyClipboardTooltip>유효한 원본 JSON 형식으로 클립보드에 복사합니다.</RimTalk.DebugWindow.CopyClipboardTooltip>
+    <RimTalk.DebugWindow.UnescapeNewlines>줄바꿈 펼쳐보기</RimTalk.DebugWindow.UnescapeNewlines>
+    <RimTalk.DebugWindow.UnescapeNewlinesTooltip>화면에 줄바꿈으로 펼쳐봅니다. 복사 버튼을 누르면 항상 유효한 원본 JSON으로 복사됩니다.</RimTalk.DebugWindow.UnescapeNewlinesTooltip>
+    <RimTalk.DebugWindow.EditMode>수정 모드</RimTalk.DebugWindow.EditMode>
+    <RimTalk.DebugWindow.EditModeTooltip>텍스트를 직접 수정하여 재전송할 수 있는 편집 모드로 전환합니다.</RimTalk.DebugWindow.EditModeTooltip>
+    <RimTalk.DebugWindow.Report>오류 제보</RimTalk.DebugWindow.Report>
+    <RimTalk.DebugWindow.ReportTooltip>오류 로그 제보 창을 엽니다.</RimTalk.DebugWindow.ReportTooltip>
+    <RimTalk.DebugWindow.ReportConfirmation>[API 오류 제보]\n\n원인 규명을 위해 요청/응답의 원본 JSON 전체 구조가 필요합니다.\n\n- 제보 전 필수 확인:\n• 401(키 오류), 429(할당량 초과), 5xx(제공사 서버 장애) 등 외부 API 및 서버 오류는 모드 결함이 아닙니다.\n• 개인 설정 오류나 AI 서비스 일시 장애로 인한 제보는 별도 답변 없이 닫힐 수 있습니다.\n\n- 프라이버시 및 제보 안내:\n• 림월드 폰 이름, 프롬프트, 대화 내용이 웹에 공개됩니다.\n• 민감한 내용이 꺼려지면 창 상단의 [전체 복사]로 직접 검토 후 올려주셔도 됩니다.\n• 단, 분석을 위해 서식이 보존된 원본 JSON 전체가 필요하며, 스팀 게시판은 긴 텍스트를 확인하기 매우 불편하므로 링크 형태의 제보를 권장합니다.\n\n- 제보 순서:\n1. 먼저 아래 [로그 업로드]를 눌러 링크를 클립보드에 복사합니다.\n2. 그 다음 [스팀 토론 열기]를 눌러 열린 게시판에 붙여넣기(Ctrl+V)하여 글을 등록해 주세요.</RimTalk.DebugWindow.ReportConfirmation>
+    <RimTalk.DebugWindow.ReportSuccess>로그 링크가 복사되었습니다. 스팀 토론에 붙여넣어 주세요!</RimTalk.DebugWindow.ReportSuccess>
+    <RimTalk.DebugWindow.ReportUploading>로그 업로드 중...</RimTalk.DebugWindow.ReportUploading>
+    <RimTalk.DebugWindow.ReportFailed>업로드에 실패하여 전체 로그가 클립보드에 복사되었습니다. 스팀 토론에 붙여넣어 주세요.</RimTalk.DebugWindow.ReportFailed>
+    <RimTalk.DebugWindow.UploadLog>로그 업로드</RimTalk.DebugWindow.UploadLog>
+    <RimTalk.DebugWindow.OpenSteamDiscussion>스팀 토론 열기</RimTalk.DebugWindow.OpenSteamDiscussion>
     <RimTalk.DebugWindow.Undo>되돌리기</RimTalk.DebugWindow.Undo>
     <RimTalk.DebugWindow.Prompt>프롬프트 (Prompt)</RimTalk.DebugWindow.Prompt>
     <RimTalk.DebugWindow.Response>응답 (Response)</RimTalk.DebugWindow.Response>

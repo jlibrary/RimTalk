@@ -423,12 +423,27 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.DebugWindow.ResendTooltip>コンテキストとプロンプトを編集し、再送信して会話をテストします。</RimTalk.DebugWindow.ResendTooltip>
     <RimTalk.DebugWindow.ResendSuccess>リクエストが正常に再送信されました。</RimTalk.DebugWindow.ResendSuccess>
     <RimTalk.DebugWindow.ResendError>AIは現在処理中です。ステータスがIdleになったら再試行してください。</RimTalk.DebugWindow.ResendError>
+    <RimTalk.DebugWindow.JsonParseError>変更されたJSONの解析に失敗しました。JSONの構文を確認してください。</RimTalk.DebugWindow.JsonParseError>
     <RimTalk.DebugWindow.ApiLog>API ログ</RimTalk.DebugWindow.ApiLog>
     <RimTalk.DebugWindow.FailMsg>リクエストに失敗しました。「API ログ」をクリックしてサポート用ログを生成してください。</RimTalk.DebugWindow.FailMsg>
     <RimTalk.DebugWindow.JsonDeserializationFailedTip>(解決しない場合は、API設定 -> 歯車アイコン -> 1. 対話形式の強制 をご確認ください)</RimTalk.DebugWindow.JsonDeserializationFailedTip>
     <RimTalk.DebugWindow.CopyAll>すべてコピー</RimTalk.DebugWindow.CopyAll>
     <RimTalk.DebugWindow.Copy>コピー</RimTalk.DebugWindow.Copy>
     <RimTalk.DebugWindow.Copied>コピーしました</RimTalk.DebugWindow.Copied>
+    <RimTalk.DebugWindow.CopyClipboard>クリップボードにコピー</RimTalk.DebugWindow.CopyClipboard>
+    <RimTalk.DebugWindow.CopyClipboardTooltip>有効な元JSON形式でクリップボードにコピーします。</RimTalk.DebugWindow.CopyClipboardTooltip>
+    <RimTalk.DebugWindow.UnescapeNewlines>改行を展開して表示</RimTalk.DebugWindow.UnescapeNewlines>
+    <RimTalk.DebugWindow.UnescapeNewlinesTooltip>画面上で改行を展開して見やすく表示します。コピー時は常に有効な元JSONがコピーされます。</RimTalk.DebugWindow.UnescapeNewlinesTooltip>
+    <RimTalk.DebugWindow.EditMode>編集モード</RimTalk.DebugWindow.EditMode>
+    <RimTalk.DebugWindow.EditModeTooltip>テキストを直接編集して再送信できる編集モードに切り替えます。</RimTalk.DebugWindow.EditModeTooltip>
+    <RimTalk.DebugWindow.Report>エラー報告</RimTalk.DebugWindow.Report>
+    <RimTalk.DebugWindow.ReportTooltip>エラー報告ウィンドウを開きます。</RimTalk.DebugWindow.ReportTooltip>
+    <RimTalk.DebugWindow.ReportConfirmation>[APIエラー報告前の確認]\n\n原因調査のため、リクエストとレスポンスの元の生JSON構造全体が必要です。\n\n- 報告前の確認事項:\n• 401(キー無効)、429(クォータ超過)、5xx(プロバイダーサーバー障害)などの外部API・サーバーエラーはMODのバグではありません。\n• 設定ミスやAIサービスの一時的なサーバー障害による報告は回答なく閉じられる場合があります。\n\n- プライバシーと報告に関する案内:\n• ポーン名、プロンプト、会話内容がWeb上に公開されます。\n• 機微な内容が含まれる場合は上部の[すべてコピー]から内容を確認して手動で共有してください。\n• ただし、分析には書式が保たれた元の生JSON全体が必要であり、Steam掲示板では長文テキストの確認が非常に困難なため、リンク形式での報告を推奨します。\n\n- 報告の手順:\n1. まず下の[ログをアップロード]を押して、リンクをクリップボードにコピーします。\n2. 次に[Steamスレッドを開く]を押し、開いた掲示板に貼り付けて(Ctrl+V)投稿してください。</RimTalk.DebugWindow.ReportConfirmation>
+    <RimTalk.DebugWindow.ReportSuccess>ログのリンクをクリップボードにコピーしました。Steamスレッドに貼り付けてください！</RimTalk.DebugWindow.ReportSuccess>
+    <RimTalk.DebugWindow.ReportUploading>ログをアップロード中...</RimTalk.DebugWindow.ReportUploading>
+    <RimTalk.DebugWindow.ReportFailed>アップロードに失敗したため、全体のログがクリップボードにコピーされました。</RimTalk.DebugWindow.ReportFailed>
+    <RimTalk.DebugWindow.UploadLog>ログをアップロード</RimTalk.DebugWindow.UploadLog>
+    <RimTalk.DebugWindow.OpenSteamDiscussion>Steamスレッドを開く</RimTalk.DebugWindow.OpenSteamDiscussion>
     <RimTalk.DebugWindow.Undo>元に戻す</RimTalk.DebugWindow.Undo>
     <RimTalk.DebugWindow.Prompt>プロンプト (Prompt)</RimTalk.DebugWindow.Prompt>
     <RimTalk.DebugWindow.Response>レスポンス (Response)</RimTalk.DebugWindow.Response>

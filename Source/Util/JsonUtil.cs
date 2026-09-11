@@ -71,7 +71,7 @@ public static class JsonUtil
             return string.Empty;
         }
 
-        string sanitized = text.Replace("```json", "").Replace("```", "").Trim();
+        string sanitized = text.Replace("```jsonl", "").Replace("```json", "").Replace("```", "").Trim();
 
         int startIndex = sanitized.IndexOfAny(['{', '[']);
         int endIndex = sanitized.LastIndexOfAny(['}', ']']);
@@ -740,6 +740,136 @@ public static class JsonUtil
 
             throw new FormatException($"Invalid number '{numStr}' at position {start}");
         }
+    }
+
+    #endregion
+
+    #region UI & Display Formatting
+
+    public static string PrettifyJson(string json)
+    {
+        if (string.IsNullOrWhiteSpace(json)) return json ?? string.Empty;
+
+        var trimmed = json.Trim();
+        if (!trimmed.StartsWith("{") && !trimmed.StartsWith("["))
+            return json;
+
+        var sb = new StringBuilder(trimmed.Length + 256);
+        bool inString = false;
+        bool isEscaped = false;
+        int indent = 0;
+        const string indentStr = "  ";
+
+        for (int i = 0; i < trimmed.Length; i++)
+        {
+            char ch = trimmed[i];
+
+            if (inString)
+            {
+                sb.Append(ch);
+                if (isEscaped)
+                {
+                    isEscaped = false;
+                }
+                else if (ch == '\\')
+                {
+                    isEscaped = true;
+                }
+                else if (ch == '"')
+                {
+                    inString = false;
+                }
+                continue;
+            }
+
+            switch (ch)
+            {
+                case '"':
+                    inString = true;
+                    sb.Append(ch);
+                    break;
+                case '{':
+                case '[':
+                    sb.Append(ch);
+                    int next = i + 1;
+                    while (next < trimmed.Length && char.IsWhiteSpace(trimmed[next])) next++;
+                    if (next < trimmed.Length && ((ch == '{' && trimmed[next] == '}') || (ch == '[' && trimmed[next] == ']')))
+                    {
+                        sb.Append(trimmed[next]);
+                        i = next;
+                    }
+                    else
+                    {
+                        indent++;
+                        sb.AppendLine();
+                        for (int k = 0; k < indent; k++) sb.Append(indentStr);
+                    }
+                    break;
+                case '}':
+                case ']':
+                    indent = Math.Max(0, indent - 1);
+                    sb.AppendLine();
+                    for (int k = 0; k < indent; k++) sb.Append(indentStr);
+                    sb.Append(ch);
+                    break;
+                case ',':
+                    sb.Append(ch);
+                    sb.AppendLine();
+                    for (int k = 0; k < indent; k++) sb.Append(indentStr);
+                    break;
+                case ':':
+                    sb.Append(": ");
+                    break;
+                default:
+                    if (!char.IsWhiteSpace(ch))
+                    {
+                        sb.Append(ch);
+                    }
+                    break;
+            }
+        }
+
+        return sb.ToString();
+    }
+
+    public static string UnescapeNewlines(string text)
+    {
+        if (string.IsNullOrEmpty(text)) return text ?? string.Empty;
+
+        var sb = new StringBuilder(text.Length);
+        for (int i = 0; i < text.Length; i++)
+        {
+            if (text[i] == '\\' && i + 1 < text.Length)
+            {
+                char next = text[i + 1];
+                if (next == 'n')
+                {
+                    sb.AppendLine();
+                    i++;
+                    continue;
+                }
+                if (next == 'r')
+                {
+                    if (i + 3 < text.Length && text[i + 2] == '\\' && text[i + 3] == 'n')
+                    {
+                        sb.AppendLine();
+                        i += 3;
+                        continue;
+                    }
+                    i++;
+                    continue;
+                }
+                if (next == '\\')
+                {
+                    sb.Append('\\');
+                    i++;
+                    continue;
+                }
+            }
+            sb.Append(text[i]);
+        }
+
+        return sb.ToString();
     }
 
     #endregion

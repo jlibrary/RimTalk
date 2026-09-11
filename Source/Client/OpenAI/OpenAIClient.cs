@@ -52,7 +52,10 @@ public class OpenAIClient(
         string responseText = await SendRequestAsync(jsonContent, new DownloadHandlerBuffer());
 
         var response = JsonUtil.DeserializeFromJson<OpenAIResponse>(responseText);
-        return new Payload(_endpointUrl, model, jsonContent, response?.Choices?[0]?.Message?.Content, response?.Usage?.TotalTokens ?? 0);
+        return new Payload(_endpointUrl, model, jsonContent, response?.Choices?[0]?.Message?.Content, response?.Usage?.TotalTokens ?? 0)
+        {
+            StatusCode = 200
+        };
     }
 
     public async Task<Payload> GetStreamingChatCompletionAsync<T>(List<(Role role, string message)> prefixMessages,
@@ -105,7 +108,10 @@ public class OpenAIClient(
         await SendRequestAsync(jsonContent, streamHandler);
 
         return new Payload(_endpointUrl, model, jsonContent, streamHandler.GetFullText(),
-            streamHandler.GetTotalTokens());
+            streamHandler.GetTotalTokens())
+        {
+            StatusCode = 200
+        };
     }
 
     private string BuildRequestJson(List<(Role role, string message)> prefixMessages,
@@ -259,7 +265,7 @@ public class OpenAIClient(
                 string errorMsg = sHandler.DetectedError;
                 string allText = sHandler.GetAllReceivedText();
                 throw new AIRequestException(errorMsg,
-                    new Payload(_endpointUrl, model, jsonContent, allText, 0, errorMsg));
+                    new Payload(_endpointUrl, model, jsonContent, allText, 0, errorMsg) { StatusCode = (int)webRequest.responseCode });
             }
 
             if (webRequest.responseCode >= 400 || webRequest.isNetworkError || webRequest.isHttpError)
@@ -273,7 +279,7 @@ public class OpenAIClient(
         {
             string errorMsg = ErrorUtil.ExtractErrorMessage(responseText) ?? "Quota exceeded";
             throw new QuotaExceededException(errorMsg,
-                new Payload(_endpointUrl, model, jsonContent, responseText, 0, errorMsg));
+                new Payload(_endpointUrl, model, jsonContent, responseText, 0, errorMsg) { StatusCode = (int)webRequest.responseCode });
         }
 
         if (webRequest.isNetworkError || webRequest.isHttpError)
@@ -281,7 +287,7 @@ public class OpenAIClient(
             string errorMsg = ErrorUtil.ExtractErrorMessage(responseText) ?? webRequest.error;
             Logger.Warning($"Request failed: {webRequest.responseCode} - {errorMsg}");
             throw new AIRequestException(errorMsg,
-                new Payload(_endpointUrl, model, jsonContent, responseText, 0, errorMsg));
+                new Payload(_endpointUrl, model, jsonContent, responseText, 0, errorMsg) { StatusCode = (int)webRequest.responseCode });
         }
 
         if (downloadHandler is DownloadHandlerBuffer)

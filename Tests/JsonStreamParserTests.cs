@@ -140,4 +140,60 @@ public class JsonStreamParserTests
         Assert.EndsWith("}", cleaned);
         Assert.Contains("Colonist", cleaned);
     }
+
+    [Fact]
+    public void JsonUtil_PrettifyJson_FormatsCompactJsonWithIndents()
+    {
+        string compact = "{\"model\":\"gpt-4o\",\"messages\":[{\"role\":\"system\",\"content\":\"hello world\"}],\"temperature\":0.7}";
+        string pretty = JsonUtil.PrettifyJson(compact);
+
+        Assert.Contains("  \"model\": \"gpt-4o\",", pretty);
+        Assert.Contains("  \"messages\": [", pretty);
+        Assert.Contains("    {", pretty);
+        Assert.Contains("      \"role\": \"system\",", pretty);
+        Assert.Contains("      \"content\": \"hello world\"", pretty);
+        Assert.Contains("    }", pretty);
+        Assert.Contains("  ],", pretty);
+        Assert.Contains("  \"temperature\": 0.7", pretty);
+    }
+
+    [Fact]
+    public void JsonUtil_PrettifyJson_NonJsonReturnsOriginal()
+    {
+        string rawError = "502 Bad Gateway: Connection timeout";
+        string result = JsonUtil.PrettifyJson(rawError);
+        Assert.Equal(rawError, result);
+    }
+
+    [Fact]
+    public void JsonUtil_PrettifyJson_HandlesEscapedQuotesAndSpecialChars()
+    {
+        string json = "{\"text\":\"Colonist said: \\\"Look at the {stars}!\\\"\",\"empty\":{}}";
+        string pretty = JsonUtil.PrettifyJson(json);
+
+        Assert.Contains("\"text\": \"Colonist said: \\\"Look at the {stars}!\\\"\"", pretty);
+        Assert.Contains("\"empty\": {}", pretty);
+    }
+
+    [Fact]
+    public void JsonUtil_UnescapeNewlines_ConvertsEscapedNewlines()
+    {
+        string input = "Line 1\\nLine 2\\r\\nLine 3";
+        string result = JsonUtil.UnescapeNewlines(input);
+
+        Assert.Contains("Line 1", result);
+        Assert.Contains("Line 2", result);
+        Assert.Contains("Line 3", result);
+        Assert.DoesNotContain("\\n", result);
+        Assert.DoesNotContain("\\r", result);
+    }
+
+    [Fact]
+    public void JsonUtil_PrettifyJson_NonJsonOrRawMarkdownReturnsOriginalRaw()
+    {
+        string input = "```jsonl\n{\"name\": \"Kennis\", \"text\": \"Hello\"}\n```";
+        string result = JsonUtil.PrettifyJson(input);
+
+        Assert.Equal(input, result);
+    }
 }

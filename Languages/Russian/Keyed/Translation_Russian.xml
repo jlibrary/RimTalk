@@ -422,12 +422,27 @@
     <RimTalk.DebugWindow.ResendTooltip>Измените контекст и запрос, затем отправьте снова для тестирования диалога.</RimTalk.DebugWindow.ResendTooltip>
     <RimTalk.DebugWindow.ResendSuccess>Запрос успешно отправлен повторно.</RimTalk.DebugWindow.ResendSuccess>
     <RimTalk.DebugWindow.ResendError>ИИ в данный момент занят. Повторите попытку, когда статус будет Idle.</RimTalk.DebugWindow.ResendError>
+    <RimTalk.DebugWindow.JsonParseError>Не удалось разобрать измененный JSON. Пожалуйста, проверьте синтаксис JSON.</RimTalk.DebugWindow.JsonParseError>
     <RimTalk.DebugWindow.ApiLog>Журнал API</RimTalk.DebugWindow.ApiLog>
     <RimTalk.DebugWindow.FailMsg>Запрос не выполнен. Нажмите «Журнал API», чтобы создать журнал для поддержки.</RimTalk.DebugWindow.FailMsg>
     <RimTalk.DebugWindow.JsonDeserializationFailedTip>(Если ошибка повторяется, проверьте Настройки API -> Значок шестеренки -> 1. Фиксация формата диалога)</RimTalk.DebugWindow.JsonDeserializationFailedTip>
     <RimTalk.DebugWindow.CopyAll>Копировать всё</RimTalk.DebugWindow.CopyAll>
     <RimTalk.DebugWindow.Copy>Копировать</RimTalk.DebugWindow.Copy>
     <RimTalk.DebugWindow.Copied>Скопировано</RimTalk.DebugWindow.Copied>
+    <RimTalk.DebugWindow.CopyClipboard>Копировать в буфер обмена</RimTalk.DebugWindow.CopyClipboard>
+    <RimTalk.DebugWindow.CopyClipboardTooltip>Скопировать отчет в буфер обмена как валидный JSON.</RimTalk.DebugWindow.CopyClipboardTooltip>
+    <RimTalk.DebugWindow.UnescapeNewlines>Понятные переносы строк</RimTalk.DebugWindow.UnescapeNewlines>
+    <RimTalk.DebugWindow.UnescapeNewlinesTooltip>Отображать удобные переносы строк. Кнопка копирования всегда копирует валидный исходный JSON.</RimTalk.DebugWindow.UnescapeNewlinesTooltip>
+    <RimTalk.DebugWindow.EditMode>Режим редактирования</RimTalk.DebugWindow.EditMode>
+    <RimTalk.DebugWindow.EditModeTooltip>Включить режим редактирования, чтобы изменить текст перед повторной отправкой.</RimTalk.DebugWindow.EditModeTooltip>
+    <RimTalk.DebugWindow.Report>Сообщить об ошибке</RimTalk.DebugWindow.Report>
+    <RimTalk.DebugWindow.ReportTooltip>Открыть окно сообщения об ошибке.</RimTalk.DebugWindow.ReportTooltip>
+    <RimTalk.DebugWindow.ReportConfirmation>[Проверка перед отправкой отчета об ошибке]\n\nДля выявления причины требуется полная структура исходного JSON запроса и ответа.\n\n- Обязательно проверьте перед отправкой:\n• 401 (неверный ключ), 429 (исчерпан лимит) и 5xx (сбой сервера провайдера) — это внешние ошибки, а не баг мода.\n• Отчеты, вызванные ошибками настройки или временными сбоями провайдера, могут быть закрыты без ответа.\n\n- Конфиденциальность и отправка:\n• Имена пешек, промпты и диалоги будут опубликованы в сети.\n• Если лог содержит личные данные, используйте кнопку [Копировать все] вверху для ручной отправки.\n• Однако для анализа необходим весь исходный JSON с сохранением форматирования, а тема Steam крайне неудобна для чтения длинного текста, поэтому настоятельно рекомендуется отправлять отчет в виде ссылки.\n\n- Порядок отправки:\n1. Сначала нажмите [Загрузить лог] ниже, чтобы скопировать ссылку в буфер обмена.\n2. Затем нажмите [Открыть тему в Steam] и вставьте (Ctrl+V) ссылку в открывшуюся тему для публикации.</RimTalk.DebugWindow.ReportConfirmation>
+    <RimTalk.DebugWindow.ReportSuccess>Ссылка на лог скопирована в буфер обмена. Вставьте ее в тему Steam!</RimTalk.DebugWindow.ReportSuccess>
+    <RimTalk.DebugWindow.ReportUploading>Загрузка лога...</RimTalk.DebugWindow.ReportUploading>
+    <RimTalk.DebugWindow.ReportFailed>Не удалось загрузить. Полный лог скопирован в буфер обмена.</RimTalk.DebugWindow.ReportFailed>
+    <RimTalk.DebugWindow.UploadLog>Загрузить лог</RimTalk.DebugWindow.UploadLog>
+    <RimTalk.DebugWindow.OpenSteamDiscussion>Открыть тему в Steam</RimTalk.DebugWindow.OpenSteamDiscussion>
     <RimTalk.DebugWindow.Undo>Отменить</RimTalk.DebugWindow.Undo>
     <RimTalk.DebugWindow.Prompt>Промпт (Prompt)</RimTalk.DebugWindow.Prompt>
     <RimTalk.DebugWindow.Response>Ответ (Response)</RimTalk.DebugWindow.Response>

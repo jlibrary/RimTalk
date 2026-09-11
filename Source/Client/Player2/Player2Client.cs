@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using RimTalk.Data;
@@ -103,7 +104,10 @@ public class Player2Client : IAIClient
         var content = response?.Choices?[0]?.Message?.Content;
         var tokens = response?.Usage?.TotalTokens ?? 0;
 
-        return new Payload(CurrentApiUrl, CurrentModelName, jsonContent, content, tokens);
+        return new Payload(CurrentApiUrl, CurrentModelName, jsonContent, content, tokens)
+        {
+            StatusCode = 200
+        };
     }
 
     public async Task<Payload> GetStreamingChatCompletionAsync<T>(List<(Role role, string message)> prefixMessages,
@@ -136,7 +140,10 @@ public class Player2Client : IAIClient
         });
 
         return new Payload(CurrentApiUrl, CurrentModelName, jsonContent, streamHandler?.GetFullText(),
-            streamHandler?.GetTotalTokens() ?? 0);
+            streamHandler?.GetTotalTokens() ?? 0)
+        {
+            StatusCode = 200
+        };
     }
 
     private string BuildRequestJson(List<(Role role, string message)> prefixMessages, List<(Role role, string message)> messages, bool stream, string imageBase64 = null)
@@ -275,10 +282,10 @@ public class Player2Client : IAIClient
                 if (errorMsg.Contains("ResourceExhausted") || errorMsg.Contains("Insufficient"))
                 {
                     throw new QuotaExceededException("Player2 quota exceeded",
-                        new Payload(url, CurrentModelName, jsonContent, allText, 0, errorMsg));
+                        new Payload(url, CurrentModelName, jsonContent, allText, 0, errorMsg) { StatusCode = (int)webRequest.responseCode });
                 }
 
-                throw new AIRequestException(errorMsg, new Payload(url, CurrentModelName, jsonContent, allText, 0, errorMsg));
+                throw new AIRequestException(errorMsg, new Payload(url, CurrentModelName, jsonContent, allText, 0, errorMsg) { StatusCode = (int)webRequest.responseCode });
             }
         }
 
@@ -301,7 +308,7 @@ public class Player2Client : IAIClient
             }
 
             Logger.Warning($"Player2 failed: {webRequest.responseCode} - {errorMsg}");
-            throw new AIRequestException(errorMsg, new Payload(url, CurrentModelName, jsonContent, responseText, 0, errorMsg));
+            throw new AIRequestException(errorMsg, new Payload(url, CurrentModelName, jsonContent, responseText, 0, errorMsg) { StatusCode = (int)webRequest.responseCode });
         }
 
         if (downloadHandler is DownloadHandlerBuffer)
@@ -503,9 +510,9 @@ public class Player2Client : IAIClient
     }
 }
 
-[System.Runtime.Serialization.DataContract]
+[DataContract]
 public class LocalPlayer2Response
 {
-    [System.Runtime.Serialization.DataMember(Name = "p2Key")]
+    [DataMember(Name = "p2Key")]
     public string P2Key { get; set; }
 }

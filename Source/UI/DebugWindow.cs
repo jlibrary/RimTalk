@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using RimTalk.Client;
 using RimTalk.Data;
 using RimTalk.Service;
 using RimTalk.Source.Data;
@@ -761,11 +760,9 @@ public class DebugWindow : Window
             GUI.enabled = payload != null;
             if (Widgets.ButtonText(reportRect, "RimTalk.DebugWindow.ApiLog".Translate()))
             {
-                string payloadText = payload?.ToString();
-                if (!string.IsNullOrEmpty(payloadText))
+                if (payload != null)
                 {
-                    GUIUtility.systemCopyBuffer = payloadText;
-                    Messages.Message("RimTalk.DebugWindow.Copied".Translate(), MessageTypeDefOf.TaskCompletion, false);
+                    Find.WindowStack.Add(new Dialog_ApiLog(payload, _selectedLog, _selectedLog.Channel != Channel.User ? Resend : null));
                 }
             }
             GUI.enabled = true;
@@ -1856,11 +1853,7 @@ public class DebugWindow : Window
 
     private void Resend()
     {
-        if (AIService.IsBusy())
-        {
-            Messages.Message("RimTalk.DebugWindow.ResendError".Translate(), MessageTypeDefOf.RejectInput);
-            return;
-        }
+        if (_selectedLog == null) return;
 
         TalkRequest debugRequest = _selectedLog.TalkRequest.Clone();
         
@@ -1871,10 +1864,35 @@ public class DebugWindow : Window
             debugRequest.PromptMessages = debugRequest.PromptMessageSegments.Select(s => (s.Role, s.Content)).ToList();
         }
 
-        if (_selectedLog.Channel == Channel.Stream)
-            TalkService.GenerateTalkDebug(debugRequest);
-        else if (_selectedLog.Channel == Channel.Query)
-            Task.Run(() => AIService.Query<PersonalityData>(debugRequest));
+        var channel = _selectedLog.Channel;
+
+        // If AI is busy with a background request, cancel it to give priority to this resend
+        if (AIService.IsBusy())
+        {
+            AIService.CancelCurrent();
+        }
+
+        // Cancel all pending speech queues across the colony and clear floating bubbles
+        foreach (var pawnState in Cache.GetAll())
+        {
+            pawnState.IgnoreAllTalkResponses();
+        }
+        SpeechBubbleDrawer.Clear();
+
+        Task.Run(async () =>
+        {
+            int waited = 0;
+            while (AIService.IsBusy() && waited < 2000)
+            {
+                await Task.Delay(30);
+                waited += 30;
+            }
+
+            if (channel == Channel.Stream)
+                TalkService.GenerateTalkDebug(debugRequest);
+            else if (channel == Channel.Query)
+                _ = AIService.Query<PersonalityData>(debugRequest);
+        });
 
         Messages.Message("RimTalk.DebugWindow.ResendSuccess".Translate(), MessageTypeDefOf.TaskCompletion);
     }

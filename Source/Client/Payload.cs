@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace RimTalk.Client;
 
 public class Payload(string url, string model, string request, string response, int tokenCount, string errorMessage = null)
@@ -8,13 +10,16 @@ public class Payload(string url, string model, string request, string response, 
     public string Response { get; set; } = response;
     public int TokenCount { get; set; } = tokenCount;
     public string ErrorMessage { get; set; } = errorMessage;
+    public int? StatusCode { get; set; }
     
     public override string ToString()
     {
-        var sb = new System.Text.StringBuilder();
+        var sb = new StringBuilder();
         sb.AppendLine("=== RIMTALK API REPORT ===");
         sb.AppendLine($"URL:      {URL}");
         sb.AppendLine($"Model:    {Model}");
+        if (StatusCode.HasValue && StatusCode.Value > 0)
+            sb.AppendLine($"Status:   HTTP {StatusCode.Value}");
         sb.AppendLine($"Tokens:   {TokenCount}");
         if (!string.IsNullOrEmpty(ErrorMessage))
             sb.AppendLine($"Error:    {ErrorMessage}");

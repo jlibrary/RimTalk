@@ -423,12 +423,27 @@ Conseils Cruciaux :
     <RimTalk.DebugWindow.ResendTooltip>Modifiez le contexte et le prompt, puis renvoyez pour tester le dialogue.</RimTalk.DebugWindow.ResendTooltip>
     <RimTalk.DebugWindow.ResendSuccess>La requête a été renvoyée avec succès.</RimTalk.DebugWindow.ResendSuccess>
     <RimTalk.DebugWindow.ResendError>L’IA est actuellement occupée. Réessayez lorsque le statut est Idle.</RimTalk.DebugWindow.ResendError>
+    <RimTalk.DebugWindow.JsonParseError>Échec de l'analyse du JSON modifié. Veuillez vérifier la syntaxe JSON.</RimTalk.DebugWindow.JsonParseError>
     <RimTalk.DebugWindow.ApiLog>Journal API</RimTalk.DebugWindow.ApiLog>
     <RimTalk.DebugWindow.FailMsg>La requête a échoué. Cliquez sur « Journal API » pour générer un journal pour le support.</RimTalk.DebugWindow.FailMsg>
     <RimTalk.DebugWindow.JsonDeserializationFailedTip>(Si le problème persiste, vérifiez Paramètres API -> Icône d’engrenage -> 1. Forcer le format de dialogue)</RimTalk.DebugWindow.JsonDeserializationFailedTip>
     <RimTalk.DebugWindow.CopyAll>Tout copier</RimTalk.DebugWindow.CopyAll>
     <RimTalk.DebugWindow.Copy>Copier</RimTalk.DebugWindow.Copy>
     <RimTalk.DebugWindow.Copied>Copié</RimTalk.DebugWindow.Copied>
+    <RimTalk.DebugWindow.CopyClipboard>Copier dans le presse-papiers</RimTalk.DebugWindow.CopyClipboard>
+    <RimTalk.DebugWindow.CopyClipboardTooltip>Copier le rapport sous forme de JSON valide dans le presse-papiers.</RimTalk.DebugWindow.CopyClipboardTooltip>
+    <RimTalk.DebugWindow.UnescapeNewlines>Sauts de ligne lisibles</RimTalk.DebugWindow.UnescapeNewlines>
+    <RimTalk.DebugWindow.UnescapeNewlinesTooltip>Affiche des sauts de ligne lisibles à l'écran. Le bouton de copie copiera toujours un JSON valide.</RimTalk.DebugWindow.UnescapeNewlinesTooltip>
+    <RimTalk.DebugWindow.EditMode>Mode édition</RimTalk.DebugWindow.EditMode>
+    <RimTalk.DebugWindow.EditModeTooltip>Basculer en mode édition pour modifier le texte avant de renvoyer.</RimTalk.DebugWindow.EditModeTooltip>
+    <RimTalk.DebugWindow.Report>Signaler une erreur</RimTalk.DebugWindow.Report>
+    <RimTalk.DebugWindow.ReportTooltip>Ouvre la fenêtre de signalement d'erreur.</RimTalk.DebugWindow.ReportTooltip>
+    <RimTalk.DebugWindow.ReportConfirmation>[Vérification avant signalement d'erreur API]\n\nPour diagnostiquer le problème, la structure JSON brute complète de la requête et de la réponse est requise.\n\n- À vérifier avant de signaler :\n• Les erreurs 401 (clé invalide), 429 (quota dépassé) et 5xx (panne du serveur du fournisseur) sont liées à des services externes, pas à un bug du mod.\n• Les signalements dus à une erreur de configuration ou à une panne temporaire du fournisseur pourront être fermés sans réponse.\n\n- Confidentialité et signalement :\n• Les noms des colons, les invites et le contenu des dialogues seront publiés en ligne.\n• Si votre journal contient des éléments sensibles, utilisez le bouton [Tout copier] en haut pour vérifier et partager manuellement.\n• Cependant, l'intégralité du JSON brut avec son formatage intact est indispensable à l'analyse, et un signalement sous forme de lien est fortement recommandé car les discussions Steam rendent la lecture de longs textes bruts très difficile.\n\n- Étapes du signalement :\n1. Cliquez d'abord sur [Téléverser le journal] ci-dessous pour copier le lien dans votre presse-papiers.\n2. Cliquez ensuite sur [Ouvrir la discussion Steam] et collez (Ctrl+V) le lien dans le forum pour publier votre message.</RimTalk.DebugWindow.ReportConfirmation>
+    <RimTalk.DebugWindow.ReportSuccess>Lien du journal copié dans le presse-papiers. Veuillez le coller dans la discussion Steam !</RimTalk.DebugWindow.ReportSuccess>
+    <RimTalk.DebugWindow.ReportUploading>Téléversement du journal en cours...</RimTalk.DebugWindow.ReportUploading>
+    <RimTalk.DebugWindow.ReportFailed>Échec du téléversement. Le journal complet a été copié dans le presse-papiers.</RimTalk.DebugWindow.ReportFailed>
+    <RimTalk.DebugWindow.UploadLog>Téléverser le journal</RimTalk.DebugWindow.UploadLog>
+    <RimTalk.DebugWindow.OpenSteamDiscussion>Ouvrir la discussion Steam</RimTalk.DebugWindow.OpenSteamDiscussion>
     <RimTalk.DebugWindow.Undo>Annuler</RimTalk.DebugWindow.Undo>
     <RimTalk.DebugWindow.Prompt>Prompt</RimTalk.DebugWindow.Prompt>
     <RimTalk.DebugWindow.Response>Réponse</RimTalk.DebugWindow.Response>
