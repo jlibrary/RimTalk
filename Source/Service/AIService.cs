@@ -173,10 +173,12 @@ public static class AIService
 
     private static void HandleFinalStatus(ApiLog apiLog, Payload payload)
     {
-        // If response is empty but no explicit error yet, mark as deserialization failure (or empty response)
         if (string.IsNullOrEmpty(apiLog.Response) && !apiLog.IsError && string.IsNullOrEmpty(payload.ErrorMessage))
         {
-            ReportDeserializationError(apiLog, payload);
+            if (string.IsNullOrWhiteSpace(payload?.Response))
+                ReportError(apiLog, payload, "Empty Response (AI returned no content)");
+            else
+                ReportDeserializationError(apiLog, payload);
             return;
         }
         

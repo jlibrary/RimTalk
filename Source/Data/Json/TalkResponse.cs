@@ -45,9 +45,11 @@ public class TalkResponse(TalkType talkType, string name, string text) : IJsonDa
 
         return Enum.TryParse(InteractionRaw, true, out InteractionType result) ? result : InteractionType.None;
     }
+    public Pawn? TargetPawn { get; set; }
+
     public Pawn? GetTarget()
     {
-        return TargetName != null ? Cache.GetByName(TargetName)?.Pawn : null;
+        return TargetPawn ?? (TargetName != null ? Cache.GetByName(TargetName)?.Pawn : null);
     }
 
     public override string ToString()

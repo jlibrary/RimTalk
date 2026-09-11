@@ -137,6 +137,13 @@ public static class TalkService
                     if (pawnState == null) return;
                     talkResponse.Name = pawnState.Pawn.LabelShort;
 
+                    if (!string.IsNullOrEmpty(talkResponse.TargetName))
+                    {
+                        talkResponse.TargetPawn = talkRequest.ResolvePawnState(talkResponse.TargetName)?.Pawn;
+                        if (talkResponse.TargetPawn != null)
+                            talkResponse.TargetName = talkResponse.TargetPawn.LabelShort;
+                    }
+
                     // Link replies to the previous message in the conversation.
                     if (receivedResponses.Any())
                     {
