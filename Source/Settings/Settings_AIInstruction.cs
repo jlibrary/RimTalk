@@ -154,17 +154,10 @@ public partial class Settings
         {
             _textAreaBuffer = newInstruction;
 
-            // Write back to correct target
+            // Write back to correct target (isolated per mode)
             if (isSimpleMode)
             {
                 settings.SimpleModeInstruction = newInstruction;
-                var manager = PromptManager.Instance;
-                var activePreset = manager.GetActivePreset();
-                var activeBaseEntry = GetOrCreateBaseInstructionEntry(activePreset);
-                if (activeBaseEntry != null)
-                {
-                    activeBaseEntry.Content = newInstruction;
-                }
             }
             else if (baseEntry != null)
             {
@@ -182,14 +175,10 @@ public partial class Settings
             if (isSimpleMode)
             {
                 settings.SimpleModeInstruction = Constant.DefaultInstruction;
-                // Also update active preset
-                var manager = PromptManager.Instance;
-                var activePreset = manager.GetActivePreset();
-                var activeBaseEntry = GetOrCreateBaseInstructionEntry(activePreset);
-                if (activeBaseEntry != null)
-                {
-                    activeBaseEntry.Content = Constant.DefaultInstruction;
-                }
+            }
+            else if (baseEntry != null)
+            {
+                baseEntry.Content = Constant.DefaultInstruction;
             }
 
             listingStandard.Gap(10f);

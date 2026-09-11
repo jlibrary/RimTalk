@@ -212,6 +212,7 @@ public class PromptManager : IExposable
         {
             InitializeDefaults();
         }
+        CleanOrphanedModEntries();
     }
 
     // Creates default preset - entry order is determined by list position (drag-to-reorder like SillyTavern)
@@ -290,9 +291,11 @@ public class PromptManager : IExposable
         Presets ??= new List<PromptPreset>();
         VariableStore ??= new VariableStore();
 
-        // Migration: Fix legacy chat history markers
+        // Migration: Fix legacy chat history markers and clean up orphaned mod entries
         if (Scribe.mode == LoadSaveMode.PostLoadInit || Scribe.mode == LoadSaveMode.LoadingVars)
         {
+            CleanOrphanedModEntries();
+
             foreach (var preset in Presets)
             {
                 // If no entry is marked as history, but we have one with the legacy content tag
@@ -312,6 +315,36 @@ public class PromptManager : IExposable
         
         // Don't initialize defaults here - game systems may not be ready
         // Defaults will be initialized lazily when needed
+    }
+
+    /// <summary>
+    /// Removes entries and presets belonging to mods that are no longer active or installed.
+    /// </summary>
+    public void CleanOrphanedModEntries()
+    {
+        if (Presets == null || Presets.Count == 0) return;
+
+        // Remove presets whose source mod is no longer active
+        Presets.RemoveAll(p => !string.IsNullOrEmpty(p.SourceModId) && !IsModActive(p.SourceModId));
+
+        foreach (var preset in Presets)
+        {
+            if (preset?.Entries == null) continue;
+            preset.Entries.RemoveAll(e => !string.IsNullOrEmpty(e.SourceModId) && !IsModActive(e.SourceModId));
+        }
+    }
+
+    private static bool IsModActive(string packageId)
+    {
+        if (string.IsNullOrEmpty(packageId)) return false;
+        try
+        {
+            return ModsConfig.IsActive(packageId);
+        }
+        catch
+        {
+            return true; // Fail safe: preserve entries in test or uninitialized environments
+        }
     }
 
     /// <summary>Sets the singleton instance (for loading settings)</summary>
@@ -352,41 +385,24 @@ public class PromptManager : IExposable
         PromptPreset preset = GetActivePreset();
         if (preset == null) preset = CreateDefaultPreset();
 
-        string originalBaseContent = null;
-        PromptEntry baseEntry = null;
-
+        PromptPreset effectivePreset;
         if (!settings.UseAdvancedPromptMode)
         {
-            // Simple Mode: Use active preset but temporarily override Base Instruction
-            baseEntry = preset.Entries.FirstOrDefault(e =>
-                string.Equals(e.Name, "Base Instruction", StringComparison.OrdinalIgnoreCase));
-            
-            if (baseEntry != null)
-            {
-                originalBaseContent = baseEntry.Content;
-                baseEntry.Content = string.IsNullOrWhiteSpace(settings.SimpleModeInstruction) 
-                    ? Constant.DefaultInstruction 
-                    : settings.SimpleModeInstruction;
-            }
+            // Simple Mode: Exclude user-added custom entries, keep built-in & active addon entries
+            effectivePreset = PromptPresetAssembler.BuildSimpleModePreset(
+                preset,
+                settings.SimpleModeInstruction,
+                Constant.DefaultInstruction);
+        }
+        else
+        {
+            effectivePreset = preset;
         }
 
         // 4. Reset session variables and build
         ScribanParser.ResetSessionVariables();
         var segments = new List<PromptMessageSegment>();
-        List<(PromptRole role, string content)> messages;
-        try
-        {
-            messages = BuildMessagesFromPreset(preset, context, segments);
-        }
-        finally
-        {
-            // Simple mode overwrites the saved Base Instruction to render it; restore it even
-            // if rendering throws, or the preset is left permanently holding the simple-mode text.
-            if (baseEntry != null && originalBaseContent != null)
-            {
-                baseEntry.Content = originalBaseContent;
-            }
-        }
+        var messages = BuildMessagesFromPreset(effectivePreset, context, segments);
 
         talkRequest.PromptMessageSegments = segments.Count > 0 ? segments : null;
 

@@ -495,4 +495,58 @@ Environment Hazard: {{ fallout_level }}
             Assert.True(subject.Length <= 40, $"Subject '{subject}' is too verbose for a prompt anchor.");
         }
     }
+
+    [Fact]
+    public void BuildSimpleModePreset_IsolatesUserCustomEntries_PreservesAddonAndBuiltInEntries()
+    {
+        var activePreset = new RimTalk.Prompt.PromptPreset("ActiveCustomPreset");
+
+        // Built-in entries
+        var baseInstruction = new RimTalk.Prompt.PromptEntry("Base Instruction", "Original instruction");
+        var jsonFormat = new RimTalk.Prompt.PromptEntry("JSON Format", "JSON schema");
+        var history = new RimTalk.Prompt.PromptEntry("Chat History", "{{chat.history}}") { IsMainChatHistory = true };
+        var prompt = new RimTalk.Prompt.PromptEntry("Dialogue Prompt", "{{prompt}}");
+
+        // User custom entry added in Advanced Mode (SourceModId is null)
+        var userCustomEntry = new RimTalk.Prompt.PromptEntry("My User Custom Guideline", "Always talk about potatoes.")
+        {
+            SourceModId = null
+        };
+
+        // Addon mod entry attached by a third-party mod (SourceModId is set)
+        var addonEntry = new RimTalk.Prompt.PromptEntry("Combat Addon Reaction", "Check weapon status.")
+        {
+            SourceModId = "CombatMod.PackageId"
+        };
+
+        activePreset.Entries.Add(baseInstruction);
+        activePreset.Entries.Add(jsonFormat);
+        activePreset.Entries.Add(userCustomEntry);
+        activePreset.Entries.Add(addonEntry);
+        activePreset.Entries.Add(history);
+        activePreset.Entries.Add(prompt);
+
+        string simpleInstruction = "Custom simple instruction for player";
+        var simplePreset = RimTalk.Prompt.PromptPresetAssembler.BuildSimpleModePreset(activePreset, simpleInstruction);
+
+        // 1. User custom entry MUST be excluded
+        Assert.DoesNotContain(simplePreset.Entries, e => e.Name == "My User Custom Guideline");
+
+        // 2. Addon entry MUST be preserved
+        Assert.Contains(simplePreset.Entries, e => e.Name == "Combat Addon Reaction" && e.SourceModId == "CombatMod.PackageId");
+
+        // 3. Base Instruction MUST be overridden with simple instruction
+        var effectiveBase = simplePreset.Entries.FirstOrDefault(e => e.Name == "Base Instruction");
+        Assert.NotNull(effectiveBase);
+        Assert.Equal(simpleInstruction, effectiveBase.Content);
+
+        // 4. Built-in entries (JSON Format, Chat History, Dialogue Prompt) MUST be preserved
+        Assert.Contains(simplePreset.Entries, e => e.Name == "JSON Format");
+        Assert.Contains(simplePreset.Entries, e => e.IsMainChatHistory);
+        Assert.Contains(simplePreset.Entries, e => e.Name == "Dialogue Prompt");
+
+        // 5. Active preset's original Base Instruction content MUST NOT be mutated
+        Assert.Equal("Original instruction", baseInstruction.Content);
+    }
 }
+

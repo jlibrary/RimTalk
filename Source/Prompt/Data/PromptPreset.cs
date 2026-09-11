@@ -25,6 +25,9 @@ public class PromptPreset : IExposable
     /// <summary>Whether this is the currently active preset</summary>
     public bool IsActive;
     
+    /// <summary>Source mod's package ID (null means user-created or built-in)</summary>
+    public string SourceModId;
+
     /// <summary>
     /// Set of deleted mod entry IDs. Entries with these IDs will not be re-added by mods.
     /// Uses the deterministic ID (e.g., "mod_mymod_myentry") directly.
@@ -206,6 +209,7 @@ public class PromptPreset : IExposable
         Scribe_Values.Look(ref Description, "description", "");
         Scribe_Collections.Look(ref Entries, "entries", LookMode.Deep);
         Scribe_Values.Look(ref IsActive, "isActive", false);
+        Scribe_Values.Look(ref SourceModId, "sourceModId");
         
         // Serialize blacklist as List<string> for compatibility
         List<string> deletedList = DeletedModEntryIds?.ToList() ?? new List<string>();
@@ -228,6 +232,7 @@ public class PromptPreset : IExposable
             Name = Name,
             Description = Description,
             IsActive = false,
+            SourceModId = SourceModId,
             Entries = []
         };
 

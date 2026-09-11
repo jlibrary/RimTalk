@@ -24,7 +24,7 @@ public class RimTalkSettings : ModSettings
     public int ReplyInterval = 4;
     public bool ProcessNonRimTalkInteractions = true;
     public bool AllowSimultaneousConversations = false;
-    public string SimpleModeInstruction = Constant.DefaultInstruction;
+    public string SimpleModeInstruction = null;
     public string CustomInstruction = "";
     
     // New Prompt System
@@ -230,7 +230,7 @@ public class RimTalkSettings : ModSettings
     {
         base.ExposeData();
 
-        Scribe_Values.Look(ref SimpleModeInstruction, "simpleModeInstruction", Constant.DefaultInstruction);
+        Scribe_Values.Look(ref SimpleModeInstruction, "simpleModeInstruction", null, true);
         Scribe_Values.Look(ref CustomInstruction, "customInstruction", "");
 
         Scribe_Collections.Look(ref CloudConfigs, "cloudConfigs", LookMode.Deep);
@@ -402,23 +402,16 @@ public class RimTalkSettings : ModSettings
         // Migration Logic for Simple Mode Instruction
         if (Scribe.mode == LoadSaveMode.PostLoadInit)
         {
-            // 1. Recover from Preset (Reverse Migration)
-            // If SimpleModeInstruction is default, but we have a custom instruction in the preset, pull it back.
-            if (string.IsNullOrWhiteSpace(SimpleModeInstruction) || SimpleModeInstruction == Constant.DefaultInstruction)
-            {
-                var preset = PromptSystem.GetActivePreset();
-                var entry = GetOrCreateBaseInstructionEntry(preset);
-                if (entry != null && !string.IsNullOrWhiteSpace(entry.Content) && entry.Content != Constant.DefaultInstruction)
-                {
-                    SimpleModeInstruction = entry.Content;
-                }
-            }
-            
-            // 2. Migrate from Legacy CustomInstruction
+            // Migrate from Legacy CustomInstruction (pre-1.2 upgrade)
             if (!string.IsNullOrWhiteSpace(CustomInstruction))
             {
                 SimpleModeInstruction = CustomInstruction;
                 CustomInstruction = "";
+            }
+
+            if (string.IsNullOrWhiteSpace(SimpleModeInstruction) && LanguageDatabase.activeLanguage != null)
+            {
+                SimpleModeInstruction = Constant.DefaultInstruction;
             }
         }
 
