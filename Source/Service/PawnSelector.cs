@@ -24,7 +24,8 @@ public class PawnSelector
         DetectionType detectionType = DetectionType.Hearing, bool onlyTalkable = false, bool isAnnouncement = false)
     {
         int configuredCount = Settings.Get()?.Context?.MaxPawnContextCount ?? 3;
-        int effectiveMaxResults = isAnnouncement ? Math.Max(configuredCount, 8) : configuredCount;
+        // Keep candidate pool generous (floor of 10) so downstream callers have enough candidates before final Take(MaxPawnContextCount)
+        int effectiveMaxResults = Math.Max(10, configuredCount);
 
         float baseRange = detectionType == DetectionType.Hearing 
             ? isAnnouncement ? AnnouncementHearingRange : HearingRange 
