@@ -23,16 +23,9 @@ public static class ArchivePatch
         // Generate the prompt text first, as it's needed in all cases.
         // Decide quest category & generate prompt (kept compatible with original text)
         var (prompt, talkType) = GeneratePrompt(archivable);
-        var (eventMap, nearbyColonists) = FindLocationAndColonists(archivable);
+        var eventMap = FindLocation(archivable);
 
-        // If specific colonists are nearby, create a request for each one.
-        if (nearbyColonists.Any())
-        {
-            foreach (var pawn in nearbyColonists)
-                Cache.Get(pawn)?.AddTalkRequest(prompt, talkType: talkType);
-        }
-        else
-            TalkRequestPool.Add(prompt, mapId: eventMap?.uniqueID ?? -1);
+        TalkRequestPool.Add(prompt, mapId: eventMap?.uniqueID ?? -1, talkType: talkType);
     }
 
     private static bool ShouldProcessArchivable(IArchivable archivable)
@@ -119,27 +112,12 @@ public static class ArchivePatch
             || tip.IndexOf("Quest", StringComparison.OrdinalIgnoreCase) >= 0;
     }
 
-    private static (Map eventMap, List<Pawn> nearbyColonists) FindLocationAndColonists(IArchivable archivable)
+    private static Map FindLocation(IArchivable archivable)
     {
-        Map eventMap = null;
-        var nearbyColonists = new List<Pawn>();
-
-        // --- Safely check for location and nearby pawns ---
         if (archivable.LookTargets is not { Any: true })
-            return (null, nearbyColonists);
+            return null;
 
-        // Try to determine the map from the look targets
-        eventMap = archivable.LookTargets.PrimaryTarget.Map 
+        return archivable.LookTargets.PrimaryTarget.Map 
             ?? archivable.LookTargets.targets.Select(t => t.Map).FirstOrDefault(m => m != null);
-
-        // If we successfully found a map, look for the nearest colonists
-        if (eventMap != null)
-        {
-            nearbyColonists = eventMap.mapPawns.AllPawnsSpawned
-                .Where(pawn => pawn.IsFreeNonSlaveColonist && !pawn.IsQuestLodger() && Cache.Get(pawn)?.CanDisplayTalk() == true)
-                .ToList();
-        }
-
-        return (eventMap, nearbyColonists);
     }
 }

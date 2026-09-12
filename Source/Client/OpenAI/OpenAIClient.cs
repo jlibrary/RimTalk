@@ -333,6 +333,7 @@ public class OpenAIClient(
         // Recover text for streaming errors
         if (downloadHandler is OpenAIStreamHandler sHandler)
         {
+            sHandler.Flush();
             if (!string.IsNullOrEmpty(sHandler.DetectedError))
             {
                 string errorMsg = sHandler.DetectedError;

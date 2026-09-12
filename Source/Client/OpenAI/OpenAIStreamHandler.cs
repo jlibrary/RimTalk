@@ -23,7 +23,6 @@ public class OpenAIStreamHandler(Action<string> onContentReceived) : DownloadHan
 
     public string DetectedError { get; private set; }
 
-
     protected override bool ReceiveData(byte[] data, int dataLength)
     {
         if (data == null || dataLength == 0) return false;
@@ -47,58 +46,71 @@ public class OpenAIStreamHandler(Action<string> onContentReceived) : DownloadHan
         int linesToProcess = bufferContent.EndsWith("\n") ? lines.Length : lines.Length - 1;
         for (int i = 0; i < linesToProcess; i++)
         {
-            string line = lines[i].Trim();
-            if (!line.StartsWith("data: ")) continue;
-            string jsonData = line.Substring(6);
-
-            if (jsonData.Trim() == "[DONE]")
-                continue;
-
-            try
-            {
-                var openAIChunk = JsonUtil.DeserializeFromJson<OpenAIStreamChunk>(jsonData);
-
-                if (openAIChunk?.Error != null)
-                {
-                    DetectedError = openAIChunk.Error.Message;
-                    continue;
-                }
-
-                if (!string.IsNullOrEmpty(openAIChunk?.Id))
-                {
-                    _id = openAIChunk.Id;
-                    _object = openAIChunk.Object;
-                    _created = openAIChunk.Created;
-                    _model = openAIChunk.Model;
-                }
-
-                if (openAIChunk?.Choices != null && openAIChunk.Choices.Count > 0)
-                {
-                    var choice = openAIChunk.Choices[0];
-                    var content = choice?.Delta?.Content;
-                    if (!string.IsNullOrEmpty(content))
-                    {
-                        _fullText.Append(content);
-                        onContentReceived?.Invoke(content);
-                    }
-
-                    if (!string.IsNullOrEmpty(choice.FinishReason))
-                    {
-                        _finishReason = choice.FinishReason;
-                    }
-                }
-
-                if (openAIChunk?.Usage != null)
-                {
-                    _usage = openAIChunk.Usage;
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Warning($"Failed to parse stream chunk: {ex.Message}\nJSON: {jsonData}");
-            }
+            ProcessLine(lines[i].Trim());
         }
         return true;
+    }
+
+    public void Flush()
+    {
+        if (_buffer.Length > 0)
+        {
+            ProcessLine(_buffer.ToString().Trim());
+            _buffer.Clear();
+        }
+    }
+
+    private void ProcessLine(string line)
+    {
+        if (!line.StartsWith("data: ")) return;
+        string jsonData = line.Substring(6);
+
+        if (jsonData.Trim() == "[DONE]")
+            return;
+
+        try
+        {
+            var openAIChunk = JsonUtil.DeserializeFromJson<OpenAIStreamChunk>(jsonData);
+
+            if (openAIChunk?.Error != null)
+            {
+                DetectedError = openAIChunk.Error.Message;
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(openAIChunk?.Id))
+            {
+                _id = openAIChunk.Id;
+                _object = openAIChunk.Object;
+                _created = openAIChunk.Created;
+                _model = openAIChunk.Model;
+            }
+
+            if (openAIChunk?.Choices != null && openAIChunk.Choices.Count > 0)
+            {
+                var choice = openAIChunk.Choices[0];
+                var content = choice?.Delta?.Content;
+                if (!string.IsNullOrEmpty(content))
+                {
+                    _fullText.Append(content);
+                    onContentReceived?.Invoke(content);
+                }
+
+                if (!string.IsNullOrEmpty(choice.FinishReason))
+                {
+                    _finishReason = choice.FinishReason;
+                }
+            }
+
+            if (openAIChunk?.Usage != null)
+            {
+                _usage = openAIChunk.Usage;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.Warning($"Failed to parse stream chunk: {ex.Message}\nJSON: {jsonData}");
+        }
     }
 
     public string GetFullText() => _fullText.ToString();
