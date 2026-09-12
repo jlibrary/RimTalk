@@ -217,7 +217,7 @@ public class OpenAIClient(
         bool isLocal = _endpointUrl.Contains("localhost") || _endpointUrl.Contains("127.0.0.1") ||
                        _endpointUrl.Contains("192.168.") || _endpointUrl.Contains("10.");
 
-        float inactivityTimer = 0f;
+        DateTime lastActiveTime = DateTime.UtcNow;
         ulong lastBytes = 0;
         float connectTimeout = isLocal ? 300f : 60f;
         float readTimeout = 60f;
@@ -237,21 +237,19 @@ public class OpenAIClient(
 
             if (currentBytes > lastBytes)
             {
-                inactivityTimer = 0f;
+                lastActiveTime = DateTime.UtcNow;
                 lastBytes = currentBytes;
             }
-            else
-            {
-                inactivityTimer += 0.1f;
-            }
 
-            if (!hasStartedReceiving && inactivityTimer > connectTimeout)
+            float inactiveSeconds = (float)(DateTime.UtcNow - lastActiveTime).TotalSeconds;
+
+            if (!hasStartedReceiving && inactiveSeconds > connectTimeout)
             {
                 webRequest.Abort();
                 throw new TimeoutException($"Connection timed out (Waited {connectTimeout}s for first token)");
             }
 
-            if (hasStartedReceiving && inactivityTimer > readTimeout)
+            if (hasStartedReceiving && inactiveSeconds > readTimeout)
             {
                 webRequest.Abort();
                 throw new TimeoutException($"Read timed out (Stalled for {readTimeout}s during generation)");

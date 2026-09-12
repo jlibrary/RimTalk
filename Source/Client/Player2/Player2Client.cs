@@ -229,7 +229,7 @@ public class Player2Client : IAIClient
 
         var asyncOp = webRequest.SendWebRequest();
 
-        float inactivityTimer = 0f;
+        DateTime lastActiveTime = DateTime.UtcNow;
         ulong lastBytes = 0;
         const float connectTimeout = 60f;
         const float readTimeout = 60f;
@@ -249,21 +249,19 @@ public class Player2Client : IAIClient
 
             if (currentBytes > lastBytes)
             {
-                inactivityTimer = 0f;
+                lastActiveTime = DateTime.UtcNow;
                 lastBytes = currentBytes;
             }
-            else
-            {
-                inactivityTimer += 0.1f;
-            }
 
-            if (!hasStartedReceiving && inactivityTimer > connectTimeout)
+            float inactiveSeconds = (float)(DateTime.UtcNow - lastActiveTime).TotalSeconds;
+
+            if (!hasStartedReceiving && inactiveSeconds > connectTimeout)
             {
                 webRequest.Abort();
                 throw new TimeoutException($"Connection timed out ({connectTimeout}s)");
             }
 
-            if (hasStartedReceiving && inactivityTimer > readTimeout)
+            if (hasStartedReceiving && inactiveSeconds > readTimeout)
             {
                 webRequest.Abort();
                 throw new TimeoutException($"Read timed out ({readTimeout}s)");
