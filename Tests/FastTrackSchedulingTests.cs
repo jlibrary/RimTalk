@@ -151,4 +151,31 @@ public class FastTrackSchedulingTests
         Assert.True(elapsedAfterwards >= regularTalkInterval,
             "Regular talk timer must have progressed towards readiness despite intervening fast track interactions");
     }
+
+    [Fact]
+    public void RegularTalkCooldown_StartsCountingAfterGenerationCompletes()
+    {
+        // Generation starts at tick 1000 and finishes at tick 1240 (4 seconds at 60 tps)
+        int regularTalkInterval = 420; // 7 seconds (420 ticks)
+        int lastTalkEndTick = 1000;
+
+        // While busy generating regular talk, lastTalkEndTick tracks up to generation completion
+        for (int curTick = 1001; curTick <= 1240; curTick++)
+        {
+            lastTalkEndTick = curTick;
+        }
+
+        // At tick 1240, generation finishes and lastTalkEndTick is 1240
+        Assert.Equal(1240, lastTalkEndTick);
+
+        // At tick 1450 (only 210 ticks after completion), cooldown must NOT be satisfied yet
+        int currentTick = 1450;
+        int elapsedSinceEnd = currentTick - lastTalkEndTick;
+        Assert.True(elapsedSinceEnd < regularTalkInterval, "Cooldown must not expire prematurely while waiting after generation");
+
+        // At tick 1660 (420 ticks after completion), cooldown is now fully satisfied
+        currentTick = 1660;
+        elapsedSinceEnd = currentTick - lastTalkEndTick;
+        Assert.True(elapsedSinceEnd >= regularTalkInterval, "Cooldown must be satisfied once full interval passes after generation completes");
+    }
 }

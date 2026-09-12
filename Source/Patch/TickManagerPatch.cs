@@ -82,7 +82,13 @@ internal static class TickManagerPatch
     private static void ProcessRegularTalkRequests()
     {
         if (AIService.IsBusy())
+        {
+            if (AIService.CurrentRequest == null || !AIService.CurrentRequest.TalkType.IsFastTrack())
+            {
+                _lastTalkEndTick = GenTicks.TicksGame;
+            }
             return;
+        }
 
         int intervalTicks = CommonUtil.GetTicksForDuration(TalkInterval);
         if (intervalTicks <= 0 || GenTicks.TicksGame - _lastTalkEndTick < intervalTicks)
