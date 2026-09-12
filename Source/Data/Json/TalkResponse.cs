@@ -11,7 +11,7 @@ public class TalkResponse(TalkType talkType, string name, string text) : IJsonDa
 {
     public Guid Id { get; set; } = Guid.NewGuid();
 
-    [DataMember(Name = "talkType", EmitDefaultValue = false)]
+    // Internal game logic only. Do NOT add [DataMember]; it leaks into LLM history JSON payloads.
     public TalkType TalkType { get; set; } = talkType;
     
     [DataMember(Name = "name")] 
