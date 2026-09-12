@@ -9,27 +9,28 @@ namespace RimTalk.UI;
 public class SpeechBubble
 {
     public const float BasePadding = 10f;
-    private const float PaddingHorizontal = 10f;
-    private const float PaddingVertical = 10f;
     public const float MinBubbleWidth = 50f;
     public const float MinBubbleHeight = 14f;
     public const float CornerClearance = 5f; // Clearance for 9-slice rounded corners
     private const float DefaultMaxWidth = 260f;
-    public const float WidthSafetyBuffer = 4f; // Safe buffer with pre-wrapped text
 
     public Pawn Pawn;
     public string Text;
     public string WrappedText;
     public Vector2 BubbleSize;
     public int StartTick;
-    public int ExpiryTick;
-    public float StartRealTime;
+    public float TotalDurationSec;
+    public float ElapsedRealSec;
     public bool IsUrgent;
+    public bool IsInPain;
     public bool IsAnnouncement;
     public bool IsAggressive;
     public bool IsDowned;
     public int ConversationId = -1;
     public bool Active;
+    public int LastTypewriterLength = -1;
+    public string CachedTypewriterText;
+    public int LastUpdateFrame = -1;
 
     public void Init(Pawn pawn, string text, int conversationId = -1, InteractionType interactionType = InteractionType.None, TalkType talkType = TalkType.Other)
     {
@@ -41,7 +42,7 @@ public class SpeechBubble
             Text = Text.Replace("\r\n", "\n").Replace('\r', '\n');
         WrappedText = Text;
         StartTick = GenTicks.TicksGame;
-        StartRealTime = Time.realtimeSinceStartup;
+        ElapsedRealSec = 0f;
         Active = true;
         ConversationId = conversationId;
 
@@ -49,8 +50,11 @@ public class SpeechBubble
         IsDowned = pawn?.Downed ?? false;
         IsAnnouncement = talkType == TalkType.Announcement;
         IsAggressive = interactionType is InteractionType.Insult or InteractionType.Slight;
-        // The bubble shakes only when the speaker is in personal danger (fire, combat, fleeing, heavy bleeding), never during peaceful social interactions
-        IsUrgent = !IsDowned && interactionType == InteractionType.None && pawn != null && pawn.IsInDanger();
+        
+        // The bubble shakes violently only when in acute physical danger (fire, combat, fleeing)
+        IsUrgent = !IsDowned && interactionType == InteractionType.None && pawn != null && pawn.IsInCombatOrFire();
+        // Physical pain/illness state: muted gray text & slow fade (only when not in violent combat/fire)
+        IsInPain = !IsDowned && !IsUrgent && interactionType == InteractionType.None && pawn != null && pawn.IsInPainOrSick();
 
         var settings = Settings.Get();
 
@@ -66,11 +70,10 @@ public class SpeechBubble
         // Precompute dimensions and lock line breaks once to ensure zero text calculation per frame
         ComputeDimensions();
 
-        // Compute lifetime in real seconds using CommonUtil.GetTicksForDuration so fast-forwarding game speed does not cut it off
+        // Compute lifetime in real seconds
         double baseSeconds = 5.0 + Mathf.Clamp(Text.Length * 0.05f, 0f, 6.0f);
         double totalSeconds = baseSeconds * Mathf.Max(0.5f, durationMultiplier);
-        int totalTicks = Mathf.Max(120, CommonUtil.GetTicksForDuration(totalSeconds));
-        ExpiryTick = StartTick + totalTicks;
+        TotalDurationSec = (float)totalSeconds;
     }
 
     public void ComputeDimensions()
@@ -231,10 +234,15 @@ public class SpeechBubble
         Text = null;
         WrappedText = null;
         IsUrgent = false;
+        IsInPain = false;
         IsAnnouncement = false;
         IsAggressive = false;
         IsDowned = false;
         ConversationId = -1;
-        StartRealTime = 0f;
+        TotalDurationSec = 0f;
+        ElapsedRealSec = 0f;
+        LastTypewriterLength = -1;
+        CachedTypewriterText = null;
+        LastUpdateFrame = -1;
     }
 }

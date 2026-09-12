@@ -65,6 +65,30 @@ public static class PawnUtil
         return false;
     }
 
+    public static bool IsInCombatOrFire(this Pawn pawn)
+    {
+        if (pawn == null || pawn.Dead || pawn.Downed || pawn.IsPlayer()) return false;
+        return pawn.IsBurning() || pawn.IsInCombat() || pawn.CurJobDef == JobDefOf.Flee || pawn.CurJobDef == JobDefOf.FleeAndCower;
+    }
+
+    public static bool IsInPainOrSick(this Pawn pawn)
+    {
+        if (pawn == null || pawn.Dead || pawn.Downed || pawn.IsPlayer()) return false;
+        if (pawn.health?.hediffSet == null) return false;
+
+        if (pawn.health.hediffSet.BleedRateTotal > 0.2f) return true;
+        if (pawn.health.hediffSet.PainTotal >= 0.25f) return true;
+
+        foreach (var h in pawn.health.hediffSet.hediffs)
+        {
+            if (h.Visible && (h.CurStage?.lifeThreatening == true ||
+                              h.def.lethalSeverity > 0 && h.Severity > h.def.lethalSeverity * 0.7f))
+                return true;
+        }
+
+        return false;
+    }
+
     public static bool IsInCombat(this Pawn pawn)
     {
         if (pawn == null) return false;

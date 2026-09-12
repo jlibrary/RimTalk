@@ -153,6 +153,7 @@ public static class SpeechBubbleDrawer
 
     public static void DrawBubbles()
     {
+        if (Event.current?.type != EventType.Repaint) return;
         if (SuppressForScreenshot || Overlay.SuppressForScreenshot) return;
         if (Find.CurrentMap == null) return;
         if (WorldRendererUtility.CurrentWorldRenderMode != WorldRenderMode.None) return;
@@ -169,13 +170,23 @@ public static class SpeechBubbleDrawer
         if (zoomFade <= 0.01f) return; // Zoomed out to max or beyond (47f+), do not render
 
         CellRect currentViewRect = cameraDriver.CurrentViewRect.ExpandedBy(2);
-        int curTicks = GenTicks.TicksGame;
+
+        // Advance speech bubbles by unscaled real-time delta seconds (pausing freezes bubble lifetime)
+        // Guard with Time.frameCount because OnGUI is called multiple times per render frame (Layout, Repaint)
+        float deltaSec = (Find.TickManager?.Paused == true) ? 0f : Mathf.Min(Time.unscaledDeltaTime, 0.1f);
+        int currentFrame = Time.frameCount;
 
         // Cleanup expired or invalid bubbles first
         for (int i = ActiveBubbles.Count - 1; i >= 0; i--)
         {
             SpeechBubble b = ActiveBubbles[i];
-            if (!b.Active || curTicks >= b.ExpiryTick || b.Pawn == null ||
+            if (b.LastUpdateFrame != currentFrame)
+            {
+                b.LastUpdateFrame = currentFrame;
+                b.ElapsedRealSec += deltaSec;
+            }
+
+            if (!b.Active || b.ElapsedRealSec >= b.TotalDurationSec || b.Pawn == null ||
                 !b.Pawn.Spawned || b.Pawn.Dead || b.Pawn.Destroyed || b.Pawn.Map != Find.CurrentMap)
             {
                 b.Deactivate();
@@ -186,7 +197,7 @@ public static class SpeechBubbleDrawer
         if (ActiveBubbles.Count == 0) return;
 
         // Approach B: Dynamic stepped zoom scaling without GUI matrix manipulation
-        if (settings != null && settings.BubbleScaleWithZoom)
+        if (settings.BubbleScaleWithZoom)
         {
             int currentTier = GetCurrentZoomTier();
             if (currentTier != _lastZoomTier)
@@ -221,12 +232,17 @@ public static class SpeechBubbleDrawer
                 if (pawn.Map.fogGrid.IsFogged(pawn.Position)) continue;
                 if (!currentViewRect.Contains(pawn.Position)) continue;
 
-                // Fade calculation: Aggressive interactions pop in instantly; others ease in smoothly (12 ticks)
-                int elapsed = curTicks - bubble.StartTick;
-                int remaining = bubble.ExpiryTick - curTicks;
+                // Fade calculation in real seconds: Aggressive interactions pop in instantly; Downed & Pain bubbles fade in/out slowly; others standard
+                float elapsed = bubble.ElapsedRealSec;
+                float remaining = bubble.TotalDurationSec - elapsed;
+
+                bool isSlowFade = bubble.IsDowned || bubble.IsInPain;
+                float fadeInSec = isSlowFade ? 0.65f : 0.20f;
+                float fadeOutSec = isSlowFade ? 1.00f : 0.40f;
+
                 float fadeAlpha = 1f;
-                if (elapsed < 12 && !bubble.IsAggressive) fadeAlpha = elapsed / 12f;
-                else if (remaining < 25) fadeAlpha = remaining / 25f;
+                if (elapsed < fadeInSec && !bubble.IsAggressive) fadeAlpha = elapsed / fadeInSec;
+                else if (remaining < fadeOutSec) fadeAlpha = remaining / fadeOutSec;
                 fadeAlpha = Mathf.Clamp01(fadeAlpha) * zoomFade;
 
                 if (fadeAlpha <= 0.01f) continue;
@@ -260,11 +276,10 @@ public static class SpeechBubbleDrawer
 
                 // Urgent impact shake: Ultra-fast horizontal vibration for 0.6 real-time seconds (if enabled)
                 bool allowShake = settings?.BubbleUrgentShake ?? true;
-                float elapsedRealSec = Time.realtimeSinceStartup - bubble.StartRealTime;
-                if (allowShake && bubble.IsUrgent && elapsedRealSec < 0.6f)
+                if (allowShake && bubble.IsUrgent && elapsed < 0.6f)
                 {
-                    float decay = (0.6f - elapsedRealSec) / 0.6f;
-                    float timeVal = elapsedRealSec * 85f; // ~85Hz crisp vibration
+                    float decay = (0.6f - elapsed) / 0.6f;
+                    float timeVal = elapsed * 85f; // ~85Hz crisp vibration
                     int shakeX = Mathf.RoundToInt((Mathf.Sin(timeVal * 1.0f) * 5.0f + Mathf.Sin(timeVal * 2.3f) * 3.0f) * decay);
                     drawX += shakeX;
                 }
@@ -312,14 +327,46 @@ public static class SpeechBubbleDrawer
                 int customSize = Mathf.RoundToInt(bubble.IsAnnouncement ? baseFontSize * 1.25f : baseFontSize);
                 Text.fontStyles[(int)targetFont].fontSize = customSize;
 
-                Color textCol = bubble.IsDowned
+                Color textCol = (bubble.IsDowned || bubble.IsInPain)
                     ? (isLight ? new Color(0.42f, 0.44f, 0.47f, fadeAlpha) : new Color(0.72f, 0.74f, 0.77f, fadeAlpha))
                     : bubble.IsAnnouncement ? (isLight ? new Color(0.62f, 0.38f, 0.05f, fadeAlpha) : new Color(1.0f, 0.88f, 0.42f, fadeAlpha))
                     : isLight ? new Color(0f, 0f, 0f, fadeAlpha) : new Color(0.95f, 0.96f, 0.98f, fadeAlpha);
 
                 GUI.color = textCol;
                 Rect textRect = bubbleRect.ExpandedBy(0f, 2f);
-                Widgets.Label(textRect, bubble.WrappedText ?? bubble.Text);
+
+                string fullText = bubble.WrappedText ?? bubble.Text;
+                string displayText = fullText;
+
+                // Downed typewriter effect: Characters appear continuously like a weak whisper (14 chars/sec)
+                // Invisible trailing characters preserve full layout geometry without jumping
+                if (bubble.IsDowned && !string.IsNullOrEmpty(fullText))
+                {
+                    const float charsPerSec = 14f;
+                    int targetLen = Mathf.Clamp(Mathf.FloorToInt(elapsed * charsPerSec), 0, fullText.Length);
+                    if (targetLen > 0 && targetLen < fullText.Length && char.IsHighSurrogate(fullText[targetLen - 1]))
+                    {
+                        targetLen++;
+                    }
+
+                    if (targetLen < fullText.Length)
+                    {
+                        if (targetLen != bubble.LastTypewriterLength)
+                        {
+                            bubble.LastTypewriterLength = targetLen;
+                            bubble.CachedTypewriterText = targetLen == 0
+                                ? $"<color=#00000000>{fullText}</color>"
+                                : $"{fullText.Substring(0, targetLen)}<color=#00000000>{fullText.Substring(targetLen)}</color>";
+                        }
+                        displayText = bubble.CachedTypewriterText;
+                    }
+                    else
+                    {
+                        displayText = fullText;
+                    }
+                }
+
+                Widgets.Label(textRect, displayText);
             }
         }
         finally
