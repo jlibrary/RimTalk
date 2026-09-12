@@ -92,6 +92,7 @@ public class RimTalkSettings : ModSettings
     public bool AllowOtherFactionsToTalk = false;
     public bool AllowEnemiesToTalk = false;
     public bool AllowCustomConversation = true;
+    public bool EnableDialoguePresets = false;
     public string LastLoadedLanguage = null;
     public List<CustomDialoguePreset> DialoguePresets = [];
     public Settings.PlayerDialogueMode PlayerDialogueMode = Settings.PlayerDialogueMode.Manual;
@@ -348,7 +349,13 @@ public class RimTalkSettings : ModSettings
             OverlayRectNonDebug = new Rect(overlayNonDebugX, overlayNonDebugY, overlayNonDebugWidth, overlayNonDebugHeight);
         }
 
+        bool? savedEnablePresets = EnableDialoguePresets;
+        Scribe_Values.Look(ref savedEnablePresets, "enableDialoguePresets", null, true);
         Scribe_Collections.Look(ref DialoguePresets, "dialoguePresets", LookMode.Deep);
+        if (Scribe.mode == LoadSaveMode.LoadingVars)
+        {
+            EnableDialoguePresets = savedEnablePresets ?? (DialoguePresets?.Exists(p => p.IsEnabled) == true);
+        }
         Scribe_Values.Look(ref LastLoadedLanguage, "lastLoadedLanguage");
 
         // Initialize collections if null

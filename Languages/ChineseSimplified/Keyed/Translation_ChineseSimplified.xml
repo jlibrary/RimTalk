@@ -554,8 +554,10 @@ Scriban 魔法 (动态内容)
     <RimTalk.PlayerSettings.Announce>📢 公告</RimTalk.PlayerSettings.Announce>
     <RimTalk.PlayerSettings.AnnounceTooltip>勾选时，将以向附近所有殖民者喊话的公告形式进行对话。</RimTalk.PlayerSettings.AnnounceTooltip>
     <RimTalk.PlayerSettings.AllowCustomConversation>启用自定义对话</RimTalk.PlayerSettings.AllowCustomConversation>
+    <RimTalk.PlayerSettings.AllowCustomConversationDesc>允许玩家通过输入台词发起或指挥角色之间的对话。（右键点击角色）</RimTalk.PlayerSettings.AllowCustomConversationDesc>
     <RimTalk.PlayerSettings.AllowCustomConversationTooltip>启用殖民者对话指令、Gizmo以及右键对话预设菜单。</RimTalk.PlayerSettings.AllowCustomConversationTooltip>
-    <RimTalk.PlayerSettings.AllowDirectPlayerTalk>允许玩家 ↔ 殖民者直接对话 (底部指令图标)</RimTalk.PlayerSettings.AllowDirectPlayerTalk>
+    <RimTalk.PlayerSettings.AllowDirectPlayerTalk>允许玩家 ↔ 殖民者直接对话</RimTalk.PlayerSettings.AllowDirectPlayerTalk>
+    <RimTalk.PlayerSettings.AllowDirectPlayerTalkDesc>右键点击选中的角色，允许玩家直接与其交谈。</RimTalk.PlayerSettings.AllowDirectPlayerTalkDesc>
     <RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>选中殖民者时在底部显示直接对话与通告指令图标(Gizmo)。取消勾选时将隐藏这两个图标，只能通过右键指示殖民者之间进行对话。</RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>
     <RimTalk.PlayerSettings.AllowPlayerAiGen>AI自动生成玩家台词（应用人设）</RimTalk.PlayerSettings.AllowPlayerAiGen>
     <RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>勾选时，AI将在对话中根据玩家人设自动生成玩家的后续台词。取消勾选时，玩家只说出用户手动输入的台词。</RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>
@@ -567,6 +569,9 @@ Scriban 魔法 (动态内容)
     <RimTalk.DebugWindow.CopyImage>复制图像（剪贴板）</RimTalk.DebugWindow.CopyImage>
     <RimTalk.DebugWindow.ImageCopied>图像已复制到剪贴板。</RimTalk.DebugWindow.ImageCopied>
     <RimTalk.PlayerSettings.DisabledNotice>自定义对话已禁用。殖民者右键菜单与玩家对话功能将不会生效。</RimTalk.PlayerSettings.DisabledNotice>
+    <RimTalk.PlayerSettings.EnablePresets>启用对话预设</RimTalk.PlayerSettings.EnablePresets>
+    <RimTalk.PlayerSettings.EnablePresetsTooltip>在角色右键菜单中显示快速对话预设列表。</RimTalk.PlayerSettings.EnablePresetsTooltip>
+    <RimTalk.PlayerSettings.PresetsDisabledNotice>对话预设已禁用。角色右键菜单中仅显示默认对话选项。</RimTalk.PlayerSettings.PresetsDisabledNotice>
     <RimTalk.PlayerSettings.NewPresetName>新对话预设</RimTalk.PlayerSettings.NewPresetName>
     <RimTalk.PlayerSettings.PresetTitleHeader>标题 / 菜单名</RimTalk.PlayerSettings.PresetTitleHeader>
     <RimTalk.PlayerSettings.PresetTitlePlaceholder>对话预设标题...</RimTalk.PlayerSettings.PresetTitlePlaceholder>

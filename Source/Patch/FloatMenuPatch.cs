@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using HarmonyLib;
 using RimTalk.Service;
 using RimTalk.UI;
@@ -176,41 +177,27 @@ public static class FloatMenuPatch
         ));
 
         var settings = Settings.Get();
-        settings?.EnsureDialoguePresetsLanguage();
-        var presets = settings?.DialoguePresets;
+        if (settings?.EnableDialoguePresets != true) return;
+        
+        settings.EnsureDialoguePresetsLanguage();
+        var presets = settings.DialoguePresets;
         if (presets != null && presets.Count > 0)
         {
-            for (int i = 0; i < presets.Count; i++)
-            {
-                var preset = presets[i];
-                if (preset == null || !preset.IsEnabled || string.IsNullOrWhiteSpace(preset.Title)) continue;
-
-                string optionLabel = $"[{target.LabelShortCap}] {preset.Title}";
-                var capturedPreset = preset;
-
-                result.Add(new FloatMenuOption(
-                    optionLabel,
-                    delegate
+            result.AddRange(from preset in presets
+                where preset != null && preset.IsEnabled && !string.IsNullOrWhiteSpace(preset.Title)
+                let optionLabel = $"[{target.LabelShortCap}] {preset.Title}"
+                let capturedPreset = preset
+                select new FloatMenuOption(optionLabel, delegate
+                {
+                    if (capturedPreset.IncludeVision)
                     {
-                        if (capturedPreset.IncludeVision)
-                        {
-                            VisionUtil.CaptureScreenAsync(img =>
-                            {
-                                CustomDialogueService.DispatchDialogue(initiator, target, capturedPreset.Prompt,
-                                    capturedPreset.IsAnnouncement, img);
-                            });
-                        }
-                        else
-                        {
-                            CustomDialogueService.DispatchDialogue(initiator, target, capturedPreset.Prompt,
-                                capturedPreset.IsAnnouncement, null);
-                        }
-                    },
-                    MenuOptionPriority.Default,
-                    null,
-                    target
-                ));
-            }
+                        VisionUtil.CaptureScreenAsync(img => { CustomDialogueService.DispatchDialogue(initiator, target, capturedPreset.Prompt, capturedPreset.IsAnnouncement, img); });
+                    }
+                    else
+                    {
+                        CustomDialogueService.DispatchDialogue(initiator, target, capturedPreset.Prompt, capturedPreset.IsAnnouncement, null);
+                    }
+                }, MenuOptionPriority.Default, null, target));
         }
     }
 }

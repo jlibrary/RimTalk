@@ -556,8 +556,10 @@
     <RimTalk.PlayerSettings.Announce>📢 Объявление</RimTalk.PlayerSettings.Announce>
     <RimTalk.PlayerSettings.AnnounceTooltip>При включении диалог озвучивается как громкое объявление для всех поселенцев поблизости.</RimTalk.PlayerSettings.AnnounceTooltip>
     <RimTalk.PlayerSettings.AllowCustomConversation>Разрешить пользовательские диалоги</RimTalk.PlayerSettings.AllowCustomConversation>
+    <RimTalk.PlayerSettings.AllowCustomConversationDesc>Позволяет начинать и направлять диалоги между персонажами, вводя свои реплики. (Правый клик по персонажу)</RimTalk.PlayerSettings.AllowCustomConversationDesc>
     <RimTalk.PlayerSettings.AllowCustomConversationTooltip>Включает команды диалога, гизмо и пресеты при клике правой кнопкой мыши.</RimTalk.PlayerSettings.AllowCustomConversationTooltip>
-    <RimTalk.PlayerSettings.AllowDirectPlayerTalk>Разрешить прямой диалог Игрок ↔ Поселенец (Гизмо)</RimTalk.PlayerSettings.AllowDirectPlayerTalk>
+    <RimTalk.PlayerSettings.AllowDirectPlayerTalk>Разрешить прямой диалог Игрок ↔ Поселенец</RimTalk.PlayerSettings.AllowDirectPlayerTalk>
+    <RimTalk.PlayerSettings.AllowDirectPlayerTalkDesc>Позволяет игроку напрямую говорить с персонажем, нажав ПКМ по выбранному персонажу.</RimTalk.PlayerSettings.AllowDirectPlayerTalkDesc>
     <RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>Отображает кнопки гизмо диалога и объявления внизу экрана при выборе поселенца. Если отключено, оба гизмо скрываются, и доступны только диалоги между поселенцами по правому клику.</RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>
     <RimTalk.PlayerSettings.AllowPlayerAiGen>Автогенерация реплик игрока ИИ (применяет персону)</RimTalk.PlayerSettings.AllowPlayerAiGen>
     <RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>При включении ИИ автоматически генерирует последующие ответы игрока согласно персоне. При отключении игрок говорит только введенные вручную фразы.</RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>
@@ -569,6 +571,9 @@
     <RimTalk.DebugWindow.CopyImage>Скопировать изображение (в буфер обмена)</RimTalk.DebugWindow.CopyImage>
     <RimTalk.DebugWindow.ImageCopied>Изображение скопировано в буфер обмена.</RimTalk.DebugWindow.ImageCopied>
     <RimTalk.PlayerSettings.DisabledNotice>Пользовательские диалоги отключены. Контекстное меню и диалоги игрока будут недоступны.</RimTalk.PlayerSettings.DisabledNotice>
+    <RimTalk.PlayerSettings.EnablePresets>Включить пресеты диалогов</RimTalk.PlayerSettings.EnablePresets>
+    <RimTalk.PlayerSettings.EnablePresetsTooltip>Отображать быстрые пресеты диалогов в контекстном меню персонажа по правому клику.</RimTalk.PlayerSettings.EnablePresetsTooltip>
+    <RimTalk.PlayerSettings.PresetsDisabledNotice>Пресеты диалогов отключены. В контекстном меню будет отображаться только стандартная опция разговора.</RimTalk.PlayerSettings.PresetsDisabledNotice>
     <RimTalk.PlayerSettings.NewPresetName>Новый пресет</RimTalk.PlayerSettings.NewPresetName>
     <RimTalk.PlayerSettings.PresetTitleHeader>Заголовок / Название в меню</RimTalk.PlayerSettings.PresetTitleHeader>
     <RimTalk.PlayerSettings.PresetTitlePlaceholder>Название пресета...</RimTalk.PlayerSettings.PresetTitlePlaceholder>

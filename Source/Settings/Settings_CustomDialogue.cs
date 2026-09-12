@@ -29,18 +29,26 @@ public partial class Settings
         // =========================================================================
         Text.Font = GameFont.Small;
         GUI.color = settings.AllowCustomConversation ? new Color(0.6f, 0.9f, 0.6f) : Color.gray;
-        listing.CheckboxLabeled(
+        Rect masterRect = listing.GetRect(24f);
+        Widgets.DrawHighlightIfMouseover(masterRect);
+        Widgets.CheckboxLabeled(
+            masterRect,
             "RimTalk.PlayerSettings.AllowCustomConversation".Translate(),
-            ref settings.AllowCustomConversation,
-            "RimTalk.PlayerSettings.AllowCustomConversationTooltip".Translate());
+            ref settings.AllowCustomConversation);
         GUI.color = Color.white;
+
+        Text.Font = GameFont.Tiny;
+        GUI.color = new Color(0.75f, 0.75f, 0.75f);
+        listing.Label("RimTalk.PlayerSettings.AllowCustomConversationDesc".Translate());
+        GUI.color = Color.white;
+        Text.Font = GameFont.Small;
 
         listing.Gap(4f);
 
         // If master toggle is disabled, display notice and return
         if (!settings.AllowCustomConversation)
         {
-            listing.Gap(12f);
+            listing.Gap(8f);
             Text.Font = GameFont.Tiny;
             GUI.color = new Color(0.7f, 0.7f, 0.7f);
             listing.Label("RimTalk.PlayerSettings.DisabledNotice".Translate());
@@ -64,12 +72,12 @@ public partial class Settings
         bool allowDirectPlayerTalk = settings.PlayerDialogueMode != PlayerDialogueMode.Disabled;
         bool allowPlayerAiGen = settings.PlayerDialogueMode == PlayerDialogueMode.AIDriven;
 
-        // Direct Player Talk Checkbox with Gizmo Previews
+        // Direct Player Talk Checkbox with Gizmo Previews (no tooltip)
         bool prevDirectTalk = allowDirectPlayerTalk;
         Rect row = listing.GetRect(24f);
+        Widgets.DrawHighlightIfMouseover(row);
         string label = "RimTalk.PlayerSettings.AllowDirectPlayerTalk".Translate();
         Widgets.CheckboxLabeled(row, label, ref allowDirectPlayerTalk);
-        TooltipHandler.TipRegion(row, "RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip".Translate());
 
         float x = row.x + Text.CalcSize(label).x + 8f;
         if (!allowDirectPlayerTalk) GUI.color = new Color(1f, 1f, 1f, 0.4f);
@@ -84,6 +92,12 @@ public partial class Settings
                 : PlayerDialogueMode.Disabled;
             Cache.InitializePlayerPawn();
         }
+
+        Text.Font = GameFont.Tiny;
+        GUI.color = new Color(0.75f, 0.75f, 0.75f);
+        listing.Label("RimTalk.PlayerSettings.AllowDirectPlayerTalkDesc".Translate());
+        GUI.color = Color.white;
+        Text.Font = GameFont.Small;
 
         listing.Gap(6f);
 
@@ -170,6 +184,24 @@ public partial class Settings
         GUI.color = Color.white;
 
         listing.Gap(4f);
+
+        listing.CheckboxLabeled(
+            "RimTalk.PlayerSettings.EnablePresets".Translate(),
+            ref settings.EnableDialoguePresets,
+            "RimTalk.PlayerSettings.EnablePresetsTooltip".Translate());
+
+        if (!settings.EnableDialoguePresets)
+        {
+            listing.Gap(4f);
+            Text.Font = GameFont.Tiny;
+            GUI.color = new Color(0.7f, 0.7f, 0.7f);
+            listing.Label("RimTalk.PlayerSettings.PresetsDisabledNotice".Translate());
+            GUI.color = Color.white;
+            Text.Font = GameFont.Small;
+            return;
+        }
+
+        listing.Gap(6f);
 
         // Subline: Description on left, Buttons (+ Add, Reset) on right
         Rect toolbarRow = listing.GetRect(26f);

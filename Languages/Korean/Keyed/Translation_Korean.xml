@@ -246,8 +246,10 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.PlayerSettings.Announce>📢 공지</RimTalk.PlayerSettings.Announce>
     <RimTalk.PlayerSettings.AnnounceTooltip>체크 시 주변 모든 폰에게 외치는 공지 형태로 대화합니다.</RimTalk.PlayerSettings.AnnounceTooltip>
     <RimTalk.PlayerSettings.AllowCustomConversation>커스텀 대화 활성화</RimTalk.PlayerSettings.AllowCustomConversation>
+    <RimTalk.PlayerSettings.AllowCustomConversationDesc>사용자가 직접 대사를 작성해 폰 간의 대화를 시작하거나 지시할 수 있습니다. (폰 우클릭)</RimTalk.PlayerSettings.AllowCustomConversationDesc>
     <RimTalk.PlayerSettings.AllowCustomConversationTooltip>폰 대화 지시, 기즈모 및 우클릭 대화 프리셋 메뉴를 활성화합니다.</RimTalk.PlayerSettings.AllowCustomConversationTooltip>
-    <RimTalk.PlayerSettings.AllowDirectPlayerTalk>플레이어 ↔ 폰 직접 대화 허용 (하단 기즈모)</RimTalk.PlayerSettings.AllowDirectPlayerTalk>
+    <RimTalk.PlayerSettings.AllowDirectPlayerTalk>플레이어 ↔ 폰 직접 대화 허용</RimTalk.PlayerSettings.AllowDirectPlayerTalk>
+    <RimTalk.PlayerSettings.AllowDirectPlayerTalkDesc>선택한 폰을 우클릭하여 플레이어가 직접 말을 걸 수 있습니다.</RimTalk.PlayerSettings.AllowDirectPlayerTalkDesc>
     <RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>폰 선택 시 하단에 직접 대화 및 공지 기즈모 버튼을 표시하여 플레이어가 직접 대화하거나 공지할 수 있게 합니다. 체크 해제 시 두 기즈모가 모두 숨겨지며, 우클릭을 통한 폰 간 대화 지시만 가능합니다.</RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>
     <RimTalk.PlayerSettings.AllowPlayerAiGen>플레이어 대사도 AI가 자동 생성 (페르소나 적용)</RimTalk.PlayerSettings.AllowPlayerAiGen>
     <RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>체크 시 AI가 플레이어의 페르소나에 맞춰 대화 중 플레이어의 후속 대사를 자동으로 생성합니다. 체크 해제 시 플레이어는 사용자가 직접 입력한 대사만 말합니다.</RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>
@@ -571,6 +573,9 @@ Scriban 매직 (동적 콘텐츠)
 • 자동 생성: 폰 전용: 플레이어가 말을 시작한 후, 이어지는 대화는 폰들끼리만 진행합니다.
 • 자동 생성: 폰+플레이어: AI가 폰과 플레이어의 대사를 모두 자동 생성합니다. (플레이어 페르소나 적용)</RimTalk.PlayerSettings.ModeDesc>
     <RimTalk.PlayerSettings.DisabledNotice>커스텀 대화 시스템이 비활성화되어 있습니다. 폰 우클릭 메뉴 및 플레이어 대화 기능이 작동하지 않습니다.</RimTalk.PlayerSettings.DisabledNotice>
+    <RimTalk.PlayerSettings.EnablePresets>대화 프리셋 사용</RimTalk.PlayerSettings.EnablePresets>
+    <RimTalk.PlayerSettings.EnablePresetsTooltip>폰 우클릭 메뉴에 빠른 대화 프리셋 목록을 표시합니다.</RimTalk.PlayerSettings.EnablePresetsTooltip>
+    <RimTalk.PlayerSettings.PresetsDisabledNotice>대화 프리셋이 비활성화되었습니다. 폰 우클릭 메뉴에 기본 대화 메뉴만 표시됩니다.</RimTalk.PlayerSettings.PresetsDisabledNotice>
     <RimTalk.PlayerSettings.NewPresetName>새 대화 프리셋</RimTalk.PlayerSettings.NewPresetName>
     <RimTalk.PlayerSettings.PresetTitleHeader>제목 / 메뉴명</RimTalk.PlayerSettings.PresetTitleHeader>
     <RimTalk.PlayerSettings.PresetTitlePlaceholder>대화 프리셋 제목...</RimTalk.PlayerSettings.PresetTitlePlaceholder>

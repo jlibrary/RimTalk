@@ -557,8 +557,10 @@ Conseils Cruciaux :
     <RimTalk.PlayerSettings.Announce>📢 Annonce</RimTalk.PlayerSettings.Announce>
     <RimTalk.PlayerSettings.AnnounceTooltip>Si coché, diffuse le dialogue à tous les colons proches sous forme d'annonce.</RimTalk.PlayerSettings.AnnounceTooltip>
     <RimTalk.PlayerSettings.AllowCustomConversation>Activer les dialogues personnalisés</RimTalk.PlayerSettings.AllowCustomConversation>
+    <RimTalk.PlayerSettings.AllowCustomConversationDesc>Permet de lancer ou diriger des dialogues entre colons en écrivant vos propres répliques. (Clic droit sur le colon)</RimTalk.PlayerSettings.AllowCustomConversationDesc>
     <RimTalk.PlayerSettings.AllowCustomConversationTooltip>Active les commandes de dialogue, les gizmos et le menu des préréglages au clic droit.</RimTalk.PlayerSettings.AllowCustomConversationTooltip>
-    <RimTalk.PlayerSettings.AllowDirectPlayerTalk>Autoriser le dialogue direct Joueur ↔ Colon (Gizmos)</RimTalk.PlayerSettings.AllowDirectPlayerTalk>
+    <RimTalk.PlayerSettings.AllowDirectPlayerTalk>Autoriser le dialogue direct Joueur ↔ Colon</RimTalk.PlayerSettings.AllowDirectPlayerTalk>
+    <RimTalk.PlayerSettings.AllowDirectPlayerTalkDesc>Permet au joueur de parler directement à un colon en faisant un clic droit sur le colon sélectionné.</RimTalk.PlayerSettings.AllowDirectPlayerTalkDesc>
     <RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>Affiche les boutons d'action (gizmos) Discuter et Annoncer en bas lors de la sélection d'un colon. Décoché, les deux gizmos sont masqués et seuls les dialogues entre colons par clic droit sont autorisés.</RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>
     <RimTalk.PlayerSettings.AllowPlayerAiGen>Réponses IA générées pour le joueur (Persona appliqué)</RimTalk.PlayerSettings.AllowPlayerAiGen>
     <RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>Si coché, l'IA génère les répliques suivantes du joueur selon son persona. Décoché, le joueur ne dit que le texte saisi manuellement.</RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>
@@ -570,6 +572,9 @@ Conseils Cruciaux :
     <RimTalk.DebugWindow.CopyImage>Copier l'image (Presse-papiers)</RimTalk.DebugWindow.CopyImage>
     <RimTalk.DebugWindow.ImageCopied>Image copiée dans le presse-papiers.</RimTalk.DebugWindow.ImageCopied>
     <RimTalk.PlayerSettings.DisabledNotice>Les dialogues personnalisés sont désactivés. Le menu clic droit et les fonctionnalités de dialogue du joueur ne seront pas actifs.</RimTalk.PlayerSettings.DisabledNotice>
+    <RimTalk.PlayerSettings.EnablePresets>Activer les préréglages de dialogue</RimTalk.PlayerSettings.EnablePresets>
+    <RimTalk.PlayerSettings.EnablePresetsTooltip>Affiche les préréglages de dialogue rapide dans le menu contextuel du colon.</RimTalk.PlayerSettings.EnablePresetsTooltip>
+    <RimTalk.PlayerSettings.PresetsDisabledNotice>Les préréglages de dialogue sont désactivés. Seule l'option de discussion par défaut apparaîtra dans le menu contextuel.</RimTalk.PlayerSettings.PresetsDisabledNotice>
     <RimTalk.PlayerSettings.NewPresetName>Nouveau préréglage</RimTalk.PlayerSettings.NewPresetName>
     <RimTalk.PlayerSettings.PresetTitleHeader>Titre / Nom du menu</RimTalk.PlayerSettings.PresetTitleHeader>
     <RimTalk.PlayerSettings.PresetTitlePlaceholder>Titre du préréglage...</RimTalk.PlayerSettings.PresetTitlePlaceholder>

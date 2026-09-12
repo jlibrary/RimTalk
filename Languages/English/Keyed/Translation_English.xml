@@ -242,8 +242,10 @@ Crucial Tips:
     <RimTalk.PlayerSettings.Announce>📢 Announce</RimTalk.PlayerSettings.Announce>
     <RimTalk.PlayerSettings.AnnounceTooltip>When enabled, broadcasts the dialogue to all nearby pawns as an announcement.</RimTalk.PlayerSettings.AnnounceTooltip>
     <RimTalk.PlayerSettings.AllowCustomConversation>Enable Custom Dialogue</RimTalk.PlayerSettings.AllowCustomConversation>
+    <RimTalk.PlayerSettings.AllowCustomConversationDesc>Allows you to start or direct dialogues between pawns by writing your own lines. (Right-click pawn)</RimTalk.PlayerSettings.AllowCustomConversationDesc>
     <RimTalk.PlayerSettings.AllowCustomConversationTooltip>Enable pawn dialogue commands, gizmos, and right-click dialogue presets.</RimTalk.PlayerSettings.AllowCustomConversationTooltip>
-    <RimTalk.PlayerSettings.AllowDirectPlayerTalk>Allow Direct Player ↔ Pawn Dialogue (Pawn Gizmos)</RimTalk.PlayerSettings.AllowDirectPlayerTalk>
+    <RimTalk.PlayerSettings.AllowDirectPlayerTalk>Allow Direct Player ↔ Pawn Dialogue</RimTalk.PlayerSettings.AllowDirectPlayerTalk>
+    <RimTalk.PlayerSettings.AllowDirectPlayerTalkDesc>Allows the player to talk directly to a pawn by right-clicking the selected pawn.</RimTalk.PlayerSettings.AllowDirectPlayerTalkDesc>
     <RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>Displays the Chat and Announce gizmo buttons at the bottom when a pawn is selected, allowing direct conversations or announcements. If disabled, both gizmos are hidden and only pawn-to-pawn dialogues via right-click are available.</RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>
     <RimTalk.PlayerSettings.AllowPlayerAiGen>AI-Generated Player Responses (Apply Persona)</RimTalk.PlayerSettings.AllowPlayerAiGen>
     <RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>When enabled, AI generates subsequent responses for the player matching the player's persona. When disabled, the player only speaks text manually entered by you.</RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>
@@ -565,6 +567,9 @@ Crucial Tips:
     <RimTalk.DebugWindow.CopyImage>Copy Image (Clipboard)</RimTalk.DebugWindow.CopyImage>
     <RimTalk.DebugWindow.ImageCopied>Image copied to clipboard.</RimTalk.DebugWindow.ImageCopied>
     <RimTalk.PlayerSettings.DisabledNotice>Custom dialogue is disabled. Pawn right-click menu and player conversation features will not be active.</RimTalk.PlayerSettings.DisabledNotice>
+    <RimTalk.PlayerSettings.EnablePresets>Enable Dialogue Presets</RimTalk.PlayerSettings.EnablePresets>
+    <RimTalk.PlayerSettings.EnablePresetsTooltip>Displays quick dialogue presets in the pawn right-click menu.</RimTalk.PlayerSettings.EnablePresetsTooltip>
+    <RimTalk.PlayerSettings.PresetsDisabledNotice>Dialogue presets are disabled. Only the default chat option will appear in the right-click menu.</RimTalk.PlayerSettings.PresetsDisabledNotice>
     <RimTalk.PlayerSettings.NewPresetName>New Preset</RimTalk.PlayerSettings.NewPresetName>
     <RimTalk.PlayerSettings.PresetTitleHeader>Title / Menu Name</RimTalk.PlayerSettings.PresetTitleHeader>
     <RimTalk.PlayerSettings.PresetTitlePlaceholder>Preset title...</RimTalk.PlayerSettings.PresetTitlePlaceholder>

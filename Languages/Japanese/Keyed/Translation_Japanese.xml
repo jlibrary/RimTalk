@@ -556,8 +556,10 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.PlayerSettings.Announce>📢 周知</RimTalk.PlayerSettings.Announce>
     <RimTalk.PlayerSettings.AnnounceTooltip>チェックすると、周囲のすべてのポーンに呼びかける周知形式で対話します。</RimTalk.PlayerSettings.AnnounceTooltip>
     <RimTalk.PlayerSettings.AllowCustomConversation>カスタム対話を有効化</RimTalk.PlayerSettings.AllowCustomConversation>
+    <RimTalk.PlayerSettings.AllowCustomConversationDesc>プレイヤーが直接セリフを入力してポーン同士の会話を開始・指示できます。（ポーンを右クリック）</RimTalk.PlayerSettings.AllowCustomConversationDesc>
     <RimTalk.PlayerSettings.AllowCustomConversationTooltip>ポーンへの対話指示、ギズモ、および右クリック対話プリセットメニューを有効にします。</RimTalk.PlayerSettings.AllowCustomConversationTooltip>
-    <RimTalk.PlayerSettings.AllowDirectPlayerTalk>プレイヤー ↔ ポーンの直接対話を許可 (下部ギズモ)</RimTalk.PlayerSettings.AllowDirectPlayerTalk>
+    <RimTalk.PlayerSettings.AllowDirectPlayerTalk>プレイヤー ↔ ポーンの直接対話を許可</RimTalk.PlayerSettings.AllowDirectPlayerTalk>
+    <RimTalk.PlayerSettings.AllowDirectPlayerTalkDesc>選択したポーンを右クリックして、プレイヤーが直接話しかけられるようにします。</RimTalk.PlayerSettings.AllowDirectPlayerTalkDesc>
     <RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>ポーン選択時に下部に対話およびアナウンスのギズモボタンを表示します。オフにすると両方のギズモが非表示になり、右クリックによるポーン同士の対話指示のみ可能になります。</RimTalk.PlayerSettings.AllowDirectPlayerTalkTooltip>
     <RimTalk.PlayerSettings.AllowPlayerAiGen>プレイヤーのセリフもAIが自動生成（ペルソナ適用）</RimTalk.PlayerSettings.AllowPlayerAiGen>
     <RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>チェックすると、AIがプレイヤーペルソナに合わせて会話中のプレイヤーの後続セリフを自動生成します。オフの場合、手動入力したセリフのみ発言します。</RimTalk.PlayerSettings.AllowPlayerAiGenTooltip>
@@ -569,6 +571,9 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.DebugWindow.CopyImage>画像をコピー（クリップボード）</RimTalk.DebugWindow.CopyImage>
     <RimTalk.DebugWindow.ImageCopied>画像がクリップボードにコピーされました。</RimTalk.DebugWindow.ImageCopied>
     <RimTalk.PlayerSettings.DisabledNotice>カスタム対話が無効になっています。ポーンの右クリックメニューおよびプレイヤー対話機能は動作しません。</RimTalk.PlayerSettings.DisabledNotice>
+    <RimTalk.PlayerSettings.EnablePresets>対話プリセットを有効化</RimTalk.PlayerSettings.EnablePresets>
+    <RimTalk.PlayerSettings.EnablePresetsTooltip>ポーンの右クリックメニューにクイック対話プリセットを表示します。</RimTalk.PlayerSettings.EnablePresetsTooltip>
+    <RimTalk.PlayerSettings.PresetsDisabledNotice>対話プリセットが無効化されています。右クリックメニューには基本対話オプションのみ表示されます。</RimTalk.PlayerSettings.PresetsDisabledNotice>
     <RimTalk.PlayerSettings.NewPresetName>新しい対話プリセット</RimTalk.PlayerSettings.NewPresetName>
     <RimTalk.PlayerSettings.PresetTitleHeader>タイトル / メニュー名</RimTalk.PlayerSettings.PresetTitleHeader>
     <RimTalk.PlayerSettings.PresetTitlePlaceholder>対話プリセットのタイトル...</RimTalk.PlayerSettings.PresetTitlePlaceholder>
