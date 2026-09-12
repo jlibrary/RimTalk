@@ -319,6 +319,12 @@
     <RimTalk.Settings.CustomJsonValid>✓ Корректный JSON</RimTalk.Settings.CustomJsonValid>
     <RimTalk.Settings.CustomJsonInvalid>⚠ Некорректный JSON: {0}</RimTalk.Settings.CustomJsonInvalid>
     <RimTalk.Settings.CustomJsonEmpty>Будут использованы стандартные параметры запроса.</RimTalk.Settings.CustomJsonEmpty>
+    <RimTalk.Settings.ReasoningLabel>Рассуждения:</RimTalk.Settings.ReasoningLabel>
+    <RimTalk.Settings.ReasoningAutoDetected>автоопределено</RimTalk.Settings.ReasoningAutoDetected>
+    <RimTalk.Settings.ReasoningPending>будет определено при первом запросе</RimTalk.Settings.ReasoningPending>
+    <RimTalk.Settings.ReasoningCustomActive>пользовательский JSON активен (автоопределение выключено)</RimTalk.Settings.ReasoningCustomActive>
+    <RimTalk.Settings.ResetReasoning>Сбросить рассуждения</RimTalk.Settings.ResetReasoning>
+    <RimTalk.Settings.ResetReasoningTooltip>Сбрасывает сохраненные настройки рассуждений для этой модели. Мод автоматически подберет оптимальные параметры при следующем запросе диалога.</RimTalk.Settings.ResetReasoningTooltip>
     <RimTalk.Settings.CustomizeHelpButton>Справка и примеры</RimTalk.Settings.CustomizeHelpButton>
     <RimTalk.Settings.CustomizeTemplatesTitle>Шаблоны и примеры</RimTalk.Settings.CustomizeTemplatesTitle>
     <RimTalk.Settings.CustomizeTemplatesSubtitle>Выберите шаблон для предпросмотра и применения.</RimTalk.Settings.CustomizeTemplatesSubtitle>

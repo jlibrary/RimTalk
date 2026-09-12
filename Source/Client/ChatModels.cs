@@ -53,6 +53,7 @@ public class ChatRequest
     public List<ChatMessage> Messages { get; set; } = [];
     public bool Stream { get; set; }
     public string ReasoningEffort { get; set; }
+    public bool DisableThinking { get; set; }
 
     public Dictionary<string, object> ToPayload()
     {
@@ -68,7 +69,9 @@ public class ChatRequest
         if (Stream)
             dict["stream_options"] = new Dictionary<string, object> { ["include_usage"] = true };
 
-        if (!string.IsNullOrEmpty(ReasoningEffort))
+        if (DisableThinking)
+            dict["thinking"] = new Dictionary<string, object> { ["type"] = "disabled" };
+        else if (!string.IsNullOrEmpty(ReasoningEffort))
             dict["reasoning_effort"] = ReasoningEffort;
 
         return dict;

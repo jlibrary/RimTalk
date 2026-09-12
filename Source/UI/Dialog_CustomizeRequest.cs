@@ -77,7 +77,11 @@ public class Dialog_CustomizeRequest : Window
         Rect descRect = new Rect(x, y + 30f, width, descH);
         Widgets.Label(descRect, desc);
         GUI.color = Color.white;
-        Text.Font = GameFont.Small;
+
+        // Reasoning Detection Status & Reset Button Bar
+        float reasoningBarY = y + 30f + descH + 6f;
+        float reasoningBarH = 26f;
+        DrawReasoningBar(new Rect(x, reasoningBarY, width, reasoningBarH));
 
         // Status Indicator (above bottom limit)
         float statusHeight = 22f;
@@ -86,7 +90,7 @@ public class Dialog_CustomizeRequest : Window
         DrawStatus(statusRect);
 
         // Text Editor Box
-        float editorY = y + 30f + descH + 8f;
+        float editorY = reasoningBarY + reasoningBarH + 6f;
         float editorHeight = statusY - editorY - 4f;
 
         Rect editorBoxRect = new Rect(x, editorY, width, editorHeight);
@@ -296,6 +300,71 @@ public class Dialog_CustomizeRequest : Window
         }
     }
 
+    private void DrawReasoningBar(Rect rect)
+    {
+        Widgets.DrawBoxSolid(rect, new Color(0.12f, 0.14f, 0.17f, 0.7f));
+        Color prevBorder = GUI.color;
+        GUI.color = new Color(1f, 1f, 1f, 0.08f);
+        Widgets.DrawBox(rect);
+        GUI.color = prevBorder;
+
+        string level = _config.GetDetectedThinkingLevel();
+        bool userOverrodeReasoning = !string.IsNullOrWhiteSpace(_jsonText) &&
+            (_jsonText.Contains("\"thinking\"") || _jsonText.Contains("\"reasoning_effort\""));
+
+        // Reset button on the right
+        const float btnWidth = 90f;
+        Rect btnRect = new Rect(rect.xMax - btnWidth - 3f, rect.y + 2f, btnWidth, rect.height - 4f);
+        TooltipHandler.TipRegion(btnRect, "RimTalk.Settings.ResetReasoningTooltip".Translate());
+        if (Widgets.ButtonText(btnRect, "RimTalk.Settings.ResetReasoning".Translate(), active: !string.IsNullOrEmpty(level)))
+        {
+            var settings = Settings.Get();
+            if (settings?.DetectedThinkingLevels != null)
+            {
+                string modelName = _config.GetEffectiveModelName();
+                if (modelName.StartsWith("models/")) modelName = modelName.Substring(7);
+                string key = $"{_config.Provider}_{modelName}";
+                settings.DetectedThinkingLevels.Remove(key);
+                settings.Write();
+                AIClientFactory.Clear();
+                SoundDefOf.Click.PlayOneShotOnCamera();
+            }
+        }
+
+        // Label on the left
+        Rect labelRect = new Rect(rect.x + 8f, rect.y + 3f, btnRect.x - rect.x - 12f, rect.height - 6f);
+        Text.Font = GameFont.Tiny;
+        Text.Anchor = TextAnchor.MiddleLeft;
+
+        if (userOverrodeReasoning)
+        {
+            GUI.color = new Color(0.85f, 0.75f, 0.4f);
+            Widgets.Label(labelRect, $"{"RimTalk.Settings.ReasoningLabel".Translate()} {"RimTalk.Settings.ReasoningCustomActive".Translate()}");
+        }
+        else if (string.IsNullOrEmpty(level))
+        {
+            GUI.color = new Color(0.65f, 0.65f, 0.65f);
+            Widgets.Label(labelRect, $"{"RimTalk.Settings.ReasoningLabel".Translate()} {"RimTalk.Settings.ReasoningPending".Translate()}");
+        }
+        else
+        {
+            GUI.color = new Color(0.4f, 0.85f, 1f);
+            string levelDisplay = level switch
+            {
+                "disabled" => "disabled (off)",
+                "minimal" => "minimal",
+                "low" => "low",
+                "standard" => "standard (none)",
+                _ => level
+            };
+            Widgets.Label(labelRect, $"{"RimTalk.Settings.ReasoningLabel".Translate()} {levelDisplay} - {"RimTalk.Settings.ReasoningAutoDetected".Translate()}");
+        }
+
+        GUI.color = Color.white;
+        Text.Anchor = TextAnchor.UpperLeft;
+        Text.Font = GameFont.Small;
+    }
+
     private void DrawStatus(Rect rect)
     {
         Text.Font = GameFont.Tiny;
@@ -304,13 +373,7 @@ public class Dialog_CustomizeRequest : Window
         if (string.IsNullOrWhiteSpace(_jsonText))
         {
             GUI.color = Color.gray;
-            string defaultJson = _config.GetDefaultRequestJson();
-            string status = "RimTalk.Settings.CustomJsonEmpty".Translate();
-            if (!string.IsNullOrEmpty(defaultJson) && defaultJson != "{}")
-            {
-                status += $" ({defaultJson.Replace("\n", " ").Replace("  ", " ").Trim()})";
-            }
-            Widgets.Label(rect, status);
+            Widgets.Label(rect, "RimTalk.Settings.CustomJsonEmpty".Translate());
         }
         else if (JsonUtil.IsValidJson(_jsonText, out var err))
         {

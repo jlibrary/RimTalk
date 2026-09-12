@@ -320,6 +320,12 @@ Scriban 魔法 (動態內容)
     <RimTalk.Settings.CustomJsonValid>✓ 有效的 JSON</RimTalk.Settings.CustomJsonValid>
     <RimTalk.Settings.CustomJsonInvalid>⚠ 無效的 JSON：{0}</RimTalk.Settings.CustomJsonInvalid>
     <RimTalk.Settings.CustomJsonEmpty>將使用預設請求參數。</RimTalk.Settings.CustomJsonEmpty>
+    <RimTalk.Settings.ReasoningLabel>推理：</RimTalk.Settings.ReasoningLabel>
+    <RimTalk.Settings.ReasoningAutoDetected>已自動偵測</RimTalk.Settings.ReasoningAutoDetected>
+    <RimTalk.Settings.ReasoningPending>將在首次請求時自動偵測</RimTalk.Settings.ReasoningPending>
+    <RimTalk.Settings.ReasoningCustomActive>已套用自訂 JSON（自動偵測已停用）</RimTalk.Settings.ReasoningCustomActive>
+    <RimTalk.Settings.ResetReasoning>重設推理設定</RimTalk.Settings.ResetReasoning>
+    <RimTalk.Settings.ResetReasoningTooltip>清除此模型的推理設定。將在下一次對話請求時自動重新偵測最佳設定。</RimTalk.Settings.ResetReasoningTooltip>
     <RimTalk.Settings.CustomizeHelpButton>說明與範例</RimTalk.Settings.CustomizeHelpButton>
     <RimTalk.Settings.CustomizeTemplatesTitle>範本與範例</RimTalk.Settings.CustomizeTemplatesTitle>
     <RimTalk.Settings.CustomizeTemplatesSubtitle>選擇範本以預覽並套用。</RimTalk.Settings.CustomizeTemplatesSubtitle>

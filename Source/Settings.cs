@@ -54,7 +54,7 @@ public partial class Settings : Mod
 
     public static RimTalkSettings Get()
     {
-        return _settings ??= LoadedModManager.GetMod<Settings>().GetSettings<RimTalkSettings>();
+        return _settings ??= LoadedModManager.GetMod<Settings>()?.GetSettings<RimTalkSettings>();
     }
 
     public Settings(ModContentPack content) : base(content)

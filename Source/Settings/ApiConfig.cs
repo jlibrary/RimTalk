@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using RimTalk.Client.Player2;
 using RimTalk.Data;
 using RimTalk.Util;
 using Verse;
@@ -38,24 +38,37 @@ public class ApiConfig : IExposable
     public string GetEffectiveModelName()
     {
         if (Provider == AIProvider.Local)
-            return !string.IsNullOrWhiteSpace(CustomModelName) ? CustomModelName : "Local";
+            return CustomModelName ?? "";
 
         return SelectedModel == "Custom" ? CustomModelName : SelectedModel;
     }
 
-    public static Dictionary<string, object> GetDefaultRequestDict(string model)
+    public string GetDetectedThinkingLevel()
+    {
+        var settings = Settings.Get();
+        if (settings?.DetectedThinkingLevels != null)
+        {
+            string modelName = GetEffectiveModelName();
+            if (modelName.StartsWith("models/")) modelName = modelName.Substring(7);
+            string key = $"{Provider}_{modelName}";
+            if (settings.DetectedThinkingLevels.TryGetValue(key, out var level))
+                return level;
+        }
+        return null;
+    }
+
+    public Dictionary<string, object> GetDefaultRequestDict()
     {
         var dict = new Dictionary<string, object>();
-        if (string.IsNullOrEmpty(model)) return dict;
+        string level = GetDetectedThinkingLevel();
 
-        string m = model.ToLower();
-        if (m.Contains("gemini"))
+        if (level == "disabled")
         {
-            dict["reasoning_effort"] = "low";
+            dict["thinking"] = new Dictionary<string, object> { ["type"] = "disabled" };
         }
-        else if (m.Contains("gemma"))
+        else if (!string.IsNullOrEmpty(level) && level != "standard")
         {
-            dict["reasoning_effort"] = "minimal";
+            dict["reasoning_effort"] = level;
         }
 
         return dict;
@@ -63,18 +76,8 @@ public class ApiConfig : IExposable
 
     public string GetDefaultRequestJson()
     {
-        return GetDefaultRequestJson(GetEffectiveModelName());
-    }
-
-    public static string GetDefaultRequestJson(string model)
-    {
-        var dict = GetDefaultRequestDict(model);
+        var dict = GetDefaultRequestDict();
         return dict.Count > 0 ? JsonUtil.SerializeJsonValue(dict, indent: true) : "{}";
-    }
-
-    public static string GetDefaultReasoningEffort(string model)
-    {
-        return GetDefaultRequestDict(model).TryGetValue("reasoning_effort", out var val) ? val?.ToString() : null;
     }
 
     public bool IsValid()
@@ -83,7 +86,7 @@ public class ApiConfig : IExposable
         if (Provider == AIProvider.Local) return !string.IsNullOrWhiteSpace(BaseUrl);
         bool hasKey = !string.IsNullOrWhiteSpace(ApiKey);
         if (Provider == AIProvider.Player2)
-            return (hasKey || Client.Player2.Player2Client.GetLocalAppStatusCached() == true) && SelectedModel != Constant.ChooseModel;
+            return (hasKey || Player2Client.GetLocalAppStatusCached() == true) && SelectedModel != Constant.ChooseModel;
         return hasKey && SelectedModel != Constant.ChooseModel;
     }
 }

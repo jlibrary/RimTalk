@@ -23,6 +23,24 @@ public class OpenAIClient(
     private const string DefaultPath = "/v1/chat/completions";
     private readonly string _endpointUrl = FormatEndpointUrl(baseUrl);
     private readonly Random _random = new();
+    private readonly AIProvider _provider = AIProvider.None;
+
+    public OpenAIClient(
+        string baseUrl,
+        string model,
+        string apiKey,
+        Dictionary<string, string> extraHeaders,
+        string customRequestJson,
+        AIProvider provider) : this(baseUrl, model, apiKey, extraHeaders, customRequestJson)
+    {
+        _provider = provider;
+    }
+
+    private AIProvider GetEffectiveProvider()
+    {
+        if (_provider != AIProvider.None) return _provider;
+        return Settings.Get()?.GetActiveConfig()?.Provider ?? AIProvider.None;
+    }
 
     private static string FormatEndpointUrl(string baseUrl)
     {
@@ -42,20 +60,25 @@ public class OpenAIClient(
         return await GetChatCompletionAsync(prefixMessages, messages, null, onRequestPrepared);
     }
 
+    private static readonly string[] ThinkingLadder = ["disabled", "minimal", "low", "standard"];
+
     public async Task<Payload> GetChatCompletionAsync(List<(Role role, string message)> prefixMessages,
         List<(Role role, string message)> messages,
         string imageBase64,
         Action<Payload> onRequestPrepared = null)
     {
-        string jsonContent = BuildRequestJson(prefixMessages, messages, stream: false, imageBase64: imageBase64);
-        onRequestPrepared?.Invoke(new Payload(_endpointUrl, model, jsonContent, null, 0));
-        string responseText = await SendRequestAsync(jsonContent, new DownloadHandlerBuffer());
-
-        var response = JsonUtil.DeserializeFromJson<OpenAIResponse>(responseText);
-        return new Payload(_endpointUrl, model, jsonContent, response?.Choices?[0]?.Message?.Content, response?.Usage?.TotalTokens ?? 0)
+        return await ExecuteWithFallbackAsync(async reasoningLevel =>
         {
-            StatusCode = 200
-        };
+            string jsonContent = BuildRequestJson(prefixMessages, messages, stream: false, imageBase64: imageBase64, reasoningLevel: reasoningLevel);
+            onRequestPrepared?.Invoke(new Payload(_endpointUrl, model, jsonContent, null, 0));
+            string responseText = await SendRequestAsync(jsonContent, new DownloadHandlerBuffer());
+
+            var response = JsonUtil.DeserializeFromJson<OpenAIResponse>(responseText);
+            return new Payload(_endpointUrl, model, jsonContent, response?.Choices?[0]?.Message?.Content, response?.Usage?.TotalTokens ?? 0)
+            {
+                StatusCode = 200
+            };
+        });
     }
 
     public async Task<Payload> GetStreamingChatCompletionAsync<T>(List<(Role role, string message)> prefixMessages,
@@ -80,20 +103,6 @@ public class OpenAIClient(
         }, onRequestPrepared);
     }
 
-    public async Task<Payload> GetStreamingTextCompletionAsync(
-        List<(Role role, string message)> prefixMessages,
-        List<(Role role, string message)> messages,
-        string imageBase64,
-        Action<string> onChunkReceived,
-        Action<Payload> onRequestPrepared = null)
-    {
-        return await StreamAsync(prefixMessages, messages, imageBase64, chunk =>
-        {
-            if (!string.IsNullOrEmpty(chunk))
-                onChunkReceived?.Invoke(chunk);
-        }, onRequestPrepared);
-    }
-
     private async Task<Payload> StreamAsync(
         List<(Role role, string message)> prefixMessages,
         List<(Role role, string message)> messages,
@@ -101,27 +110,90 @@ public class OpenAIClient(
         Action<string> onChunk,
         Action<Payload> onRequestPrepared)
     {
-        string jsonContent = BuildRequestJson(prefixMessages, messages, stream: true, imageBase64: imageBase64);
-        onRequestPrepared?.Invoke(new Payload(_endpointUrl, model, jsonContent, null, 0));
-
-        var streamHandler = new OpenAIStreamHandler(onChunk);
-        await SendRequestAsync(jsonContent, streamHandler);
-
-        return new Payload(_endpointUrl, model, jsonContent, streamHandler.GetFullText(),
-            streamHandler.GetTotalTokens())
+        return await ExecuteWithFallbackAsync(async reasoningLevel =>
         {
-            StatusCode = 200
-        };
+            string jsonContent = BuildRequestJson(prefixMessages, messages, stream: true, imageBase64: imageBase64, reasoningLevel: reasoningLevel);
+            onRequestPrepared?.Invoke(new Payload(_endpointUrl, model, jsonContent, null, 0));
+
+            var streamHandler = new OpenAIStreamHandler(onChunk);
+            await SendRequestAsync(jsonContent, streamHandler);
+
+            return new Payload(_endpointUrl, model, jsonContent, streamHandler.GetFullText(),
+                streamHandler.GetTotalTokens())
+            {
+                StatusCode = 200
+            };
+        });
+    }
+
+    private async Task<Payload> ExecuteWithFallbackAsync(Func<string, Task<Payload>> requestFunc)
+    {
+        bool userOverrodeReasoning = !string.IsNullOrWhiteSpace(customRequestJson) &&
+            (customRequestJson.Contains("\"thinking\"") || customRequestJson.Contains("\"reasoning_effort\""));
+
+        if (userOverrodeReasoning)
+            return await requestFunc(null);
+
+        var settings = Settings.Get();
+        string normalizedModel = model?.StartsWith("models/") == true ? model.Substring(7) : model;
+        string cacheKey = $"{GetEffectiveProvider()}_{normalizedModel}";
+
+        if (settings?.DetectedThinkingLevels != null &&
+            settings.DetectedThinkingLevels.TryGetValue(cacheKey, out var cachedLevel))
+        {
+            try
+            {
+                return await requestFunc(cachedLevel);
+            }
+            catch (AIRequestException ex) when (ex.Payload?.StatusCode == 400)
+            {
+                settings.DetectedThinkingLevels.Remove(cacheKey);
+                settings.Write();
+                Logger.Warning($"Cached thinking level '{cachedLevel}' failed for '{cacheKey}'. Retrying ladder...");
+            }
+        }
+
+        AIRequestException lastEx = null;
+        foreach (var level in ThinkingLadder)
+        {
+            try
+            {
+                var payload = await requestFunc(level);
+                if (settings != null)
+                {
+                    settings.DetectedThinkingLevels ??= new Dictionary<string, string>();
+                    settings.DetectedThinkingLevels[cacheKey] = level;
+                    settings.Write();
+                    Logger.Message($"Detected and saved thinking level '{level}' for '{cacheKey}'.");
+                }
+                return payload;
+            }
+            catch (AIRequestException ex) when (ex.Payload?.StatusCode == 400)
+            {
+                lastEx = ex;
+                Logger.Warning($"Model '{model}' failed with thinking level '{level}' (HTTP 400). Trying next level...");
+            }
+        }
+
+        if (lastEx != null)
+            throw lastEx;
+
+        return null;
     }
 
     private string BuildRequestJson(List<(Role role, string message)> prefixMessages,
-        List<(Role role, string message)> messages, bool stream, string imageBase64 = null)
+        List<(Role role, string message)> messages, bool stream, string imageBase64 = null,
+        string reasoningLevel = null)
     {
+        bool disableThinking = reasoningLevel == "disabled";
+        string effort = reasoningLevel is "minimal" or "low" ? reasoningLevel : null;
+
         var request = new ChatRequest
         {
             Model = model,
             Stream = stream,
-            ReasoningEffort = ApiConfig.GetDefaultReasoningEffort(model),
+            DisableThinking = disableThinking,
+            ReasoningEffort = effort,
             Messages = BuildMessages(prefixMessages, messages, imageBase64)
         };
 

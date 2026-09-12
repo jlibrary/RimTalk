@@ -57,14 +57,14 @@ public static class AIClientFactory
         switch (config.Provider)
         {
             case AIProvider.Player2: return await Player2Client.CreateAsync(config.ApiKey, config.CustomRequestJson);
-            case AIProvider.Local:   return new OpenAIClient(config.BaseUrl, config.CustomModelName, customRequestJson: config.CustomRequestJson);
-            case AIProvider.Custom:  return new OpenAIClient(config.BaseUrl, config.CustomModelName, config.ApiKey, customRequestJson: config.CustomRequestJson);
+            case AIProvider.Local:   return new OpenAIClient(config.BaseUrl, model, null, null, config.CustomRequestJson, config.Provider);
+            case AIProvider.Custom:  return new OpenAIClient(config.BaseUrl, model, config.ApiKey, null, config.CustomRequestJson, config.Provider);
         }
 
         // 2. Handle Standard Clients via Registry
         if (AIProviderRegistry.Defs.TryGetValue(config.Provider, out var def))
         {
-            return new OpenAIClient(def.EndpointUrl, model, config.ApiKey, def.ExtraHeaders, customRequestJson: config.CustomRequestJson);
+            return new OpenAIClient(def.EndpointUrl, model, config.ApiKey, def.ExtraHeaders, config.CustomRequestJson, config.Provider);
         }
 
         return null;

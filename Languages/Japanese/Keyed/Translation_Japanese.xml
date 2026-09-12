@@ -320,6 +320,12 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Settings.CustomJsonValid>✓ 有効なJSON</RimTalk.Settings.CustomJsonValid>
     <RimTalk.Settings.CustomJsonInvalid>⚠ 無効なJSON: {0}</RimTalk.Settings.CustomJsonInvalid>
     <RimTalk.Settings.CustomJsonEmpty>デフォルトのリクエストパラメータが使用されます。</RimTalk.Settings.CustomJsonEmpty>
+    <RimTalk.Settings.ReasoningLabel>推論:</RimTalk.Settings.ReasoningLabel>
+    <RimTalk.Settings.ReasoningAutoDetected>自動検出済み</RimTalk.Settings.ReasoningAutoDetected>
+    <RimTalk.Settings.ReasoningPending>初回リクエスト時に自動検出されます</RimTalk.Settings.ReasoningPending>
+    <RimTalk.Settings.ReasoningCustomActive>カスタムJSON適用中（自動検出無効）</RimTalk.Settings.ReasoningCustomActive>
+    <RimTalk.Settings.ResetReasoning>推論初期化</RimTalk.Settings.ResetReasoning>
+    <RimTalk.Settings.ResetReasoningTooltip>このモデルの推論設定を初期化します。次の会話リクエスト時に最適な設定を自動再検出します。</RimTalk.Settings.ResetReasoningTooltip>
     <RimTalk.Settings.CustomizeHelpButton>ヘルプとサンプル</RimTalk.Settings.CustomizeHelpButton>
     <RimTalk.Settings.CustomizeTemplatesTitle>テンプレートとサンプル</RimTalk.Settings.CustomizeTemplatesTitle>
     <RimTalk.Settings.CustomizeTemplatesSubtitle>テンプレートを選択してプレビュー・適用できます。</RimTalk.Settings.CustomizeTemplatesSubtitle>

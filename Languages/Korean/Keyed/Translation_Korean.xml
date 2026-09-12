@@ -343,6 +343,12 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.Settings.CustomJsonValid>✓ 유효한 JSON</RimTalk.Settings.CustomJsonValid>
     <RimTalk.Settings.CustomJsonInvalid>⚠ 잘못된 JSON: {0}</RimTalk.Settings.CustomJsonInvalid>
     <RimTalk.Settings.CustomJsonEmpty>기본 요청 매개변수가 사용됩니다.</RimTalk.Settings.CustomJsonEmpty>
+    <RimTalk.Settings.ReasoningLabel>추론:</RimTalk.Settings.ReasoningLabel>
+    <RimTalk.Settings.ReasoningAutoDetected>자동 감지됨</RimTalk.Settings.ReasoningAutoDetected>
+    <RimTalk.Settings.ReasoningPending>첫 요청 시 자동 감지됨</RimTalk.Settings.ReasoningPending>
+    <RimTalk.Settings.ReasoningCustomActive>커스텀 JSON 적용 중 (자동 감지 비활성화)</RimTalk.Settings.ReasoningCustomActive>
+    <RimTalk.Settings.ResetReasoning>추론 초기화</RimTalk.Settings.ResetReasoning>
+    <RimTalk.Settings.ResetReasoningTooltip>이 모델의 추론 설정을 초기화합니다. 다음 대화 요청 시 최적 설정을 자동으로 다시 감지합니다.</RimTalk.Settings.ResetReasoningTooltip>
     <RimTalk.Settings.CustomizeHelpButton>도움말 및 샘플</RimTalk.Settings.CustomizeHelpButton>
     <RimTalk.Settings.CustomizeTemplatesTitle>템플릿 및 샘플</RimTalk.Settings.CustomizeTemplatesTitle>
     <RimTalk.Settings.CustomizeTemplatesSubtitle>템플릿을 선택하여 확인하고 적용할 수 있습니다.</RimTalk.Settings.CustomizeTemplatesSubtitle>

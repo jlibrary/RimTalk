@@ -84,6 +84,7 @@ public class RimTalkSettings : ModSettings
     public bool? ShowQuickSettings = true;
     public Dictionary<string, bool> EnabledArchivableTypes = new();
     public Dictionary<string, bool> FastTrackInteractions = new();
+    public Dictionary<string, string> DetectedThinkingLevels = new();
     public bool DisplayTalkWhenDrafted = true;
     public bool AllowMonologue = true;
     public bool AllowSlavesToTalk = true;
@@ -290,6 +291,8 @@ public class RimTalkSettings : ModSettings
         Scribe_Collections.Look(ref EnabledArchivableTypes, "enabledArchivableTypes", LookMode.Value, LookMode.Value);
         Scribe_Collections.Look(ref FastTrackInteractions, "fastTrackInteractions", LookMode.Value, LookMode.Value);
         FastTrackInteractions ??= new Dictionary<string, bool>();
+        Scribe_Collections.Look(ref DetectedThinkingLevels, "detectedThinkingLevels", LookMode.Value, LookMode.Value);
+        DetectedThinkingLevels ??= new Dictionary<string, string>();
         Scribe_Values.Look(ref AllowBabiesToTalk, "allowBabiesToTalk", true);
         Scribe_Values.Look(ref AllowNonHumanToTalk, "allowNonHumanToTalk", true);
         Scribe_Values.Look(ref AllowAnnouncement, "allowAnnouncement", true);

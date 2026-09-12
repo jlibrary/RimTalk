@@ -344,6 +344,12 @@ Crucial Tips:
     <RimTalk.Settings.CustomJsonValid>✓ Valid JSON</RimTalk.Settings.CustomJsonValid>
     <RimTalk.Settings.CustomJsonInvalid>⚠ Invalid JSON: {0}</RimTalk.Settings.CustomJsonInvalid>
     <RimTalk.Settings.CustomJsonEmpty>Default request parameters will be used.</RimTalk.Settings.CustomJsonEmpty>
+    <RimTalk.Settings.ReasoningLabel>Reasoning:</RimTalk.Settings.ReasoningLabel>
+    <RimTalk.Settings.ReasoningAutoDetected>auto-detected</RimTalk.Settings.ReasoningAutoDetected>
+    <RimTalk.Settings.ReasoningPending>will be auto-detected on first request</RimTalk.Settings.ReasoningPending>
+    <RimTalk.Settings.ReasoningCustomActive>custom JSON active (auto-detection disabled)</RimTalk.Settings.ReasoningCustomActive>
+    <RimTalk.Settings.ResetReasoning>Reset Reasoning</RimTalk.Settings.ResetReasoning>
+    <RimTalk.Settings.ResetReasoningTooltip>Clears saved reasoning setting for this model. The mod will automatically detect the optimal setting on the next dialogue request.</RimTalk.Settings.ResetReasoningTooltip>
     <RimTalk.Settings.CustomizeHelpButton>Help &amp; Samples</RimTalk.Settings.CustomizeHelpButton>
     <RimTalk.Settings.CustomizeTemplatesTitle>Templates &amp; Samples</RimTalk.Settings.CustomizeTemplatesTitle>
     <RimTalk.Settings.CustomizeTemplatesSubtitle>Select a template to preview and apply.</RimTalk.Settings.CustomizeTemplatesSubtitle>

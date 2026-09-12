@@ -320,6 +320,12 @@ Conseils Cruciaux :
     <RimTalk.Settings.CustomJsonValid>✓ JSON valide</RimTalk.Settings.CustomJsonValid>
     <RimTalk.Settings.CustomJsonInvalid>⚠ JSON invalide : {0}</RimTalk.Settings.CustomJsonInvalid>
     <RimTalk.Settings.CustomJsonEmpty>Les paramètres de requête par défaut seront utilisés.</RimTalk.Settings.CustomJsonEmpty>
+    <RimTalk.Settings.ReasoningLabel>Raisonnement :</RimTalk.Settings.ReasoningLabel>
+    <RimTalk.Settings.ReasoningAutoDetected>détecté automatiquement</RimTalk.Settings.ReasoningAutoDetected>
+    <RimTalk.Settings.ReasoningPending>sera détecté automatiquement à la première requête</RimTalk.Settings.ReasoningPending>
+    <RimTalk.Settings.ReasoningCustomActive>JSON personnalisé actif (détection auto désactivée)</RimTalk.Settings.ReasoningCustomActive>
+    <RimTalk.Settings.ResetReasoning>Réinitialiser raisonnement</RimTalk.Settings.ResetReasoning>
+    <RimTalk.Settings.ResetReasoningTooltip>Efface les paramètres de raisonnement enregistrés pour ce modèle. Le mod détectera à nouveau automatiquement le paramètre optimal lors de la prochaine requête.</RimTalk.Settings.ResetReasoningTooltip>
     <RimTalk.Settings.CustomizeHelpButton>Aide &amp; Exemples</RimTalk.Settings.CustomizeHelpButton>
     <RimTalk.Settings.CustomizeTemplatesTitle>Modèles et exemples</RimTalk.Settings.CustomizeTemplatesTitle>
     <RimTalk.Settings.CustomizeTemplatesSubtitle>Sélectionnez un modèle pour le prévisualiser et l'appliquer.</RimTalk.Settings.CustomizeTemplatesSubtitle>

@@ -24,7 +24,6 @@ public class Player2Client : IAIClient
     private string _localApiKey;
     private bool _isLocalConnection;
     private readonly string _customRequestJson;
-    private static DateTime _lastHealthCheck = DateTime.MinValue;
     private static bool _healthCheckActive;
     private DateTime _lastLocalProbe = DateTime.MinValue;
 
@@ -433,7 +432,6 @@ public class Player2Client : IAIClient
 
             await SendWebRequestAsync(webRequest);
 
-            _lastHealthCheck = DateTime.Now;
             if (webRequest.responseCode == 200)
                 Logger.Debug("Player2 health check successful");
             else
@@ -446,22 +444,7 @@ public class Player2Client : IAIClient
     }
 
     public static void StopHealthCheck() => _healthCheckActive = false;
-
-    public static void CheckPlayer2StatusAndNotify()
-    {
-        Task.Run(async () =>
-        {
-            bool isAvailable = await IsPlayer2LocalAppAvailableAsync();
-            LongEventHandler.ExecuteWhenFinished(() =>
-            {
-                if (isAvailable)
-                    Messages.Message("RimTalk: Player2 desktop app detected!", MessageTypeDefOf.PositiveEvent);
-                else
-                    Messages.Message("RimTalk: Player2 desktop app not detected.", MessageTypeDefOf.CautionInput);
-            });
-        });
-    }
-
+    
     private static bool? _lastLocalAppDetected;
     private static DateTime _lastLocalAppCheckTime = DateTime.MinValue;
     private static bool _isCheckingLocalApp;
