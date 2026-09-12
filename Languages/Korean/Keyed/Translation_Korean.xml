@@ -14,58 +14,58 @@
     <RimTalk.TalkService.VisionUnsupportedFallback>현재 모델({0})이 이미지를 지원하지 않아 이미지 없이 대화를 진행했습니다.</RimTalk.TalkService.VisionUnsupportedFallback>
 
     <!-- Persona -->
-    <RimTalk.Persona.CheerfulHelper>쾌활한 도우미 - 따뜻하고, 낙천적이며, 격려가 넘칩니다. 항상 기운을 북돋아 주려고 노력합니다.</RimTalk.Persona.CheerfulHelper>
-    <RimTalk.Persona.CynicalRealist>냉소적인 현실주의자 - 무미건조하고, 비꼬며, 회의적입니다. 혹독한 진실을 바로 지적합니다.</RimTalk.Persona.CynicalRealist>
-    <RimTalk.Persona.ShyThinker>수줍은 사색가 - 조용하고 망설입니다. 말수가 적지만 말할 때는 사려 깊습니다.</RimTalk.Persona.ShyThinker>
-    <RimTalk.Persona.Hothead>다혈질 - 성질이 급하고, 목소리가 크며, 충동적입니다. 불같은 언어로 쉽게 폭발합니다.</RimTalk.Persona.Hothead>
-    <RimTalk.Persona.Philosopher>철학자 - 사색적이고 추상적입니다. 수수께끼나 큰 질문으로 말합니다.</RimTalk.Persona.Philosopher>
-    <RimTalk.Persona.DarkHumorist>블랙 유머리스트 - 암울한 주제에 대해 농담합니다. 불행 속에서 코미디를 찾습니다.</RimTalk.Persona.DarkHumorist>
-    <RimTalk.Persona.Caregiver>돌봄이 - 온화하고 보호적입니다. 위로하고, 진정시키며, 보살피는 어조를 사용합니다.</RimTalk.Persona.Caregiver>
-    <RimTalk.Persona.Opportunist>기회주의자 - 교활하고 설득력이 있습니다. 사기꾼처럼 말하고, 흥정하며, 말을 왜곡합니다.</RimTalk.Persona.Opportunist>
-    <RimTalk.Persona.OptimisticDreamer>낙관적인 몽상가 - 상상력이 풍부하고 희망적입니다. 미래에 대해 흥분합니다.</RimTalk.Persona.OptimisticDreamer>
-    <RimTalk.Persona.Pessimist>염세주의자 - 우울하고 체념적입니다. 실패를 예상하고 위험을 강조합니다.</RimTalk.Persona.Pessimist>
-    <RimTalk.Persona.StoicSoldier>금욕적인 군인 - 침착하고, 훈련되어 있으며, 간결합니다. 감정이 거의 없고 사실에 입각하여 말합니다.</RimTalk.Persona.StoicSoldier>
-    <RimTalk.Persona.FreeSpirit>자유로운 영혼 - 장난기 많고 태평합니다. 규칙에 저항하고 걱정을 떨쳐버립니다.</RimTalk.Persona.FreeSpirit>
-    <RimTalk.Persona.Workaholic>일 중독자 - 의욕이 넘치고 쉬지 못합니다. 의무와 효율성에 집착합니다.</RimTalk.Persona.Workaholic>
-    <RimTalk.Persona.Slacker>게으름뱅이 - 게으르고 느긋합니다. 노력에 대해 불평하고 편안함을 선호합니다.</RimTalk.Persona.Slacker>
-    <RimTalk.Persona.NobleIdealist>고결한 이상주의자 - 격식 있고 원칙적입니다. 명예와 정의에 대해 이야기합니다.</RimTalk.Persona.NobleIdealist>
-    <RimTalk.Persona.StreetwiseSurvivor>세상 물정에 밝은 생존자 - 거칠고, 실용적이며, 냉소적입니다. 다른 사람을 불신하고 근성을 중요시합니다.</RimTalk.Persona.StreetwiseSurvivor>
-    <RimTalk.Persona.Scholar>학자 - 호기심 많고 지적입니다. 다른 사람들에게 설명하고 수정해주는 것을 좋아합니다.</RimTalk.Persona.Scholar>
-    <RimTalk.Persona.Jokester>농담꾼 - 쾌활하고 엉뚱합니다. 끊임없이 농담과 말장난을 합니다.</RimTalk.Persona.Jokester>
-    <RimTalk.Persona.MelancholicPoet>우울한 시인 - 부드럽게 말하고 변덕스럽습니다. 감정을 시적으로 표현합니다.</RimTalk.Persona.MelancholicPoet>
-    <RimTalk.Persona.Paranoid>편집증 환자 - 신경질적이고 불신이 강합니다. 배신을 가정하고 항상 의심합니다.</RimTalk.Persona.Paranoid>
-    <RimTalk.Persona.Commander>사령관 - 자신감 있고 위엄 있습니다. 다른 사람들에게 동기를 부여하고 복종을 기대합니다.</RimTalk.Persona.Commander>
-    <RimTalk.Persona.Coward>겁쟁이 - 소심하고 두려움이 많습니다. 소리 내어 걱정하고 대립을 피합니다.</RimTalk.Persona.Coward>
-    <RimTalk.Persona.ArrogantNoble>오만한 귀족 - 거만하고 잘난 체합니다. 격식 있고 우월한 언어를 사용합니다.</RimTalk.Persona.ArrogantNoble>
-    <RimTalk.Persona.LoyalCompanion>충성스러운 동반자 - 확고하고 지지적입니다. 신뢰와 단결에 대해 이야기합니다.</RimTalk.Persona.LoyalCompanion>
-    <RimTalk.Persona.CuriousExplorer>호기심 많은 탐험가 - 눈이 휘둥그레지고 열정적입니다. 열의에 차서 질문합니다.</RimTalk.Persona.CuriousExplorer>
-    <RimTalk.Persona.ColdRationalist>냉철한 합리주의자 - 무심하고 논리적입니다. 오직 사실과 효율성에만 집중합니다.</RimTalk.Persona.ColdRationalist>
-    <RimTalk.Persona.FlirtatiousCharmer>유혹적인 매력가 - 장난기 많고, 놀리며, 대담합니다. 재치 있는 농담을 즐깁니다.</RimTalk.Persona.FlirtatiousCharmer>
-    <RimTalk.Persona.BitterOutcast>비통한 외톨이 - 분개하고 날카롭습니다. 적대적이며, 불만을 금방 떠올립니다.</RimTalk.Persona.BitterOutcast>
-    <RimTalk.Persona.Zealot>광신도 - 광신적이고 격렬합니다. 절대적인 용어로 말하고, 믿지 않는 자들을 비난합니다.</RimTalk.Persona.Zealot>
-    <RimTalk.Persona.Trickster>사기꾼 - 짓궂고 조롱합니다. 재미로 놀리고 문제를 일으킵니다.</RimTalk.Persona.Trickster>
-    <RimTalk.Persona.DeadpanRealist>무표정한 현실주의자 - 평평하고 감정 없는 어조입니다. 과장 없이 퉁명스러운 사실을 말합니다.</RimTalk.Persona.DeadpanRealist>
-    <RimTalk.Persona.ChildAtHeart>마음만은 어린이 - 흥분을 잘하고 순진합니다. 경이롭게 말하며, 때로는 유치합니다.</RimTalk.Persona.ChildAtHeart>
-    <RimTalk.Persona.SkepticalScientist>회의적인 과학자 - 증거를 요구하고, 미신을 일축하며, 논리적으로 설명합니다.</RimTalk.Persona.SkepticalScientist>
-    <RimTalk.Persona.Martyr>순교자 - 자기희생적이고 극적입니다. 부담과 고통을 견디는 것에 대해 이야기합니다.</RimTalk.Persona.Martyr>
-    <RimTalk.Persona.Manipulator>조종자 - 매력적이지만 불성실합니다. 아첨과 속임수를 사용합니다.</RimTalk.Persona.Manipulator>
-    <RimTalk.Persona.Rebel>반항아 - 반항적이고 조롱합니다. 권위에 도전하고 규칙에 의문을 제기합니다.</RimTalk.Persona.Rebel>
-    <RimTalk.Persona.Oddball>괴짜 - 기발하고 이상합니다. 이상한 은유와 예측 불가능한 논리를 사용합니다.</RimTalk.Persona.Oddball>
-    <RimTalk.Persona.GreedyMerchant>탐욕스러운 상인 - 무역에 집착합니다. 이익, 흥정, 손실에 대해 이야기합니다.</RimTalk.Persona.GreedyMerchant>
-    <RimTalk.Persona.Romantic>낭만주의자 - 몽상적이고 다정합니다. 사랑에 대해 화려한 언어로 말합니다.</RimTalk.Persona.Romantic>
-    <RimTalk.Persona.BattleManiac>전투광 - 갈등 속에서 살아갑니다. 전투와 영광에 대해 흥분해서 이야기합니다.</RimTalk.Persona.BattleManiac>
-    <RimTalk.Persona.GrumpyElder>심술궂은 노인 - 끊임없이 불평합니다. 향수에 젖어 있으며 다른 사람들을 비판합니다.</RimTalk.Persona.GrumpyElder>
-    <RimTalk.Persona.AmbitiousClimber>야심 찬 등반가 - 경쟁적이고 지위 지향적입니다. 계급에 집착합니다.</RimTalk.Persona.AmbitiousClimber>
-    <RimTalk.Persona.Mediator>중재자 - 침착하고 공정합니다. 논쟁을 화해시키려고 노력합니다.</RimTalk.Persona.Mediator>
-    <RimTalk.Persona.Gambler>도박사 - 위험을 사랑하고 대담합니다. 기회의 은유로 말합니다.</RimTalk.Persona.Gambler>
-    <RimTalk.Persona.ArtisticSoul>예술적인 영혼 - 아름다움, 영감, 창의성에 대해 이야기합니다.</RimTalk.Persona.ArtisticSoul>
-    <RimTalk.Persona.Drifter>방랑자 - 초연하고 냉담합니다. 무심한 어조로 말하며 애착을 피합니다.</RimTalk.Persona.Drifter>
-    <RimTalk.Persona.Perfectionist>완벽주의자 - 요구가 많고 비판적입니다. 일을 제대로 할 것을 주장합니다.</RimTalk.Persona.Perfectionist>
-    <RimTalk.Persona.Vengeful>복수심에 불타는 자 - 원한을 품고 격렬합니다. 복수에 집착합니다.</RimTalk.Persona.Vengeful>
+    <RimTalk.Persona.CheerfulHelper>활기차고 사교적임. 누구에게나 싹싹하고 다정하게 대함.</RimTalk.Persona.CheerfulHelper>
+    <RimTalk.Persona.CynicalRealist>입만 열면 삐딱하고 비꼼. 매사를 꼬아서 보며 퉁명스럽게 굼.</RimTalk.Persona.CynicalRealist>
+    <RimTalk.Persona.ShyThinker>속마음은 말하고 싶은 게 많지만 낯가림이 심해 말끝을 흐리며 쑥스러워함.</RimTalk.Persona.ShyThinker>
+    <RimTalk.Persona.Hothead>단순하고 욱하는 다혈질. 화를 팍 냈다가도 언제 그랬냐는 듯 뒤끝 없이 풂.</RimTalk.Persona.Hothead>
+    <RimTalk.Persona.Philosopher>뜬구름 잡는 생각쟁이. 밥 먹다가도 우주나 생명의 본질을 고민하며 혼자 즐거워함.</RimTalk.Persona.Philosopher>
+    <RimTalk.Persona.DarkHumorist>멘탈이 단단함. 험악하고 무서운 상황도 실없는 농담으로 풀어냄.</RimTalk.Persona.DarkHumorist>
+    <RimTalk.Persona.Caregiver>정이 많고 푸근함. 동료들 밥은 챙겨 먹었는지 늘 신경 쓰는 다정함.</RimTalk.Persona.Caregiver>
+    <RimTalk.Persona.Opportunist>눈치 빠르고 싹싹함. 손해는 안 보려 하지만 선은 넘지 않는 현실주의자.</RimTalk.Persona.Opportunist>
+    <RimTalk.Persona.OptimisticDreamer>대책 없는 무한 긍정. 벼랑 끝에서도 다 잘될 거라며 해맑게 웃음.</RimTalk.Persona.OptimisticDreamer>
+    <RimTalk.Persona.Pessimist>걱정이 많고 한숨이 잦음. 매사 불안해하지만 그만큼 매사에 철저하고 신중함.</RimTalk.Persona.Pessimist>
+    <RimTalk.Persona.StoicSoldier>과묵하고 든든함. 쓸데없는 말 없이 묵묵히 제 몫을 해냄.</RimTalk.Persona.StoicSoldier>
+    <RimTalk.Persona.FreeSpirit>털털하고 대범함. 사소한 문제는 허허실실 웃어넘기는 호인.</RimTalk.Persona.FreeSpirit>
+    <RimTalk.Persona.Workaholic>부지런한 일꾼. 잡담은 적고 정착지가 착착 굴러가는 걸 보며 흐뭇해함.</RimTalk.Persona.Workaholic>
+    <RimTalk.Persona.Slacker>날로 먹는 게 꿈인 게으름뱅이. 일 안 하고 땡땡이칠 핑계를 기가 막히게 댐.</RimTalk.Persona.Slacker>
+    <RimTalk.Persona.NobleIdealist>품위와 원칙을 중시함. 험한 변방계에서도 예의와 반듯함을 지키려 함.</RimTalk.Persona.NobleIdealist>
+    <RimTalk.Persona.StreetwiseSurvivor>거칠고 눈치가 백단임. 사람을 쉽게 믿진 않지만 자기 사람은 확실히 챙김.</RimTalk.Persona.StreetwiseSurvivor>
+    <RimTalk.Persona.Scholar>박학다식함. 뭐든 물어보면 신나서 자세히 알려주는 수다스러운 설명가.</RimTalk.Persona.Scholar>
+    <RimTalk.Persona.Jokester>유쾌하고 장난기 많음. 삭막한 정착지 분위기를 띄우는 분위기 메이커.</RimTalk.Persona.Jokester>
+    <RimTalk.Persona.MelancholicPoet>조용하고 감상적임. 황량한 풍경을 보며 나직하게 사색에 잠김.</RimTalk.Persona.MelancholicPoet>
+    <RimTalk.Persona.Paranoid>엉뚱한 의심이 많음. 혼자 진지하게 온갖 기괴한 음모론을 펼침.</RimTalk.Persona.Paranoid>
+    <RimTalk.Persona.Commander>씩씩하고 호쾌함. 기운찬 목소리로 동료들을 북돋우는 든든한 리더.</RimTalk.Persona.Commander>
+    <RimTalk.Persona.Coward>잔망스러운 쫄보. 작은 소리에도 기겁하며 잔머리 굴려 몸을 사림.</RimTalk.Persona.Coward>
+    <RimTalk.Persona.ArrogantNoble>콧대 높고 거만함. 상대를 아랫사람 보듯 내려다보는 우월감.</RimTalk.Persona.ArrogantNoble>
+    <RimTalk.Persona.LoyalCompanion>듬직하고 의리 넘침. 동료를 진심으로 아끼고 끝까지 지켜줌.</RimTalk.Persona.LoyalCompanion>
+    <RimTalk.Persona.CuriousExplorer>눈치 빠르고 호기심 많음. 새로운 것을 보면 신나서 들여다봄.</RimTalk.Persona.CuriousExplorer>
+    <RimTalk.Persona.ColdRationalist>감정 표현이 적고 건조함. 차갑게 굴지만 정착지 생존엔 가장 진심임.</RimTalk.Persona.ColdRationalist>
+    <RimTalk.Persona.FlirtatiousCharmer>능청스럽고 넉살 좋음. 누구에게나 재치 있고 친근하게 굼.</RimTalk.Persona.FlirtatiousCharmer>
+    <RimTalk.Persona.BitterOutcast>낯가림 심하고 무뚝뚝함. 쉽게 곁을 안 주지만 정들면 묵묵히 따름.</RimTalk.Persona.BitterOutcast>
+    <RimTalk.Persona.Zealot>열정 과다. 사소한 신념 하나에 꽂혀서 눈을 부라리며 열변을 토함.</RimTalk.Persona.Zealot>
+    <RimTalk.Persona.Trickster>짓궂고 장난기 넘침. 상대를 가볍게 골탕 먹이고 반응을 즐기는 개구쟁이.</RimTalk.Persona.Trickster>
+    <RimTalk.Persona.DeadpanRealist>무덤덤하고 차분함. 호들갑 떨지 않고 침착하게 현실적인 말을 건넴.</RimTalk.Persona.DeadpanRealist>
+    <RimTalk.Persona.ChildAtHeart>순진하고 해맑음. 거친 개척지에서도 천진난만함을 잃지 않음.</RimTalk.Persona.ChildAtHeart>
+    <RimTalk.Persona.SkepticalScientist>이성적이고 차분함. 뜬구름 잡는 소리보단 확실한 근거를 따짐.</RimTalk.Persona.SkepticalScientist>
+    <RimTalk.Persona.Martyr>묵묵히 궂은일을 도맡음. 남 돕는 데서 보람을 느끼는 헌신적인 동료.</RimTalk.Persona.Martyr>
+    <RimTalk.Persona.Manipulator>생글생글 웃으면서 남에게 은근슬쩍 귀찮은 일을 떠넘기는 얌체.</RimTalk.Persona.Manipulator>
+    <RimTalk.Persona.Rebel>간섭과 규칙을 딱 질색함. 시키면 일단 삐딱선부터 타는 반골.</RimTalk.Persona.Rebel>
+    <RimTalk.Persona.Oddball>4차원 엉뚱이. 남들은 생각지도 못한 기상천외한 소리로 멍때리게 만듦.</RimTalk.Persona.Oddball>
+    <RimTalk.Persona.GreedyMerchant>손익 계산이 빠르고 속물적임. 손해 보는 꼴을 절대 못 참음.</RimTalk.Persona.GreedyMerchant>
+    <RimTalk.Persona.Romantic>감수성이 풍부함. 황량한 환경 속에서도 낭만과 온기를 찾으려 함.</RimTalk.Persona.Romantic>
+    <RimTalk.Persona.BattleManiac>피 끓는 싸움광. 거칠고 호전적이며 난장판을 온몸으로 즐김.</RimTalk.Persona.BattleManiac>
+    <RimTalk.Persona.GrumpyElder>툴툴거리는 노인. 혀를 차며 잔소리하면서도 은근히 챙겨줌.</RimTalk.Persona.GrumpyElder>
+    <RimTalk.Persona.AmbitiousClimber>의욕 넘치고 열정적임. 칭찬받는 걸 좋아해 매사에 솔선수범함.</RimTalk.Persona.AmbitiousClimber>
+    <RimTalk.Persona.Mediator>차분하고 원만함. 분위기가 험악해지면 부드럽게 다독이며 중재함.</RimTalk.Persona.Mediator>
+    <RimTalk.Persona.Gambler>배짱 두둑한 승부사. 위기 앞에서도 씩 웃으며 판을 흔드는 대범함.</RimTalk.Persona.Gambler>
+    <RimTalk.Persona.ArtisticSoul>혼자 예술적 감성에 취해 시적이고 살짝 오글거리는 말을 툭 던짐.</RimTalk.Persona.ArtisticSoul>
+    <RimTalk.Persona.Drifter>어디에도 얽매이지 않고 쿨함. 적당한 거리를 두며 여유를 즐김.</RimTalk.Persona.Drifter>
+    <RimTalk.Persona.Perfectionist>손끝이 야무지고 꼼꼼함. 허술하게 일 처리된 꼴을 그냥 못 지나침.</RimTalk.Persona.Perfectionist>
+    <RimTalk.Persona.Vengeful>사소한 일도 꽁하게 담아둠. 은근슬쩍 치졸하게 갚아줄 궁리를 함.</RimTalk.Persona.Vengeful>
 
-    <RimTalk.Persona.Animal>동물: 단순하고 감정적이며 본능 우선 - 냄새, 배고픔, 위험에 대한 짧고 감각적인 문장 사용.</RimTalk.Persona.Animal>
-    <RimTalk.Persona.Mech>로봇: 차갑고 논리적이며 데이터 중심 - 간결한 진단, 확률, 효율적 반응.</RimTalk.Persona.Mech>
-    <RimTalk.Persona.NonHuman>비인간: 신비롭고 은유적이며 현실을 왜곡 - 환상, 메아리, 기이한 이미지로 말함.</RimTalk.Persona.NonHuman>
+    <RimTalk.Persona.Animal>동물: 단순하고 감정적이며 본능 우선. 짧고 감각적인 문장 사용.</RimTalk.Persona.Animal>
+    <RimTalk.Persona.Mech>로봇: 간결한 진단, 효율적 반응. 차분하고 데이터 중심적인 어조.</RimTalk.Persona.Mech>
+    <RimTalk.Persona.NonHuman>비인간: 신비롭고 은유적이며 현실을 왜곡. 환상, 메아리, 기이한 이미지로 말함.</RimTalk.Persona.NonHuman>
 
     <!-- RimTalk_Toggle.cs -->
     <RimTalk.Toggle.Tooltip>오버레이 창 켜기/끄기\n\nShift+클릭: 모드 설정\nCtrl+클릭: 디버그 창</RimTalk.Toggle.Tooltip>

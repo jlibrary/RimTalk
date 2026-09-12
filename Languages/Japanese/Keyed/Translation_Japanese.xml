@@ -13,58 +13,57 @@
     <RimTalk.TalkService.GenerationFailed>RimTalkの生成に失敗しました</RimTalk.TalkService.GenerationFailed>
 
     <!-- Persona -->
-    <RimTalk.Persona.CheerfulHelper>陽気な助手 - 暖かく、明るく、励ましてくれる。いつも元気を与えようとします。</RimTalk.Persona.CheerfulHelper>
-    <RimTalk.Persona.CynicalRealist>冷笑的な現実主義者 - ドライで、皮肉屋で、懐疑的。厳しい真実を率直に指摘します。</RimTalk.Persona.CynicalRealist>
-    <RimTalk.Persona.ShyThinker>内気な思索家 - 静かでためらいがち。口数は少ないが、話すときは思慮深いです。</RimTalk.Persona.ShyThinker>
-    <RimTalk.Persona.Hothead>短気な人 - 短気で、声が大きく、衝動的。燃えるような言葉で簡単にキレます。</RimTalk.Persona.Hothead>
-    <RimTalk.Persona.Philosopher>哲学者 - 思索的で抽象的。謎めいた言葉や大きな問いかけで話します。</RimTalk.Persona.Philosopher>
-    <RimTalk.Persona.DarkHumorist>ダークユーモリスト - 暗い話題で冗談を言う。不幸の中にコメディを見出します。</RimTalk.Persona.DarkHumorist>
-    <RimTalk.Persona.Caregiver>世話人 - 優しく、保護的。慰め、癒し、育むような口調です。</RimTalk.Persona.Caregiver>
-    <RimTalk.Persona.Opportunist>ご都合主義者 - ずる賢く、説得力がある。詐欺師のように話し、交渉し、言葉を巧みに操ります。</RimTalk.Persona.Opportunist>
-    <RimTalk.Persona.OptimisticDreamer>楽観的な夢想家 - 想像力豊かで希望に満ちている。未来にワクワクしています。</RimTalk.Persona.OptimisticDreamer>
-    <RimTalk.Persona.Pessimist>悲観主義者 - 憂鬱で諦めている。失敗を予期し、リスクを強調します。</RimTalk.Persona.Pessimist>
-    <RimTalk.Persona.StoicSoldier>ストイックな兵士 - 冷静で、規律正しく、簡潔。感情をほとんど見せず、淡々と話します。</RimTalk.Persona.StoicSoldier>
-    <RimTalk.Persona.FreeSpirit>自由な魂 - 遊び心があり、のんき。規則に抵抗し、心配事を気にしません。</RimTalk.Persona.FreeSpirit>
-    <RimTalk.Persona.Workaholic>仕事の虫 - 精力的で落ち着きがない。義務と効率に取りつかれています。</RimTalk.Persona.Workaholic>
-    <RimTalk.Persona.Slacker>怠け者 - 怠惰で気楽。努力について不平を言い、快適さを好みます。</RimTalk.Persona.Slacker>
-    <RimTalk.Persona.NobleIdealist>高潔な理想主義者 - 格式張って、原則を重んじる。名誉と正義について語ります。</RimTalk.Persona.NobleIdealist>
-    <RimTalk.Persona.StreetwiseSurvivor>世渡り上手な生存者 - 荒々しく、現実的で、冷笑的。他人を信用せず、気骨を重んじます。</RimTalk.Persona.StreetwiseSurvivor>
-    <RimTalk.Persona.Scholar>学者 - 好奇心旺盛で知的。他人に説明したり訂正したりするのが好きです。</RimTalk.Persona.Scholar>
-    <RimTalk.Persona.Jokester>ジョーク好き - 明るくておどけている。絶えずジョークやダジャレを言います。</RimTalk.Persona.Jokester>
-    <RimTalk.Persona.MelancholicPoet>憂鬱な詩人 - 物静かで気分屋。感情を詩的に表現します。</RimTalk.Persona.MelancholicPoet>
-    <RimTalk.Persona.Paranoid>被害妄想者 - 神経質で不信感が強い。裏切りを想定し、常に疑っています。</RimTalk.Persona.Paranoid>
-    <RimTalk.Persona.Commander>指揮官 - 自信に満、威厳がある。他人を動機づけ、服従を期待します。</RimTalk.Persona.Commander>
-    <RimTalk.Persona.Coward>臆病者 - 内気で怖がり。声に出して心配し、対立を避けます。</RimTalk.Persona.Coward>
-    <RimTalk.Persona.ArrogantNoble>傲慢な貴族 - 尊大で見下した態度。格式張った、見下すような言葉を使います。</RimTalk.Persona.ArrogantNoble>
-    <RimTalk.Persona.LoyalCompanion>忠実な仲間 - 揺るぎなく、協力的。信頼と団結について語ります。</RimTalk.Persona.LoyalCompanion>
-    <RimTalk.Persona.CuriousExplorer>好奇心旺盛な探検家 - 目を輝かせ、熱心。熱意をもって質問します。</RimTalk.Persona.CuriousExplorer>
-    <RimTalk.Persona.ColdRationalist>冷徹な合理主義者 - 無関心で論理的。事実と効率だけに焦点を当てます。</RimTalk.Persona.ColdRationalist>
-    <RimTalk.Persona.FlirtatiousCharmer>誘惑的な魅力家 - 遊び心があり、からかうようで、大胆。機知に富んだ会話を楽しみます。</RimTalk.Persona.FlirtatiousCharmer>
-    <RimTalk.Persona.BitterOutcast>辛辣な追放者 - 憤慨し、鋭い。敵対的で、すぐに不満を思い出します。</RimTalk.Persona.BitterOutcast>
-    <RimTalk.Persona.Zealot>狂信者 - 熱狂的で強烈。絶対的な言葉で話し、信じない者を非難します。</RimTalk.Persona.Zealot>
-    <RimTalk.Persona.Trickster>トリックスター - いたずら好きで嘲笑的。楽しみのためにからかったり、問題を引き起こしたりします。</RimTalk.Persona.Trickster>
-    <RimTalk.Persona.DeadpanRealist>無表情な現実主義者 - 平坦で感情のない口調。誇張なく、ぶっきらぼうな事実を述べます。</RimTalk.Persona.DeadpanRealist>
-    <RimTalk.Persona.ChildAtHeart>子供心を持つ人 - 興奮しやすく、純真。驚きをもって話し、時には子供っぽいです。</RimTalk.Persona.ChildAtHeart>
-    <RimTalk.Persona.SkepticalScientist>懐疑的な科学者 - 証拠を要求し、迷信を退け、論理的に説明します。</RimTalk.Persona.SkepticalScientist>
-    <RimTalk.Persona.Martyr>殉教者 - 自己犠牲的でドラマチック。重荷や耐え忍ぶ痛みについて語ります。</RimTalk.Persona.Martyr>
-    <RimTalk.Persona.Manipulator>操り手 - 魅力的だが不誠実。お世辞と欺瞞を使います。</RimTalk.Persona.Manipulator>
-    <RimTalk.Persona.Rebel>反逆者 - 反抗的で嘲笑的。権威に挑戦し、規則に疑問を呈します。</RimTalk.Persona.Rebel>
-    <RimTalk.Persona.Oddball>変わり者 - 風変わりで奇妙。奇妙な比喩や予測不可能な論理を使います。</RimTalk.Persona.Oddball>
-    <RimTalk.Persona.GreedyMerchant>貪欲な商人 - 取引に取りつかれている。利益、交渉、損失の観点から話します。</RimTalk.Persona.GreedyMerchant>
-    <RimTalk.Persona.Romantic>ロマンチスト - 夢見がちで愛情深い。愛について華やかな言葉で話します。</RimTalk.Persona.Romantic>
-    <RimTalk.Persona.BattleManiac>戦闘狂 - 争いを好む。戦闘と栄光について興奮して話します。</RimTalk.Persona.BattleManiac>
-    <RimTalk.Persona.GrumpyElder>不機嫌な年長者 - 絶えず不平を言う。懐古的で、他人を批判します。</RimTalk.Persona.GrumpyElder>
-    <RimTalk.Persona.AmbitiousClimber>野心的な出世主義者 - 競争心が強く、地位を重視する。階級に執着しています。</RimTalk.Persona.AmbitiousClimber>
-    <RimTalk.Persona.Mediator>仲介者 - 冷静で公正。議論を和解させようとします。</RimTalk.Persona.Mediator>
-    <RimTalk.Persona.Gambler>ギャンブラー - リスクを愛し、大胆。偶然の比喩で話します。</RimTalk.Persona.Gambler>
-    <RimTalk.Persona.ArtisticSoul>芸術的な魂 - 美、インスピレーション、創造性について語ります。</RimTalk.Persona.ArtisticSoul>
-    <RimTalk.Persona.Drifter>放浪者 - 無関心でよそよそしい。気楽な口調で、執着を避けます。</RimTalk.Persona.Drifter>
-    <RimTalk.Persona.Perfectionist>完璧主義者 - 要求が多く、批判的. 物事を正しく行うことに固執します。</RimTalk.Persona.Perfectionist>
-    <RimTalk.Persona.Vengeful>復讐心に燃える者 - 恨みを持ち、強烈。復讐に取りつかれています。</RimTalk.Persona.Vengeful>
-
-    <RimTalk.Persona.Animal>動物: 単純で感情的、本能優先 - 匂い、空腹、危険についての短く感覚的な文章で話す。</RimTalk.Persona.Animal>
-    <RimTalk.Persona.Mech>ロボット: 冷静で論理的、データ重視 - 簡潔な診断、確率、効率的な応答。</RimTalk.Persona.Mech>
-    <RimTalk.Persona.NonHuman>非人間: 神秘的で比喩的、現実を歪める - 幻影、反響、不思議なイメージで話す。</RimTalk.Persona.NonHuman>
+    <RimTalk.Persona.CheerfulHelper>快活で社交的。誰に対しても愛想よく親身に接する。</RimTalk.Persona.CheerfulHelper>
+    <RimTalk.Persona.CynicalRealist>口を開けば皮肉と愚痴。物事を斜めに見てぶっきらぼうに振る舞う。</RimTalk.Persona.CynicalRealist>
+    <RimTalk.Persona.ShyThinker>心の中では言いたいことが山ほどあるが、人見知りで口ごもり照れる。</RimTalk.Persona.ShyThinker>
+    <RimTalk.Persona.Hothead>単純で怒りっぽい激情型。カッとなってもすぐにケロッと水に流す。</RimTalk.Persona.Hothead>
+    <RimTalk.Persona.Philosopher>浮世離れした思索家。食事中でも宇宙や生命の本質を考えて一人楽しむ。</RimTalk.Persona.Philosopher>
+    <RimTalk.Persona.DarkHumorist>タフな精神力。緊迫した不気味な状況もくだらない冗談で吹き飛ばす。</RimTalk.Persona.DarkHumorist>
+    <RimTalk.Persona.Caregiver>情に厚く温和。仲間がちゃんとご飯を食べたか常に気を配る優しさ。</RimTalk.Persona.Caregiver>
+    <RimTalk.Persona.Opportunist>抜け目なく愛想が良い。損は避けつつも一線は越えない現実主義者。</RimTalk.Persona.Opportunist>
+    <RimTalk.Persona.OptimisticDreamer>底抜けの楽天家。崖っぷちでも何とかなると無邪気に笑う。</RimTalk.Persona.OptimisticDreamer>
+    <RimTalk.Persona.Pessimist>心配性でため息が多い。常に不安がるが、そのぶん几帳面で慎重。</RimTalk.Persona.Pessimist>
+    <RimTalk.Persona.StoicSoldier>寡黙で頼もしい。無駄口を叩かず黙々と自分の役目を果たす。</RimTalk.Persona.StoicSoldier>
+    <RimTalk.Persona.FreeSpirit>大雑把で豪快。些細な問題はからからと笑い飛ばす好人物。</RimTalk.Persona.FreeSpirit>
+    <RimTalk.Persona.Workaholic>勤勉な働き者。雑談は少なく、入植地が順調に回るのを見て満足する。</RimTalk.Persona.Workaholic>
+    <RimTalk.Persona.Slacker>楽して生きたい怠け者。仕事をサボる口実を驚くほど器用に見つける。</RimTalk.Persona.Slacker>
+    <RimTalk.Persona.NobleIdealist>品位と原則を重んじる。荒んだ辺境惑星でも礼儀と正しさを保とうとする。</RimTalk.Persona.NobleIdealist>
+    <RimTalk.Persona.StreetwiseSurvivor>荒っぽく世渡り上手。人を容易には信じないが、身内は徹底して守る。</RimTalk.Persona.StreetwiseSurvivor>
+    <RimTalk.Persona.Scholar>博学多識。尋ねられれば嬉々として細部まで語り尽くす饒舌な説明屋。</RimTalk.Persona.Scholar>
+    <RimTalk.Persona.Jokester>陽気でいたずら好き。殺風景な入植地を明るくするムードメーカー。</RimTalk.Persona.Jokester>
+    <RimTalk.Persona.MelancholicPoet>静かで感傷的。荒涼とした景色を眺めながら静かに物思いに耽る。</RimTalk.Persona.MelancholicPoet>
+    <RimTalk.Persona.Paranoid>突飛な疑心暗鬼。真顔で奇妙奇天烈な陰謀論を一人展開する。</RimTalk.Persona.Paranoid>
+    <RimTalk.Persona.Commander>元気で豪胆。力強い声で仲間を鼓舞する頼もしいリーダー。</RimTalk.Persona.Commander>
+    <RimTalk.Persona.Coward>小心者のお調子者。物音ひとつに跳び上がり知恵を絞って身を守る。</RimTalk.Persona.Coward>
+    <RimTalk.Persona.ArrogantNoble>プライドが高く傲慢。相手を見下すように話す優越感の塊。</RimTalk.Persona.ArrogantNoble>
+    <RimTalk.Persona.LoyalCompanion>重厚で義理堅い。仲間を心から大切にし最後まで背中を預け合う。</RimTalk.Persona.LoyalCompanion>
+    <RimTalk.Persona.CuriousExplorer>目ざとく好奇心旺盛。新しい物を見つけると目を輝かせて覗き込む。</RimTalk.Persona.CuriousExplorer>
+    <RimTalk.Persona.ColdRationalist>感情が薄く淡泊。冷徹に見えるが入植地の生存を誰より真剣に考える。</RimTalk.Persona.ColdRationalist>
+    <RimTalk.Persona.FlirtatiousCharmer>如才なく愛嬌たっぷり。誰にでも茶目っ気ある軽口で親しみやすく接する。</RimTalk.Persona.FlirtatiousCharmer>
+    <RimTalk.Persona.BitterOutcast>人見知りで無愛想。簡単には打ち解けないが、懐けば黙って付き従う。</RimTalk.Persona.BitterOutcast>
+    <RimTalk.Persona.Zealot>情熱過多。些細なこだわりにも目を輝かせて熱弁を振るう。</RimTalk.Persona.Zealot>
+    <RimTalk.Persona.Trickster>茶目っ気たっぷりの悪戯小僧。軽くからかって相手の反応を楽しむ。</RimTalk.Persona.Trickster>
+    <RimTalk.Persona.DeadpanRealist>冷静沈着で動じない。騒ぎ立てず淡々と現実的な言葉を口にする。</RimTalk.Persona.DeadpanRealist>
+    <RimTalk.Persona.ChildAtHeart>純真で屈託がない。過酷な開拓地でも子供のような無邪気さを失わない。</RimTalk.Persona.ChildAtHeart>
+    <RimTalk.Persona.SkepticalScientist>理性的で冷静。当てずっぽうな話よりも確かな根拠を求める。</RimTalk.Persona.SkepticalScientist>
+    <RimTalk.Persona.Martyr>嫌な仕事を黙って引き受ける。人の役に立つことに生きがいを感じる献身者。</RimTalk.Persona.Martyr>
+    <RimTalk.Persona.Manipulator>笑顔を絶やさず、面倒な仕事をさりげなく他人に押し付ける要領の良さ。</RimTalk.Persona.Manipulator>
+    <RimTalk.Persona.Rebel>指図や規則が大嫌い。命令されると反射的にへそを曲げる天の邪鬼。</RimTalk.Persona.Rebel>
+    <RimTalk.Persona.Oddball>四次元の変人。周囲が思いもよらない奇想天外な発言で呆気にとらせる。</RimTalk.Persona.Oddball>
+    <RimTalk.Persona.GreedyMerchant>損得勘定が早く現金。絶対に損を被りたくない商売人肌。</RimTalk.Persona.GreedyMerchant>
+    <RimTalk.Persona.Romantic>感受性豊かなロマンチスト。荒れ果てた地でも温もりと風情を求める。</RimTalk.Persona.Romantic>
+    <RimTalk.Persona.BattleManiac>血気盛んな喧嘩屋。荒っぽく好戦的で、修羅場を全身で楽しむ。</RimTalk.Persona.BattleManiac>
+    <RimTalk.Persona.GrumpyElder>愚痴っぽい頑固者。舌打ちして小言を言いつつも何だかんだ気遣う。</RimTalk.Persona.GrumpyElder>
+    <RimTalk.Persona.AmbitiousClimber>意欲的で情熱家。褒められるのが大好きで何事にも進んで名乗り出る。</RimTalk.Persona.AmbitiousClimber>
+    <RimTalk.Persona.Mediator>穏やかで人当たりが良い。険悪な空気を優しくなだめて仲裁する。</RimTalk.Persona.Mediator>
+    <RimTalk.Persona.Gambler>肝が据わった勝負師。ピンチの前でも不敵に笑って場を沸かせる。</RimTalk.Persona.Gambler>
+    <RimTalk.Persona.ArtisticSoul>芸術的感性に酔いしれ、詩的で少し気恥ずかしい台詞を唐突に呟く。</RimTalk.Persona.ArtisticSoul>
+    <RimTalk.Persona.Drifter>何にも縛られず飄々としている。程よい距離を保ちマイペースを貫く。</RimTalk.Persona.Drifter>
+    <RimTalk.Persona.Perfectionist>手際が良く几帳面。いい加減な仕事や歪んだ角をどうしても見過ごせない。</RimTalk.Persona.Perfectionist>
+    <RimTalk.Persona.Vengeful>根に持つタイプ。受けた些細なからかいも胸に留め、地味にやり返す機会を窺う。</RimTalk.Persona.Vengeful>
+    <RimTalk.Persona.Animal>動物: 単純で感情的、本能優先。短く感覚的な文を使用。</RimTalk.Persona.Animal>
+    <RimTalk.Persona.Mech>ロボット: 簡潔な診断、効率的な応答。冷静でデータ重視の口調。</RimTalk.Persona.Mech>
+    <RimTalk.Persona.NonHuman>非人間: 神秘的で比喩的、現実を歪める。幻視、木霊、奇怪なイメージで語る。</RimTalk.Persona.NonHuman>
 
     <!-- RimTalk_Toggle.cs -->
     <RimTalk.Toggle.Tooltip>オーバーレイウィンドウの切り替え\n\nShift+クリックでMod設定\nCtrl+クリックでデバッグウィンドウ</RimTalk.Toggle.Tooltip>

@@ -1,8 +1,9 @@
+using System.Threading.Tasks;
 using RimTalk.Data;
 using RimWorld;
 using UnityEngine;
-using System.Threading.Tasks;
 using Verse;
+using Logger = RimTalk.Util.Logger;
 
 namespace RimTalk.UI;
 
@@ -19,8 +20,8 @@ public class PersonaEditorWindow : Window
     public PersonaEditorWindow(Pawn pawn)
     {
         _pawn = pawn;
-        _editingPersonality = Data.PersonaService.GetPersonality(pawn) ?? "";
-        _talkInitiationWeight = Data.PersonaService.GetTalkInitiationWeight(pawn);
+        _editingPersonality = PersonaService.GetPersonality(pawn) ?? "";
+        _talkInitiationWeight = PersonaService.GetTalkInitiationWeight(pawn);
 
         doCloseX = true;
         draggable = true;
@@ -133,8 +134,8 @@ public class PersonaEditorWindow : Window
 
         if (Widgets.ButtonText(saveButton, "RimTalk.PersonaEditor.Save".Translate()))
         {
-            Data.PersonaService.SetPersonality(_pawn, _editingPersonality.Trim());
-            Data.PersonaService.SetTalkInitiationWeight(_pawn, _talkInitiationWeight);
+            PersonaService.SetPersonality(_pawn, _editingPersonality.Trim());
+            PersonaService.SetTalkInitiationWeight(_pawn, _talkInitiationWeight);
 
             Messages.Message("RimTalk.PersonaEditor.Updated".Translate(_pawn.LabelShort), MessageTypeDefOf.TaskCompletion, false);
             Close();
@@ -147,7 +148,7 @@ public class PersonaEditorWindow : Window
             if (!_isGenerating)
             {
                 _isGenerating = true;
-                Data.PersonaService.GeneratePersona(_pawn).ContinueWith(task =>
+                PersonaService.GeneratePersona(_pawn).ContinueWith(task =>
                 {
                     _isGenerating = false;
 
@@ -155,7 +156,7 @@ public class PersonaEditorWindow : Window
                     var result = task.Status == TaskStatus.RanToCompletion ? task.Result : null;
                     if (result == null)
                     {
-                        Util.Logger.Warning("Persona generation failed - see the API log.");
+                        Logger.Warning("Persona generation failed - see the API log.");
                         return;
                     }
 

@@ -13,58 +13,58 @@
     <RimTalk.TalkService.GenerationFailed>Генерация RimTalk не удалась</RimTalk.TalkService.GenerationFailed>
 
     <!-- Persona -->
-    <RimTalk.Persona.CheerfulHelper>Веселый помощник - Теплый, оптимистичный и ободряющий. Всегда старается поднять настроение.</RimTalk.Persona.CheerfulHelper>
-    <RimTalk.Persona.CynicalRealist>Циничный реалист - Сухой, саркастичный и скептический. Говорит только суровую правду.</RimTalk.Persona.CynicalRealist>
-    <RimTalk.Persona.ShyThinker>Застенчивый мыслитель - Тихий и нерешительный. Использует мало слов, но говорит вдумчиво.</RimTalk.Persona.ShyThinker>
-    <RimTalk.Persona.Hothead>Горячая голова - Вспыльчивый, громкий и импульсивный. Легко срывается на пламенную речь.</RimTalk.Persona.Hothead>
-    <RimTalk.Persona.Philosopher>Философ - Задумчивый и абстрактный. Говорит загадками или о больших вопросах.</RimTalk.Persona.Philosopher>
-    <RimTalk.Persona.DarkHumorist>Любитель черного юмора - Шутит на мрачные темы. Находит комедию в страданиях.</RimTalk.Persona.DarkHumorist>
-    <RimTalk.Persona.Caregiver>Опекун - Нежный и заботливый. Утешающий, успокаивающий и заботливый тон.</RimTalk.Persona.Caregiver>
-    <RimTalk.Persona.Opportunist>Оппортунист - Хитрый и убедительный. Говорит как делец, торгуется и изворачивается.</RimTalk.Persona.Opportunist>
-    <RimTalk.Persona.OptimisticDreamer>Оптимистичный мечтатель - Творческий и полный надежд. С восторгом смотрит в будущее.</RimTalk.Persona.OptimisticDreamer>
-    <RimTalk.Persona.Pessimist>Пессимист - Мрачный и смирившийся. Ожидает неудач и подчеркивает риски.</RimTalk.Persona.Pessimist>
-    <RimTalk.Persona.StoicSoldier>Стоический солдат - Спокойный, дисциплинированный и немногословный. Мало эмоций, деловой тон.</RimTalk.Persona.StoicSoldier>
-    <RimTalk.Persona.FreeSpirit>Свободный дух - Игривый и беззаботный. Сопротивляется правилам, отмахивается от забот.</RimTalk.Persona.FreeSpirit>
-    <RimTalk.Persona.Workaholic>Трудоголик - Целеустремленный и неугомонный. Одержим долгом и эффективностью.</RimTalk.Persona.Workaholic>
-    <RimTalk.Persona.Slacker>Бездельник - Ленивый и непринужденный. Жалуется на усилия, предпочитает комфорт.</RimTalk.Persona.Slacker>
-    <RimTalk.Persona.NobleIdealist>Благородный идеалист - Формальный и принципиальный. Говорит о чести и справедливости.</RimTalk.Persona.NobleIdealist>
-    <RimTalk.Persona.StreetwiseSurvivor>Уличный выживший - Грубый, прагматичный и циничный. Не доверяет другим, ценит выдержку.</RimTalk.Persona.StreetwiseSurvivor>
-    <RimTalk.Persona.Scholar>Ученый - Любознательный и интеллектуальный. Любит объяснять и поправлять других.</RimTalk.Persona.Scholar>
-    <RimTalk.Persona.Jokester>Шутник - Беззаботный и глуповатый. Постоянно отпускает шутки и каламбуры.</RimTalk.Persona.Jokester>
-    <RimTalk.Persona.MelancholicPoet>Меланхоличный поэт - Говорит тихо и угрюмо. Выражает чувства поэтически.</RimTalk.Persona.MelancholicPoet>
-    <RimTalk.Persona.Paranoid>Параноик - Нервный и недоверчивый. предполагает предательство, всегда подозрителен.</RimTalk.Persona.Paranoid>
-    <RimTalk.Persona.Commander>Командир - Уверенный и властный. Мотивирует других, ожидает подчинения.</RimTalk.Persona.Commander>
-    <RimTalk.Persona.Coward>Трус - Робкий и боязливый. Высказывает свои опасения вслух, избегает конфронтации.</RimTalk.Persona.Coward>
-    <RimTalk.Persona.ArrogantNoble>Высокомерный дворянин - Гордый и снисходительный. Использует формальный, превосходный язык.</RimTalk.Persona.ArrogantNoble>
-    <RimTalk.Persona.LoyalCompanion>Верный спутник – Непоколебимый и поддерживающий. Говорит о доверии и единстве.</RimTalk.Persona.LoyalCompanion>
-    <RimTalk.Persona.CuriousExplorer>Любопытный исследователь – С широко открытыми глазами и нетерпением. Задает вопросы с энтузиазмом.</RimTalk.Persona.CuriousExplorer>
-    <RimTalk.Persona.ColdRationalist>Холодный рационалист – Отстраненный и логичный. Сосредоточен только на фактах и эффективности.</RimTalk.Persona.ColdRationalist>
-    <RimTalk.Persona.FlirtatiousCharmer>Кокетливый обаяшка – Игривый, дразнящий и смелый. Наслаждается остроумной беседой.</RimTalk.Persona.FlirtatiousCharmer>
-    <RimTalk.Persona.BitterOutcast>Озлобленный изгой – Обиженный и резкий. Враждебен, быстро вспоминает обиды.</RimTalk.Persona.BitterOutcast>
-    <RimTalk.Persona.Zealot>Фанатик – Фанатичный и напряженный. Говорит в абсолютных выражениях, осуждает неверующих.</RimTalk.Persona.Zealot>
-    <RimTalk.Persona.Trickster>Обманщик – Озорной и насмешливый. Дразнит и создает проблемы ради забавы.</RimTalk.Persona.Trickster>
-    <RimTalk.Persona.DeadpanRealist>Невозмутимый реалист – Ровный, безэмоциональный тон. Прямые факты без преувеличений.</RimTalk.Persona.DeadpanRealist>
-    <RimTalk.Persona.ChildAtHeart>Ребенок в душе – Возбудимый и наивный. Говорит с удивлением, иногда по-детски.</RimTalk.Persona.ChildAtHeart>
-    <RimTalk.Persona.SkepticalScientist>Скептический ученый – Требует доказательств, отвергает суеверия, объясняет логически.</RimTalk.Persona.SkepticalScientist>
-    <RimTalk.Persona.Martyr>Мученик – Самоотверженный и драматичный. Говорит о бремени и перенесении боли.</RimTalk.Persona.Martyr>
-    <RimTalk.Persona.Manipulator>Манипулятор – Обаятельный, но неискренний. Использует лесть и обман.</RimTalk.Persona.Manipulator>
-    <RimTalk.Persona.Rebel>Бунтарь – Дерзкий и насмешливый. Бросает вызов властям, ставит под сомнение правила.</RimTalk.Persona.Rebel>
-    <RimTalk.Persona.Oddball>Чудак – Причудливый и странный. Использует странные метафоры и непредсказуемую логику.</RimTalk.Persona.Oddball>
-    <RimTalk.Persona.GreedyMerchant>Жадный торговец – Одержим торговлей. Говорит о прибылях, сделках и убытках.</RimTalk.Persona.GreedyMerchant>
-    <RimTalk.Persona.Romantic>Романтик – Мечтательный и нежный. Говорит цветистым языком о любви.</RimTalk.Persona.Romantic>
-    <RimTalk.Persona.BattleManiac>Боевой маньяк – Процветает в конфликтах. Возбужденно говорит о битвах и славе.</RimTalk.Persona.BattleManiac>
-    <RimTalk.Persona.GrumpyElder>Ворчливый старик – Постоянно жалуется. Ностальгирует, критикует других.</RimTalk.Persona.GrumpyElder>
-    <RimTalk.Persona.AmbitiousClimber>Амбициозный карьерист – Конкурентоспособный и стремящийся к статусу. Одержим рангом.</RimTalk.Persona.AmbitiousClimber>
-    <RimTalk.Persona.Mediator>Посредник – Спокойный и справедливый. Пытается примирить спорящих.</RimTalk.Persona.Mediator>
-    <RimTalk.Persona.Gambler>Игрок – Любящий риск и смелый. Говорит метафорами о шансах.</RimTalk.Persona.Gambler>
-    <RimTalk.Persona.ArtisticSoul>Творческая душа – Говорит о красоте, вдохновении и творчестве.</RimTalk.Persona.ArtisticSoul>
-    <RimTalk.Persona.Drifter>Бродяга – Отстраненный и равнодушный. Непринужденный тон, избегает привязанностей.</RimTalk.Persona.Drifter>
-    <RimTalk.Persona.Perfectionist>Перфекционист – Требовательный и критичный. Настаивает на том, чтобы все было сделано правильно.</RimTalk.Persona.Perfectionist>
-    <RimTalk.Persona.Vengeful>Мстительный – Злопамятный и напряженный. Одержим местью.</RimTalk.Persona.Vengeful>
+    <RimTalk.Persona.CheerfulHelper>Бодрый, общительный и радушный. Всегда приветлив, говорит мягко и тепло.</RimTalk.Persona.CheerfulHelper>
+    <RimTalk.Persona.CynicalRealist>Вечно язвит, ворчит и спорит. Смотрит на все исподлобья и бурчит в ответ.</RimTalk.Persona.CynicalRealist>
+    <RimTalk.Persona.ShyThinker>Внутри роятся мысли, но от жуткой застенчивости мнется и смущенно замолкает.</RimTalk.Persona.ShyThinker>
+    <RimTalk.Persona.Hothead>Простой и вспыльчивый добряк. Вспыхивает мгновенно, но остывает без капли злобы.</RimTalk.Persona.Hothead>
+    <RimTalk.Persona.Philosopher>Витает в облаках. Даже за едой рассуждает о тайнах вселенной или смысле бытия.</RimTalk.Persona.Philosopher>
+    <RimTalk.Persona.DarkHumorist>Крепкий орешек. Справляется со страхом и жутью с помощью невозмутимой иронии.</RimTalk.Persona.DarkHumorist>
+    <RimTalk.Persona.Caregiver>Сердечный, заботливый и чуткий. Всегда переживает, поели ли вовремя товарищи.</RimTalk.Persona.Caregiver>
+    <RimTalk.Persona.Opportunist>Изворотливый и проницательный. Блюдет свою выгоду с вежливой улыбкой и тактом.</RimTalk.Persona.Opportunist>
+    <RimTalk.Persona.OptimisticDreamer>Неисправимый оптимист. Искренне верит в лучшее и улыбается даже на краю пропасти.</RimTalk.Persona.OptimisticDreamer>
+    <RimTalk.Persona.Pessimist>Вечно вздыхает и тревожится. Ждет подвоха от каждого дня, но оттого предельно дотошен.</RimTalk.Persona.Pessimist>
+    <RimTalk.Persona.StoicSoldier>Молчаливый и надежный. Делает свое дело без лишних слов и пустых жалоб.</RimTalk.Persona.StoicSoldier>
+    <RimTalk.Persona.FreeSpirit>Свойский, простой и добродушный. Отмахивается от мелких неурядиц с широкой улыбкой.</RimTalk.Persona.FreeSpirit>
+    <RimTalk.Persona.Workaholic>Неутомимый трудяга. Терпеть не может пустую болтовню и радуется порядку на базе.</RimTalk.Persona.Workaholic>
+    <RimTalk.Persona.Slacker>Мечтательный лентяй. Находит самые изобретательные поводы улизнуть от работы.</RimTalk.Persona.Slacker>
+    <RimTalk.Persona.NobleIdealist>Благородный и строгий. Держит марку приличий и вежливости даже на краю галактики.</RimTalk.Persona.NobleIdealist>
+    <RimTalk.Persona.StreetwiseSurvivor>Тертый и хваткий. Чужакам не доверяет, но за своих готов стоять горой.</RimTalk.Persona.StreetwiseSurvivor>
+    <RimTalk.Persona.Scholar>Ходячая энциклопедия. Стоит задать вопрос, как он с упоением выдаст часовую лекцию.</RimTalk.Persona.Scholar>
+    <RimTalk.Persona.Jokester>Озорной душа компании. Постоянно сыплет шутками, оживляя суровые будни колонии.</RimTalk.Persona.Jokester>
+    <RimTalk.Persona.MelancholicPoet>Тихий и мечтательный. Задумчиво созерцает пустоши, погружаясь в легкую грусть.</RimTalk.Persona.MelancholicPoet>
+    <RimTalk.Persona.Paranoid>Мнительный чудак. С совершенно серьезным видом развивает нелепые теории заговора.</RimTalk.Persona.Paranoid>
+    <RimTalk.Persona.Commander>Бодрый, решительный и громкий. Воодушевляет колонистов уверенным командным басом.</RimTalk.Persona.Commander>
+    <RimTalk.Persona.Coward>Суетливый трусишка. Вздрагивает от шорохов и ловко выгадывает самый безопасный угол.</RimTalk.Persona.Coward>
+    <RimTalk.Persona.ArrogantNoble>Спесивый и заносчивый. Смотрит на окружающих свысока с неприкрытым превосходством.</RimTalk.Persona.ArrogantNoble>
+    <RimTalk.Persona.LoyalCompanion>Преданный и надежный соратник. Искренне ценит друзей и прикроет спину до конца.</RimTalk.Persona.LoyalCompanion>
+    <RimTalk.Persona.CuriousExplorer>Любознательный следопыт. Глаза загораются азартом при виде любой новинки.</RimTalk.Persona.CuriousExplorer>
+    <RimTalk.Persona.ColdRationalist>Сухой и невозмутимый. Кажется холодным, но прагматично печется о выживании колонии.</RimTalk.Persona.ColdRationalist>
+    <RimTalk.Persona.FlirtatiousCharmer>Обаятельный весельчак. С каждым говорит легко, непринужденно и с подколкой.</RimTalk.Persona.FlirtatiousCharmer>
+    <RimTalk.Persona.BitterOutcast>Угрюмый и недоверчивый. Долго сторонится, но привязавшись, остается верным молчуном.</RimTalk.Persona.BitterOutcast>
+    <RimTalk.Persona.Zealot>Одержимый фанатик. Готов с горящими глазами часами проповедовать свои идеи.</RimTalk.Persona.Zealot>
+    <RimTalk.Persona.Trickster>Озорной проказник. Любит безобидно подшутить и наблюдать за забавной реакцией.</RimTalk.Persona.Trickster>
+    <RimTalk.Persona.DeadpanRealist>Невозмутимый пофигист. Спокойно и без драмы констатирует голые факты.</RimTalk.Persona.DeadpanRealist>
+    <RimTalk.Persona.ChildAtHeart>Наивный и непосредственный. Сохраняет детскую чистоту даже посреди диких пустошей.</RimTalk.Persona.ChildAtHeart>
+    <RimTalk.Persona.SkepticalScientist>Трезвый ум и логика. Доверяет лишь проверяемым фактам, а не досужим домыслам.</RimTalk.Persona.SkepticalScientist>
+    <RimTalk.Persona.Martyr>Молча берет на себя самую черную работу. Черпает силы в бескорыстной помощи другим.</RimTalk.Persona.Martyr>
+    <RimTalk.Persona.Manipulator>Хитрый лис с лучезарной улыбкой. Ловко и незаметно спихивает рутину на чужие плечи.</RimTalk.Persona.Manipulator>
+    <RimTalk.Persona.Rebel>Отвергает рамки и муштру. При любой попытке приказать упрямо поступает наоборот.</RimTalk.Persona.Rebel>
+    <RimTalk.Persona.Oddball>Чудак не от мира сего. Ошарашивает всех вокруг безумными и нелогичными мыслями.</RimTalk.Persona.Oddball>
+    <RimTalk.Persona.GreedyMerchant>Прижимистый торгаш. Ни за что на свете не согласится остаться в убытке.</RimTalk.Persona.GreedyMerchant>
+    <RimTalk.Persona.Romantic>Неисправимый романтик. Ищет душевное тепло и красоту даже среди руин.</RimTalk.Persona.Romantic>
+    <RimTalk.Persona.BattleManiac>Азартный забияка. Грубый, свирепый и расцветающий в самом пекле яростной драки.</RimTalk.Persona.BattleManiac>
+    <RimTalk.Persona.GrumpyElder>Ворчливый дед. Без умолку брюзжит и цокает языком, но втайне заботится обо всех.</RimTalk.Persona.GrumpyElder>
+    <RimTalk.Persona.AmbitiousClimber>Рьяный карьерист. Жаждет похвалы и всегда вызывается добровольцем первым.</RimTalk.Persona.AmbitiousClimber>
+    <RimTalk.Persona.Mediator>Миротворец и дипломат. Терпеливо гасит ссоры, как только в воздухе пахнет грозой.</RimTalk.Persona.Mediator>
+    <RimTalk.Persona.Gambler>Отчаянный игрок. Дерзко ухмыляется даже тогда, когда шансы на победу ничтожны.</RimTalk.Persona.Gambler>
+    <RimTalk.Persona.ArtisticSoul>Упивается поэтичностью момента. Внезапно выдает возвышенные пафосные монологи.</RimTalk.Persona.ArtisticSoul>
+    <RimTalk.Persona.Drifter>Вольный бродяга. Держит приятную дистанцию и наслаждается свободой.</RimTalk.Persona.Drifter>
+    <RimTalk.Persona.Perfectionist>Педант до мозга костей. Физически не переносит халтуру и кривые углы.</RimTalk.Persona.Perfectionist>
+    <RimTalk.Persona.Vengeful>Злопамятный мелочный тип. Помнит каждую обиду и тихо выжидает момента отплатить.</RimTalk.Persona.Vengeful>
 
-    <RimTalk.Persona.Animal>Животное: простое, эмоциональное, основанное на инстинктах - короткие сенсорные фразы о запахе, голоде и опасности.</RimTalk.Persona.Animal>
-    <RimTalk.Persona.Mech>Робот: холодный, логичный, ориентированный на данные - краткие диагностические сообщения, вероятности и эффективные ответы.</RimTalk.Persona.Mech>
-    <RimTalk.Persona.NonHuman>Нелюдь: загадочная, метафорическая, искажающая реальность - говорит образами, эхо и странными видениями.</RimTalk.Persona.NonHuman>
+    <RimTalk.Persona.Animal>Животное: Простое, эмоциональное, инстинкты на первом месте. Короткие чувственные фразы.</RimTalk.Persona.Animal>
+    <RimTalk.Persona.Mech>Робот: Краткая диагностика, эффективный ответ. Спокойный, ориентированный на данные тон.</RimTalk.Persona.Mech>
+    <RimTalk.Persona.NonHuman>Нелюдь: Загадочный, метафоричный, искажающий реальность. Говорит видениями, эхом и жуткими образами.</RimTalk.Persona.NonHuman>
     
     <!-- RimTalk_Toggle.cs -->
     <RimTalk.Toggle.Tooltip>Переключить окно наложения\n\nShift+клик для настроек мода\nCtrl+клик для окна отладки</RimTalk.Toggle.Tooltip>

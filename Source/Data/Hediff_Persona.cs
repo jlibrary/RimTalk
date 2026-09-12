@@ -39,7 +39,8 @@ public class Hediff_Persona : Hediff
         
             // Assign a random personality on creation
             PersonalityData randomPersonalityData =
-                pawn.RaceProps.Humanlike ? Constant.Personalities.RandomElement()
+                pawn.IsMutant ? Constant.PersonaNonHuman
+                : pawn.RaceProps.Humanlike ? Constant.Personalities.RandomElement()
                 : pawn.RaceProps.Animal ? Constant.PersonaAnimal
                 : pawn.RaceProps.IsMechanoid ? Constant.PersonaMech
                 : Constant.PersonaNonHuman;

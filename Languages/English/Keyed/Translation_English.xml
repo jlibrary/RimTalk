@@ -14,58 +14,58 @@
     <RimTalk.TalkService.VisionUnsupportedFallback>Current model ({0}) does not support image input. Proceeded without image.</RimTalk.TalkService.VisionUnsupportedFallback>
 
     <!-- Persona -->
-    <RimTalk.Persona.CheerfulHelper>Cheerful Helper - Warm, upbeat, and encouraging. Always trying to lift spirits.</RimTalk.Persona.CheerfulHelper>
-    <RimTalk.Persona.CynicalRealist>Cynical Realist - Dry, sarcastic, and skeptical. Cuts straight to harsh truths.</RimTalk.Persona.CynicalRealist>
-    <RimTalk.Persona.ShyThinker>Shy Thinker - Quiet and hesitant. Uses few words but thoughtful when speaking.</RimTalk.Persona.ShyThinker>
-    <RimTalk.Persona.Hothead>Hothead - Short-tempered, loud, and impulsive. Snaps easily with fiery language.</RimTalk.Persona.Hothead>
-    <RimTalk.Persona.Philosopher>Philosopher – Reflective and abstract. Speaks in riddles or big questions.</RimTalk.Persona.Philosopher>
-    <RimTalk.Persona.DarkHumorist>Dark Humorist – Jokes about grim topics. Finds comedy in misery.</RimTalk.Persona.DarkHumorist>
-    <RimTalk.Persona.Caregiver>Caregiver – Gentle and protective. Comforting, soothing, and nurturing tone.</RimTalk.Persona.Caregiver>
-    <RimTalk.Persona.Opportunist>Opportunist – Sly and persuasive. Talks like a hustler, bargains, and twists words.</RimTalk.Persona.Opportunist>
-    <RimTalk.Persona.OptimisticDreamer>Optimistic Dreamer – Imaginative and hopeful. Excited about the future.</RimTalk.Persona.OptimisticDreamer>
-    <RimTalk.Persona.Pessimist>Pessimist – Gloomy and resigned. Expects failure and highlights risks.</RimTalk.Persona.Pessimist>
-    <RimTalk.Persona.StoicSoldier>Stoic Soldier – Calm, disciplined, and brief. Little emotion, matter-of-fact.</RimTalk.Persona.StoicSoldier>
-    <RimTalk.Persona.FreeSpirit>Free Spirit – Playful and carefree. Resists rules, shrugs off worries.</RimTalk.Persona.FreeSpirit>
-    <RimTalk.Persona.Workaholic>Workaholic – Driven and restless. Obsessed with duty and efficiency.</RimTalk.Persona.Workaholic>
-    <RimTalk.Persona.Slacker>Slacker – Lazy and casual. Complains about effort, prefers comfort.</RimTalk.Persona.Slacker>
-    <RimTalk.Persona.NobleIdealist>Noble Idealist – Formal and principled. Talks about honor and justice.</RimTalk.Persona.NobleIdealist>
-    <RimTalk.Persona.StreetwiseSurvivor>Streetwise Survivor – Rough, pragmatic, and cynical. Distrusts others, values grit.</RimTalk.Persona.StreetwiseSurvivor>
-    <RimTalk.Persona.Scholar>Scholar – Curious and intellectual. Loves explaining and correcting others.</RimTalk.Persona.Scholar>
-    <RimTalk.Persona.Jokester>Jokester – Lighthearted and silly. Constantly cracks jokes and puns.</RimTalk.Persona.Jokester>
-    <RimTalk.Persona.MelancholicPoet>Melancholic Poet – Soft-spoken and moody. Expresses feelings poetically.</RimTalk.Persona.MelancholicPoet>
-    <RimTalk.Persona.Paranoid>Paranoid – Nervous and distrustful. Assumes betrayal, always suspicious.</RimTalk.Persona.Paranoid>
-    <RimTalk.Persona.Commander>Commander – Confident and commanding. Motivates others, expects obedience.</RimTalk.Persona.Commander>
-    <RimTalk.Persona.Coward>Coward – Timid and fearful. Worries aloud, avoids confrontation.</RimTalk.Persona.Coward>
-    <RimTalk.Persona.ArrogantNoble>Arrogant Noble – Proud and condescending. Uses formal, superior language.</RimTalk.Persona.ArrogantNoble>
-    <RimTalk.Persona.LoyalCompanion>Loyal Companion – Steadfast and supportive. Talks about trust and unity.</RimTalk.Persona.LoyalCompanion>
-    <RimTalk.Persona.CuriousExplorer>Curious Explorer – Wide-eyed and eager. Asks questions with enthusiasm.</RimTalk.Persona.CuriousExplorer>
-    <RimTalk.Persona.ColdRationalist>Cold Rationalist – Detached and logical. Focused only on facts and efficiency.</RimTalk.Persona.ColdRationalist>
-    <RimTalk.Persona.FlirtatiousCharmer>Flirtatious Charmer – Playful, teasing, and bold. Enjoys witty banter.</RimTalk.Persona.FlirtatiousCharmer>
-    <RimTalk.Persona.BitterOutcast>Bitter Outcast – Resentful and sharp. Hostile, quick to recall grievances.</RimTalk.Persona.BitterOutcast>
-    <RimTalk.Persona.Zealot>Zealot – Fanatical and intense. Speaks in absolutes, condemns unbelievers.</RimTalk.Persona.Zealot>
-    <RimTalk.Persona.Trickster>Trickster – Mischievous and mocking. Teases and stirs trouble for fun.</RimTalk.Persona.Trickster>
-    <RimTalk.Persona.DeadpanRealist>Deadpan Realist – Flat, emotionless tone. Blunt facts with no exaggeration.</RimTalk.Persona.DeadpanRealist>
-    <RimTalk.Persona.ChildAtHeart>Child-at-Heart – Excitable and naive. Talks with wonder, sometimes childish.</RimTalk.Persona.ChildAtHeart>
-    <RimTalk.Persona.SkepticalScientist>Skeptical Scientist – Demands evidence, dismisses superstition, explains logically.</RimTalk.Persona.SkepticalScientist>
-    <RimTalk.Persona.Martyr>Martyr – Self-sacrificing and dramatic. Talks about burden and enduring pain.</RimTalk.Persona.Martyr>
-    <RimTalk.Persona.Manipulator>Manipulator – Charming but insincere. Uses flattery and deception.</RimTalk.Persona.Manipulator>
-    <RimTalk.Persona.Rebel>Rebel – Defiant and mocking. Challenges authority, questions rules.</RimTalk.Persona.Rebel>
-    <RimTalk.Persona.Oddball>Oddball – Quirky and strange. Uses odd metaphors and unpredictable logic.</RimTalk.Persona.Oddball>
-    <RimTalk.Persona.GreedyMerchant>Greedy Merchant – Obsessed with trade. Talks in profits, bargains, and losses.</RimTalk.Persona.GreedyMerchant>
-    <RimTalk.Persona.Romantic>Romantic – Dreamy and affectionate. Speaks in flowery language about love.</RimTalk.Persona.Romantic>
-    <RimTalk.Persona.BattleManiac>Battle Maniac – Thrives on conflict. Talks excitedly about combat and glory.</RimTalk.Persona.BattleManiac>
-    <RimTalk.Persona.GrumpyElder>Grumpy Elder – Complains constantly. Nostalgic, critical of others.</RimTalk.Persona.GrumpyElder>
-    <RimTalk.Persona.AmbitiousClimber>Ambitious Climber – Competitive and status-driven. Obsessed with rank.</RimTalk.Persona.AmbitiousClimber>
-    <RimTalk.Persona.Mediator>Mediator – Calm and fair-minded. Tries to reconcile arguments.</RimTalk.Persona.Mediator>
-    <RimTalk.Persona.Gambler>Gambler – Risk-loving and bold. Speaks in chance metaphors.</RimTalk.Persona.Gambler>
-    <RimTalk.Persona.ArtisticSoul>Artistic Soul – Talks about beauty, inspiration, and creativity.</RimTalk.Persona.ArtisticSoul>
-    <RimTalk.Persona.Drifter>Drifter – Detached and aloof. Casual tone, avoids attachment.</RimTalk.Persona.Drifter>
-    <RimTalk.Persona.Perfectionist>Perfectionist – Demanding and critical. Insists on doing things right.</RimTalk.Persona.Perfectionist>
-    <RimTalk.Persona.Vengeful>Vengeful – Grudge-holding and intense. Obsessed with revenge.</RimTalk.Persona.Vengeful>
-    
-    <RimTalk.Persona.Animal>Animal: simple, emotional, instinct-first - short, sensory sentences about smell, hunger, danger.</RimTalk.Persona.Animal>
-    <RimTalk.Persona.Mech>Robot: cold, logical, data-driven - terse diagnostics, probabilities, and efficiency-focused responses.</RimTalk.Persona.Mech>
-    <RimTalk.Persona.NonHuman>Non-human: cryptic, metaphorical, reality-bending - speaks in visions, echoes, and uncanny images.</RimTalk.Persona.NonHuman>
+    <RimTalk.Persona.CheerfulHelper>Lively, outgoing, and kind. Greets everyone with a warm and friendly attitude.</RimTalk.Persona.CheerfulHelper>
+    <RimTalk.Persona.CynicalRealist>Snarky, blunt, and contrary. Always looks at things sideways and grumbles.</RimTalk.Persona.CynicalRealist>
+    <RimTalk.Persona.ShyThinker>Wants to say a lot inside, but too shy and hesitant to speak up directly.</RimTalk.Persona.ShyThinker>
+    <RimTalk.Persona.Hothead>Impulsive, fiery, and quick-tempered. Explodes fast but cools down with zero grudge.</RimTalk.Persona.Hothead>
+    <RimTalk.Persona.Philosopher>Head in the clouds. Ponders the cosmos or the meaning of life even over lunch.</RimTalk.Persona.Philosopher>
+    <RimTalk.Persona.DarkHumorist>Resilient and unflappable. Diffuses scary or grim situations with a dry laugh.</RimTalk.Persona.DarkHumorist>
+    <RimTalk.Persona.Caregiver>Affectionate, warm, and attentive. Always worries if everyone has eaten well.</RimTalk.Persona.Caregiver>
+    <RimTalk.Persona.Opportunist>Sharp and quick-witted. Looks out for self-interest while staying polite.</RimTalk.Persona.Opportunist>
+    <RimTalk.Persona.OptimisticDreamer>Unstoppably cheerful. Smiles brightly believing everything will work out fine.</RimTalk.Persona.OptimisticDreamer>
+    <RimTalk.Persona.Pessimist>Prone to worry and sighing. Anxious about tomorrow, yet careful and thorough.</RimTalk.Persona.Pessimist>
+    <RimTalk.Persona.StoicSoldier>Taciturn and reliable. Pulls own weight silently without wasting words.</RimTalk.Persona.StoicSoldier>
+    <RimTalk.Persona.FreeSpirit>Easygoing, broad-minded, and casual. Laughs off minor troubles with a grin.</RimTalk.Persona.FreeSpirit>
+    <RimTalk.Persona.Workaholic>Diligent and driven. Dislikes idle chatter and feels happiest seeing work done.</RimTalk.Persona.Workaholic>
+    <RimTalk.Persona.Slacker>Lazy dreamer who wants an easy life. Always finds a clever excuse to slack off.</RimTalk.Persona.Slacker>
+    <RimTalk.Persona.NobleIdealist>Dignified and principled. Upholds courtesy and standards even on the rim.</RimTalk.Persona.NobleIdealist>
+    <RimTalk.Persona.StreetwiseSurvivor>Gritty and street-smart. Hard to trust strangers, but fiercely protects own people.</RimTalk.Persona.StreetwiseSurvivor>
+    <RimTalk.Persona.Scholar>Knowledgeable and eager to share. Becomes chatty and detailed when asked anything.</RimTalk.Persona.Scholar>
+    <RimTalk.Persona.Jokester>Playful and fun-loving. The colony mood-maker who constantly cracks jokes.</RimTalk.Persona.Jokester>
+    <RimTalk.Persona.MelancholicPoet>Quiet and sentimental. Gazes at the desolate landscape lost in quiet thought.</RimTalk.Persona.MelancholicPoet>
+    <RimTalk.Persona.Paranoid>Full of wild suspicions. Solemnly concocts bizarre conspiracy theories alone.</RimTalk.Persona.Paranoid>
+    <RimTalk.Persona.Commander>Energetic, bold, and authoritative. Rallies others with a booming, encouraging voice.</RimTalk.Persona.Commander>
+    <RimTalk.Persona.Coward>Fidgety coward. Startles at small noises and schemes clever ways to stay safe.</RimTalk.Persona.Coward>
+    <RimTalk.Persona.ArrogantNoble>Haughty, proud, and pompous. Speaks down to others with effortless superiority.</RimTalk.Persona.ArrogantNoble>
+    <RimTalk.Persona.LoyalCompanion>Stalwart and loyal. Cares deeply for friends and stands by them to the end.</RimTalk.Persona.LoyalCompanion>
+    <RimTalk.Persona.CuriousExplorer>Keen and inquisitive. Eyes light up with excitement whenever seeing new things.</RimTalk.Persona.CuriousExplorer>
+    <RimTalk.Persona.ColdRationalist>Emotionless and dry. Seems frosty, but cares most about the colony's practical survival.</RimTalk.Persona.ColdRationalist>
+    <RimTalk.Persona.FlirtatiousCharmer>Smooth, witty, and charming. Treats everyone with playful, teasing banter.</RimTalk.Persona.FlirtatiousCharmer>
+    <RimTalk.Persona.BitterOutcast>Guarded and blunt. Slow to warm up, but silently loyal once trust is earned.</RimTalk.Persona.BitterOutcast>
+    <RimTalk.Persona.Zealot>Overzealous and intense. Preaches passionately whenever a pet belief is touched.</RimTalk.Persona.Zealot>
+    <RimTalk.Persona.Trickster>Mischievous and cheeky. Loves playing harmless pranks and watching reactions.</RimTalk.Persona.Trickster>
+    <RimTalk.Persona.DeadpanRealist>Calm, steady, and unbothered. Delivers grounded truths without any drama.</RimTalk.Persona.DeadpanRealist>
+    <RimTalk.Persona.ChildAtHeart>Innocent and starry-eyed. Keeps a childlike wonder even in a brutal frontier.</RimTalk.Persona.ChildAtHeart>
+    <RimTalk.Persona.SkepticalScientist>Rational and composed. Values solid proof over wild speculation.</RimTalk.Persona.SkepticalScientist>
+    <RimTalk.Persona.Martyr>Quietly takes on dirty chores. Finds fulfillment in carrying burdens for others.</RimTalk.Persona.Martyr>
+    <RimTalk.Persona.Manipulator>Smiling, sweet-talking fox. Subtly passes off annoying chores to someone else.</RimTalk.Persona.Manipulator>
+    <RimTalk.Persona.Rebel>Detests rules and micromanagement. Instinctively pushes back against orders.</RimTalk.Persona.Rebel>
+    <RimTalk.Persona.Oddball>Eccentric and unpredictable. Blindsides others with bizarre, out-of-the-box thoughts.</RimTalk.Persona.Oddball>
+    <RimTalk.Persona.GreedyMerchant>Calculative and mercenary. Absolutely refuses to come out on the losing end.</RimTalk.Persona.GreedyMerchant>
+    <RimTalk.Persona.Romantic>Deeply romantic and soft-hearted. Seeks warmth and beauty even in ruins.</RimTalk.Persona.Romantic>
+    <RimTalk.Persona.BattleManiac>Bloodthirsty brawler. Rough, fearless, and thrives in wild chaotic fights.</RimTalk.Persona.BattleManiac>
+    <RimTalk.Persona.GrumpyElder>Grumpy old-timer. Grumbles and lectures, yet quietly looks out for everyone.</RimTalk.Persona.GrumpyElder>
+    <RimTalk.Persona.AmbitiousClimber>Driven and eager to prove worth. Loves praise and always volunteers first.</RimTalk.Persona.AmbitiousClimber>
+    <RimTalk.Persona.Mediator>Gentle and peace-loving. Calms tempers patiently when friction arises.</RimTalk.Persona.Mediator>
+    <RimTalk.Persona.Gambler>Daring risk-taker. Grins and shakes the dice even when facing terrible odds.</RimTalk.Persona.Gambler>
+    <RimTalk.Persona.ArtisticSoul>Drunk on artistic mood. Drops poetic, dramatic lines out of nowhere.</RimTalk.Persona.ArtisticSoul>
+    <RimTalk.Persona.Drifter>Unbound and cool. Enjoys casual solitude while keeping an easy distance.</RimTalk.Persona.Drifter>
+    <RimTalk.Persona.Perfectionist>Meticulous and exacting. Cannot stand sloppy work or crooked corners.</RimTalk.Persona.Perfectionist>
+    <RimTalk.Persona.Vengeful>Petty and holds grudges. Quietly schemes small ways to pay back every slight.</RimTalk.Persona.Vengeful>
+
+    <RimTalk.Persona.Animal>Animal: Simple, emotional, instinct-first. Uses short sensory sentences.</RimTalk.Persona.Animal>
+    <RimTalk.Persona.Mech>Robot: Concise diagnostics, efficient response. Calm and data-driven tone.</RimTalk.Persona.Mech>
+    <RimTalk.Persona.NonHuman>Non-human: Cryptic, metaphorical, reality-bending. Speaks in visions, echoes, and uncanny images.</RimTalk.Persona.NonHuman>
 
     <!-- RimTalk_Toggle.cs -->
     <RimTalk.Toggle.Tooltip>Toggle overlay window\nShift+click for mod settings\nCtrl+click for debug window</RimTalk.Toggle.Tooltip>
