@@ -471,8 +471,8 @@ public static class ContextBuilder
             else if (pawns.Count == 1)
             {
                 intentSb.Append(talkRequest.Prompt != null
-                    ? $"{shortName} start monologue"
-                    : $"{shortName} continue monologue");
+                    ? $"{shortName} start monologue (only {shortName} speaks)"
+                    : $"{shortName} continue monologue (only {shortName} speaks)");
             }
             else
             {
