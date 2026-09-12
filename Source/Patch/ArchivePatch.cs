@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
@@ -32,7 +32,7 @@ public static class ArchivePatch
                 Cache.Get(pawn)?.AddTalkRequest(prompt, talkType: talkType);
         }
         else
-            TalkRequestPool.Add(prompt, mapId: eventMap?.uniqueID ?? 0);
+            TalkRequestPool.Add(prompt, mapId: eventMap?.uniqueID ?? -1);
     }
 
     private static bool ShouldProcessArchivable(IArchivable archivable)
