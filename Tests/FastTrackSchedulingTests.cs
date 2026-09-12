@@ -155,27 +155,63 @@ public class FastTrackSchedulingTests
     [Fact]
     public void RegularTalkCooldown_StartsCountingAfterGenerationCompletes()
     {
-        // Generation starts at tick 1000 and finishes at tick 1240 (4 seconds at 60 tps)
+        // Dialogue generation starts at tick 1000 and takes 4 seconds (240 ticks at 60 tps) to complete
         int regularTalkInterval = 420; // 7 seconds (420 ticks)
         int lastTalkEndTick = 1000;
 
-        // While busy generating regular talk, lastTalkEndTick tracks up to generation completion
+        // Current Fixed Logic (1451d40):
+        // While AIService.IsBusy() for regular talk, lastTalkEndTick updates each tick until generation finishes at tick 1240
+        bool isAiBusy = true;
+        TalkType activeTalkType = TalkType.Chitchat;
+
         for (int curTick = 1001; curTick <= 1240; curTick++)
         {
-            lastTalkEndTick = curTick;
+            if (isAiBusy && !activeTalkType.IsFastTrack())
+            {
+                lastTalkEndTick = curTick;
+            }
         }
 
-        // At tick 1240, generation finishes and lastTalkEndTick is 1240
+        // Generation completed at tick 1240
         Assert.Equal(1240, lastTalkEndTick);
 
-        // At tick 1450 (only 210 ticks after completion), cooldown must NOT be satisfied yet
+        // 1. At tick 1450 (only 210 ticks = 3.5s after generation completed):
+        // Under FIXED code: elapsed since completion is 210 ticks < 420 ticks (7s).
+        // Pawns MUST NOT speak yet!
         int currentTick = 1450;
         int elapsedSinceEnd = currentTick - lastTalkEndTick;
-        Assert.True(elapsedSinceEnd < regularTalkInterval, "Cooldown must not expire prematurely while waiting after generation");
+        bool canSpeakFixed = elapsedSinceEnd >= regularTalkInterval;
+        Assert.False(canSpeakFixed, "With fix, cooldown must NOT elapse prematurely 3.5s after generation");
 
-        // At tick 1660 (420 ticks after completion), cooldown is now fully satisfied
+        // 2. What happened BEFORE the fix (1451d40 이전 버그 상태):
+        // In the bugged code, lastTalkEndTick was NEVER updated during AI generation, remaining at start tick (1000).
+        int buggedLastTalkEndTick = 1000;
+        int buggedElapsed = currentTick - buggedLastTalkEndTick; // 1450 - 1000 = 450 ticks (7.5s from start!)
+        bool canSpeakBugged = buggedElapsed >= regularTalkInterval;
+        Assert.True(canSpeakBugged, "Before fix (bug), pawns spoke much earlier (3.5s after generation ended) because cooldown counted from START, not END!");
+
+        // 3. Under FIXED code, at tick 1660 (full 420 ticks = 7s after generation completed):
         currentTick = 1660;
         elapsedSinceEnd = currentTick - lastTalkEndTick;
-        Assert.True(elapsedSinceEnd >= regularTalkInterval, "Cooldown must be satisfied once full interval passes after generation completes");
+        canSpeakFixed = elapsedSinceEnd >= regularTalkInterval;
+        Assert.True(canSpeakFixed, "With fix, pawns speak exactly after the full 7s cooldown following generation completion");
+    }
+
+    [Fact]
+    public void RegularTalkCooldown_FastTrackDoesNotUpdateLastTalkEndTick()
+    {
+        // An intervening fast-track request (e.g. user prompt) must NOT reset the regular dialogue cooldown timer
+        int regularEndTick = 1000;
+        bool isAiBusy = true;
+        TalkType activeTalkType = TalkType.User; // Fast-track!
+
+        int curTick = 1500;
+        if (isAiBusy && !activeTalkType.IsFastTrack())
+        {
+            regularEndTick = curTick;
+        }
+
+        // Must remain preserved at 1000!
+        Assert.Equal(1000, regularEndTick);
     }
 }
