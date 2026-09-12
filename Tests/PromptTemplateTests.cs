@@ -548,5 +548,61 @@ Environment Hazard: {{ fallout_level }}
         // 5. Active preset's original Base Instruction content MUST NOT be mutated
         Assert.Equal("Original instruction", baseInstruction.Content);
     }
-}
 
+    [Fact]
+    public void BuildSimpleModePreset_SupportsLegacyPawnProfiles_AndForcesEnabledForBuiltIns()
+    {
+        var activePreset = new RimTalk.Prompt.PromptPreset("LegacyPreset");
+        // Legacy config has "Pawn Profiles" instead of "Context", and user disabled some items in Advanced Mode
+        var contextEntry = new RimTalk.Prompt.PromptEntry("Pawn Profiles", "{{context}}") { Enabled = false };
+        var jsonEntry = new RimTalk.Prompt.PromptEntry("JSON Format", "Output JSON") { Enabled = false };
+
+        activePreset.Entries.Add(contextEntry);
+        activePreset.Entries.Add(jsonEntry);
+
+        var simplePreset = RimTalk.Prompt.PromptPresetAssembler.BuildSimpleModePreset(activePreset, "Simple instruction");
+
+        // "Pawn Profiles" must be treated as built-in and preserved
+        var resolvedContext = simplePreset.Entries.FirstOrDefault(e => e.Name == "Pawn Profiles");
+        Assert.NotNull(resolvedContext);
+        // Even if disabled in Advanced mode, built-ins must be forced Enabled = true in Simple mode
+        Assert.True(resolvedContext.Enabled);
+
+        var resolvedJson = simplePreset.Entries.FirstOrDefault(e => e.Name == "JSON Format");
+        Assert.NotNull(resolvedJson);
+        Assert.True(resolvedJson.Enabled);
+    }
+
+    [Fact]
+    public void BuildSimpleModePreset_WhenAdvancedPresetIsEmpty_InjectsAllFiveEssentialFallbacks()
+    {
+        // An empty preset in Advanced mode must not crash or fail Simple mode
+        var emptyPreset = new RimTalk.Prompt.PromptPreset("EmptyPreset");
+        string fallbackJson = "Output JSON.\nRequired keys: 'name', 'text'.";
+
+        var simplePreset = RimTalk.Prompt.PromptPresetAssembler.BuildSimpleModePreset(
+            emptyPreset,
+            "Simple instruction",
+            fallbackInstruction: "Fallback instruction",
+            fallbackJsonInstruction: fallbackJson);
+
+        // All 5 essential entries must be present and enabled
+        Assert.Contains(simplePreset.Entries, e => e.Name == "Base Instruction" && e.Enabled && e.Content == "Simple instruction");
+        Assert.Contains(simplePreset.Entries, e => e.Name == "JSON Format" && e.Enabled && e.Content == fallbackJson);
+        Assert.Contains(simplePreset.Entries, e => e.Name == "Context" && e.Enabled && e.Content == "{{context}}");
+        Assert.Contains(simplePreset.Entries, e => e.Name == "Chat History" && e.Enabled && e.IsMainChatHistory && e.Content == "{{chat.history}}");
+        Assert.Contains(simplePreset.Entries, e => e.Name == "Dialogue Prompt" && e.Enabled && e.Content == "{{prompt}}");
+
+        // Order check: Base Instruction -> JSON Format -> Context -> Chat History -> Dialogue Prompt
+        int baseIdx = simplePreset.Entries.FindIndex(e => e.Name == "Base Instruction");
+        int jsonIdx = simplePreset.Entries.FindIndex(e => e.Name == "JSON Format");
+        int ctxIdx = simplePreset.Entries.FindIndex(e => e.Name == "Context");
+        int histIdx = simplePreset.Entries.FindIndex(e => e.Name == "Chat History");
+        int promptIdx = simplePreset.Entries.FindIndex(e => e.Name == "Dialogue Prompt");
+
+        Assert.True(baseIdx < jsonIdx);
+        Assert.True(jsonIdx < ctxIdx);
+        Assert.True(ctxIdx < histIdx);
+        Assert.True(histIdx < promptIdx);
+    }
+}

@@ -392,7 +392,8 @@ public class PromptManager : IExposable
             effectivePreset = PromptPresetAssembler.BuildSimpleModePreset(
                 preset,
                 settings.SimpleModeInstruction,
-                Constant.DefaultInstruction);
+                Constant.DefaultInstruction,
+                Constant.JsonInstruction + "\n{{ if settings.ApplyMoodAndSocialEffects }}\n" + Constant.SocialInstruction + "\n{{ end }}");
         }
         else
         {
