@@ -236,9 +236,9 @@ public static class SpeechBubbleDrawer
                 float elapsed = bubble.ElapsedRealSec;
                 float remaining = bubble.TotalDurationSec - elapsed;
 
-                bool isSlowFade = bubble.IsDowned || bubble.IsInPain;
-                float fadeInSec = isSlowFade ? 0.65f : 0.20f;
-                float fadeOutSec = isSlowFade ? 1.00f : 0.40f;
+                bool isSlowFade = bubble.IsDowned;
+                float fadeInSec = isSlowFade ? 1.00f : 0.20f;
+                float fadeOutSec = isSlowFade ? 1.60f : 0.40f;
 
                 float fadeAlpha = 1f;
                 if (elapsed < fadeInSec && !bubble.IsAggressive) fadeAlpha = elapsed / fadeInSec;
@@ -327,7 +327,7 @@ public static class SpeechBubbleDrawer
                 int customSize = Mathf.RoundToInt(bubble.IsAnnouncement ? baseFontSize * 1.25f : baseFontSize);
                 Text.fontStyles[(int)targetFont].fontSize = customSize;
 
-                Color textCol = (bubble.IsDowned || bubble.IsInPain)
+                Color textCol = bubble.IsDowned
                     ? (isLight ? new Color(0.42f, 0.44f, 0.47f, fadeAlpha) : new Color(0.72f, 0.74f, 0.77f, fadeAlpha))
                     : bubble.IsAnnouncement ? (isLight ? new Color(0.62f, 0.38f, 0.05f, fadeAlpha) : new Color(1.0f, 0.88f, 0.42f, fadeAlpha))
                     : isLight ? new Color(0f, 0f, 0f, fadeAlpha) : new Color(0.95f, 0.96f, 0.98f, fadeAlpha);
@@ -336,37 +336,7 @@ public static class SpeechBubbleDrawer
                 Rect textRect = bubbleRect.ExpandedBy(0f, 2f);
 
                 string fullText = bubble.WrappedText ?? bubble.Text;
-                string displayText = fullText;
-
-                // Downed typewriter effect: Characters appear continuously like a weak whisper (14 chars/sec)
-                // Invisible trailing characters preserve full layout geometry without jumping
-                if (bubble.IsDowned && !string.IsNullOrEmpty(fullText))
-                {
-                    const float charsPerSec = 14f;
-                    int targetLen = Mathf.Clamp(Mathf.FloorToInt(elapsed * charsPerSec), 0, fullText.Length);
-                    if (targetLen > 0 && targetLen < fullText.Length && char.IsHighSurrogate(fullText[targetLen - 1]))
-                    {
-                        targetLen++;
-                    }
-
-                    if (targetLen < fullText.Length)
-                    {
-                        if (targetLen != bubble.LastTypewriterLength)
-                        {
-                            bubble.LastTypewriterLength = targetLen;
-                            bubble.CachedTypewriterText = targetLen == 0
-                                ? $"<color=#00000000>{fullText}</color>"
-                                : $"{fullText.Substring(0, targetLen)}<color=#00000000>{fullText.Substring(targetLen)}</color>";
-                        }
-                        displayText = bubble.CachedTypewriterText;
-                    }
-                    else
-                    {
-                        displayText = fullText;
-                    }
-                }
-
-                Widgets.Label(textRect, displayText);
+                Widgets.Label(textRect, fullText);
             }
         }
         finally

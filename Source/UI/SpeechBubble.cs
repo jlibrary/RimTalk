@@ -53,18 +53,21 @@ public class SpeechBubble
         
         // The bubble shakes violently only when in acute physical danger (fire, combat, fleeing)
         IsUrgent = !IsDowned && interactionType == InteractionType.None && pawn != null && pawn.IsInCombatOrFire();
-        // Physical pain/illness state: muted gray text & slow fade (only when not in violent combat/fire)
-        IsInPain = !IsDowned && !IsUrgent && interactionType == InteractionType.None && pawn != null && pawn.IsInPainOrSick();
+        IsInPain = false;
 
         var settings = Settings.Get();
 
         float scale = settings?.BubbleScale ?? 1f;
         float durationMultiplier = settings?.BubbleDurationMultiplier ?? 1f;
 
-        // Announcements have extended duration for calm readability
+        // Announcements and downed dialogues have extended duration for calm readability
         if (IsAnnouncement)
         {
             durationMultiplier *= 1.4f;
+        }
+        else if (IsDowned)
+        {
+            durationMultiplier *= 1.25f;
         }
 
         // Precompute dimensions and lock line breaks once to ensure zero text calculation per frame

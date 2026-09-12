@@ -76,8 +76,8 @@ public static class PawnUtil
         if (pawn == null || pawn.Dead || pawn.Downed || pawn.IsPlayer()) return false;
         if (pawn.health?.hediffSet == null) return false;
 
-        if (pawn.health.hediffSet.BleedRateTotal > 0.2f) return true;
-        if (pawn.health.hediffSet.PainTotal >= 0.25f) return true;
+        if (pawn.health.hediffSet.BleedRateTotal > 0.5f) return true;
+        if (pawn.health.hediffSet.PainTotal >= 0.4f) return true;
 
         foreach (var h in pawn.health.hediffSet.hediffs)
         {
