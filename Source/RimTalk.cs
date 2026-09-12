@@ -4,6 +4,7 @@ using RimTalk.Data;
 using RimTalk.Error;
 using RimTalk.Patch;
 using RimTalk.Service;
+using RimTalk.UI;
 using Verse;
 
 namespace RimTalk;
@@ -43,6 +44,7 @@ public class RimTalk : GameComponent
         Cache.GetAll().ToList().ForEach(pawnState => pawnState.IgnoreAllTalkResponses());
         Cache.InitializePlayerPawn();
         UserRequestPool.Clear();
+        SpeechBubbleDrawer.Clear();
 
         if (soft) return;
 
