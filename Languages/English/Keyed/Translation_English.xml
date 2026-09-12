@@ -313,6 +313,12 @@ Crucial Tips:
     <RimTalk.Settings.Player2WebDesc>Enter a free web API key without using the desktop app.</RimTalk.Settings.Player2WebDesc>
     <RimTalk.Settings.Player2AppRunningNotice>Desktop app is connected; web key is not needed.</RimTalk.Settings.Player2AppRunningNotice>
     <RimTalk.Settings.Player2GetWebKey>Get Free API Key</RimTalk.Settings.Player2GetWebKey>
+    <RimTalk.Settings.Player2AuthWaiting>⏳ Waiting for approval...</RimTalk.Settings.Player2AuthWaiting>
+    <RimTalk.Settings.Player2AuthWaitingNotice>Browser opened. Please approve the request in your Player2 account.</RimTalk.Settings.Player2AuthWaitingNotice>
+    <RimTalk.Settings.Player2AuthSuccess>Player2 API key received and saved!</RimTalk.Settings.Player2AuthSuccess>
+    <RimTalk.Settings.Player2AuthFailed>Failed to obtain Player2 API key: {0}</RimTalk.Settings.Player2AuthFailed>
+    <RimTalk.Settings.Player2AuthReopen>Re-open approval page</RimTalk.Settings.Player2AuthReopen>
+    <RimTalk.Settings.Player2AuthCancel>Cancel authorization</RimTalk.Settings.Player2AuthCancel>
     <RimTalk.Settings.GoogleApiKeyLabel>Google AI API Key:</RimTalk.Settings.GoogleApiKeyLabel>
     <RimTalk.Settings.GoogleApiKeyDesc>Uses the free gemma-4-31b model. For other models or providers, use Advanced Settings.</RimTalk.Settings.GoogleApiKeyDesc>
     <RimTalk.Settings.GetFreeApiKeyButton>Get a Free API Key</RimTalk.Settings.GetFreeApiKeyButton>

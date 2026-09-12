@@ -288,6 +288,12 @@
     <RimTalk.Settings.Player2WebTitle>Ключ веб-API Player2</RimTalk.Settings.Player2WebTitle>
     <RimTalk.Settings.Player2WebDesc>Используйте бесплатный веб-ключ без установки приложения.</RimTalk.Settings.Player2WebDesc>
     <RimTalk.Settings.Player2GetWebKey>Получить бесплатный ключ</RimTalk.Settings.Player2GetWebKey>
+    <RimTalk.Settings.Player2AuthWaiting>⏳ Ожидание подтверждения...</RimTalk.Settings.Player2AuthWaiting>
+    <RimTalk.Settings.Player2AuthWaitingNotice>Браузер открыт. Пожалуйста, подтвердите запрос в аккаунте Player2.</RimTalk.Settings.Player2AuthWaitingNotice>
+    <RimTalk.Settings.Player2AuthSuccess>Ключ API Player2 успешно получен и сохранен!</RimTalk.Settings.Player2AuthSuccess>
+    <RimTalk.Settings.Player2AuthFailed>Не удалось получить ключ API Player2: {0}</RimTalk.Settings.Player2AuthFailed>
+    <RimTalk.Settings.Player2AuthReopen>Открыть страницу подтверждения снова</RimTalk.Settings.Player2AuthReopen>
+    <RimTalk.Settings.Player2AuthCancel>Отменить авторизацию</RimTalk.Settings.Player2AuthCancel>
     <RimTalk.Settings.GoogleApiKeyLabel>Ключ API Google AI:</RimTalk.Settings.GoogleApiKeyLabel>
     <RimTalk.Settings.GoogleApiKeyDesc>Использует бесплатную модель gemma-4-31b. Для других моделей или провайдеров используйте расширенные настройки.</RimTalk.Settings.GoogleApiKeyDesc>
     <RimTalk.Settings.GetFreeApiKeyButton>Получить бесплатный ключ API</RimTalk.Settings.GetFreeApiKeyButton>

@@ -257,9 +257,36 @@ public partial class Settings
             // Right Bottom Button
             Rect rightBtnRect = new Rect(rightInner.x, rightCard.yMax - padding - btnHeight, rightInner.width, btnHeight);
             Text.Font = GameFont.Small;
-            if (Widgets.ButtonText(rightBtnRect, "RimTalk.Settings.Player2GetWebKey".Translate()))
+
+            bool isAuthenticating = Player2AuthService.IsAuthenticating;
+            string btnLabel = isAuthenticating
+                ? "RimTalk.Settings.Player2AuthWaiting".Translate()
+                : "RimTalk.Settings.Player2GetWebKey".Translate();
+
+            if (Widgets.ButtonText(rightBtnRect, btnLabel))
             {
-                Application.OpenURL("https://gerikuylerk.com/RimTalk");
+                if (isAuthenticating)
+                {
+                    List<FloatMenuOption> authOptions =
+                    [
+                        new("RimTalk.Settings.Player2AuthReopen".Translate(), () =>
+                        {
+                            if (!string.IsNullOrEmpty(Player2AuthService.ApprovalUrl))
+                            {
+                                Application.OpenURL(Player2AuthService.ApprovalUrl);
+                            }
+                        }),
+                        new("RimTalk.Settings.Player2AuthCancel".Translate(), () =>
+                        {
+                            Player2AuthService.Cancel();
+                        })
+                    ];
+                    Find.WindowStack.Add(new FloatMenu(authOptions));
+                }
+                else
+                {
+                    Player2AuthService.StartAuth();
+                }
             }
         }
     }

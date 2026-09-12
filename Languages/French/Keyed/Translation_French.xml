@@ -289,6 +289,12 @@ Conseils Cruciaux :
     <RimTalk.Settings.Player2WebTitle>Clé API Web Player2</RimTalk.Settings.Player2WebTitle>
     <RimTalk.Settings.Player2WebDesc>Utilisez une clé API Web gratuite sans installer l'application de bureau.</RimTalk.Settings.Player2WebDesc>
     <RimTalk.Settings.Player2GetWebKey>Obtenir une clé API gratuite</RimTalk.Settings.Player2GetWebKey>
+    <RimTalk.Settings.Player2AuthWaiting>⏳ En attente d'approbation...</RimTalk.Settings.Player2AuthWaiting>
+    <RimTalk.Settings.Player2AuthWaitingNotice>Navigateur ouvert. Veuillez approuver la demande dans votre compte Player2.</RimTalk.Settings.Player2AuthWaitingNotice>
+    <RimTalk.Settings.Player2AuthSuccess>Clé API Player2 reçue et enregistrée avec succès !</RimTalk.Settings.Player2AuthSuccess>
+    <RimTalk.Settings.Player2AuthFailed>Échec de l'obtention de la clé API Player2 : {0}</RimTalk.Settings.Player2AuthFailed>
+    <RimTalk.Settings.Player2AuthReopen>Rouvrir la page d'approbation</RimTalk.Settings.Player2AuthReopen>
+    <RimTalk.Settings.Player2AuthCancel>Annuler l'autorisation</RimTalk.Settings.Player2AuthCancel>
     <RimTalk.Settings.GoogleApiKeyLabel>Clé API Google AI :</RimTalk.Settings.GoogleApiKeyLabel>
     <RimTalk.Settings.GoogleApiKeyDesc>Utilise le modèle gratuit gemma-4-31b. Pour d'autres modèles ou fournisseurs, utilisez les Paramètres Avancés.</RimTalk.Settings.GoogleApiKeyDesc>
     <RimTalk.Settings.GetFreeApiKeyButton>Obtenir une clé API gratuite</RimTalk.Settings.GetFreeApiKeyButton>

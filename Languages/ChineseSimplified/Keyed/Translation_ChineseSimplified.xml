@@ -285,6 +285,12 @@ Scriban 魔法 (动态内容)
     <RimTalk.Settings.Player2WebTitle>Player2 网页 API 密钥</RimTalk.Settings.Player2WebTitle>
     <RimTalk.Settings.Player2WebDesc>无需桌面应用，直接在网页获取免费 API 密钥使用。</RimTalk.Settings.Player2WebDesc>
     <RimTalk.Settings.Player2GetWebKey>获取免费 API 密钥</RimTalk.Settings.Player2GetWebKey>
+    <RimTalk.Settings.Player2AuthWaiting>⏳ 等待授权中...</RimTalk.Settings.Player2AuthWaiting>
+    <RimTalk.Settings.Player2AuthWaitingNotice>浏览器已打开，请登录 Player2 并完成授权。</RimTalk.Settings.Player2AuthWaitingNotice>
+    <RimTalk.Settings.Player2AuthSuccess>Player2 API 密钥获取并保存成功！</RimTalk.Settings.Player2AuthSuccess>
+    <RimTalk.Settings.Player2AuthFailed>获取 Player2 API 密钥失败：{0}</RimTalk.Settings.Player2AuthFailed>
+    <RimTalk.Settings.Player2AuthReopen>重新打开授权页面</RimTalk.Settings.Player2AuthReopen>
+    <RimTalk.Settings.Player2AuthCancel>取消授权</RimTalk.Settings.Player2AuthCancel>
     <RimTalk.Settings.GoogleApiKeyLabel>Google AI API 密钥：</RimTalk.Settings.GoogleApiKeyLabel>
     <RimTalk.Settings.GoogleApiKeyDesc>使用免费的 gemma-4-31b 模型。如需其他模型或提供商，请使用高级设置。</RimTalk.Settings.GoogleApiKeyDesc>
     <RimTalk.Settings.GetFreeApiKeyButton>获取免费 API 密钥</RimTalk.Settings.GetFreeApiKeyButton>

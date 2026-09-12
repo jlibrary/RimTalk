@@ -289,6 +289,12 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Settings.Player2WebTitle>Player2 Web APIキー</RimTalk.Settings.Player2WebTitle>
     <RimTalk.Settings.Player2WebDesc>デスクトップアプリを使わず、Webで無料キーを取得して利用します。</RimTalk.Settings.Player2WebDesc>
     <RimTalk.Settings.Player2GetWebKey>無料APIキーを取得</RimTalk.Settings.Player2GetWebKey>
+    <RimTalk.Settings.Player2AuthWaiting>⏳ 承認待ち...</RimTalk.Settings.Player2AuthWaiting>
+    <RimTalk.Settings.Player2AuthWaitingNotice>ブラウザが開きました。Player2にログインして承認を完了してください。</RimTalk.Settings.Player2AuthWaitingNotice>
+    <RimTalk.Settings.Player2AuthSuccess>Player2 APIキーの取得と保存に成功しました！</RimTalk.Settings.Player2AuthSuccess>
+    <RimTalk.Settings.Player2AuthFailed>Player2 APIキーの取得に失敗しました：{0}</RimTalk.Settings.Player2AuthFailed>
+    <RimTalk.Settings.Player2AuthReopen>承認ページを再度開く</RimTalk.Settings.Player2AuthReopen>
+    <RimTalk.Settings.Player2AuthCancel>認証をキャンセル</RimTalk.Settings.Player2AuthCancel>
     <RimTalk.Settings.GoogleApiKeyLabel>Google AI APIキー：</RimTalk.Settings.GoogleApiKeyLabel>
     <RimTalk.Settings.GoogleApiKeyDesc>無料のgemma-4-31bモデルを使用します。他のモデルやプロバイダーを使用する場合は、詳細設定を使用してください。</RimTalk.Settings.GoogleApiKeyDesc>
     <RimTalk.Settings.GetFreeApiKeyButton>無料APIキーを取得</RimTalk.Settings.GetFreeApiKeyButton>
