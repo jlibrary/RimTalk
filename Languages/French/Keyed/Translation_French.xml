@@ -513,6 +513,14 @@ Conseils Cruciaux :
     <RimTalk.Overlay.FontSize>Taille de la police</RimTalk.Overlay.FontSize>
     <RimTalk.Overlay.TurnOff>Désactiver</RimTalk.Overlay.TurnOff>
     <RimTalk.Overlay.TurnOffTooltip>Désactive la superposition.\nVous pouvez la basculer en cliquant sur l'icône en bas à droite ou sur l'onglet selon vos paramètres.</RimTalk.Overlay.TurnOffTooltip>
+    <RimTalk.Overlay.StatusGenerating>Génération de conversation...</RimTalk.Overlay.StatusGenerating>
+    <RimTalk.Overlay.StatusPendingTalks>Conversations en attente d'affichage</RimTalk.Overlay.StatusPendingTalks>
+    <RimTalk.Overlay.StatusIndicator>Indicateur d'état IA</RimTalk.Overlay.StatusIndicator>
+    <RimTalk.Overlay.EnableRimTalkTooltip>Activer ou désactiver globalement la génération de dialogue.</RimTalk.Overlay.EnableRimTalkTooltip>
+    <RimTalk.Overlay.DrawAboveUITooltip>Afficher la superposition au-dessus des éléments d'interface.</RimTalk.Overlay.DrawAboveUITooltip>
+    <RimTalk.Overlay.ShowGroupColorsTooltip>Afficher des barres de couleur à gauche pour regrouper les dialogues.</RimTalk.Overlay.ShowGroupColorsTooltip>
+    <RimTalk.Overlay.AlignNameColumnTooltip>Aligner le texte du dialogue sur le nom de personnage le plus long.</RimTalk.Overlay.AlignNameColumnTooltip>
+    <RimTalk.Overlay.StatusIndicatorTooltip>Afficher 3 voyants LED en bas à gauche indiquant l'état de l'IA et la file d'attente.</RimTalk.Overlay.StatusIndicatorTooltip>
 
     <!-- FloatMenuMakerMapGetOptionsPatch.cs -->
     <RimTalk.FloatMenu.ChatWith>Discuter avec {0}</RimTalk.FloatMenu.ChatWith>

@@ -539,6 +539,14 @@ Crucial Tips:
     <RimTalk.Overlay.FontSize>Font Size</RimTalk.Overlay.FontSize>
     <RimTalk.Overlay.TurnOff>Turn Off</RimTalk.Overlay.TurnOff>
     <RimTalk.Overlay.TurnOffTooltip>Turn off overlay.\nYou can toggle it by clicking the bottom right icon or tab depending on setting.</RimTalk.Overlay.TurnOffTooltip>
+    <RimTalk.Overlay.StatusGenerating>Generating conversation...</RimTalk.Overlay.StatusGenerating>
+    <RimTalk.Overlay.StatusPendingTalks>Conversations queued for display</RimTalk.Overlay.StatusPendingTalks>
+    <RimTalk.Overlay.StatusIndicator>AI Status Indicator</RimTalk.Overlay.StatusIndicator>
+    <RimTalk.Overlay.EnableRimTalkTooltip>Globally toggle RimTalk dialogue generation.</RimTalk.Overlay.EnableRimTalkTooltip>
+    <RimTalk.Overlay.DrawAboveUITooltip>Render the overlay window on top of game UI elements.</RimTalk.Overlay.DrawAboveUITooltip>
+    <RimTalk.Overlay.ShowGroupColorsTooltip>Show colored accent bars on the left to group related dialogues.</RimTalk.Overlay.ShowGroupColorsTooltip>
+    <RimTalk.Overlay.AlignNameColumnTooltip>Align dialogue text across all rows to match the widest speaker name.</RimTalk.Overlay.AlignNameColumnTooltip>
+    <RimTalk.Overlay.StatusIndicatorTooltip>Show a 3-slot LED at the bottom-left indicating AI generation and queued dialogues.</RimTalk.Overlay.StatusIndicatorTooltip>
 
     <!-- FloatMenuMakerMapGetOptionsPatch.cs -->
     <RimTalk.FloatMenu.ChatWith>Chat with {0}</RimTalk.FloatMenu.ChatWith>

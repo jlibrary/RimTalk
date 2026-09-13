@@ -512,6 +512,14 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Overlay.FontSize>フォントサイズ</RimTalk.Overlay.FontSize>
     <RimTalk.Overlay.TurnOff>非表示</RimTalk.Overlay.TurnOff>
     <RimTalk.Overlay.TurnOffTooltip>オーバーレイを非表示にします。\n設定に応じて右下のアイコンまたはタブをクリックして切り替えることができます。</RimTalk.Overlay.TurnOffTooltip>
+    <RimTalk.Overlay.StatusGenerating>会話生成中...</RimTalk.Overlay.StatusGenerating>
+    <RimTalk.Overlay.StatusPendingTalks>表示待ちの会話があります</RimTalk.Overlay.StatusPendingTalks>
+    <RimTalk.Overlay.StatusIndicator>AI 状態インジケーター</RimTalk.Overlay.StatusIndicator>
+    <RimTalk.Overlay.EnableRimTalkTooltip>RimTalk による会話生成を全体で有効/無効にします。</RimTalk.Overlay.EnableRimTalkTooltip>
+    <RimTalk.Overlay.DrawAboveUITooltip>オーバーレイをゲーム UI の上に表示します。</RimTalk.Overlay.DrawAboveUITooltip>
+    <RimTalk.Overlay.ShowGroupColorsTooltip>同じ会話グループの行の左側にカラーバーを表示します。</RimTalk.Overlay.ShowGroupColorsTooltip>
+    <RimTalk.Overlay.AlignNameColumnTooltip>最も長い名前に合わせて会話の開始位置を揃えます。</RimTalk.Overlay.AlignNameColumnTooltip>
+    <RimTalk.Overlay.StatusIndicatorTooltip>左下に AI 生成中および待機列を示す 3 スロット LED を表示します。</RimTalk.Overlay.StatusIndicatorTooltip>
 
     <!-- FloatMenuMakerMapGetOptionsPatch.cs -->
     <RimTalk.FloatMenu.ChatWith> {0} とチャット</RimTalk.FloatMenu.ChatWith>

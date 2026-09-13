@@ -538,6 +538,14 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.Overlay.FontSize>글꼴 크기</RimTalk.Overlay.FontSize>
     <RimTalk.Overlay.TurnOff>끄기</RimTalk.Overlay.TurnOff>
     <RimTalk.Overlay.TurnOffTooltip>오버레이를 끕니다.\n설정에 따라 우측 하단 아이콘 또는 탭을 클릭하여 다시 켤 수 있습니다.</RimTalk.Overlay.TurnOffTooltip>
+    <RimTalk.Overlay.StatusGenerating>대화 생성 중...</RimTalk.Overlay.StatusGenerating>
+    <RimTalk.Overlay.StatusPendingTalks>대기 중인 대화가 있습니다</RimTalk.Overlay.StatusPendingTalks>
+    <RimTalk.Overlay.StatusIndicator>AI 상태 표시기</RimTalk.Overlay.StatusIndicator>
+    <RimTalk.Overlay.EnableRimTalkTooltip>RimTalk 모드의 대화 생성을 켜거나 끕니다.</RimTalk.Overlay.EnableRimTalkTooltip>
+    <RimTalk.Overlay.DrawAboveUITooltip>오버레이 창을 다른 UI 위에 표시합니다.</RimTalk.Overlay.DrawAboveUITooltip>
+    <RimTalk.Overlay.ShowGroupColorsTooltip>같은 대화 그룹의 문장 좌측에 색상 바를 표시합니다.</RimTalk.Overlay.ShowGroupColorsTooltip>
+    <RimTalk.Overlay.AlignNameColumnTooltip>대화 시작 위치를 가장 긴 이름 길이에 맞춰 정렬합니다.</RimTalk.Overlay.AlignNameColumnTooltip>
+    <RimTalk.Overlay.StatusIndicatorTooltip>오버레이 좌측 하단에 AI 생성 중 및 대기열을 나타내는 3칸 LED를 표시합니다.</RimTalk.Overlay.StatusIndicatorTooltip>
 
     <!-- FloatMenuMakerMapGetOptionsPatch.cs -->
     <RimTalk.FloatMenu.ChatWith>{0}와 대화하기</RimTalk.FloatMenu.ChatWith>
