@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 using RimTalk.Data;
+using RimTalk.Service;
 using RimTalk.Source.Data;
 using RimWorld;
 using UnityEngine;
@@ -405,7 +406,7 @@ public class Overlay : MapComponent
         _gearIconScreenRect.Set(currentOverlayRect.xMax - iconSize - 5f, currentOverlayRect.y + 2f, iconSize, iconSize);
 
         float dropdownY = _gearIconScreenRect.yMax;
-        
+
         // Check if the dropdown would go off the bottom of the screen
         if (dropdownY + DropdownHeight > Verse.UI.screenHeight)
         {
@@ -415,8 +416,8 @@ public class Overlay : MapComponent
 
         _settingsDropdownRect.Set(
             _gearIconScreenRect.x - DropdownWidth + _gearIconScreenRect.width,
-            dropdownY, 
-            DropdownWidth, 
+            dropdownY,
+            DropdownWidth,
             DropdownHeight
         );
 
@@ -427,7 +428,7 @@ public class Overlay : MapComponent
         HandleInput(ref currentOverlayRect);
 
         bool isMouseOver = Mouse.IsOver(currentOverlayRect);
-        
+
         GUI.BeginGroup(currentOverlayRect);
         var inRect = new Rect(Vector2.zero, currentOverlayRect.size);
 
@@ -449,10 +450,33 @@ public class Overlay : MapComponent
         }
         GUI.EndGroup();
 
+        DrawStatusIndicator(currentOverlayRect);
+
         if (_showSettingsDropdown)
         {
             DrawSettingsDropdown();
         }
+    }
+
+    private void DrawStatusIndicator(Rect overlayRect)
+    {
+        if (Event.current.type is not EventType.Repaint) return;
+
+        if (AIService.IsBusy())
+        {
+            DrawStatusBar(overlayRect, new Color(0.4f, 0.6f, 0.8f, CalcStatusBarAlpha(4f)));
+            return;
+        }
+
+        if (TalkService.HasPendingTalks)
+            DrawStatusBar(overlayRect, new Color(0.4f, 0.8f, 0.6f, CalcStatusBarAlpha(1f)));
+    }
+
+    private static float CalcStatusBarAlpha(float pulseRate) => 0.3f + 0.35f * (1f + Mathf.Sin(Time.realtimeSinceStartup * pulseRate));
+
+    private static void DrawStatusBar(Rect overlayRect, Color color)
+    {
+        Widgets.DrawBoxSolid(new Rect(overlayRect.x, overlayRect.yMax - 2f, overlayRect.width, 2f), color);
     }
 
     private void HandleInput(ref Rect windowRect)
@@ -601,9 +625,9 @@ public class Overlay : MapComponent
                 settings.IsEnabled = value;
                 settings.Write();
             });
-        
+
             listing.Gap(6);
-        
+
             DrawSettingsCheckbox(listing, "RimTalk.Overlay.DrawAboveUI".Translate(), settings.OverlayDrawAboveUI, value =>
             {
                 settings.OverlayDrawAboveUI = value;

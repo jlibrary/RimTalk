@@ -22,6 +22,12 @@ public static class TalkService
     private static readonly List<TalkType> PriorityTalkTypes = [TalkType.Urgent, TalkType.User, TalkType.Announcement];
 
     /// <summary>
+    /// Whether any pawn has talk responses waiting to be displayed. Snapshot taken by
+    /// <see cref="DisplayTalk"/> on its regular tick schedule so UI can read it cheaply.
+    /// </summary>
+    public static bool HasPendingTalks { get; private set; }
+
+    /// <summary>
     /// Initiates the process of generating a conversation. It performs initial checks and then
     /// starts a background task to handle the actual AI communication.
     /// </summary>
@@ -212,12 +218,15 @@ public static class TalkService
             Cache.Get(pawn)?.DrainIncomingTalkResponses();
         }
 
+        HasPendingTalks = false;
+
         foreach (Pawn pawn in Cache.Keys)
         {
             PawnState pawnState = Cache.Get(pawn);
             if (pawnState == null) continue;
 
             if (pawnState.TalkResponses.Empty()) continue;
+            HasPendingTalks = true;
 
             if (pawn.IsInDanger())
                 pawnState.IgnoreAllTalkResponses(PriorityTalkTypes);
