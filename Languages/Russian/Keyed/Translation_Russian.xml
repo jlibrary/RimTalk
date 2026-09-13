@@ -465,8 +465,9 @@
     <RimTalk.DebugWindow.StatusProcessing>Обработка</RimTalk.DebugWindow.StatusProcessing>
     <RimTalk.DebugWindow.StatusIdle>Ожидание</RimTalk.DebugWindow.StatusIdle>
     <RimTalk.DebugWindow.ModSettings>Настройки мода</RimTalk.DebugWindow.ModSettings>
-    <RimTalk.DebugWindow.Export>Экспорт</RimTalk.DebugWindow.Export>
-    <RimTalk.DebugWindow.ResetLogs>Сброс лога</RimTalk.DebugWindow.ResetLogs>
+    <RimTalk.DebugWindow.Export>Сохранить</RimTalk.DebugWindow.Export>
+    <RimTalk.DebugWindow.ExportTooltip>Сохраняет текущие диалоги в виде CSV-файла на рабочем столе.</RimTalk.DebugWindow.ExportTooltip>
+    <RimTalk.DebugWindow.ResetLogs>Сбросить</RimTalk.DebugWindow.ResetLogs>
     <RimTalk.DebugWindow.EnableRimTalk>Включить RimTalk</RimTalk.DebugWindow.EnableRimTalk>
     <RimTalk.DebugWindow.AIStatus>Статус ИИ:</RimTalk.DebugWindow.AIStatus>
     <RimTalk.DebugWindow.TotalCalls>Всего вызовов:</RimTalk.DebugWindow.TotalCalls>

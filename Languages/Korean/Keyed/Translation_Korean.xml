@@ -491,15 +491,16 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.DebugWindow.StatusProcessing>처리 중</RimTalk.DebugWindow.StatusProcessing>
     <RimTalk.DebugWindow.StatusIdle>대기 중</RimTalk.DebugWindow.StatusIdle>
     <RimTalk.DebugWindow.ModSettings>모드 설정</RimTalk.DebugWindow.ModSettings>
-    <RimTalk.DebugWindow.Export>내보내기</RimTalk.DebugWindow.Export>
-    <RimTalk.DebugWindow.ResetLogs>로그 초기화</RimTalk.DebugWindow.ResetLogs>
+    <RimTalk.DebugWindow.Export>대화 저장</RimTalk.DebugWindow.Export>
+    <RimTalk.DebugWindow.ExportTooltip>현재 대화 기록을 바탕화면에 CSV 파일로 저장합니다.</RimTalk.DebugWindow.ExportTooltip>
+    <RimTalk.DebugWindow.ResetLogs>대화 초기화</RimTalk.DebugWindow.ResetLogs>
     <RimTalk.DebugWindow.EnableRimTalk>RimTalk 활성화</RimTalk.DebugWindow.EnableRimTalk>
     <RimTalk.DebugWindow.AIStatus>AI 상태:</RimTalk.DebugWindow.AIStatus>
     <RimTalk.DebugWindow.TotalCalls>총 호출 수:</RimTalk.DebugWindow.TotalCalls>
     <RimTalk.DebugWindow.TotalTokens>총 토큰 수:</RimTalk.DebugWindow.TotalTokens>
-    <RimTalk.DebugWindow.AvgCallsPerMin>분당 평균 호출 수:</RimTalk.DebugWindow.AvgCallsPerMin>
-    <RimTalk.DebugWindow.AvgTokensPerMin>분당 평균 토큰 수:</RimTalk.DebugWindow.AvgTokensPerMin>
-    <RimTalk.DebugWindow.AvgTokensPerCall>호출당 평균 토큰 수:</RimTalk.DebugWindow.AvgTokensPerCall>
+    <RimTalk.DebugWindow.AvgCallsPerMin>분당 호출:</RimTalk.DebugWindow.AvgCallsPerMin>
+    <RimTalk.DebugWindow.AvgTokensPerMin>분당 토큰:</RimTalk.DebugWindow.AvgTokensPerMin>
+    <RimTalk.DebugWindow.AvgTokensPerCall>호출당 토큰:</RimTalk.DebugWindow.AvgTokensPerCall>
     <RimTalk.DebugWindow.TokensPerSecond>토큰/초</RimTalk.DebugWindow.TokensPerSecond>
     <RimTalk.DebugWindow.SixtySecondsAgo>60초 전</RimTalk.DebugWindow.SixtySecondsAgo>
     <RimTalk.DebugWindow.Now>현재</RimTalk.DebugWindow.Now>

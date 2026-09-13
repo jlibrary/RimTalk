@@ -492,8 +492,9 @@ Crucial Tips:
     <RimTalk.DebugWindow.StatusProcessing>Processing</RimTalk.DebugWindow.StatusProcessing>
     <RimTalk.DebugWindow.StatusIdle>Idle</RimTalk.DebugWindow.StatusIdle>
     <RimTalk.DebugWindow.ModSettings>Mod Settings</RimTalk.DebugWindow.ModSettings>
-    <RimTalk.DebugWindow.Export>Export</RimTalk.DebugWindow.Export>
-    <RimTalk.DebugWindow.ResetLogs>Reset Logs</RimTalk.DebugWindow.ResetLogs>
+    <RimTalk.DebugWindow.Export>Save Dialogue</RimTalk.DebugWindow.Export>
+    <RimTalk.DebugWindow.ExportTooltip>Saves the current conversation dialogue as a CSV file on your desktop.</RimTalk.DebugWindow.ExportTooltip>
+    <RimTalk.DebugWindow.ResetLogs>Reset Dialogue</RimTalk.DebugWindow.ResetLogs>
     <RimTalk.DebugWindow.EnableRimTalk>Enable RimTalk</RimTalk.DebugWindow.EnableRimTalk>
     <RimTalk.DebugWindow.AIStatus>AI Status:</RimTalk.DebugWindow.AIStatus>
     <RimTalk.DebugWindow.TotalCalls>Total Calls:</RimTalk.DebugWindow.TotalCalls>

@@ -466,8 +466,9 @@ Scriban 魔法 (動態內容)
     <RimTalk.DebugWindow.StatusProcessing>處理中</RimTalk.DebugWindow.StatusProcessing>
     <RimTalk.DebugWindow.StatusIdle>閒置</RimTalk.DebugWindow.StatusIdle>
     <RimTalk.DebugWindow.ModSettings>Mod設定</RimTalk.DebugWindow.ModSettings>
-    <RimTalk.DebugWindow.Export>匯出</RimTalk.DebugWindow.Export>
-    <RimTalk.DebugWindow.ResetLogs>重置日誌</RimTalk.DebugWindow.ResetLogs>
+    <RimTalk.DebugWindow.Export>儲存對話</RimTalk.DebugWindow.Export>
+    <RimTalk.DebugWindow.ExportTooltip>將目前對話記錄以 CSV 檔案格式儲存到桌面。</RimTalk.DebugWindow.ExportTooltip>
+    <RimTalk.DebugWindow.ResetLogs>重置對話</RimTalk.DebugWindow.ResetLogs>
     <RimTalk.DebugWindow.EnableRimTalk>啟用 RimTalk</RimTalk.DebugWindow.EnableRimTalk>
     <RimTalk.DebugWindow.AIStatus>AI 狀態：</RimTalk.DebugWindow.AIStatus>
     <RimTalk.DebugWindow.TotalCalls>總呼叫次數：</RimTalk.DebugWindow.TotalCalls>

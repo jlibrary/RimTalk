@@ -465,15 +465,16 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.DebugWindow.StatusProcessing>処理中</RimTalk.DebugWindow.StatusProcessing>
     <RimTalk.DebugWindow.StatusIdle>待機中</RimTalk.DebugWindow.StatusIdle>
     <RimTalk.DebugWindow.ModSettings>MOD設定</RimTalk.DebugWindow.ModSettings>
-    <RimTalk.DebugWindow.Export>エクスポート</RimTalk.DebugWindow.Export>
-    <RimTalk.DebugWindow.ResetLogs>ログ初期化</RimTalk.DebugWindow.ResetLogs>
+    <RimTalk.DebugWindow.Export>会話保存</RimTalk.DebugWindow.Export>
+    <RimTalk.DebugWindow.ExportTooltip>現在の会話ログをデスクトップにCSVファイルとして保存します。</RimTalk.DebugWindow.ExportTooltip>
+    <RimTalk.DebugWindow.ResetLogs>会話初期化</RimTalk.DebugWindow.ResetLogs>
     <RimTalk.DebugWindow.EnableRimTalk>RimTalkを有効にする</RimTalk.DebugWindow.EnableRimTalk>
     <RimTalk.DebugWindow.AIStatus>AIステータス：</RimTalk.DebugWindow.AIStatus>
     <RimTalk.DebugWindow.TotalCalls>総呼び出し回数：</RimTalk.DebugWindow.TotalCalls>
     <RimTalk.DebugWindow.TotalTokens>総トークン数：</RimTalk.DebugWindow.TotalTokens>
-    <RimTalk.DebugWindow.AvgCallsPerMin>平均呼び出し回数/分：</RimTalk.DebugWindow.AvgCallsPerMin>
-    <RimTalk.DebugWindow.AvgTokensPerMin>平均トークン数/分：</RimTalk.DebugWindow.AvgTokensPerMin>
-    <RimTalk.DebugWindow.AvgTokensPerCall>平均トークン数/呼び出し：</RimTalk.DebugWindow.AvgTokensPerCall>
+    <RimTalk.DebugWindow.AvgCallsPerMin>平均呼び出し/分：</RimTalk.DebugWindow.AvgCallsPerMin>
+    <RimTalk.DebugWindow.AvgTokensPerMin>平均トークン/分：</RimTalk.DebugWindow.AvgTokensPerMin>
+    <RimTalk.DebugWindow.AvgTokensPerCall>平均トークン/呼出：</RimTalk.DebugWindow.AvgTokensPerCall>
     <RimTalk.DebugWindow.TokensPerSecond>トークン/秒</RimTalk.DebugWindow.TokensPerSecond>
     <RimTalk.DebugWindow.SixtySecondsAgo>60秒前</RimTalk.DebugWindow.SixtySecondsAgo>
     <RimTalk.DebugWindow.Now>現在</RimTalk.DebugWindow.Now>

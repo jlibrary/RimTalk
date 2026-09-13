@@ -143,7 +143,7 @@ public class Dialog_ApiLog : Window
         // --- Top Bar: Title & Action Buttons ---
         Text.Font = GameFont.Medium;
         Widgets.Label(new Rect(0f, y, 200f, 28f), "RimTalk.DebugWindow.ApiLog".Translate());
-        Text.Font = GameFont.Small;
+        Text.Font = GameFont.Tiny;
 
         float btnW = 88f;
         float btnH = 26f;
