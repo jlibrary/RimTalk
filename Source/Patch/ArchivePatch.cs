@@ -33,41 +33,42 @@ public static class ArchivePatch
         var settings = Settings.Get();
         var enabledTypes = settings.EnabledArchivableTypes;
 
-        // 1. Check against the C# type (e.g., "Verse.Letter_Standard")
+        // Messages are disabled by default unless explicitly enabled
+        if (archivable is Message message)
+        {
+            if (!enabledTypes.TryGetValue("Verse.Message", out var isTypeEnabled) || !isTypeEnabled)
+                return false;
+
+            if (message.def != null && enabledTypes.TryGetValue(message.def.defName, out var isDefEnabled) && !isDefEnabled)
+                return false;
+
+            return true;
+        }
+
+        // Letters and other events are enabled by default unless explicitly disabled
         string typeName = archivable.GetType().FullName;
-        if (enabledTypes.TryGetValue(typeName, out var isTypeEnabled) && !isTypeEnabled)
+        if (enabledTypes.TryGetValue(typeName, out var isEnabled) && !isEnabled)
         {
-            return false; // The C# type itself is disabled, so we stop here.
+            return false;
         }
 
-        // 2. If it's a Letter or Message, also check against its defName
-        string defName = null;
-        if (archivable is Letter letter)
+        if (archivable is Letter letter && letter.def != null)
         {
-            defName = letter.def.defName;
-        }
-        else if (archivable is Message message)
-        {
-            defName = message.def.defName;
-        }
-
-        if (defName != null)
-        {
-            if (enabledTypes.TryGetValue(defName, out var isDefEnabled) && !isDefEnabled)
+            if (enabledTypes.TryGetValue(letter.def.defName, out var isDefEnabled) && !isDefEnabled)
             {
-                return false; // The specific defName is disabled.
+                return false;
             }
         }
-        
-        // If reached this point, it means neither the C# type nor the defName (if applicable) was explicitly disabled.
-        // The archivable should be processed.
+
         return true;
     }
+
 
     private static (string prompt, TalkType talkType) GeneratePrompt(IArchivable archivable)
     {
         var talkType = TalkType.Event;
         string prompt;
+        string targetSuffix = GetTargetSuffix(archivable);
 
         if (archivable is ChoiceLetter { quest: not null } choiceLetter)
         {
@@ -94,17 +95,26 @@ public static class ArchivePatch
             }
             else
             {
-                prompt = $"(Talk about incident)\n[{tip.StripTags()}]";
+                prompt = $"(Talk about incident)\n[{tip.StripTags()}{targetSuffix}]";
             }
         }
         else
         {
             // Other events
-            prompt = $"(Talk about incident)\n[{archivable.ArchivedTooltip.StripTags()}]";
+            prompt = $"(Talk about incident)\n[{archivable.ArchivedTooltip.StripTags()}{targetSuffix}]";
         }
 
         return (prompt, talkType);
     }
+
+    private static string GetTargetSuffix(IArchivable archivable)
+    {
+        var pawn = archivable?.LookTargets?.PrimaryTarget.Thing as Pawn
+            ?? archivable?.LookTargets?.targets?.Select(t => t.Thing as Pawn).FirstOrDefault(p => p != null);
+
+        return pawn != null ? $" (Target: {pawn.LabelShort})" : string.Empty;
+    }
+
 
     private static bool ContainsQuestReference(string label, string tip)
     {
