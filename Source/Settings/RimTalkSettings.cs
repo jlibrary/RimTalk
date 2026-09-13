@@ -122,8 +122,15 @@ public class RimTalkSettings : ModSettings
     public float OverlayOpacity = 0.5f;
     public float OverlayFontSize = 15f;
     public bool OverlayDrawAboveUI = true;
+    public OverlayIndicatorType OverlayIndicatorMode = OverlayIndicatorType.Disabled;
     public Rect OverlayRectDebug = new(200f, 200f, 600f, 450f);
     public Rect OverlayRectNonDebug = new(200f, 200f, 400f, 250f);
+
+    public enum OverlayIndicatorType
+    {
+        BottomLedChase,
+        Disabled
+    }
 
     /// <summary>
     /// Gets the first active and valid API configuration.
@@ -320,6 +327,7 @@ public class RimTalkSettings : ModSettings
         Scribe_Values.Look(ref OverlayOpacity, "overlayOpacity", 0.5f);
         Scribe_Values.Look(ref OverlayFontSize, "overlayFontSize", 15f);
         Scribe_Values.Look(ref OverlayDrawAboveUI, "overlayDrawAboveUI", true);
+        Scribe_Values.Look(ref OverlayIndicatorMode, "overlayIndicatorMode", OverlayIndicatorType.Disabled);
 
         // Scribe Debug Overlay Rect
         Rect defaultDebugRect = new Rect(200f, 200f, 600f, 450f);

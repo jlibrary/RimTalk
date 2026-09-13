@@ -60,11 +60,13 @@ public class Overlay : MapComponent
 
     private List<CachedMessageLine> _cachedMessagesForLog;
     private bool _isCacheDirty = true;
+    private float _statusDotFade;
+    private string _lastStatusTooltipKey;
 
     private const float OptionsBarHeight = 30f;
     private const float ResizeHandleSize = 24f;
     private const float DropdownWidth = 200f;
-    private const float DropdownHeight = 310f;
+    private const float DropdownHeight = 350f;
     private const int MaxMessagesInLog = 10;
     private const float TextPadding = 5f;
     private const float MaxNameColumnFraction = 0.45f;
@@ -283,8 +285,6 @@ public class Overlay : MapComponent
         {
             Text.Font = gameFont;
             Text.fontStyles[(int)gameFont].fontSize = (int)settings.OverlayFontSize;
-            Text.Anchor = TextAnchor.UpperLeft;
-
             float contentWidth = settings.OverlayRectNonDebug.width - 10f;
             float contentHeight = Mathf.Max(1f, settings.OverlayRectNonDebug.height - 10f);
             float maxNameWidth = Mathf.Max(1f, Mathf.Min(
@@ -438,6 +438,8 @@ public class Overlay : MapComponent
 
         DrawMessageLog(contentRect);
 
+        DrawStatusIndicator(inRect);
+
         if (isMouseOver)
         {
             var optionsRect = new Rect(inRect.x, inRect.y, inRect.width, OptionsBarHeight);
@@ -450,33 +452,96 @@ public class Overlay : MapComponent
         }
         GUI.EndGroup();
 
-        DrawStatusIndicator(currentOverlayRect);
-
         if (_showSettingsDropdown)
         {
             DrawSettingsDropdown();
         }
     }
 
-    private void DrawStatusIndicator(Rect overlayRect)
-    {
-        if (Event.current.type is not EventType.Repaint) return;
 
-        if (AIService.IsBusy())
-        {
-            DrawStatusBar(overlayRect, new Color(0.4f, 0.6f, 0.8f, CalcStatusBarAlpha(4f)));
+    private void DrawStatusIndicator(Rect inRect)
+    {
+        var settings = Settings.Get();
+        if (settings.OverlayIndicatorMode == RimTalkSettings.OverlayIndicatorType.Disabled)
             return;
+
+        bool isBusy = AIService.IsBusy();
+        bool hasPending = TalkService.HasPendingTalks;
+        bool isActive = isBusy || hasPending;
+
+        if (Event.current.type is EventType.Repaint)
+        {
+            float targetFade = isActive ? 1f : 0f;
+            _statusDotFade = Mathf.MoveTowards(_statusDotFade, targetFade, Time.unscaledDeltaTime * 6f);
         }
 
-        if (TalkService.HasPendingTalks)
-            DrawStatusBar(overlayRect, new Color(0.4f, 0.8f, 0.6f, CalcStatusBarAlpha(1f)));
-    }
+        const int numSegments = 3;
+        const float segWidth = 8f;
+        const float segHeight = 2.5f;
+        const float segGap = 3f;
+        float startX = inRect.x;
+        float startY = inRect.height - segHeight;
 
-    private static float CalcStatusBarAlpha(float pulseRate) => 0.3f + 0.35f * (1f + Mathf.Sin(Time.realtimeSinceStartup * pulseRate));
+        var hitRect = new Rect(inRect.x, inRect.height - 10f, 36f, 10f);
 
-    private static void DrawStatusBar(Rect overlayRect, Color color)
-    {
-        Widgets.DrawBoxSolid(new Rect(overlayRect.x, overlayRect.yMax - 2f, overlayRect.width, 2f), color);
+        if (isBusy)
+        {
+            _lastStatusTooltipKey = "RimTalk.Overlay.StatusGenerating";
+        }
+        else if (hasPending)
+        {
+            _lastStatusTooltipKey = "RimTalk.Overlay.StatusPendingTalks";
+        }
+
+        if (Event.current.type is EventType.Repaint)
+        {
+            // 1) Always draw 3 dim chassis slots (housing frame)
+            Color slotHousingColor = new Color(1f, 1f, 1f, 0.15f);
+            for (int i = 0; i < numSegments; i++)
+            {
+                Rect segRect = new Rect(startX + i * (segWidth + segGap), startY, segWidth, segHeight);
+                Widgets.DrawBoxSolid(segRect, slotHousingColor);
+            }
+
+            // 2) Draw active glowing lights
+            int pendingCount = TalkService.PendingTalksCount;
+
+            for (int i = 0; i < numSegments; i++)
+            {
+                Rect segRect = new Rect(startX + i * (segWidth + segGap), startY, segWidth, segHeight);
+
+                if (isBusy)
+                {
+                    // Sine chase wave across the 3 slots
+                    float time = Time.realtimeSinceStartup * 4.5f;
+                    float phase = time - i * 1.05f;
+                    float wave = Mathf.Sin(phase);
+                    float segAlpha = Mathf.Clamp01(Mathf.Max(0f, wave)) * _statusDotFade;
+                    if (segAlpha > 0.01f)
+                    {
+                        Widgets.DrawBoxSolid(segRect, new Color(0.35f, 0.70f, 1.0f, segAlpha));
+                    }
+                }
+                else if (hasPending)
+                {
+                    // Fixed 3-slot queue buffer: immediate 1:1 visual on talk consume
+                    if (i < pendingCount)
+                    {
+                        Widgets.DrawBoxSolid(segRect, new Color(0.35f, 0.85f, 0.45f, 0.85f * _statusDotFade));
+                    }
+                }
+            }
+        }
+
+        if (_statusDotFade > 0.1f && !string.IsNullOrEmpty(_lastStatusTooltipKey))
+        {
+            string tipText = _lastStatusTooltipKey.Translate();
+            if (hasPending && TalkService.PendingTalksCount > 0)
+            {
+                tipText += $" ({TalkService.PendingTalksCount})";
+            }
+            TooltipHandler.TipRegion(hitRect, tipText);
+        }
     }
 
     private void HandleInput(ref Rect windowRect)
@@ -595,11 +660,22 @@ public class Overlay : MapComponent
         return clicked;
     }
 
-    private void DrawSettingsCheckbox(Listing_Standard listing, string label, bool initialValue, Action<bool> onValueChanged)
+    private void DrawSettingsCheckbox(Listing_Standard listing, string label, bool initialValue, Action<bool> onValueChanged, string tooltipKey = null)
     {
         Text.Font = GameFont.Tiny;
+        var rowRect = listing.GetRect(24f);
+        if (Mouse.IsOver(rowRect))
+        {
+            Widgets.DrawHighlight(rowRect);
+        }
+
+        if (!string.IsNullOrEmpty(tooltipKey))
+        {
+            TooltipHandler.TipRegion(rowRect, tooltipKey.Translate());
+        }
+
         bool currentValue = initialValue;
-        listing.CheckboxLabeled(label, ref currentValue);
+        Widgets.CheckboxLabeled(rowRect, label, ref currentValue);
         if (currentValue != initialValue)
         {
             onValueChanged(currentValue);
@@ -624,7 +700,7 @@ public class Overlay : MapComponent
             {
                 settings.IsEnabled = value;
                 settings.Write();
-            });
+            }, "RimTalk.Overlay.EnableRimTalkTooltip");
 
             listing.Gap(6);
 
@@ -632,7 +708,7 @@ public class Overlay : MapComponent
             {
                 settings.OverlayDrawAboveUI = value;
                 settings.Write();
-            });
+            }, "RimTalk.Overlay.DrawAboveUITooltip");
 
             listing.Gap(6);
 
@@ -640,7 +716,7 @@ public class Overlay : MapComponent
             {
                 settings.OverlayShowGroupColors = value;
                 settings.Write();
-            });
+            }, "RimTalk.Overlay.ShowGroupColorsTooltip");
 
             listing.Gap(6);
 
@@ -649,9 +725,20 @@ public class Overlay : MapComponent
                 settings.OverlayAlignNameColumn = value;
                 _isCacheDirty = true;
                 settings.Write();
-            });
+            }, "RimTalk.Overlay.AlignNameColumnTooltip");
 
             listing.Gap(6);
+
+            bool indicatorEnabled = settings.OverlayIndicatorMode != RimTalkSettings.OverlayIndicatorType.Disabled;
+            DrawSettingsCheckbox(listing, "RimTalk.Overlay.StatusIndicator".Translate(), indicatorEnabled, value =>
+            {
+                settings.OverlayIndicatorMode = value 
+                    ? RimTalkSettings.OverlayIndicatorType.BottomLedChase 
+                    : RimTalkSettings.OverlayIndicatorType.Disabled;
+                settings.Write();
+            }, "RimTalk.Overlay.StatusIndicatorTooltip");
+
+            listing.Gap(10);
 
             Text.Font = GameFont.Tiny;
             listing.Label("RimTalk.Overlay.Opacity".Translate() + ": " + settings.OverlayOpacity.ToString("P0"));

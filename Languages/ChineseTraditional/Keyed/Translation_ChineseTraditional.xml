@@ -514,6 +514,14 @@ Scriban 魔法 (動態內容)
     <RimTalk.Overlay.FontSize>字體大小</RimTalk.Overlay.FontSize>
     <RimTalk.Overlay.TurnOff>關閉</RimTalk.Overlay.TurnOff>
     <RimTalk.Overlay.TurnOffTooltip>關閉懸浮窗。\n你可以根據設定點擊右下角圖示或底部標籤重新開啟。</RimTalk.Overlay.TurnOffTooltip>
+    <RimTalk.Overlay.StatusGenerating>正在生成對話...</RimTalk.Overlay.StatusGenerating>
+    <RimTalk.Overlay.StatusPendingTalks>等待顯示的對話</RimTalk.Overlay.StatusPendingTalks>
+    <RimTalk.Overlay.StatusIndicator>AI 狀態指示</RimTalk.Overlay.StatusIndicator>
+    <RimTalk.Overlay.EnableRimTalkTooltip>全域開啟或關閉 RimTalk 對話生成。</RimTalk.Overlay.EnableRimTalkTooltip>
+    <RimTalk.Overlay.DrawAboveUITooltip>將懸浮窗繪製在遊戲 UI 之上。</RimTalk.Overlay.DrawAboveUITooltip>
+    <RimTalk.Overlay.ShowGroupColorsTooltip>在左側顯示顏色條以區分同一組對話。</RimTalk.Overlay.ShowGroupColorsTooltip>
+    <RimTalk.Overlay.AlignNameColumnTooltip>按最長名稱寬度對齊所有行對話文字。</RimTalk.Overlay.AlignNameColumnTooltip>
+    <RimTalk.Overlay.StatusIndicatorTooltip>在懸浮窗左下角顯示 3 格 LED，指示 AI 生成與排隊狀態。</RimTalk.Overlay.StatusIndicatorTooltip>
 
     <!-- FloatMenuMakerMapGetOptionsPatch.cs -->
     <RimTalk.FloatMenu.ChatWith>與 {0} 聊天</RimTalk.FloatMenu.ChatWith>
