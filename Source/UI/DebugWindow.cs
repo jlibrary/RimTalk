@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using RimTalk.Data;
 using RimTalk.Service;
@@ -12,6 +13,8 @@ using UnityEngine;
 using Verse;
 using Verse.Sound;
 using Cache = RimTalk.Data.Cache;
+using Logger = RimTalk.Util.Logger;
+using Object = UnityEngine.Object;
 using State = RimTalk.Data.ApiLog.State;
 
 namespace RimTalk.UI;
@@ -140,7 +143,7 @@ public class DebugWindow : Window
         base.PreClose();
         if (_cachedImageTexture != null)
         {
-            UnityEngine.Object.Destroy(_cachedImageTexture);
+            Object.Destroy(_cachedImageTexture);
             _cachedImageTexture = null;
         }
         _cachedImageLogId = Guid.Empty;
@@ -178,12 +181,13 @@ public class DebugWindow : Window
     public override void DoWindowContents(Rect inRect)
     {
         Text.WordWrap = false;
+        Text.Font = GameFont.Tiny;
         try
         {
             HandleGlobalClicks(inRect);
             UpdateData();
 
-            const float bottomSectionHeight = 150f;
+            const float bottomSectionHeight = 60f;
             const float spacing = 10f;
 
             float contentHeight = inRect.height - bottomSectionHeight - spacing;
@@ -198,15 +202,14 @@ public class DebugWindow : Window
             DrawLeftPane(leftPaneRect);
             DrawDetailsPanel(detailsRect);
 
-            // Bottom Section
+            // Bottom Section (Fixed button and stats panels, flexible graph)
+            const float actionsWidth = 234f;
+            const float statsWidth = 340f;
             var bottomRect = new Rect(inRect.x, leftPaneRect.yMax + spacing, inRect.width, bottomSectionHeight);
-            float graphWidth = bottomRect.width * 0.50f;
-            float statsWidth = bottomRect.width * 0.30f;
-            float actionsWidth = bottomRect.width * 0.20f - (spacing * 2);
-
+            var actionsRect = new Rect(bottomRect.xMax - actionsWidth, bottomRect.y, actionsWidth, bottomRect.height);
+            var statsRect = new Rect(actionsRect.x - spacing - statsWidth, bottomRect.y, statsWidth, bottomRect.height);
+            float graphWidth = Mathf.Max(100f, statsRect.x - bottomRect.x - spacing);
             var graphRect = new Rect(bottomRect.x, bottomRect.y, graphWidth, bottomRect.height);
-            var statsRect = new Rect(graphRect.xMax + spacing, bottomRect.y, statsWidth, bottomRect.height);
-            var actionsRect = new Rect(statsRect.xMax + spacing, bottomRect.y, actionsWidth, bottomRect.height);
 
             DrawGraph(graphRect);
             DrawStatsSection(statsRect);
@@ -215,6 +218,7 @@ public class DebugWindow : Window
         finally
         {
             Text.WordWrap = true;
+            Text.Font = GameFont.Small;
         }
     }
 
@@ -891,12 +895,12 @@ public class DebugWindow : Window
                 }
                 else
                 {
-                    UnityEngine.Object.Destroy(tex);
+                    Object.Destroy(tex);
                 }
             }
             catch (Exception ex)
             {
-                Util.Logger.Error($"Failed to decode ImageBase64 for DebugWindow: {ex.Message}");
+                Logger.Error($"Failed to decode ImageBase64 for DebugWindow: {ex.Message}");
             }
         }
     }
@@ -905,7 +909,7 @@ public class DebugWindow : Window
     {
         if (_cachedImageTexture != null)
         {
-            UnityEngine.Object.Destroy(_cachedImageTexture);
+            Object.Destroy(_cachedImageTexture);
             _cachedImageTexture = null;
         }
         _cachedImageBase64 = null;
@@ -1416,9 +1420,9 @@ public class DebugWindow : Window
 
         Text.Font = GameFont.Tiny;
         GUI.color = Color.gray;
-        Widgets.Label(new Rect(rect.x + 5, rect.y + rect.height - 15, 60, 20),
+        Widgets.Label(new Rect(rect.x + 5, rect.y + rect.height - 14f, 60, 14f),
             "RimTalk.DebugWindow.SixtySecondsAgo".Translate());
-        Widgets.Label(new Rect(rect.xMax - 35, rect.y + rect.height - 15, 40, 20),
+        Widgets.Label(new Rect(rect.xMax - 35, rect.y + rect.height - 14f, 35, 14f),
             "RimTalk.DebugWindow.Now".Translate());
         GUI.color = Color.white;
 
@@ -1427,7 +1431,7 @@ public class DebugWindow : Window
         foreach (var (data, color, _) in series)
         {
             if (data == null || data.Count < 2) continue;
-            const float verticalPadding = 15f;
+            const float verticalPadding = 10f;
             float graphHeight = graphArea.height - (2 * verticalPadding);
             if (graphHeight <= 0) continue;
 
@@ -1451,37 +1455,36 @@ public class DebugWindow : Window
                     bool isEnd = (i == data.Count - 1) || data[i + 1] <= 0;
                     if (isEnd && i < points.Count)
                     {
-                        Widgets.Label(new Rect(points[i].x - 15, points[i].y - 15, 50, 20), Stats.TokenLabels[i].ToString());
+                        Widgets.Label(new Rect(points[i].x - 15, points[i].y - 13f, 50, 14f), Stats.TokenLabels[i].ToString());
                     }
                 }
             }
             GUI.color = Color.white;
         }
 
-        var legendRect = new Rect(rect.xMax - 100, rect.y + 10, 90, 30);
-        var legendListing = new Listing_Standard();
+        var legendRect = new Rect(rect.xMax - 95, rect.y + 3, 90, 18);
         Widgets.DrawBoxSolid(legendRect, new Color(0, 0, 0, 0.4f));
-        legendListing.Begin(legendRect.ContractedBy(5));
         foreach (var (data, color, label) in series)
         {
-            var labelRect = legendListing.GetRect(18);
-            Widgets.DrawBoxSolid(new Rect(labelRect.x, labelRect.y + 4, 10, 10), color);
-            Widgets.Label(new Rect(labelRect.x + 15, labelRect.y, 70, 20), label);
+            Widgets.DrawBoxSolid(new Rect(legendRect.x + 6, legendRect.y + 4, 10, 10), color);
+            Text.Font = GameFont.Tiny;
+            Widgets.Label(new Rect(legendRect.x + 20, legendRect.y, 68, 16), label);
         }
-
-        legendListing.End();
     }
 
     private void DrawStatsSection(Rect rect)
     {
         Widgets.DrawBoxSolid(rect, new Color(0.15f, 0.15f, 0.15f, 0.4f));
-        Text.Font = GameFont.Small;
+        Text.Font = GameFont.Tiny;
         GUI.BeginGroup(rect);
 
-        const float rowHeight = 22f;
-        const float labelWidth = 120f;
-        float currentY = 10f;
-        var contentRect = rect.AtZero().ContractedBy(10f);
+        const float rowHeight = 18f;
+        float startY = Mathf.Max(2f, (rect.height - (rowHeight * 3)) / 2f);
+        var contentRect = rect.AtZero().ContractedBy(6f);
+        const float colGap = 10f;
+        float colWidth = Mathf.Floor((contentRect.width - colGap) / 2f);
+        float col1X = contentRect.x;
+        float col2X = col1X + colWidth + colGap;
 
         Color statusColor;
         var aiStatus = _aiStatus.Translate();
@@ -1489,60 +1492,75 @@ public class DebugWindow : Window
         else if (aiStatus == "RimTalk.DebugWindow.StatusIdle".Translate()) statusColor = Color.green;
         else statusColor = Color.gray;
 
-        GUI.color = Color.gray;
-        Widgets.Label(new Rect(contentRect.x, currentY, labelWidth, rowHeight),
-            "RimTalk.DebugWindow.AIStatus".Translate());
-        GUI.color = statusColor;
-        Widgets.Label(new Rect(contentRect.x + labelWidth, currentY, 150f, rowHeight), _aiStatus);
-        GUI.color = Color.white;
-        currentY += rowHeight;
-
-        void DrawStatRow(string label, string value)
+        void DrawStat(float x, float y, float width, float valWidth, string label, string value, Color? valColor = null)
         {
+            float labelWidth = width - valWidth;
+            var labelRect = new Rect(x, y, labelWidth, rowHeight);
+            var valRect = new Rect(x + labelWidth, y, valWidth, rowHeight);
+
             GUI.color = Color.gray;
-            Widgets.Label(new Rect(contentRect.x, currentY, labelWidth, rowHeight), label);
+            Widgets.Label(labelRect, label);
+            GUI.color = valColor ?? Color.white;
+            Text.Anchor = TextAnchor.UpperRight;
+            Widgets.Label(valRect, value);
+            Text.Anchor = TextAnchor.UpperLeft;
             GUI.color = Color.white;
-            Widgets.Label(new Rect(contentRect.x + labelWidth, currentY, 150f, rowHeight), value);
-            currentY += rowHeight;
         }
 
-        DrawStatRow("RimTalk.DebugWindow.TotalCalls".Translate(), _totalCalls.ToString("N0"));
-        DrawStatRow("RimTalk.DebugWindow.TotalTokens".Translate(), _totalTokens.ToString("N0"));
-        DrawStatRow("RimTalk.DebugWindow.AvgCallsPerMin".Translate(), _avgCallsPerMin.ToString("F2"));
-        DrawStatRow("RimTalk.DebugWindow.AvgTokensPerMin".Translate(), _avgTokensPerMin.ToString("F2"));
-        DrawStatRow("RimTalk.DebugWindow.AvgTokensPerCall".Translate(), _avgTokensPerCall.ToString("F2"));
+        // Column 1 (Status, Total calls, Total tokens)
+        DrawStat(col1X, startY, colWidth, 55f, "RimTalk.DebugWindow.AIStatus".Translate(), _aiStatus, statusColor);
+        DrawStat(col1X, startY + rowHeight, colWidth, 55f, "RimTalk.DebugWindow.TotalCalls".Translate(), _totalCalls.ToString("N0"));
+        DrawStat(col1X, startY + rowHeight * 2, colWidth, 55f, "RimTalk.DebugWindow.TotalTokens".Translate(), _totalTokens.ToString("N0"));
+
+        // Column 2 (Avg calls/min, Avg tokens/min, Avg tokens/call)
+        DrawStat(col2X, startY, colWidth, 55f, "RimTalk.DebugWindow.AvgCallsPerMin".Translate(), _avgCallsPerMin.ToString("F2"));
+        DrawStat(col2X, startY + rowHeight, colWidth, 55f, "RimTalk.DebugWindow.AvgTokensPerMin".Translate(), _avgTokensPerMin.ToString("F2"));
+        DrawStat(col2X, startY + rowHeight * 2, colWidth, 55f, "RimTalk.DebugWindow.AvgTokensPerCall".Translate(), _avgTokensPerCall.ToString("F2"));
 
         GUI.EndGroup();
     }
 
     private void DrawBottomActions(Rect rect)
     {
-        var listing = new Listing_Standard();
-        listing.Begin(rect);
+        Text.Font = GameFont.Tiny;
+        const float gap = 4f;
+        float colWidth = (rect.width - gap) / 2f;
+        const float btnHeight = 24f;
+        float y1 = rect.y + Mathf.Max(0f, (rect.height - (btnHeight * 2 + gap)) / 2f);
+        float y2 = y1 + btnHeight + gap;
 
-        listing.Gap(6f);
+        var col1X = rect.x;
+        var col2X = rect.x + colWidth + gap;
+
+        // Row 1: Mod Settings (Button) & Toggle RimTalk (Button)
+        var modSettingsRect = new Rect(col1X, y1, colWidth, btnHeight);
+        if (Widgets.ButtonText(modSettingsRect, "RimTalk.DebugWindow.ModSettings".Translate()))
+            Find.WindowStack.Add(new Dialog_ModSettings(LoadedModManager.GetMod<Settings>()));
 
         var settings = Settings.Get();
         bool modEnabled = settings.IsEnabled;
-        listing.CheckboxLabeled("RimTalk.DebugWindow.EnableRimTalk".Translate(), ref modEnabled);
-        settings.IsEnabled = modEnabled;
-
-        listing.Gap(12f);
-
-        if (listing.ButtonText("RimTalk.DebugWindow.ModSettings".Translate()))
-            Find.WindowStack.Add(new Dialog_ModSettings(LoadedModManager.GetMod<Settings>()));
-        listing.Gap(6f);
-
-        if (listing.ButtonText("RimTalk.DebugWindow.Export".Translate()))
-            UIUtil.ExportLogs(_requests);
-        listing.Gap(6f);
-
+        string toggleLabel = $"RimTalk: {(modEnabled ? "ON" : "OFF")}";
+        var toggleRect = new Rect(col2X, y1, colWidth, btnHeight);
         var prevColor = GUI.color;
+        GUI.color = modEnabled ? new Color(0.6f, 1f, 0.6f) : new Color(0.9f, 0.5f, 0.5f);
+        if (Widgets.ButtonText(toggleRect, toggleLabel))
+        {
+            settings.IsEnabled = !modEnabled;
+        }
+        GUI.color = prevColor;
+        TooltipHandler.TipRegion(toggleRect, "RimTalk.DebugWindow.EnableRimTalk".Translate());
+
+        // Row 2: Export (Button) & Reset Logs (Button)
+        var exportRect = new Rect(col1X, y2, colWidth, btnHeight);
+        if (Widgets.ButtonText(exportRect, "RimTalk.DebugWindow.Export".Translate()))
+            UIUtil.ExportLogs(_requests);
+        TooltipHandler.TipRegion(exportRect, "RimTalk.DebugWindow.ExportTooltip".Translate());
+
+        var resetRect = new Rect(col2X, y2, colWidth, btnHeight);
         GUI.color = new Color(1f, 0.4f, 0.4f);
-        if (listing.ButtonText("RimTalk.DebugWindow.ResetLogs".Translate()))
+        if (Widgets.ButtonText(resetRect, "RimTalk.DebugWindow.ResetLogs".Translate()))
             Reset();
         GUI.color = prevColor;
-        listing.End();
     }
 
     private IEnumerable<ApiLog> ApplyFilters(IEnumerable<ApiLog> source)
@@ -1795,7 +1813,7 @@ public class DebugWindow : Window
             return "(empty)";
 
         var firstLine = content.Replace("\r", "").Split('\n')[0].Trim();
-        firstLine = System.Text.RegularExpressions.Regex.Replace(firstLine, @"\s+", " ");
+        firstLine = Regex.Replace(firstLine, @"\s+", " ");
         if (firstLine.Length > 90)
             firstLine = firstLine.Substring(0, 87) + "...";
 

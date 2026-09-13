@@ -466,8 +466,9 @@ Conseils Cruciaux :
     <RimTalk.DebugWindow.StatusProcessing>En traitement</RimTalk.DebugWindow.StatusProcessing>
     <RimTalk.DebugWindow.StatusIdle>Inactif</RimTalk.DebugWindow.StatusIdle>
     <RimTalk.DebugWindow.ModSettings>Paramètres du mod</RimTalk.DebugWindow.ModSettings>
-    <RimTalk.DebugWindow.Export>Exporter</RimTalk.DebugWindow.Export>
-    <RimTalk.DebugWindow.ResetLogs>Réinit. logs</RimTalk.DebugWindow.ResetLogs>
+    <RimTalk.DebugWindow.Export>Sauvegarder</RimTalk.DebugWindow.Export>
+    <RimTalk.DebugWindow.ExportTooltip>Enregistre les dialogues actuels sous forme de fichier CSV sur votre bureau.</RimTalk.DebugWindow.ExportTooltip>
+    <RimTalk.DebugWindow.ResetLogs>Réinitialiser</RimTalk.DebugWindow.ResetLogs>
     <RimTalk.DebugWindow.EnableRimTalk>Activer RimTalk</RimTalk.DebugWindow.EnableRimTalk>
     <RimTalk.DebugWindow.AIStatus>Statut IA :</RimTalk.DebugWindow.AIStatus>
     <RimTalk.DebugWindow.TotalCalls>Appels Totaux :</RimTalk.DebugWindow.TotalCalls>
