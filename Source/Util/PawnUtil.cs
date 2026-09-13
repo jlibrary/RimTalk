@@ -136,10 +136,10 @@ public static class PawnUtil
 
     public static bool IsVisitor(this Pawn pawn)
     {
-        if (pawn?.Faction == null || pawn.Faction.IsPlayer || pawn.Faction.def.hidden)
+        if (pawn?.Faction == null || pawn.Faction.IsPlayer)
             return false;
 
-        return !pawn.IsPrisoner && !pawn.HostileTo(Faction.OfPlayer);
+        return !pawn.IsPrisoner && !IsHostileToPlayer(pawn);
     }
 
     public static string GetTitle(this Pawn pawn)
@@ -181,10 +181,22 @@ public static class PawnUtil
 
     public static bool IsEnemy(this Pawn pawn)
     {
-        if (pawn?.Faction == null || pawn.Faction.IsPlayer || pawn.Faction.def.hidden)
+        if (pawn?.Faction == null || pawn.Faction.IsPlayer)
             return false;
 
-        return !pawn.IsPrisoner && pawn.HostileTo(Faction.OfPlayer);
+        return !pawn.IsPrisoner && IsHostileToPlayer(pawn);
+    }
+
+    private static bool IsHostileToPlayer(Pawn pawn)
+    {
+        if (pawn?.Faction == null || Faction.OfPlayer == null || pawn.Faction == Faction.OfPlayer)
+            return false;
+
+        FactionRelation relation = pawn.Faction.RelationWith(Faction.OfPlayer, false);
+        if (relation != null)
+            return relation.kind == FactionRelationKind.Hostile;
+
+        return pawn.Faction.def.permanentEnemy;
     }
 
     public static bool IsBaby(this Pawn pawn)
