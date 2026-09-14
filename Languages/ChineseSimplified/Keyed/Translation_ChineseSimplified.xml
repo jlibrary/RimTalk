@@ -310,6 +310,10 @@ Scriban 魔法 (动态内容)
     <RimTalk.Settings.LocalProviderConfiguration>本地供应商设置</RimTalk.Settings.LocalProviderConfiguration>
     <RimTalk.Settings.BaseUrlLabel>URL：</RimTalk.Settings.BaseUrlLabel>
     <RimTalk.Settings.ModelLabel>模型：</RimTalk.Settings.ModelLabel>
+    <RimTalk.Settings.LocalAutoDetect>自动检测</RimTalk.Settings.LocalAutoDetect>
+    <RimTalk.Settings.LocalScanning>检测中...</RimTalk.Settings.LocalScanning>
+    <RimTalk.Settings.LocalDetected>已检测到本地服务器。</RimTalk.Settings.LocalDetected>
+    <RimTalk.Settings.LocalNotFound>未找到正在运行的本地服务器。</RimTalk.Settings.LocalNotFound>
     <RimTalk.Settings.EnterApiKey>（输入有效的 API 密钥以获取模型）</RimTalk.Settings.EnterApiKey>
     <RimTalk_Settings_Api_BaseUrlInfo>如果您只提供基础 URL（例如 http://localhost:1234），将自动添加 /v1/chat/completions。如果您输入完整路径，将完全按照输入使用。</RimTalk_Settings_Api_BaseUrlInfo>
     <RimTalk.Settings.CustomizeRequestTooltip>高级设置：微调 AI 请求参数</RimTalk.Settings.CustomizeRequestTooltip>

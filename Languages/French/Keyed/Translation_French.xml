@@ -314,6 +314,10 @@ Conseils Cruciaux :
     <RimTalk.Settings.LocalProviderConfiguration>Configuration du Fournisseur Local</RimTalk.Settings.LocalProviderConfiguration>
     <RimTalk.Settings.BaseUrlLabel>URL :</RimTalk.Settings.BaseUrlLabel>
     <RimTalk.Settings.ModelLabel>Modèle :</RimTalk.Settings.ModelLabel>
+    <RimTalk.Settings.LocalAutoDetect>Détection auto</RimTalk.Settings.LocalAutoDetect>
+    <RimTalk.Settings.LocalScanning>Recherche...</RimTalk.Settings.LocalScanning>
+    <RimTalk.Settings.LocalDetected>Serveur local détecté.</RimTalk.Settings.LocalDetected>
+    <RimTalk.Settings.LocalNotFound>Aucun serveur local en cours d'exécution trouvé.</RimTalk.Settings.LocalNotFound>
     <RimTalk.Settings.EnterApiKey>(entrez une clé api valide pour récupérer les modèles)</RimTalk.Settings.EnterApiKey>
     <RimTalk_Settings_Api_BaseUrlInfo>Si vous ne fournissez que la base (par ex., http://localhost:1234), /v1/chat/completions sera ajouté automatiquement. Si vous entrez le chemin complet, il sera utilisé tel quel.</RimTalk_Settings_Api_BaseUrlInfo>
     <RimTalk.Settings.CustomizeRequestTooltip>Paramètres avancés : ajuster les paramètres de requête de l'IA</RimTalk.Settings.CustomizeRequestTooltip>

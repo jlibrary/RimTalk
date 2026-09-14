@@ -340,6 +340,10 @@ Crucial Tips:
     <RimTalk.Settings.LocalProviderConfiguration>Local Provider Configuration</RimTalk.Settings.LocalProviderConfiguration>
     <RimTalk.Settings.BaseUrlLabel>URL:</RimTalk.Settings.BaseUrlLabel>
     <RimTalk.Settings.ModelLabel>Model:</RimTalk.Settings.ModelLabel>
+    <RimTalk.Settings.LocalAutoDetect>Auto Detect</RimTalk.Settings.LocalAutoDetect>
+    <RimTalk.Settings.LocalScanning>Scanning...</RimTalk.Settings.LocalScanning>
+    <RimTalk.Settings.LocalDetected>Local server detected.</RimTalk.Settings.LocalDetected>
+    <RimTalk.Settings.LocalNotFound>No running local server found.</RimTalk.Settings.LocalNotFound>
     <RimTalk.Settings.EnterApiKey>(enter valid api key to fetch models)</RimTalk.Settings.EnterApiKey>
     <RimTalk_Settings_Api_BaseUrlInfo>If you provide only the base (e.g., http://localhost:1234), /v1/chat/completions will be added automatically. If you enter the full path, it will be used exactly as entered.</RimTalk_Settings_Api_BaseUrlInfo>
     <RimTalk.Settings.CustomizeRequestTooltip>Advanced settings: Fine-tune AI request parameters</RimTalk.Settings.CustomizeRequestTooltip>

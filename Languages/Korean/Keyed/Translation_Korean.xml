@@ -339,6 +339,10 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.Settings.LocalProviderConfiguration>로컬 서비스 구성</RimTalk.Settings.LocalProviderConfiguration>
     <RimTalk.Settings.BaseUrlLabel>URL:</RimTalk.Settings.BaseUrlLabel>
     <RimTalk.Settings.ModelLabel>모델:</RimTalk.Settings.ModelLabel>
+    <RimTalk.Settings.LocalAutoDetect>자동 감지</RimTalk.Settings.LocalAutoDetect>
+    <RimTalk.Settings.LocalScanning>검색 중...</RimTalk.Settings.LocalScanning>
+    <RimTalk.Settings.LocalDetected>로컬 서버가 감지되었습니다.</RimTalk.Settings.LocalDetected>
+    <RimTalk.Settings.LocalNotFound>실행 중인 로컬 서버를 찾을 수 없습니다.</RimTalk.Settings.LocalNotFound>
     <RimTalk.Settings.EnterApiKey>(모델을 가져오려면 유효한 API 키를 입력하세요)</RimTalk.Settings.EnterApiKey>
     <RimTalk_Settings_Api_BaseUrlInfo>기본 URL만 제공하면(예: http://localhost:1234), /v1/chat/completions가 자동으로 추가됩니다. 전체 경로를 입력하면 입력한 그대로 사용됩니다.</RimTalk_Settings_Api_BaseUrlInfo>
     <RimTalk.Settings.CustomizeRequestTooltip>고급 설정: AI 요청 매개변수 미세 조정</RimTalk.Settings.CustomizeRequestTooltip>

@@ -63,9 +63,9 @@ public partial class Settings
 
         // 1. AI Cooldown
         Rect cooldownRect = leftListing.GetRect(24f);
-        float cooldownLabelWidth = cooldownRect.width - intervalFieldWidth - 10f;
-        Rect cooldownLabelRect = new Rect(cooldownRect.x, cooldownRect.y, cooldownLabelWidth, cooldownRect.height);
-        Rect cooldownFieldRect = new Rect(cooldownLabelRect.xMax + 10f, cooldownRect.y, intervalFieldWidth, 24f);
+        float cooldownFieldX = cooldownRect.xMax - intervalFieldWidth - 2f;
+        Rect cooldownLabelRect = new Rect(cooldownRect.x, cooldownRect.y, cooldownFieldX - cooldownRect.x - 10f, cooldownRect.height);
+        Rect cooldownFieldRect = new Rect(cooldownFieldX, cooldownRect.y, intervalFieldWidth, 24f);
 
         TextAnchor originalAnchor = Text.Anchor;
         TextAnchor middleLeft = TextAnchor.MiddleLeft;
@@ -79,9 +79,9 @@ public partial class Settings
 
         // 2. Reply Interval
         Rect replyRect = leftListing.GetRect(24f);
-        float replyLabelWidth = replyRect.width - intervalFieldWidth - 10f;
-        Rect replyLabelRect = new Rect(replyRect.x, replyRect.y, replyLabelWidth, replyRect.height);
-        Rect replyFieldRect = new Rect(replyLabelRect.xMax + 10f, replyRect.y, intervalFieldWidth, 24f);
+        float replyFieldX = replyRect.xMax - intervalFieldWidth - 2f;
+        Rect replyLabelRect = new Rect(replyRect.x, replyRect.y, replyFieldX - replyRect.x - 10f, replyRect.height);
+        Rect replyFieldRect = new Rect(replyFieldX, replyRect.y, intervalFieldWidth, 24f);
 
         Widgets.Label(replyLabelRect, "RimTalk.Settings.ReplyInterval".Translate().ToString());
         Text.Anchor = originalAnchor;

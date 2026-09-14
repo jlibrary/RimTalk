@@ -10,6 +10,7 @@ using RimWorld;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
+using Logger = RimTalk.Util.Logger;
 
 namespace RimTalk;
 
@@ -24,10 +25,15 @@ public partial class Settings
 
         // Border
         GUI.color = isSelected ? new Color(0.4f, 0.75f, 1f, 1f) : new Color(0.35f, 0.35f, 0.35f, 0.6f);
-        Widgets.DrawBox(rect, isSelected ? 2 : 1);
+        Widgets.DrawBox(rect, 1);
         GUI.color = Color.white;
 
         if (Mouse.IsOver(rect)) Widgets.DrawHighlight(rect);
+
+        if (!string.IsNullOrEmpty(desc))
+        {
+            TooltipHandler.TipRegion(rect, desc);
+        }
 
         bool clicked = Widgets.ButtonInvisible(rect);
 
@@ -734,46 +740,127 @@ public partial class Settings
         }
     }
 
+    private struct DetectedServerInfo
+    {
+        public string Url;
+        public string Name;
+        public List<string> Models;
+    }
+
+    private static string GetLocalServerDisplayName(string url)
+    {
+        if (Uri.TryCreate(url, UriKind.Absolute, out Uri uri))
+        {
+            string hostPort = $"{uri.Host}:{uri.Port}";
+            string appName = uri.Port switch
+            {
+                11434 => "Ollama",
+                1234 => "LM Studio",
+                8080 => "llama.cpp",
+                8000 => "vLLM",
+                5000 => "TextGen",
+                5001 => "KoboldCpp",
+                1337 => "Jan",
+                _ => null
+            };
+
+            return appName != null ? $"{appName} ({hostPort})" : hostPort;
+        }
+
+        return url;
+    }
+
+    private static bool isScanningLocal;
+    private static List<DetectedServerInfo> pendingLocalServers;
+    private static ApiConfig pendingLocalConfig;
+
     private void DrawLocalProviderSection(Listing_Standard listingStandard, RimTalkSettings settings)
     {
-        listingStandard.Label("RimTalk.Settings.LocalProviderConfiguration".Translate());
-        listingStandard.Gap(6f);
-
         if (settings.LocalConfig == null)
         {
             settings.LocalConfig = new ApiConfig { Provider = AIProvider.Local };
         }
 
+        listingStandard.Gap(20f);
         DrawLocalConfigRow(listingStandard, settings.LocalConfig);
+    }
+
+    private static void ApplyDetectedServer(DetectedServerInfo server, ApiConfig config)
+    {
+        config.BaseUrl = server.Url;
+        if (server.Models.Count == 1)
+        {
+            config.CustomModelName = server.Models[0];
+        }
+        else if (server.Models.Count > 1)
+        {
+            var modelOptions = server.Models.Select(m => new FloatMenuOption(m, () =>
+            {
+                config.CustomModelName = m;
+            })).ToList();
+            Find.WindowStack.Add(new FloatMenu(modelOptions) { vanishIfMouseDistant = false });
+        }
     }
 
     private void DrawLocalConfigRow(Listing_Standard listingStandard, ApiConfig config)
     {
-        Rect rowRect = listingStandard.GetRect(24f);
-        float x = rowRect.x;
-        float y = rowRect.y;
-        float height = rowRect.height;
+        if (pendingLocalServers != null && pendingLocalConfig == config)
+        {
+            var servers = pendingLocalServers;
+            pendingLocalServers = null;
+            pendingLocalConfig = null;
 
-        Widgets.Label(new Rect(x, y, 45f, height), "RimTalk.Settings.BaseUrlLabel".Translate());
-        Rect infoRect = new Rect(x + 48f, y + 3f, 18f, 18f);
+            if (servers.Count == 1)
+            {
+                ApplyDetectedServer(servers[0], config);
+            }
+            else
+            {
+                var serverOptions = servers.Select(server => new FloatMenuOption(server.Name, () =>
+                {
+                    ApplyDetectedServer(server, config);
+                })).ToList();
+
+                Find.WindowStack.Add(new FloatMenu(serverOptions) { vanishIfMouseDistant = false });
+            }
+        }
+
+        const float totalWidth = 708f;
+        const float height = 26f;
+
+        Rect rowRect = listingStandard.GetRect(height);
+        float x = rowRect.x + Mathf.Max(0f, (listingStandard.ColumnWidth - totalWidth) / 2f);
+        float y = rowRect.y;
+
+        TextAnchor prevAnchor = Text.Anchor;
+        Text.Anchor = TextAnchor.MiddleLeft;
+
+        // Base URL label & info icon
+        Widgets.Label(new Rect(x, y, 38f, height), "RimTalk.Settings.BaseUrlLabel".Translate());
+        Rect infoRect = new Rect(x + 40f, y + 4f, 18f, 18f);
         GUI.DrawTexture(infoRect, TexButton.Info);
         TooltipHandler.TipRegion(infoRect, "RimTalk_Settings_Api_BaseUrlInfo".Translate());
-        x += 85f;
+        x += 66f;
 
-        Rect urlRect = new Rect(x, y, 250f, height);
+        Text.Anchor = prevAnchor;
+
+        // URL TextField
+        Rect urlRect = new Rect(x, y, 230f, height);
         config.BaseUrl = Widgets.TextField(urlRect, config.BaseUrl);
-        x += 285f;
+        x += 262f;
 
-        Rect modelLabelRect = new Rect(x, y, 70f, height);
-        Widgets.Label(modelLabelRect, "RimTalk.Settings.ModelLabel".Translate());
-        x += 75f;
+        Text.Anchor = TextAnchor.MiddleLeft;
+        Widgets.Label(new Rect(x, y, 60f, height), "RimTalk.Settings.ModelLabel".Translate());
+        Text.Anchor = prevAnchor;
+        x += 64f;
 
+        // Model TextField
         Rect modelRect = new Rect(x, y, 200f, height);
         config.CustomModelName = Widgets.TextField(modelRect, config.CustomModelName);
-        x += 205f;
+        x += 218f;
 
-        // Customize Button (OptionsGeneral Icon)
-        Rect customRect = new Rect(x, y + 1f, 22f, 22f);
+        // Customize Button (gear icon)
+        Rect customRect = new Rect(x, y + 2f, 22f, 22f);
         var iconTexture = ContentFinder<Texture2D>.Get("UI/Icons/Options/OptionsGeneral");
         bool hasCustom = !string.IsNullOrWhiteSpace(config.CustomRequestJson);
         Color iconColor = hasCustom ? new Color(0.4f, 0.9f, 0.5f) : new Color(0.85f, 0.85f, 0.85f);
@@ -785,5 +872,94 @@ public partial class Settings
             Find.WindowStack.Add(new Dialog_CustomizeRequest(config));
         }
         TooltipHandler.TipRegion(customRect, "RimTalk.Settings.CustomizeRequestTooltip".Translate());
+        x += 40f;
+
+        // Auto Detect Button
+        Rect scanBtnRect = new Rect(x, y, 118f, height);
+        string scanLabel = isScanningLocal
+            ? "RimTalk.Settings.LocalScanning".Translate()
+            : "RimTalk.Settings.LocalAutoDetect".Translate();
+
+        if (Widgets.ButtonText(scanBtnRect, scanLabel, true, true, !isScanningLocal))
+        {
+            SoundDefOf.Click.PlayOneShotOnCamera(null);
+            StartScanLocalEndpoints(config);
+        }
+    }
+
+    private static void StartScanLocalEndpoints(ApiConfig config)
+    {
+        if (isScanningLocal) return;
+        isScanningLocal = true;
+
+        Task.Run(async () =>
+        {
+            try
+            {
+                string[] candidates =
+                [
+                    "http://localhost:11434",
+                    "http://localhost:1234",
+                    "http://localhost:8080",
+                    "http://localhost:8000",
+                    "http://localhost:5000",
+                    "http://localhost:5001",
+                    "http://localhost:1337"
+                ];
+
+                var tasks = candidates.Select(async url =>
+                {
+                    try
+                    {
+                        string modelsUrl = url.TrimEnd('/') + "/v1/models";
+                        var models = await OpenAIClient.FetchModelsAsync(null, modelsUrl);
+                        if (models != null && models.Count > 0)
+                        {
+                            return (url, models, alive: true);
+                        }
+                    }
+                    catch
+                    {
+                        // Ignore connection failures / timeouts
+                    }
+                    return (url, models: new List<string>(), alive: false);
+                }).ToList();
+
+                var results = await Task.WhenAll(tasks);
+                var activeServers = results
+                    .Where(r => r.alive)
+                    .Select(r => new DetectedServerInfo
+                    {
+                        Url = r.url,
+                        Name = GetLocalServerDisplayName(r.url),
+                        Models = r.models
+                    })
+                    .ToList();
+
+                LongEventHandler.ExecuteWhenFinished(() =>
+                {
+                    isScanningLocal = false;
+                    if (activeServers.Count == 0)
+                    {
+                        Messages.Message("RimTalk.Settings.LocalNotFound".Translate(), MessageTypeDefOf.RejectInput, false);
+                    }
+                    else
+                    {
+                        Messages.Message("RimTalk.Settings.LocalDetected".Translate(), MessageTypeDefOf.PositiveEvent, false);
+                        pendingLocalServers = activeServers;
+                        pendingLocalConfig = config;
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Error scanning local endpoints: {ex.Message}");
+                LongEventHandler.ExecuteWhenFinished(() =>
+                {
+                    isScanningLocal = false;
+                    Messages.Message("RimTalk.Settings.LocalNotFound".Translate(), MessageTypeDefOf.RejectInput, false);
+                });
+            }
+        });
     }
 }

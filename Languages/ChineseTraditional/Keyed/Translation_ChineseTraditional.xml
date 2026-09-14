@@ -314,6 +314,10 @@ Scriban 魔法 (動態內容)
     <RimTalk.Settings.LocalProviderConfiguration>本地供應商設定</RimTalk.Settings.LocalProviderConfiguration>
     <RimTalk.Settings.BaseUrlLabel>URL：</RimTalk.Settings.BaseUrlLabel>
     <RimTalk.Settings.ModelLabel>模型：</RimTalk.Settings.ModelLabel>
+    <RimTalk.Settings.LocalAutoDetect>自動檢測</RimTalk.Settings.LocalAutoDetect>
+    <RimTalk.Settings.LocalScanning>檢測中...</RimTalk.Settings.LocalScanning>
+    <RimTalk.Settings.LocalDetected>已檢測到本地伺服器。</RimTalk.Settings.LocalDetected>
+    <RimTalk.Settings.LocalNotFound>未找到正在運行的本地伺服器。</RimTalk.Settings.LocalNotFound>
     <RimTalk.Settings.EnterApiKey>（輸入有效的 API 金鑰以獲取模型）</RimTalk.Settings.EnterApiKey>
     <RimTalk_Settings_Api_BaseUrlInfo>如果您只提供基礎 URL（例如 http://localhost:1234），將自動新增 /v1/chat/completions。如果您輸入完整路徑，將完全按照輸入使用。</RimTalk_Settings_Api_BaseUrlInfo>
     <RimTalk.Settings.CustomizeRequestTooltip>高級設定：微調 AI 請求參數</RimTalk.Settings.CustomizeRequestTooltip>

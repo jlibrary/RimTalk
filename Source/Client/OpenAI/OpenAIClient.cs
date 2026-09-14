@@ -47,10 +47,12 @@ public class OpenAIClient(
         if (string.IsNullOrEmpty(baseUrl)) return string.Empty;
         var trimmed = baseUrl.Trim().TrimEnd('/');
         var uri = new Uri(trimmed);
-        // Append default path if only base domain is provided
-        return (uri.AbsolutePath == "/" || string.IsNullOrEmpty(uri.AbsolutePath.Trim('/')))
-            ? trimmed + DefaultPath
-            : trimmed;
+        // Append default path if only base domain or /v1 is provided
+        if (uri.AbsolutePath == "/" || string.IsNullOrEmpty(uri.AbsolutePath.Trim('/')))
+            return trimmed + DefaultPath;
+        if (uri.AbsolutePath.TrimEnd('/') == "/v1")
+            return trimmed + "/chat/completions";
+        return trimmed;
     }
 
     public async Task<Payload> GetChatCompletionAsync(List<(Role role, string message)> prefixMessages,
@@ -147,8 +149,14 @@ public class OpenAIClient(
             }
             catch (AIRequestException ex) when (ex.Payload?.StatusCode == 400)
             {
-                settings.DetectedThinkingLevels.Remove(cacheKey);
-                settings.Write();
+                LongEventHandler.ExecuteWhenFinished(() =>
+                {
+                    var s = Settings.Get();
+                    if (s?.DetectedThinkingLevels != null && s.DetectedThinkingLevels.Remove(cacheKey))
+                    {
+                        s.Write();
+                    }
+                });
                 Logger.Warning($"Cached thinking level '{cachedLevel}' failed for '{cacheKey}'. Retrying ladder...");
             }
         }
@@ -159,13 +167,17 @@ public class OpenAIClient(
             try
             {
                 var payload = await requestFunc(level);
-                if (settings != null)
+                LongEventHandler.ExecuteWhenFinished(() =>
                 {
-                    settings.DetectedThinkingLevels ??= new Dictionary<string, string>();
-                    settings.DetectedThinkingLevels[cacheKey] = level;
-                    settings.Write();
-                    Logger.Message($"Detected and saved thinking level '{level}' for '{cacheKey}'.");
-                }
+                    var s = Settings.Get();
+                    if (s != null)
+                    {
+                        s.DetectedThinkingLevels ??= new Dictionary<string, string>();
+                        s.DetectedThinkingLevels[cacheKey] = level;
+                        s.Write();
+                        Logger.Message($"Detected and saved thinking level '{level}' for '{cacheKey}'.");
+                    }
+                });
                 return payload;
             }
             catch (AIRequestException ex) when (ex.Payload?.StatusCode == 400)
@@ -387,11 +399,11 @@ public class OpenAIClient(
 
         if (webRequest.isNetworkError || webRequest.isHttpError)
         {
-            Logger.Error($"Failed to fetch models: {webRequest.error}");
-            return new List<string>();
+            Logger.Warning($"Failed to fetch models: {webRequest.error}");
+            return [];
         }
 
         var response = JsonUtil.DeserializeFromJson<OpenAIModelsResponse>(webRequest.downloadHandler.text);
-        return response?.Data?.Select(m => m.Id).ToList() ?? new List<string>();
+        return response?.Data?.Select(m => m.Id).ToList() ?? [];
     }
 }

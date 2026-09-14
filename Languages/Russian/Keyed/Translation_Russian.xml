@@ -313,6 +313,10 @@
     <RimTalk.Settings.LocalProviderConfiguration>Конфигурация локального провайдера</RimTalk.Settings.LocalProviderConfiguration>
     <RimTalk.Settings.BaseUrlLabel>URL:</RimTalk.Settings.BaseUrlLabel>
     <RimTalk.Settings.ModelLabel>Модель:</RimTalk.Settings.ModelLabel>
+    <RimTalk.Settings.LocalAutoDetect>Автопоиск</RimTalk.Settings.LocalAutoDetect>
+    <RimTalk.Settings.LocalScanning>Поиск...</RimTalk.Settings.LocalScanning>
+    <RimTalk.Settings.LocalDetected>Локальный сервер обнаружен.</RimTalk.Settings.LocalDetected>
+    <RimTalk.Settings.LocalNotFound>Работающий локальный сервер не найден.</RimTalk.Settings.LocalNotFound>
     <RimTalk.Settings.EnterApiKey>(введите действительный ключ API для получения моделей)</RimTalk.Settings.EnterApiKey>
     <RimTalk_Settings_Api_BaseUrlInfo>Если вы укажете только базу (например, http://localhost:1234), /v1/chat/completions будет добавлено автоматически. Если вы введете полный путь, он будет использован в точности как введен.</RimTalk_Settings_Api_BaseUrlInfo>
     <RimTalk.Settings.CustomizeRequestTooltip>Расширенные настройки: точная настройка параметров запроса ИИ</RimTalk.Settings.CustomizeRequestTooltip>

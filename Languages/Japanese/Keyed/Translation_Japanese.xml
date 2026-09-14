@@ -313,6 +313,10 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Settings.LocalProviderConfiguration>ローカルプロバイダー設定</RimTalk.Settings.LocalProviderConfiguration>
     <RimTalk.Settings.BaseUrlLabel>URL：</RimTalk.Settings.BaseUrlLabel>
     <RimTalk.Settings.ModelLabel>モデル：</RimTalk.Settings.ModelLabel>
+    <RimTalk.Settings.LocalAutoDetect>自動検出</RimTalk.Settings.LocalAutoDetect>
+    <RimTalk.Settings.LocalScanning>検索中...</RimTalk.Settings.LocalScanning>
+    <RimTalk.Settings.LocalDetected>ローカルサーバーが検出されました。</RimTalk.Settings.LocalDetected>
+    <RimTalk.Settings.LocalNotFound>実行中のローカルサーバーが見つかりませんでした。</RimTalk.Settings.LocalNotFound>
     <RimTalk.Settings.EnterApiKey>（モデルを取得するには有効なAPIキーを入力してください）</RimTalk.Settings.EnterApiKey>
     <RimTalk_Settings_Api_BaseUrlInfo>ベースURLのみ（例：http://localhost:1234）を指定した場合、/v1/chat/completionsが自動的に追加されます。完全なパスを入力した場合は、入力された通りに使用されます。</RimTalk_Settings_Api_BaseUrlInfo>
     <RimTalk.Settings.CustomizeRequestTooltip>詳細設定：AIリクエストパラメータの微調整</RimTalk.Settings.CustomizeRequestTooltip>

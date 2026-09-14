@@ -13,6 +13,7 @@ Folder.DotSettings.user
 Directory.Build.props
 *.sh
 .vs
+*.py
 
 Release_Mod/*
 AGENTS.md
