@@ -75,9 +75,6 @@ public class Overlay : MapComponent
     private const string LeftBracket = "[";
     private const string RightBracket = "]";
 
-    private static bool _externalDialogueFormatterResolved;
-    private static MethodInfo _externalDialogueFormatter;
-
     private static readonly Color AnnounceBgColor = new(0.8f, 0.5f, 0.0f, 0.18f);
     private static readonly Color AnnounceNameColor = new(1.0f, 0.78f, 0.2f);
     private static readonly Color AnnounceTextColor = new(1.0f, 0.92f, 0.65f);
@@ -92,38 +89,6 @@ public class Overlay : MapComponent
     private void MarkCacheAsDirty()
     {
         _isCacheDirty = true;
-    }
-
-    private static string BuildFinalRichText(string text)
-    {
-        text ??= string.Empty;
-
-        if (!_externalDialogueFormatterResolved)
-        {
-            _externalDialogueFormatterResolved = true;
-            var formatterType = AccessTools.TypeByName("RimTalkDynamicColors.DynamicColorMod");
-            var formatter = formatterType == null
-                ? null
-                : AccessTools.Method(formatterType, "ColorizeString", [typeof(string)]);
-
-            if (formatter is { IsStatic: true } && formatter.ReturnType == typeof(string))
-            {
-                _externalDialogueFormatter = formatter;
-            }
-        }
-
-        if (_externalDialogueFormatter == null) return text;
-
-        try
-        {
-            return _externalDialogueFormatter.Invoke(null, [text]) as string ?? text;
-        }
-        catch
-        {
-            // A compatibility formatter must never prevent the overlay from rendering.
-            _externalDialogueFormatter = null;
-            return text;
-        }
     }
 
     private static string ExtractSpeakerName(string combinedName)
@@ -223,11 +188,10 @@ public class Overlay : MapComponent
     private static string FitDialogueToHeight(string rawDialogue, float width, float maxHeight)
     {
         rawDialogue ??= string.Empty;
-        string fullDialogue = BuildFinalRichText(rawDialogue);
-        if (CalcRichTextHeight(fullDialogue, width) <= maxHeight) return fullDialogue;
+        if (CalcRichTextHeight(rawDialogue, width) <= maxHeight) return rawDialogue;
 
         const string ellipsis = "…";
-        string bestDialogue = BuildFinalRichText(ellipsis);
+        string bestDialogue = ellipsis;
         int low = 0;
         int high = rawDialogue.Length;
 
@@ -236,11 +200,10 @@ public class Overlay : MapComponent
             int middle = (low + high) / 2;
             int safeLength = GetSafeSubstringLength(rawDialogue, middle);
             string candidate = rawDialogue[..safeLength].TrimEnd() + ellipsis;
-            string formattedCandidate = BuildFinalRichText(candidate);
 
-            if (CalcRichTextHeight(formattedCandidate, width) <= maxHeight)
+            if (CalcRichTextHeight(candidate, width) <= maxHeight)
             {
-                bestDialogue = formattedCandidate;
+                bestDialogue = candidate;
                 low = middle + 1;
             }
             else
@@ -347,7 +310,7 @@ public class Overlay : MapComponent
                     // message when it cannot fit even with every older row omitted.
                     line.Dialogue = i == 0
                         ? FitDialogueToHeight(line.RawDialogue, dialogueWidth, maxLatestDialogueHeight)
-                        : BuildFinalRichText(line.RawDialogue);
+                        : line.RawDialogue;
 
                     float dialogueHeight = CalcRichTextHeight(line.Dialogue, dialogueWidth);
                     float nameHeight = Text.CalcSize(LeftBracket + line.SpeakerLabel + RightBracket).y;
@@ -805,12 +768,6 @@ public class Overlay : MapComponent
         }
     }
 
-    private static void DrawCachedLabel(Rect rect, string text)
-    {
-        // Keep Widgets.Label outside DrawMessageLog so compatibility transpilers cannot
-        // transform the already measured rich text a second time at the call site.
-        Widgets.Label(rect, text);
-    }
 
     private static void DrawParticipants(Rect rowRect, CachedMessageLine message)
     {
@@ -846,6 +803,7 @@ public class Overlay : MapComponent
             for (int i = 0; i < _cachedMessagesForLog.Count; i++)
             {
                 var message = _cachedMessagesForLog[i];
+
                 float remainingHeight = currentY - contentRect.y;
                 if (i > 0 && message.LineHeight > remainingHeight) break;
 
@@ -874,7 +832,7 @@ public class Overlay : MapComponent
                     GUI.color = AnnounceNameColor;
                     DrawParticipants(rowRect, message);
                     GUI.color = AnnounceTextColor;
-                    DrawCachedLabel(dialogueRect, message.Dialogue);
+                    Widgets.Label(dialogueRect, message.Dialogue);
                     GUI.color = Color.white;
                 }
                 else if (message.IsUserEntered && message.TalkType == TalkType.User)
@@ -882,13 +840,13 @@ public class Overlay : MapComponent
                     GUI.color = UserNameColor;
                     DrawParticipants(rowRect, message);
                     GUI.color = UserTextColor;
-                    DrawCachedLabel(dialogueRect, message.Dialogue);
+                    Widgets.Label(dialogueRect, message.Dialogue);
                     GUI.color = Color.white;
                 }
                 else
                 {
                     DrawParticipants(rowRect, message);
-                    DrawCachedLabel(dialogueRect, message.Dialogue);
+                    Widgets.Label(dialogueRect, message.Dialogue);
                 }
             }
         }
