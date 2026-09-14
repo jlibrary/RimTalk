@@ -134,6 +134,8 @@ public class PawnState(Pawn pawn)
     /// <see cref="DrainIncomingTalkResponses"/> from the main thread before reading
     /// <see cref="TalkResponses"/> to move queued entries in.
     /// </summary>
+    public int IncomingCount => _incomingTalkResponses.Count;
+
     public void QueueIncomingResponse(TalkResponse talkResponse)
     {
         _incomingTalkResponses.Enqueue(talkResponse);

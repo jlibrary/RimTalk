@@ -21,12 +21,21 @@ public static class TalkService
 {
     private static readonly List<TalkType> PriorityTalkTypes = [TalkType.Urgent, TalkType.User, TalkType.Announcement];
 
-    /// <summary>
-    /// Whether any pawn has talk responses waiting to be displayed. Snapshot taken by
-    /// <see cref="DisplayTalk"/> on its regular tick schedule so UI can read it cheaply.
-    /// </summary>
-    public static bool HasPendingTalks { get; private set; }
-    public static int PendingTalksCount { get; private set; }
+
+    public static int PendingTalksCount
+    {
+        get
+        {
+            int count = 0;
+            foreach (Pawn pawn in Cache.Keys)
+            {
+                var ps = Cache.Get(pawn);
+                if (ps != null)
+                    count += ps.TalkResponses.Count + ps.IncomingCount;
+            }
+            return count;
+        }
+    }
 
     /// <summary>
     /// Initiates the process of generating a conversation. It performs initial checks and then
@@ -214,17 +223,10 @@ public static class TalkService
     public static void DisplayTalk()
     {
         // Drain all pawns upfront so every pawn has a consistent view of TalkResponses for this tick cycle.
-        int totalPending = 0;
         foreach (Pawn pawn in Cache.Keys)
         {
-            var ps = Cache.Get(pawn);
-            if (ps == null) continue;
-            ps.DrainIncomingTalkResponses();
-            totalPending += ps.TalkResponses.Count;
+            Cache.Get(pawn)?.DrainIncomingTalkResponses();
         }
-
-        PendingTalksCount = totalPending;
-        HasPendingTalks = totalPending > 0;
 
         foreach (Pawn pawn in Cache.Keys)
         {
@@ -232,7 +234,6 @@ public static class TalkService
             if (pawnState == null) continue;
 
             if (pawnState.TalkResponses.Empty()) continue;
-            HasPendingTalks = true;
 
             if (pawn.IsInDanger())
                 pawnState.IgnoreAllTalkResponses(PriorityTalkTypes);
@@ -306,12 +307,6 @@ public static class TalkService
         var apiLog = ApiHistory.GetApiLog(talkResponse.Id);
         if (apiLog != null)
             apiLog.SpokenTick = GenTicks.TicksGame;
-
-        if (PendingTalksCount > 0)
-        {
-            PendingTalksCount--;
-            HasPendingTalks = PendingTalksCount > 0;
-        }
 
         Overlay.NotifyLogUpdated();
         return talkResponse;

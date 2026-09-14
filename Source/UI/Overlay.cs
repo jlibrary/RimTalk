@@ -466,7 +466,8 @@ public class Overlay : MapComponent
             return;
 
         bool isBusy = AIService.IsBusy();
-        bool hasPending = TalkService.HasPendingTalks;
+        int pendingCount = isBusy ? 0 : TalkService.PendingTalksCount;
+        bool hasPending = pendingCount > 0;
         bool isActive = isBusy || hasPending;
 
         if (Event.current.type is EventType.Repaint)
@@ -504,8 +505,6 @@ public class Overlay : MapComponent
             }
 
             // 2) Draw active glowing lights
-            int pendingCount = TalkService.PendingTalksCount;
-
             for (int i = 0; i < numSegments; i++)
             {
                 Rect segRect = new Rect(startX + i * (segWidth + segGap), startY, segWidth, segHeight);
@@ -536,9 +535,9 @@ public class Overlay : MapComponent
         if (_statusDotFade > 0.1f && !string.IsNullOrEmpty(_lastStatusTooltipKey))
         {
             string tipText = _lastStatusTooltipKey.Translate();
-            if (hasPending && TalkService.PendingTalksCount > 0)
+            if (hasPending)
             {
-                tipText += $" ({TalkService.PendingTalksCount})";
+                tipText += $" ({pendingCount})";
             }
             TooltipHandler.TipRegion(hitRect, tipText);
         }
