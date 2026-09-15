@@ -16,6 +16,7 @@ public partial class Settings
     private static readonly Color LeftPanelBackground = new(0.05f, 0.05f, 0.05f, 0.55f);
     private static readonly Color AddGreen = new(0.3f, 0.9f, 0.3f);
     private static readonly Color DeleteRed = new(1f, 0.4f, 0.4f);
+    private static readonly Color SourceModColor = new(0.95f, 0.78f, 0.35f);
     private const string DefaultPresetName = "RimTalk Default";
 
     // Scroll positions
@@ -402,9 +403,10 @@ public partial class Settings
 
         // -- Row 2 (Left Side): Entry Name --
         bool isHistoryMarker = e.IsMainChatHistory;
+        bool isModEntry = !string.IsNullOrEmpty(e.SourceModId);
 
         Widgets.Label(new Rect(labelX, y, inputX - 10, 24f), "RimTalk.Settings.PromptPreset.EntryName".Translate());
-        if (isHistoryMarker)
+        if (isHistoryMarker || isModEntry)
         {
             GUI.enabled = false;
             Widgets.TextField(new Rect(inputX, y, inputWidth, 24f), e.Name);
@@ -413,6 +415,26 @@ public partial class Settings
         else
         {
             e.Name = Widgets.TextField(new Rect(inputX, y, inputWidth, 24f), e.Name);
+        }
+
+        if (!string.IsNullOrEmpty(e.SourceModId))
+        {
+            float tagX = inputX + inputWidth + 10f;
+            float availableTagWidth = topButtonX - tagX - 10f;
+            if (availableTagWidth > 30f)
+            {
+                string modName = ModLister.GetActiveModWithIdentifier(e.SourceModId)?.Name ?? e.SourceModId;
+                string tagText = "RimTalk.Settings.PromptPreset.SourceMod".Translate(modName);
+                Rect tagRect = new Rect(tagX, y, availableTagWidth, 24f);
+
+                GUI.color = SourceModColor;
+                Text.Anchor = TextAnchor.MiddleLeft;
+                Widgets.Label(tagRect, tagText.Truncate(availableTagWidth));
+                Text.Anchor = TextAnchor.UpperLeft;
+                GUI.color = Color.white;
+
+                TooltipHandler.TipRegion(tagRect, tagText);
+            }
         }
 
         y += 28f;

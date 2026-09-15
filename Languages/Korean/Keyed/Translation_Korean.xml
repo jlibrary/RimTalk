@@ -90,6 +90,7 @@
     <RimTalk.Settings.PromptPreset.SelectEntryToEdit>편집할 항목을 선택하세요</RimTalk.Settings.PromptPreset.SelectEntryToEdit>
     <RimTalk.Settings.PromptPreset.PresetName>프리셋 이름:</RimTalk.Settings.PromptPreset.PresetName>
     <RimTalk.Settings.PromptPreset.EntryName>항목 이름:</RimTalk.Settings.PromptPreset.EntryName>
+    <RimTalk.Settings.PromptPreset.SourceMod>출처: {0}</RimTalk.Settings.PromptPreset.SourceMod>
     <RimTalk.Settings.PromptPreset.Role>역할:</RimTalk.Settings.PromptPreset.Role>
     <RimTalk.Settings.PromptPreset.CustomRole>사용자 지정 역할:</RimTalk.Settings.PromptPreset.CustomRole>
     <RimTalk.Settings.PromptPreset.Position>위치:</RimTalk.Settings.PromptPreset.Position>

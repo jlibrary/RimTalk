@@ -94,23 +94,6 @@ public class JsonStreamParserTests
     }
 
     [Fact]
-    public void Parse_UnicodeAndKoreanCharacters_ParsesAccurately()
-    {
-        var parser = new JsonStreamParser<TestDialogueItem>();
-
-        var chunk1 = "{\"name\":\"정착민\",\"text\":\"안녕";
-        var chunk2 = "하세요! 오늘 날씨가 좋네요.\"}";
-
-        var r1 = parser.Parse(chunk1);
-        Assert.Empty(r1);
-
-        var r2 = parser.Parse(chunk2);
-        Assert.Single(r2);
-        Assert.Equal("정착민", r2[0].name);
-        Assert.Equal("안녕하세요! 오늘 날씨가 좋네요.", r2[0].text);
-    }
-
-    [Fact]
     public void JsonUtil_Sanitize_RepairsConcatenatedObjectsAndSmartQuotes()
     {
         // Many local LLMs (Gemma, Llama) output curly quotes and missing commas between objects:

@@ -89,6 +89,7 @@
     <RimTalk.Settings.PromptPreset.SelectEntryToEdit>选择一个条目进行编辑</RimTalk.Settings.PromptPreset.SelectEntryToEdit>
     <RimTalk.Settings.PromptPreset.PresetName>预设名称：</RimTalk.Settings.PromptPreset.PresetName>
     <RimTalk.Settings.PromptPreset.EntryName>条目名称：</RimTalk.Settings.PromptPreset.EntryName>
+    <RimTalk.Settings.PromptPreset.SourceMod>来源：{0}</RimTalk.Settings.PromptPreset.SourceMod>
     <RimTalk.Settings.PromptPreset.Role>角色：</RimTalk.Settings.PromptPreset.Role>
     <RimTalk.Settings.PromptPreset.CustomRole>自定义角色：</RimTalk.Settings.PromptPreset.CustomRole>
     <RimTalk.Settings.PromptPreset.Position>位置：</RimTalk.Settings.PromptPreset.Position>

@@ -89,6 +89,7 @@
     <RimTalk.Settings.PromptPreset.SelectEntryToEdit>Выберите запись для редактирования</RimTalk.Settings.PromptPreset.SelectEntryToEdit>
     <RimTalk.Settings.PromptPreset.PresetName>Название пресета:</RimTalk.Settings.PromptPreset.PresetName>
     <RimTalk.Settings.PromptPreset.EntryName>Название записи:</RimTalk.Settings.PromptPreset.EntryName>
+    <RimTalk.Settings.PromptPreset.SourceMod>Источник: {0}</RimTalk.Settings.PromptPreset.SourceMod>
     <RimTalk.Settings.PromptPreset.Role>Роль:</RimTalk.Settings.PromptPreset.Role>
     <RimTalk.Settings.PromptPreset.CustomRole>Пользовательская роль:</RimTalk.Settings.PromptPreset.CustomRole>
     <RimTalk.Settings.PromptPreset.Position>Позиция:</RimTalk.Settings.PromptPreset.Position>

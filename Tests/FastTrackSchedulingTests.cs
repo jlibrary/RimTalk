@@ -183,7 +183,7 @@ public class FastTrackSchedulingTests
         bool canSpeakFixed = elapsedSinceEnd >= regularTalkInterval;
         Assert.False(canSpeakFixed, "With fix, cooldown must NOT elapse prematurely 3.5s after generation");
 
-        // 2. What happened BEFORE the fix (1451d40 이전 버그 상태):
+        // 2. What happened BEFORE the fix:
         // In the bugged code, lastTalkEndTick was NEVER updated during AI generation, remaining at start tick (1000).
         int buggedLastTalkEndTick = 1000;
         int buggedElapsed = currentTick - buggedLastTalkEndTick; // 1450 - 1000 = 450 ticks (7.5s from start!)

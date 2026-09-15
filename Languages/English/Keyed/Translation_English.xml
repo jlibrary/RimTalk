@@ -90,6 +90,7 @@
     <RimTalk.Settings.PromptPreset.SelectEntryToEdit>Select an entry to edit</RimTalk.Settings.PromptPreset.SelectEntryToEdit>
     <RimTalk.Settings.PromptPreset.PresetName>Preset Name:</RimTalk.Settings.PromptPreset.PresetName>
     <RimTalk.Settings.PromptPreset.EntryName>Entry Name:</RimTalk.Settings.PromptPreset.EntryName>
+    <RimTalk.Settings.PromptPreset.SourceMod>Source: {0}</RimTalk.Settings.PromptPreset.SourceMod>
     <RimTalk.Settings.PromptPreset.Role>Role:</RimTalk.Settings.PromptPreset.Role>
     <RimTalk.Settings.PromptPreset.CustomRole>Custom Role:</RimTalk.Settings.PromptPreset.CustomRole>
     <RimTalk.Settings.PromptPreset.Position>Position:</RimTalk.Settings.PromptPreset.Position>
