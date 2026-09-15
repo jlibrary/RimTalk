@@ -427,17 +427,15 @@ public class Overlay : MapComponent
         var settings = Settings.Get();
         if (settings.OverlayIndicatorMode == RimTalkSettings.OverlayIndicatorType.Disabled)
             return;
+        if (Event.current.type is not EventType.Repaint) return;
 
         bool isBusy = AIService.IsBusy();
         int pendingCount = isBusy ? 0 : TalkService.PendingTalksCount;
         bool hasPending = pendingCount > 0;
         bool isActive = isBusy || hasPending;
 
-        if (Event.current.type is EventType.Repaint)
-        {
-            float targetFade = isActive ? 1f : 0f;
-            _statusDotFade = Mathf.MoveTowards(_statusDotFade, targetFade, Time.unscaledDeltaTime * 6f);
-        }
+        float targetFade = isActive ? 1f : 0f;
+        _statusDotFade = Mathf.MoveTowards(_statusDotFade, targetFade, Time.unscaledDeltaTime * 6f);
 
         const int numSegments = 3;
         const float segWidth = 8f;
@@ -457,40 +455,37 @@ public class Overlay : MapComponent
             _lastStatusTooltipKey = "RimTalk.Overlay.StatusPendingTalks";
         }
 
-        if (Event.current.type is EventType.Repaint)
+        // 1) Always draw 3 dim chassis slots (housing frame)
+        Color slotHousingColor = new Color(1f, 1f, 1f, 0.15f);
+        for (int i = 0; i < numSegments; i++)
         {
-            // 1) Always draw 3 dim chassis slots (housing frame)
-            Color slotHousingColor = new Color(1f, 1f, 1f, 0.15f);
-            for (int i = 0; i < numSegments; i++)
-            {
-                Rect segRect = new Rect(startX + i * (segWidth + segGap), startY, segWidth, segHeight);
-                Widgets.DrawBoxSolid(segRect, slotHousingColor);
-            }
+            Rect segRect = new Rect(startX + i * (segWidth + segGap), startY, segWidth, segHeight);
+            Widgets.DrawBoxSolid(segRect, slotHousingColor);
+        }
 
-            // 2) Draw active glowing lights
-            for (int i = 0; i < numSegments; i++)
-            {
-                Rect segRect = new Rect(startX + i * (segWidth + segGap), startY, segWidth, segHeight);
+        // 2) Draw active glowing lights
+        for (int i = 0; i < numSegments; i++)
+        {
+            Rect segRect = new Rect(startX + i * (segWidth + segGap), startY, segWidth, segHeight);
 
-                if (isBusy)
+            if (isBusy)
+            {
+                // Sine chase wave across the 3 slots
+                float time = Time.realtimeSinceStartup * 4.5f;
+                float phase = time - i * 1.05f;
+                float wave = Mathf.Sin(phase);
+                float segAlpha = Mathf.Clamp01(Mathf.Max(0f, wave)) * _statusDotFade;
+                if (segAlpha > 0.01f)
                 {
-                    // Sine chase wave across the 3 slots
-                    float time = Time.realtimeSinceStartup * 4.5f;
-                    float phase = time - i * 1.05f;
-                    float wave = Mathf.Sin(phase);
-                    float segAlpha = Mathf.Clamp01(Mathf.Max(0f, wave)) * _statusDotFade;
-                    if (segAlpha > 0.01f)
-                    {
-                        Widgets.DrawBoxSolid(segRect, new Color(0.35f, 0.70f, 1.0f, segAlpha));
-                    }
+                    Widgets.DrawBoxSolid(segRect, new Color(0.35f, 0.70f, 1.0f, segAlpha));
                 }
-                else if (hasPending)
+            }
+            else if (hasPending)
+            {
+                // Fixed 3-slot queue buffer: immediate 1:1 visual on talk consume
+                if (i < pendingCount)
                 {
-                    // Fixed 3-slot queue buffer: immediate 1:1 visual on talk consume
-                    if (i < pendingCount)
-                    {
-                        Widgets.DrawBoxSolid(segRect, new Color(0.35f, 0.85f, 0.45f, 0.85f * _statusDotFade));
-                    }
+                    Widgets.DrawBoxSolid(segRect, new Color(0.35f, 0.85f, 0.45f, 0.85f * _statusDotFade));
                 }
             }
         }
