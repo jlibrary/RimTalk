@@ -296,7 +296,7 @@ Scriban 魔法 (動態內容)
     <RimTalk.Settings.Player2AuthReopen>重新開啟授權頁面</RimTalk.Settings.Player2AuthReopen>
     <RimTalk.Settings.Player2AuthCancel>取消授權</RimTalk.Settings.Player2AuthCancel>
     <RimTalk.Settings.GoogleApiKeyLabel>Google AI API 金鑰：</RimTalk.Settings.GoogleApiKeyLabel>
-    <RimTalk.Settings.GoogleApiKeyDesc>使用免費的 gemma-4-31b 模型。如需其他模型或提供商，請使用進階設定。</RimTalk.Settings.GoogleApiKeyDesc>
+    <RimTalk.Settings.GoogleApiKeyDesc>使用免費的 gemma-4-26b-a4b 模型。如需其他模型或提供商，請使用進階設定。</RimTalk.Settings.GoogleApiKeyDesc>
     <RimTalk.Settings.GetFreeApiKeyButton>獲取免費 API 金鑰</RimTalk.Settings.GetFreeApiKeyButton>
     <RimTalk.Settings.SwitchToAdvancedSettings>切換到進階設定</RimTalk.Settings.SwitchToAdvancedSettings>
     <RimTalk.Settings.SwitchToSimpleSettings>切換到簡易設定</RimTalk.Settings.SwitchToSimpleSettings>

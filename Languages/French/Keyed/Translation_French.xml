@@ -296,7 +296,7 @@ Conseils Cruciaux :
     <RimTalk.Settings.Player2AuthReopen>Rouvrir la page d'approbation</RimTalk.Settings.Player2AuthReopen>
     <RimTalk.Settings.Player2AuthCancel>Annuler l'autorisation</RimTalk.Settings.Player2AuthCancel>
     <RimTalk.Settings.GoogleApiKeyLabel>Clé API Google AI :</RimTalk.Settings.GoogleApiKeyLabel>
-    <RimTalk.Settings.GoogleApiKeyDesc>Utilise le modèle gratuit gemma-4-31b. Pour d'autres modèles ou fournisseurs, utilisez les Paramètres Avancés.</RimTalk.Settings.GoogleApiKeyDesc>
+    <RimTalk.Settings.GoogleApiKeyDesc>Utilise le modèle gratuit gemma-4-26b-a4b. Pour d'autres modèles ou fournisseurs, utilisez les Paramètres Avancés.</RimTalk.Settings.GoogleApiKeyDesc>
     <RimTalk.Settings.GetFreeApiKeyButton>Obtenir une clé API gratuite</RimTalk.Settings.GetFreeApiKeyButton>
     <RimTalk.Settings.SwitchToAdvancedSettings>Passer aux paramètres avancés</RimTalk.Settings.SwitchToAdvancedSettings>
     <RimTalk.Settings.SwitchToSimpleSettings>Passer aux paramètres simples</RimTalk.Settings.SwitchToSimpleSettings>
