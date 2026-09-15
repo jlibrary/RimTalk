@@ -460,6 +460,7 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.DebugWindow.UploadLog>ログをアップロード</RimTalk.DebugWindow.UploadLog>
     <RimTalk.DebugWindow.OpenSteamDiscussion>Steamスレッドを開く</RimTalk.DebugWindow.OpenSteamDiscussion>
     <RimTalk.DebugWindow.Undo>元に戻す</RimTalk.DebugWindow.Undo>
+    <RimTalk.DebugWindow.UndoTooltip>編集内容を元のリクエストに戻します。</RimTalk.DebugWindow.UndoTooltip>
     <RimTalk.DebugWindow.Prompt>プロンプト (Prompt)</RimTalk.DebugWindow.Prompt>
     <RimTalk.DebugWindow.Response>レスポンス (Response)</RimTalk.DebugWindow.Response>
     <RimTalk.DebugWindow.PromptMessages>リクエスト詳細</RimTalk.DebugWindow.PromptMessages>

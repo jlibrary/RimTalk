@@ -460,6 +460,7 @@
     <RimTalk.DebugWindow.UploadLog>Загрузить лог</RimTalk.DebugWindow.UploadLog>
     <RimTalk.DebugWindow.OpenSteamDiscussion>Открыть тему в Steam</RimTalk.DebugWindow.OpenSteamDiscussion>
     <RimTalk.DebugWindow.Undo>Отменить</RimTalk.DebugWindow.Undo>
+    <RimTalk.DebugWindow.UndoTooltip>Вернуть исходный запрос.</RimTalk.DebugWindow.UndoTooltip>
     <RimTalk.DebugWindow.Prompt>Промпт (Prompt)</RimTalk.DebugWindow.Prompt>
     <RimTalk.DebugWindow.Response>Ответ (Response)</RimTalk.DebugWindow.Response>
     <RimTalk.DebugWindow.PromptMessages>Подробности запроса</RimTalk.DebugWindow.PromptMessages>

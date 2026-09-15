@@ -56,6 +56,8 @@ public class Dialog_ApiLog : Window
     private bool _requestEditMode;
     private bool _requestUnescapeNewlines;
     private Vector2 _requestScrollPos = Vector2.zero;
+    private bool _isJsonValid = true;
+    private string _jsonSyntaxError;
 
     // Response section state
     private string _responseRaw;
@@ -73,9 +75,9 @@ public class Dialog_ApiLog : Window
         InitPayloadStrings();
 
         doCloseX = true;
-        closeOnClickedOutside = true;
         draggable = true;
         resizeable = true;
+        closeOnAccept = false;
         absorbInputAroundWindow = false;
         preventCameraMotion = false;
     }
@@ -94,8 +96,20 @@ public class Dialog_ApiLog : Window
         _requestRaw = p?.Request != null ? JsonUtil.PrettifyJson(p.Request) : string.Empty;
         _initialRequestRaw = _requestRaw;
         _requestUnescaped = JsonUtil.UnescapeNewlines(_requestRaw);
+        ValidateJson(_requestRaw);
 
         UpdateResponseStrings(p);
+    }
+
+    private void ValidateJson(string json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            _isJsonValid = true;
+            _jsonSyntaxError = null;
+            return;
+        }
+        _isJsonValid = JsonUtil.IsValidJson(json, out _jsonSyntaxError);
     }
 
     private void UpdateResponseStrings(Payload p)
@@ -183,6 +197,10 @@ public class Dialog_ApiLog : Window
             GUI.color = new Color(0.6f, 0.9f, 0.6f);
             Rect resendRect = new Rect(curBtnX, y, btnW, btnH);
             bool canResend = _apiLog == null ? (_onResend != null || _onResendCustomRequest != null) : (_apiLog.Channel != Channel.User);
+            if (_requestEditMode && !_isJsonValid)
+            {
+                canResend = false;
+            }
             GUI.enabled = canResend;
             if (Widgets.ButtonText(resendRect, "RimTalk.DebugWindow.Resend".Translate()))
             {
@@ -289,7 +307,17 @@ public class Dialog_ApiLog : Window
         float unescapeW = 150f;
         curX -= unescapeW;
         Rect unescapeRect = new Rect(curX, headerY, unescapeW, headerH);
+        bool prevUnescape = _requestUnescapeNewlines;
         Widgets.CheckboxLabeled(unescapeRect, "RimTalk.DebugWindow.UnescapeNewlines".Translate(), ref _requestUnescapeNewlines);
+        if (prevUnescape != _requestUnescapeNewlines)
+        {
+            if (_requestUnescapeNewlines)
+                _requestUnescaped = JsonUtil.UnescapeNewlines(_requestRaw);
+            else
+                _requestRaw = GetEffectiveRequestJson();
+
+            ValidateJson(_requestUnescapeNewlines ? _requestUnescaped : _requestRaw);
+        }
         TooltipHandler.TipRegion(unescapeRect, "RimTalk.DebugWindow.UnescapeNewlinesTooltip".Translate());
 
         // Edit mode toggle
@@ -299,16 +327,54 @@ public class Dialog_ApiLog : Window
         Widgets.CheckboxLabeled(editRect, "RimTalk.DebugWindow.EditMode".Translate(), ref _requestEditMode);
         TooltipHandler.TipRegion(editRect, "RimTalk.DebugWindow.EditModeTooltip".Translate());
 
+        // Undo button
+        float undoW = 60f;
+        curX -= (undoW + 8f);
+        Rect undoRect = new Rect(curX, headerY, undoW, headerH);
+        bool canUndo = !string.Equals(_requestRaw, _initialRequestRaw, StringComparison.Ordinal) ||
+                       !string.Equals(_requestUnescaped, JsonUtil.UnescapeNewlines(_initialRequestRaw), StringComparison.Ordinal);
+        GUI.enabled = canUndo;
+        if (Widgets.ButtonText(undoRect, "RimTalk.DebugWindow.Undo".Translate()))
+        {
+            _requestRaw = _initialRequestRaw;
+            _requestUnescaped = JsonUtil.UnescapeNewlines(_initialRequestRaw);
+            ValidateJson(_requestUnescapeNewlines ? _requestUnescaped : _requestRaw);
+            SoundDefOf.Click.PlayOneShotOnCamera();
+        }
+        GUI.enabled = true;
+        TooltipHandler.TipRegion(undoRect, "RimTalk.DebugWindow.UndoTooltip".Translate());
+
         // Copy button
         float copyW = 55f;
         curX -= (copyW + 8f);
         Rect copyRect = new Rect(curX, headerY, copyW, headerH);
         if (Widgets.ButtonText(copyRect, "RimTalk.DebugWindow.Copy".Translate()))
         {
-            GUIUtility.systemCopyBuffer = _requestRaw;
+            GUIUtility.systemCopyBuffer = GetEffectiveRequestJson();
             Messages.Message("RimTalk.DebugWindow.Copied".Translate(), MessageTypeDefOf.TaskCompletion, false);
         }
         TooltipHandler.TipRegion(copyRect, "RimTalk.DebugWindow.CopyClipboardTooltip".Translate());
+
+        // JSON validation status (shown in Edit Mode)
+        if (_requestEditMode)
+        {
+            float statusX = rect.x + 185f;
+            float statusW = Mathf.Max(60f, curX - statusX - 8f);
+            Rect statusRect = new Rect(statusX, headerY + 2f, statusW, headerH);
+            Color prevColor = GUI.color;
+            if (_isJsonValid)
+            {
+                GUI.color = new Color(0.4f, 0.9f, 0.4f);
+                Widgets.Label(statusRect, "RimTalk.Settings.CustomJsonValid".Translate());
+            }
+            else
+            {
+                GUI.color = new Color(1f, 0.5f, 0.4f);
+                Widgets.Label(statusRect, "RimTalk.Settings.CustomJsonInvalid".Translate(_jsonSyntaxError ?? string.Empty));
+                TooltipHandler.TipRegion(statusRect, _jsonSyntaxError ?? string.Empty);
+            }
+            GUI.color = prevColor;
+        }
 
         Text.Font = GameFont.Small;
 
@@ -321,8 +387,8 @@ public class Dialog_ApiLog : Window
         GUI.color = prevCol;
 
         float innerWidth = boxRect.width - 16f;
-        string rawText = (!_requestEditMode && _requestUnescapeNewlines) ? _requestUnescaped : _requestRaw;
-        string displayText = _requestEditMode ? _requestRaw : HighlightReport(rawText);
+        string currentText = _requestUnescapeNewlines ? _requestUnescaped : _requestRaw;
+        string displayText = _requestEditMode ? currentText : HighlightReport(currentText);
 
         GUIStyle activeStyle = _requestEditMode ? _editMonoStyle : _viewMonoStyle;
         float textCalcHeight = activeStyle.CalcHeight(new GUIContent(displayText), innerWidth);
@@ -334,11 +400,28 @@ public class Dialog_ApiLog : Window
         Rect textRect = new Rect(4f, 4f, innerWidth - 8f, contentHeight - 8f);
         if (_requestEditMode)
         {
-            string newText = GUI.TextArea(textRect, _requestRaw, _editMonoStyle);
-            if (newText != _requestRaw)
+            string newText = GUI.TextArea(textRect, currentText, _editMonoStyle);
+            if (newText != currentText)
             {
-                _requestRaw = newText;
-                _requestUnescaped = JsonUtil.UnescapeNewlines(newText);
+                ValidateJson(newText);
+                if (_requestUnescapeNewlines)
+                {
+                    _requestUnescaped = newText;
+                    try
+                    {
+                        var parsed = JsonUtil.ParseJsonValue(newText.Trim(), out _);
+                        _requestRaw = JsonUtil.SerializeJsonValue(parsed, indent: true);
+                    }
+                    catch
+                    {
+                        // Temporary syntax error while typing
+                    }
+                }
+                else
+                {
+                    _requestRaw = newText;
+                    _requestUnescaped = JsonUtil.UnescapeNewlines(newText);
+                }
             }
         }
         else
@@ -435,10 +518,30 @@ public class Dialog_ApiLog : Window
         }
     }
 
+    private string GetEffectiveRequestJson()
+    {
+        if (_requestUnescapeNewlines)
+        {
+            try
+            {
+                var parsed = JsonUtil.ParseJsonValue(_requestUnescaped.Trim(), out _);
+                _requestRaw = JsonUtil.SerializeJsonValue(parsed, indent: true);
+            }
+            catch
+            {
+                return _requestUnescaped;
+            }
+        }
+        return _requestRaw;
+    }
+
     private void ExecuteResend()
     {
-        // 1. Get edited request string (always up to date in _requestRaw)
-        string currentEditedRequest = _requestRaw;
+        if (_requestEditMode && !_isJsonValid)
+            return;
+
+        // 1. Get edited request string (always serialized to valid JSON)
+        string currentEditedRequest = GetEffectiveRequestJson();
 
         // 2. If custom callback is provided, invoke it with the edited request
         if (_onResendCustomRequest != null)
@@ -451,7 +554,7 @@ public class Dialog_ApiLog : Window
         if (_apiLog?.TalkRequest != null)
         {
             TalkRequest debugRequest = _apiLog.TalkRequest.Clone();
-            bool wasEdited = !string.Equals(_requestRaw, _initialRequestRaw, StringComparison.Ordinal);
+            bool wasEdited = !string.Equals(currentEditedRequest, _initialRequestRaw, StringComparison.Ordinal);
 
             if (wasEdited)
             {
@@ -772,7 +875,8 @@ public class Dialog_ApiLog : Window
             sb.AppendLine($"Error:    {p.ErrorMessage}");
         sb.AppendLine();
         sb.AppendLine("--- REQUEST PAYLOAD ---");
-        sb.AppendLine(string.IsNullOrEmpty(_requestRaw) ? "EMPTY" : _requestRaw);
+        string reqStr = GetEffectiveRequestJson();
+        sb.AppendLine(string.IsNullOrEmpty(reqStr) ? "EMPTY" : reqStr);
         sb.AppendLine();
         sb.AppendLine("--- RESPONSE PAYLOAD ---");
         if (IsResponseGenerating)

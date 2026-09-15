@@ -120,6 +120,7 @@ public class DebugWindow : Window
         closeOnClickedOutside = false;
         draggable = true;
         resizeable = true;
+        closeOnAccept = false;
         absorbInputAroundWindow = false;
         preventCameraMotion = false;
 

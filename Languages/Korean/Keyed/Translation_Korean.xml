@@ -486,6 +486,7 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.DebugWindow.UploadLog>로그 업로드</RimTalk.DebugWindow.UploadLog>
     <RimTalk.DebugWindow.OpenSteamDiscussion>스팀 토론 열기</RimTalk.DebugWindow.OpenSteamDiscussion>
     <RimTalk.DebugWindow.Undo>되돌리기</RimTalk.DebugWindow.Undo>
+    <RimTalk.DebugWindow.UndoTooltip>수정된 요청 내용을 원래대로 되돌립니다.</RimTalk.DebugWindow.UndoTooltip>
     <RimTalk.DebugWindow.Prompt>프롬프트 (Prompt)</RimTalk.DebugWindow.Prompt>
     <RimTalk.DebugWindow.Response>응답 (Response)</RimTalk.DebugWindow.Response>
     <RimTalk.DebugWindow.PromptMessages>요청 세부 정보</RimTalk.DebugWindow.PromptMessages>

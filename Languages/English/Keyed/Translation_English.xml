@@ -487,6 +487,7 @@ Crucial Tips:
     <RimTalk.DebugWindow.UploadLog>Upload Log</RimTalk.DebugWindow.UploadLog>
     <RimTalk.DebugWindow.OpenSteamDiscussion>Open Steam Discussion</RimTalk.DebugWindow.OpenSteamDiscussion>
     <RimTalk.DebugWindow.Undo>Undo</RimTalk.DebugWindow.Undo>
+    <RimTalk.DebugWindow.UndoTooltip>Revert request edits.</RimTalk.DebugWindow.UndoTooltip>
     <RimTalk.DebugWindow.Prompt>Prompt</RimTalk.DebugWindow.Prompt>
     <RimTalk.DebugWindow.Response>Response</RimTalk.DebugWindow.Response>
     <RimTalk.DebugWindow.PromptMessages>Request Details</RimTalk.DebugWindow.PromptMessages>

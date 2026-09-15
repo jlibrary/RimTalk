@@ -457,6 +457,7 @@ Scriban 魔法 (动态内容)
     <RimTalk.DebugWindow.UploadLog>上传日志</RimTalk.DebugWindow.UploadLog>
     <RimTalk.DebugWindow.OpenSteamDiscussion>打开 Steam 讨论区</RimTalk.DebugWindow.OpenSteamDiscussion>
     <RimTalk.DebugWindow.Undo>撤销</RimTalk.DebugWindow.Undo>
+    <RimTalk.DebugWindow.UndoTooltip>恢复请求修改。</RimTalk.DebugWindow.UndoTooltip>
     <RimTalk.DebugWindow.Prompt>提示词 (Prompt)</RimTalk.DebugWindow.Prompt>
     <RimTalk.DebugWindow.Response>响应 (Response)</RimTalk.DebugWindow.Response>
     <RimTalk.DebugWindow.PromptMessages>请求详情</RimTalk.DebugWindow.PromptMessages>

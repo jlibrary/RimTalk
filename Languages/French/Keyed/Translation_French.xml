@@ -461,6 +461,7 @@ Conseils Cruciaux :
     <RimTalk.DebugWindow.UploadLog>Téléverser le journal</RimTalk.DebugWindow.UploadLog>
     <RimTalk.DebugWindow.OpenSteamDiscussion>Ouvrir la discussion Steam</RimTalk.DebugWindow.OpenSteamDiscussion>
     <RimTalk.DebugWindow.Undo>Annuler</RimTalk.DebugWindow.Undo>
+    <RimTalk.DebugWindow.UndoTooltip>Rétablir la requête d'origine.</RimTalk.DebugWindow.UndoTooltip>
     <RimTalk.DebugWindow.Prompt>Prompt</RimTalk.DebugWindow.Prompt>
     <RimTalk.DebugWindow.Response>Réponse</RimTalk.DebugWindow.Response>
     <RimTalk.DebugWindow.PromptMessages>Détails de la demande</RimTalk.DebugWindow.PromptMessages>
