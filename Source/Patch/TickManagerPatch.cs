@@ -21,6 +21,11 @@ internal static class TickManagerPatch
     private static bool _chatHistoryCleared;
     private static int _lastTalkEndTick;
 
+    internal static void MarkCacheRefreshed()
+    {
+        _initialCacheRefresh = true;
+    }
+
     public static void Postfix()
     {
         Counter.Tick++;

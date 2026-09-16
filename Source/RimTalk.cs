@@ -19,12 +19,23 @@ public class RimTalk : GameComponent
     {
         base.StartedNewGame();
         Reset();
+        PostLoadInit();
     }
 
     public override void LoadedGame()
     {
         base.LoadedGame();
         Reset();
+        PostLoadInit();
+    }
+
+    private static void PostLoadInit()
+    {
+        if (Find.CurrentMap != null)
+        {
+            Cache.Refresh();
+            TickManagerPatch.MarkCacheRefreshed();
+        }
     }
 
     public static void Reset(bool soft = false)
@@ -42,16 +53,18 @@ public class RimTalk : GameComponent
         TalkHistory.Clear();
         PatchThoughtHandlerGetDistinctMoodThoughtGroups.Clear();
         Cache.GetAll().ToList().ForEach(pawnState => pawnState.IgnoreAllTalkResponses());
-        Cache.InitializePlayerPawn();
         UserRequestPool.Clear();
         SpeechBubbleDrawer.Clear();
 
-        if (soft) return;
+        if (!soft)
+        {
+            Counter.Tick = 0;
+            Cache.Clear();
+            Stats.Reset();
+            TalkRequestPool.Clear();
+            ApiHistory.Clear();
+        }
 
-        Counter.Tick = 0;
-        Cache.Clear();
-        Stats.Reset();
-        TalkRequestPool.Clear();
-        ApiHistory.Clear();
+        Cache.InitializePlayerPawn();
     }
 }

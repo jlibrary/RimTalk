@@ -48,14 +48,23 @@ public static class Cache
 
     public static void Refresh()
     {
+        if (Find.CurrentMap == null) return;
+
         // Identify and remove ineligible pawns from all caches.
-        foreach (var pawn in PawnCache.Keys.ToList())
+        foreach (var entry in PawnCache)
         {
+            var pawn = entry.Key;
+            if (pawn == null) continue;
+
             if (!pawn.IsTalkEligible())
             {
                 if (PawnCache.TryRemove(pawn, out var removedState))
                 {
-                    NameCache.TryRemove(removedState.Pawn.LabelShort, out _); 
+                    var shortLabel = removedState?.Pawn?.LabelShort;
+                    if (!string.IsNullOrEmpty(shortLabel))
+                    {
+                        NameCache.TryRemove(shortLabel, out _); 
+                    }
                 }
                 continue;
             }
@@ -72,19 +81,24 @@ public static class Cache
         InitializePlayerPawn();
 
         // Remove "Ghost Keys" (old names).
-        foreach (var entry in NameCache.ToArray())
+        foreach (var entry in NameCache)
         {
+            var key = entry.Key;
             var pawn = entry.Value;
-            if (pawn == null || !PawnCache.ContainsKey(pawn) || pawn.LabelShort != entry.Key)
+            if (string.IsNullOrEmpty(key)) continue;
+
+            if (pawn == null || !PawnCache.ContainsKey(pawn) || pawn.LabelShort != key)
             {
-                NameCache.TryRemove(entry.Key, out _);
+                NameCache.TryRemove(key, out _);
             }
         }
 
         // Add new eligible pawns to all caches.
-        foreach (Pawn pawn in Find.CurrentMap.mapPawns.AllPawnsSpawned)
+        var spawnedPawns = Find.CurrentMap.mapPawns.AllPawnsSpawned;
+        for (int i = 0; i < spawnedPawns.Count; i++)
         {
-            if (pawn.IsTalkEligible() && !PawnCache.ContainsKey(pawn))
+            var pawn = spawnedPawns[i];
+            if (!PawnCache.ContainsKey(pawn) && pawn.IsTalkEligible())
             {
                 PawnCache[pawn] = new PawnState(pawn);
                 NameCache[pawn.LabelShort] = pawn;
@@ -213,10 +227,32 @@ public static class Cache
 
     public static void InitializePlayerPawn()
     {
-        if (Current.Game == null || Settings.Get().PlayerName == _playerPawn?.Name.ToStringShort) return;
-        
+        if (Current.Game == null) return;
+
+        string playerName = Settings.Get()?.PlayerName;
+        if (string.IsNullOrEmpty(playerName))
+        {
+            playerName = "Player";
+        }
+
+        if (_playerPawn != null)
+        {
+            string oldName = _playerPawn.LabelShort;
+            if (oldName != playerName)
+            {
+                if (!string.IsNullOrEmpty(oldName))
+                {
+                    NameCache.TryRemove(oldName, out _);
+                }
+                _playerPawn.Name = new NameSingle(playerName);
+                PawnCache[_playerPawn] = new PawnState(_playerPawn);
+                NameCache[_playerPawn.LabelShort] = _playerPawn;
+            }
+            return;
+        }
+
         _playerPawn = PawnGenerator.GeneratePawn(PawnKindDefOf.Colonist);
-        _playerPawn.Name = new NameSingle(Settings.Get().PlayerName);
+        _playerPawn.Name = new NameSingle(playerName);
         PawnCache[_playerPawn] = new PawnState(_playerPawn);
         NameCache[_playerPawn.LabelShort] = _playerPawn;
     }

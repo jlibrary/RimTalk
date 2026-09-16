@@ -595,7 +595,37 @@ public static class PawnUtil
 
     public static Pawn GetHostilePawnNearBy(this Pawn pawn)
     {
-        return pawn.GetHostileThreatInfo().nearest;
+        if (pawn?.Map == null) return null;
+
+        Faction referenceFaction = GetReferenceFaction(pawn);
+        if (referenceFaction == null) return null;
+
+        var hostileTargets = pawn.Map.attackTargetsCache?.TargetsHostileToFaction(referenceFaction);
+        if (hostileTargets == null) return null;
+
+        Pawn closestPawn = null;
+        float closestDistSq = float.MaxValue;
+
+        foreach (var target in hostileTargets)
+        {
+            if (!GenHostility.IsActiveThreatTo(target, referenceFaction))
+                continue;
+
+            if (target.Thing is not Pawn threatPawn || threatPawn.Downed || threatPawn.Dead)
+                continue;
+
+            if (!IsValidThreat(pawn, threatPawn))
+                continue;
+
+            float distSq = pawn.Position.DistanceToSquared(threatPawn.Position);
+            if (distSq < closestDistSq)
+            {
+                closestDistSq = distSq;
+                closestPawn = threatPawn;
+            }
+        }
+
+        return closestPawn;
     }
 
     private static Faction GetReferenceFaction(Pawn pawn)

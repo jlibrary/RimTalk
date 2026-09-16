@@ -52,20 +52,21 @@ public static class InteractionLogPatch
         Pawn initiator = InitiatorField?.GetValue(interaction) as Pawn;
         if (initiator == null || initiator.Map != Find.CurrentMap) return;
 
+        // Fast-path: Skip immediately if initiator is not cached/eligible or already has queued requests
+        var pawnState = Cache.Get(initiator);
+        if (pawnState == null || (!isFastTrack && isChitchat && pawnState.TalkRequests.Count > 0))
+            return;
+
         Pawn recipient = RecipientField?.GetValue(interaction) as Pawn;
 
         // If in danger then stop chitchat
         if (!isFastTrack && isChitchat
             && (initiator.IsInDanger()
                 || initiator.GetHostilePawnNearBy() != null
-                || (recipient != null && !PawnSelector.GetNearByTalkablePawns(initiator).Contains(recipient))))
+                || (recipient != null && !IsRecipientNearbyAndTalkable(initiator, recipient))))
         {
             return;
         }
-
-        var pawnState = Cache.Get(initiator);
-        if (pawnState == null || (!isFastTrack && isChitchat && pawnState.TalkRequests.Count > 0))
-            return;
 
         if (isFastTrack)
         {
@@ -85,6 +86,22 @@ public static class InteractionLogPatch
         string prompt = interaction.ToGameStringFromPOV(initiator).StripTags();
         prompt = $"{prompt} ({interactionDef.label})";
         pawnState.AddTalkRequest(prompt, recipient, isFastTrack ? TalkType.Interaction : TalkType.Chitchat);
+    }
+
+    private static bool IsRecipientNearbyAndTalkable(Pawn initiator, Pawn recipient)
+    {
+        if (recipient == null || recipient == initiator || recipient.Map != initiator.Map) return false;
+
+        var recipientState = Cache.Get(recipient);
+        if (recipientState == null || !recipientState.CanGenerateTalk()) return false;
+
+        float hearingLevel = (float)recipient.health.capacities.GetLevel(PawnCapacityDefOf.Hearing);
+        if (hearingLevel <= 0f) return false;
+
+        float detectionDistance = 10f * hearingLevel;
+        if (!initiator.Position.InHorDistOf(recipient.Position, detectionDistance)) return false;
+
+        return initiator.GetRoom() == recipient.GetRoom();
     }
 
     public static bool IsRimTalkInteraction(LogEntry entry)
