@@ -38,6 +38,7 @@ public class TalkRequest(string prompt, Pawn initiator, Pawn recipient = null, T
     public bool IsMonologue;
     public bool IsAnnouncement => TalkType == TalkType.Announcement;
     public string ImageBase64 { get; set; }
+    public string RawJsonOverride { get; set; }
     public SleepDialogueKind SleepDialogueKind { get; set; }
     
     /// <summary>

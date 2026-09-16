@@ -63,6 +63,19 @@ public class Dialog_ApiLog : Window
     private string _responseRaw;
     private Vector2 _responseScrollPos = Vector2.zero;
 
+    // Search state
+    private string _searchText = string.Empty;
+    private int _currentMatchIndex = -1;
+    private readonly List<SearchMatch> _matches = new();
+    private float _lastRequestWidth = 800f;
+    private float _lastResponseWidth = 800f;
+
+    private struct SearchMatch
+    {
+        public bool IsRequest;
+        public int CharIndex;
+    }
+
     // GUI Styles
     private GUIStyle _viewMonoStyle;
     private GUIStyle _editMonoStyle;
@@ -121,6 +134,7 @@ public class Dialog_ApiLog : Window
             resp = resp.Replace("```jsonl", "").Replace("```json", "").Replace("```", "").Trim();
         }
         _responseRaw = resp != null ? JsonUtil.PrettifyJson(resp) : string.Empty;
+        UpdateSearchMatches(scrollToMatch: false);
     }
 
     private void CheckTrackedResponse()
@@ -297,19 +311,17 @@ public class Dialog_ApiLog : Window
         // Header Title
         Text.Font = GameFont.Tiny;
         GUI.color = new Color(0.5f, 0.85f, 1f);
-        Widgets.Label(new Rect(rect.x, headerY + 2f, 180f, headerH), "--- REQUEST PAYLOAD (JSON) ---");
+        Widgets.Label(new Rect(rect.x, headerY + 2f, 175f, headerH), "--- REQUEST PAYLOAD (JSON) ---");
         GUI.color = Color.white;
 
         // Header Controls (Right-aligned)
         float curX = rect.xMax;
 
-        // Readable newlines toggle
-        float unescapeW = 150f;
+        // 1. Readable newlines toggle
+        string unescapeLabel = "RimTalk.DebugWindow.UnescapeNewlines".Translate();
+        float unescapeW = Text.CalcSize(unescapeLabel).x + 28f;
         curX -= unescapeW;
-        Rect unescapeRect = new Rect(curX, headerY, unescapeW, headerH);
-        bool prevUnescape = _requestUnescapeNewlines;
-        Widgets.CheckboxLabeled(unescapeRect, "RimTalk.DebugWindow.UnescapeNewlines".Translate(), ref _requestUnescapeNewlines);
-        if (prevUnescape != _requestUnescapeNewlines)
+        if (DrawToggle(new Rect(curX, headerY, unescapeW, headerH), unescapeLabel, ref _requestUnescapeNewlines, "RimTalk.DebugWindow.UnescapeNewlinesTooltip".Translate()))
         {
             if (_requestUnescapeNewlines)
                 _requestUnescaped = JsonUtil.UnescapeNewlines(_requestRaw);
@@ -317,63 +329,79 @@ public class Dialog_ApiLog : Window
                 _requestRaw = GetEffectiveRequestJson();
 
             ValidateJson(_requestUnescapeNewlines ? _requestUnescaped : _requestRaw);
+            UpdateSearchMatches(scrollToMatch: false);
         }
-        TooltipHandler.TipRegion(unescapeRect, "RimTalk.DebugWindow.UnescapeNewlinesTooltip".Translate());
 
-        // Edit mode toggle
-        float editW = 90f;
-        curX -= (editW + 8f);
-        Rect editRect = new Rect(curX, headerY, editW, headerH);
-        Widgets.CheckboxLabeled(editRect, "RimTalk.DebugWindow.EditMode".Translate(), ref _requestEditMode);
-        TooltipHandler.TipRegion(editRect, "RimTalk.DebugWindow.EditModeTooltip".Translate());
+        // 2. Edit mode toggle
+        curX -= 10f;
+        string editLabel = "RimTalk.DebugWindow.EditMode".Translate();
+        float editW = Text.CalcSize(editLabel).x + 28f;
+        curX -= editW;
+        if (DrawToggle(new Rect(curX, headerY, editW, headerH), editLabel, ref _requestEditMode, "RimTalk.DebugWindow.EditModeTooltip".Translate()))
+        {
+            UpdateSearchMatches(scrollToMatch: false);
+        }
 
-        // Undo button
-        float undoW = 60f;
-        curX -= (undoW + 8f);
-        Rect undoRect = new Rect(curX, headerY, undoW, headerH);
+        // 3. Undo button (icon)
+        curX -= 10f;
+        float iconSize = 20f;
+        curX -= iconSize;
+        Rect undoRect = new Rect(curX, headerY + 2f, iconSize, iconSize);
         bool canUndo = !string.Equals(_requestRaw, _initialRequestRaw, StringComparison.Ordinal) ||
                        !string.Equals(_requestUnescaped, JsonUtil.UnescapeNewlines(_initialRequestRaw), StringComparison.Ordinal);
-        GUI.enabled = canUndo;
-        if (Widgets.ButtonText(undoRect, "RimTalk.DebugWindow.Undo".Translate()))
+        GUI.color = canUndo ? Color.white : new Color(1f, 1f, 1f, 0.35f);
+        if (Widgets.ButtonImage(undoRect, TexButton.HotReloadDefs) && canUndo)
         {
             _requestRaw = _initialRequestRaw;
             _requestUnescaped = JsonUtil.UnescapeNewlines(_initialRequestRaw);
             ValidateJson(_requestUnescapeNewlines ? _requestUnescaped : _requestRaw);
+            UpdateSearchMatches(scrollToMatch: false);
             SoundDefOf.Click.PlayOneShotOnCamera();
         }
-        GUI.enabled = true;
+        GUI.color = Color.white;
         TooltipHandler.TipRegion(undoRect, "RimTalk.DebugWindow.UndoTooltip".Translate());
 
-        // Copy button
-        float copyW = 55f;
-        curX -= (copyW + 8f);
-        Rect copyRect = new Rect(curX, headerY, copyW, headerH);
-        if (Widgets.ButtonText(copyRect, "RimTalk.DebugWindow.Copy".Translate()))
+        // 4. Copy button (icon)
+        curX -= 6f;
+        curX -= iconSize;
+        Rect copyRect = new Rect(curX, headerY + 2f, iconSize, iconSize);
+        if (Widgets.ButtonImage(copyRect, TexButton.Copy))
         {
             GUIUtility.systemCopyBuffer = GetEffectiveRequestJson();
             Messages.Message("RimTalk.DebugWindow.Copied".Translate(), MessageTypeDefOf.TaskCompletion, false);
         }
         TooltipHandler.TipRegion(copyRect, "RimTalk.DebugWindow.CopyClipboardTooltip".Translate());
 
-        // JSON validation status (shown in Edit Mode)
-        if (_requestEditMode)
+        // 5. Middle area: Search bar (view mode) OR JSON validation status (edit mode)
+        curX -= 12f;
+        float middleX = rect.x + 200f;
+        float middleW = curX - middleX;
+        if (middleW > 60f)
         {
-            float statusX = rect.x + 185f;
-            float statusW = Mathf.Max(60f, curX - statusX - 8f);
-            Rect statusRect = new Rect(statusX, headerY + 2f, statusW, headerH);
-            Color prevColor = GUI.color;
-            if (_isJsonValid)
+            if (_requestEditMode)
             {
-                GUI.color = new Color(0.4f, 0.9f, 0.4f);
-                Widgets.Label(statusRect, "RimTalk.Settings.CustomJsonValid".Translate());
+                string statusLabel = _isJsonValid
+                    ? "RimTalk.Settings.CustomJsonValid".Translate()
+                    : "RimTalk.Settings.CustomJsonInvalid".Translate(_jsonSyntaxError ?? string.Empty);
+                Text.Font = GameFont.Tiny;
+                float statusTextW = Text.CalcSize(statusLabel).x + 12f;
+                float statusW = Mathf.Clamp(statusTextW, 80f, middleW);
+                float statusX = curX - statusW - 6f;
+
+                Rect statusRect = new Rect(statusX, headerY + 2f, statusW, headerH);
+                Color prevColor = GUI.color;
+                GUI.color = _isJsonValid ? new Color(0.4f, 0.9f, 0.4f) : new Color(1f, 0.5f, 0.4f);
+                Widgets.Label(statusRect, statusLabel);
+                if (!_isJsonValid) TooltipHandler.TipRegion(statusRect, _jsonSyntaxError ?? string.Empty);
+                GUI.color = prevColor;
             }
             else
             {
-                GUI.color = new Color(1f, 0.5f, 0.4f);
-                Widgets.Label(statusRect, "RimTalk.Settings.CustomJsonInvalid".Translate(_jsonSyntaxError ?? string.Empty));
-                TooltipHandler.TipRegion(statusRect, _jsonSyntaxError ?? string.Empty);
+                bool hasSearch = !string.IsNullOrWhiteSpace(_searchText);
+                float searchW = Mathf.Clamp(hasSearch ? 190f : 120f, 60f, middleW);
+                float searchX = curX - searchW - 6f;
+                DrawSearchBar(new Rect(searchX, headerY, searchW, headerH));
             }
-            GUI.color = prevColor;
         }
 
         Text.Font = GameFont.Small;
@@ -387,8 +415,14 @@ public class Dialog_ApiLog : Window
         GUI.color = prevCol;
 
         float innerWidth = boxRect.width - 16f;
+        _lastRequestWidth = innerWidth;
         string currentText = _requestUnescapeNewlines ? _requestUnescaped : _requestRaw;
         string displayText = _requestEditMode ? currentText : HighlightReport(currentText);
+
+        if (!_requestEditMode && !string.IsNullOrWhiteSpace(_searchText) && _matches.Count > 0)
+        {
+            displayText = ApplySearchHighlight(displayText, _searchText.Trim());
+        }
 
         GUIStyle activeStyle = _requestEditMode ? _editMonoStyle : _viewMonoStyle;
         float textCalcHeight = activeStyle.CalcHeight(new GUIContent(displayText), innerWidth);
@@ -422,6 +456,7 @@ public class Dialog_ApiLog : Window
                     _requestRaw = newText;
                     _requestUnescaped = JsonUtil.UnescapeNewlines(newText);
                 }
+                UpdateSearchMatches(scrollToMatch: false);
             }
         }
         else
@@ -465,17 +500,18 @@ public class Dialog_ApiLog : Window
         // Header Controls (Right-aligned)
         float curX = rect.xMax;
 
-        // Copy button
-        float copyW = 55f;
-        curX -= (copyW + 8f);
-        Rect copyRect = new Rect(curX, headerY, copyW, headerH);
-        GUI.enabled = !isGenerating && !string.IsNullOrEmpty(_responseRaw);
-        if (Widgets.ButtonText(copyRect, "RimTalk.DebugWindow.Copy".Translate()))
+        // Copy button (icon)
+        float iconSize = 20f;
+        curX -= iconSize;
+        Rect copyRect = new Rect(curX, headerY + 2f, iconSize, iconSize);
+        bool canCopy = !isGenerating && !string.IsNullOrEmpty(_responseRaw);
+        GUI.color = canCopy ? Color.white : new Color(1f, 1f, 1f, 0.35f);
+        if (Widgets.ButtonImage(copyRect, TexButton.Copy) && canCopy)
         {
             GUIUtility.systemCopyBuffer = _responseRaw;
             Messages.Message("RimTalk.DebugWindow.Copied".Translate(), MessageTypeDefOf.TaskCompletion, false);
         }
-        GUI.enabled = true;
+        GUI.color = Color.white;
         TooltipHandler.TipRegion(copyRect, "RimTalk.DebugWindow.CopyClipboardTooltip".Translate());
 
         Text.Font = GameFont.Small;
@@ -499,7 +535,13 @@ public class Dialog_ApiLog : Window
         }
 
         float innerWidth = boxRect.width - 16f;
+        _lastResponseWidth = innerWidth;
         string displayText = HighlightReport(_responseRaw);
+
+        if (!string.IsNullOrWhiteSpace(_searchText) && _matches.Count > 0)
+        {
+            displayText = ApplySearchHighlight(displayText, _searchText.Trim());
+        }
 
         float textCalcHeight = _viewMonoStyle.CalcHeight(new GUIContent(displayText), innerWidth);
         float contentHeight = Mathf.Max(boxRect.height, textCalcHeight + 20f);
@@ -550,7 +592,7 @@ public class Dialog_ApiLog : Window
             return;
         }
 
-        // 3. Try to synchronize edited Request JSON into TalkRequest.PromptMessages
+        // 3. Dispatch resend with raw JSON override if edited
         if (_apiLog?.TalkRequest != null)
         {
             TalkRequest debugRequest = _apiLog.TalkRequest.Clone();
@@ -558,15 +600,7 @@ public class Dialog_ApiLog : Window
 
             if (wasEdited)
             {
-                if (!ApplyEditedRequestJsonToTalkRequest(debugRequest, currentEditedRequest))
-                {
-                    Messages.Message("RimTalk.DebugWindow.JsonParseError".Translate(), MessageTypeDefOf.RejectInput, false);
-                    return;
-                }
-            }
-            else
-            {
-                ApplyEditedRequestJsonToTalkRequest(debugRequest, currentEditedRequest);
+                debugRequest.RawJsonOverride = currentEditedRequest;
             }
 
             _trackedResendRequest = debugRequest;
@@ -579,76 +613,6 @@ public class Dialog_ApiLog : Window
 
         // 4. Fallback to existing onResend callback
         _onResend?.Invoke();
-    }
-
-    private static bool ApplyEditedRequestJsonToTalkRequest(TalkRequest request, string json)
-    {
-        if (string.IsNullOrWhiteSpace(json) || request == null) return false;
-
-        try
-        {
-            var parsed = JsonUtil.ParseJsonValue(json.Trim(), out _) as Dictionary<string, object>;
-            if (parsed == null || !parsed.TryGetValue("messages", out var messagesObj)) return false;
-
-            if (messagesObj is List<object> msgList)
-            {
-                var newPromptMessages = new List<(Role role, string content)>();
-                var newSegments = new List<PromptMessageSegment>();
-                int idx = 0;
-
-                foreach (var item in msgList)
-                {
-                    if (item is Dictionary<string, object> msgDict)
-                    {
-                        string roleStr = msgDict.TryGetValue("role", out var r) ? r?.ToString() : "user";
-                        Role role = roleStr?.ToLowerInvariant() switch
-                        {
-                            "system" => Role.System,
-                            "assistant" => Role.AI,
-                            _ => Role.User
-                        };
-
-                        string content = string.Empty;
-                        if (msgDict.TryGetValue("content", out var cObj))
-                        {
-                            if (cObj is string s)
-                            {
-                                content = s;
-                            }
-                            else if (cObj is List<object> contentParts)
-                            {
-                                // Handle multimodal content array [{type: "text", text: "..."}]
-                                foreach (var part in contentParts)
-                                {
-                                    if (part is Dictionary<string, object> partDict &&
-                                        partDict.TryGetValue("text", out var textVal) && textVal is string textStr)
-                                    {
-                                        content += textStr;
-                                    }
-                                }
-                            }
-                        }
-
-                        newPromptMessages.Add((role, content));
-                        newSegments.Add(new PromptMessageSegment($"message-{idx}", $"Message {idx + 1}", role, content));
-                        idx++;
-                    }
-                }
-
-                if (newPromptMessages.Count > 0)
-                {
-                    request.PromptMessages = newPromptMessages;
-                    request.PromptMessageSegments = newSegments;
-                    return true;
-                }
-            }
-            return false;
-        }
-        catch (Exception ex)
-        {
-            Logger.Warning($"Failed to apply edited JSON to TalkRequest: {ex.Message}");
-            return false;
-        }
     }
 
     private static void ResendTalkRequest(TalkRequest debugRequest, Channel channel)
@@ -729,8 +693,8 @@ public class Dialog_ApiLog : Window
         text = Regex.Replace(text, @"((?:^|\\n|\r?\n)#{1,3}\s+[^\r\n""\\]+)(?=$|\\n|\r?\n)", "<color=#4ec9b0><b>$1</b></color>");
 
         // Section tags like [Environment], [P1], [P2]
-        text = Regex.Replace(text, @"((?:^|\\n|\r?\n)\[[^\]\r\n\\]+\])(?=$|\\n|\r?\n)", "<color=#e5c07b><b>$1</b></color>");
-
+        text = Regex.Replace(text, @"\[[^\]\r\n\\]+\]", "<color=#e5c07b><b>$0</b></color>");
+        
         // Key attributes at line start (e.g. Time:, Season:, Location:, Skills:, Role:)
         text = Regex.Replace(text, @"((?:^|\\n|\r?\n)[A-Z][A-Za-z0-9_\- ]{1,25}:)(?!\/\/)", "<color=#56b6c2>$1</color>");
 
@@ -738,6 +702,148 @@ public class Dialog_ApiLog : Window
         text = Regex.Replace(text, @"(\\(?:r\\n|n|r))", "<color=#d19a66><b>$1</b></color>");
 
         return text;
+    }
+
+    private static bool DrawToggle(Rect rect, string label, ref bool val, string tooltip = null)
+    {
+        float boxSize = 20f;
+        Rect boxRect = new Rect(rect.x, rect.y + (rect.height - boxSize) * 0.5f, boxSize, boxSize);
+        Rect labelRect = new Rect(boxRect.xMax + 5f, rect.y + 2f, rect.width - boxSize - 5f, rect.height);
+
+        bool prev = val;
+        Widgets.Checkbox(new Vector2(boxRect.x, boxRect.y), ref val, boxSize);
+
+        if (Widgets.ButtonInvisible(labelRect))
+        {
+            val = !val;
+            SoundDefOf.Click.PlayOneShotOnCamera();
+        }
+
+        Text.Font = GameFont.Tiny;
+        Widgets.Label(labelRect, label);
+        if (!string.IsNullOrEmpty(tooltip)) TooltipHandler.TipRegion(rect, tooltip);
+        return val != prev;
+    }
+
+    private void DrawSearchBar(Rect rect)
+    {
+        bool hasSearch = !string.IsNullOrWhiteSpace(_searchText);
+        string countLabel = _matches.Count > 0 ? $"{_currentMatchIndex + 1}/{_matches.Count}" : "0";
+        Text.Font = GameFont.Tiny;
+        float countW = hasSearch ? Mathf.Max(36f, Text.CalcSize(countLabel).x + 8f) : 0f;
+        float arrowBtnW = 18f;
+        float navW = hasSearch ? countW + (arrowBtnW * 2f) + 6f : 0f;
+
+        float inputW = rect.width - navW;
+        Rect inputRect = new Rect(rect.x, rect.y, Mathf.Max(50f, inputW), rect.height);
+
+        string newSearch = Widgets.TextField(inputRect, _searchText);
+        if (string.IsNullOrEmpty(newSearch))
+        {
+            var prevCol = GUI.color;
+            GUI.color = new Color(0.6f, 0.6f, 0.6f, 0.7f);
+            Text.Anchor = TextAnchor.MiddleLeft;
+            Widgets.Label(new Rect(inputRect.x + 4f, inputRect.y, inputRect.width - 4f, inputRect.height), "RimTalk.DebugWindow.Search".Translate());
+            Text.Anchor = TextAnchor.UpperLeft;
+            GUI.color = prevCol;
+        }
+
+        if (newSearch != _searchText)
+        {
+            _searchText = newSearch;
+            UpdateSearchMatches(scrollToMatch: true);
+        }
+
+        if (hasSearch)
+        {
+            float curX = inputRect.xMax + 2f;
+            Text.Anchor = TextAnchor.MiddleCenter;
+            Text.Font = GameFont.Tiny;
+            GUI.color = _matches.Count > 0 ? Color.white : new Color(1f, 0.45f, 0.45f);
+            Widgets.Label(new Rect(curX, rect.y, countW, rect.height), countLabel);
+            GUI.color = Color.white;
+            Text.Anchor = TextAnchor.UpperLeft;
+
+            curX += countW + 2f;
+            GUI.enabled = _matches.Count > 0;
+            if (Widgets.ButtonText(new Rect(curX, rect.y, arrowBtnW, rect.height), "▲")) PrevMatch();
+            if (Widgets.ButtonText(new Rect(curX + arrowBtnW + 2f, rect.y, arrowBtnW, rect.height), "▼")) NextMatch();
+            GUI.enabled = true;
+        }
+    }
+
+    private void UpdateSearchMatches(bool scrollToMatch = true)
+    {
+        _matches.Clear();
+        _currentMatchIndex = -1;
+        string needle = _searchText?.Trim();
+        if (string.IsNullOrEmpty(needle)) return;
+
+        // 1. Search Request (only in view mode)
+        if (!_requestEditMode)
+        {
+            string reqText = _requestUnescapeNewlines ? _requestUnescaped : _requestRaw;
+            if (!string.IsNullOrEmpty(reqText))
+            {
+                for (int idx = 0; (idx = reqText.IndexOf(needle, idx, StringComparison.OrdinalIgnoreCase)) >= 0; idx += needle.Length)
+                    _matches.Add(new SearchMatch { IsRequest = true, CharIndex = idx });
+            }
+        }
+
+        // 2. Search Response
+        if (!string.IsNullOrEmpty(_responseRaw))
+        {
+            for (int idx = 0; (idx = _responseRaw.IndexOf(needle, idx, StringComparison.OrdinalIgnoreCase)) >= 0; idx += needle.Length)
+                _matches.Add(new SearchMatch { IsRequest = false, CharIndex = idx });
+        }
+
+        if (_matches.Count > 0)
+        {
+            _currentMatchIndex = 0;
+            if (scrollToMatch) ScrollToCurrentMatch();
+        }
+    }
+
+    private void NextMatch()
+    {
+        if (_matches.Count == 0) return;
+        _currentMatchIndex = (_currentMatchIndex + 1) % _matches.Count;
+        ScrollToCurrentMatch();
+    }
+
+    private void PrevMatch()
+    {
+        if (_matches.Count == 0) return;
+        _currentMatchIndex = (_currentMatchIndex - 1 + _matches.Count) % _matches.Count;
+        ScrollToCurrentMatch();
+    }
+
+    private void ScrollToCurrentMatch()
+    {
+        if (_currentMatchIndex < 0 || _currentMatchIndex >= _matches.Count) return;
+        var match = _matches[_currentMatchIndex];
+
+        if (match.IsRequest)
+        {
+            string reqText = _requestUnescapeNewlines ? _requestUnescaped : _requestRaw;
+            if (string.IsNullOrEmpty(reqText) || match.CharIndex > reqText.Length) return;
+
+            float matchY = _viewMonoStyle?.CalcHeight(new GUIContent(reqText.Substring(0, match.CharIndex)), _lastRequestWidth) ?? 0f;
+            _requestScrollPos.y = Mathf.Max(0f, matchY - 60f);
+        }
+        else if (!string.IsNullOrEmpty(_responseRaw) && match.CharIndex <= _responseRaw.Length)
+        {
+            float matchY = _viewMonoStyle?.CalcHeight(new GUIContent(_responseRaw.Substring(0, match.CharIndex)), _lastResponseWidth) ?? 0f;
+            _responseScrollPos.y = Mathf.Max(0f, matchY - 40f);
+        }
+    }
+
+    private static string ApplySearchHighlight(string text, string needle)
+    {
+        if (string.IsNullOrEmpty(text) || string.IsNullOrWhiteSpace(needle)) return text ?? string.Empty;
+        return Regex.Replace(text, @"</?[^>]+>|(" + Regex.Escape(needle) + ")",
+            m => m.Groups[1].Success ? $"<color=#FFE066><b>{m.Value}</b></color>" : m.Value,
+            RegexOptions.IgnoreCase);
     }
 
     private const string SteamDiscussionUrl = "https://steamcommunity.com/workshop/filedetails/discussion/3551203752/690871474424385068/";

@@ -147,6 +147,9 @@ public class Player2Client : IAIClient
 
     private string BuildRequestJson(List<(Role role, string message)> prefixMessages, List<(Role role, string message)> messages, bool stream, string imageBase64 = null)
     {
+        if (!string.IsNullOrEmpty(AIService.CurrentRequest?.RawJsonOverride))
+            return AIService.CurrentRequest.RawJsonOverride;
+
         var request = new ChatRequest
         {
             Stream = stream,

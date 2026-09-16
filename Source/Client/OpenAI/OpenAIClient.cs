@@ -72,11 +72,12 @@ public class OpenAIClient(
         return await ExecuteWithFallbackAsync(async reasoningLevel =>
         {
             string jsonContent = BuildRequestJson(prefixMessages, messages, stream: false, imageBase64: imageBase64, reasoningLevel: reasoningLevel);
-            onRequestPrepared?.Invoke(new Payload(_endpointUrl, model, jsonContent, null, 0));
+            string effectiveModel = GetEffectiveModel(jsonContent);
+            onRequestPrepared?.Invoke(new Payload(_endpointUrl, effectiveModel, jsonContent, null, 0));
             string responseText = await SendRequestAsync(jsonContent, new DownloadHandlerBuffer());
 
             var response = JsonUtil.DeserializeFromJson<OpenAIResponse>(responseText);
-            return new Payload(_endpointUrl, model, jsonContent, response?.Choices?[0]?.Message?.Content, response?.Usage?.TotalTokens ?? 0)
+            return new Payload(_endpointUrl, effectiveModel, jsonContent, response?.Choices?[0]?.Message?.Content, response?.Usage?.TotalTokens ?? 0)
             {
                 StatusCode = 200
             };
@@ -115,12 +116,13 @@ public class OpenAIClient(
         return await ExecuteWithFallbackAsync(async reasoningLevel =>
         {
             string jsonContent = BuildRequestJson(prefixMessages, messages, stream: true, imageBase64: imageBase64, reasoningLevel: reasoningLevel);
-            onRequestPrepared?.Invoke(new Payload(_endpointUrl, model, jsonContent, null, 0));
+            string effectiveModel = GetEffectiveModel(jsonContent);
+            onRequestPrepared?.Invoke(new Payload(_endpointUrl, effectiveModel, jsonContent, null, 0));
 
             var streamHandler = new OpenAIStreamHandler(onChunk);
             await SendRequestAsync(jsonContent, streamHandler);
 
-            return new Payload(_endpointUrl, model, jsonContent, streamHandler.GetFullText(),
+            return new Payload(_endpointUrl, effectiveModel, jsonContent, streamHandler.GetFullText(),
                 streamHandler.GetTotalTokens())
             {
                 StatusCode = 200
@@ -130,6 +132,9 @@ public class OpenAIClient(
 
     private async Task<Payload> ExecuteWithFallbackAsync(Func<string, Task<Payload>> requestFunc)
     {
+        if (!string.IsNullOrEmpty(AIService.CurrentRequest?.RawJsonOverride))
+            return await requestFunc(null);
+
         bool userOverrodeReasoning = !string.IsNullOrWhiteSpace(customRequestJson) &&
             (customRequestJson.Contains("\"thinking\"") || customRequestJson.Contains("\"reasoning_effort\""));
 
@@ -193,10 +198,24 @@ public class OpenAIClient(
         return null;
     }
 
+    private string GetEffectiveModel(string jsonContent)
+    {
+        if (!string.IsNullOrEmpty(AIService.CurrentRequest?.RawJsonOverride))
+        {
+            var parsed = JsonUtil.ParseJsonValue(jsonContent, out _) as Dictionary<string, object>;
+            if (parsed != null && parsed.TryGetValue("model", out var m) && m is string mStr && !string.IsNullOrWhiteSpace(mStr))
+                return mStr;
+        }
+        return model;
+    }
+
     private string BuildRequestJson(List<(Role role, string message)> prefixMessages,
         List<(Role role, string message)> messages, bool stream, string imageBase64 = null,
         string reasoningLevel = null)
     {
+        if (!string.IsNullOrEmpty(AIService.CurrentRequest?.RawJsonOverride))
+            return AIService.CurrentRequest.RawJsonOverride;
+        
         bool disableThinking = reasoningLevel == "disabled";
         string effort = reasoningLevel is "minimal" or "low" ? reasoningLevel : null;
 
