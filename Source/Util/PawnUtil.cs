@@ -430,11 +430,15 @@ public static class PawnUtil
         if (nearestHostile != null)
         {
             float distance = pawn.Position.DistanceTo(nearestHostile.Position);
-            string scaleLabel = threatCount == 1 ? "1 Hostile" : $"{threatCount} Hostiles";
+            Faction referenceFaction = GetReferenceFaction(pawn);
+            bool isMentalBreak = threatCount == 1 && nearestHostile.InMentalState && referenceFaction != null && nearestHostile.Faction == referenceFaction;
+            string scaleLabel = isMentalBreak
+                ? "Mental Break"
+                : (threatCount == 1 ? "1 Hostile" : $"{threatCount} Hostiles");
 
             if (distance <= 10f)
             {
-                lines.Add($"Combat ({dangerAssessment}): Engaging in battle with {GetThreatLabel(nearestHostile)}!");
+                lines.Add($"Combat ({dangerAssessment}): Engaging in battle with {GetThreatLabel(nearestHostile, referenceFaction)}!");
                 isInDanger = true;
             }
             else if (distance <= 20f)
@@ -532,7 +536,7 @@ public static class PawnUtil
                 fleeingCount++;
             }
 
-            string label = GetThreatLabel(threatPawn);
+            string label = GetThreatLabel(threatPawn, referenceFaction);
             threatCounts[label] = threatCounts.TryGetValue(label, out int c) ? c + 1 : 1;
 
             float distSq = pawn.Position.DistanceToSquared(threatPawn.Position);
@@ -637,9 +641,13 @@ public static class PawnUtil
         return true;
     }
 
-    private static string GetThreatLabel(Pawn threat)
+    private static string GetThreatLabel(Pawn threat, Faction referenceFaction = null)
     {
         if (threat == null) return "unknown threat";
+
+        var allyFaction = referenceFaction ?? Faction.OfPlayer;
+        if (allyFaction != null && threat.Faction == allyFaction)
+            return $"{threat.LabelShort} ({threat.MentalStateDef?.label ?? "ally"})";
 
         if (threat.RaceProps.Humanlike)
         {
