@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using RimTalk.Service;
 using RimTalk.Source.Data;
 using RimTalk.Util;
 using RimWorld;
@@ -190,14 +191,29 @@ public class PawnState(Pawn pawn)
     {
         DrainIncomingTalkResponses();
         if (keepTypes == null)
+        {
             while (TalkResponses.Count > 0)
                 IgnoreTalkResponse();
+        }
         else
+        {
             TalkResponses.RemoveAll(response =>
             {
                 if (keepTypes.Contains(response.TalkType)) return false;
                 TalkHistory.AddIgnored(response.Id);
+                var log = ApiHistory.GetApiLog(response.Id);
+                log?.SpokenTick = -1;
                 return true;
             });
+        }
+
+        if (!AIService.IsBusy() || AIService.CurrentRequest == null ||
+            AIService.CurrentRequest.TalkType.IsFromUser()) return;
+        var req = AIService.CurrentRequest;
+        if (keepTypes != null && keepTypes.Contains(req.TalkType)) return;
+        if (req.Initiator == Pawn || req.Recipient == Pawn || req.Participants?.Contains(Pawn) == true)
+        {
+            AIService.CancelCurrent();
+        }
     }
 }
