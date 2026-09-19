@@ -170,7 +170,7 @@ public static class TalkService
                     // NOT announcements themselves (the actual announcement is the initiator's user prompt).
                     if (talkRequest.IsAnnouncement || talkResponse.TalkType == TalkType.Announcement)
                     {
-                        talkResponse.TalkType = TalkType.Interaction;
+                        talkResponse.TalkType = TalkType.User;
                     }
 
                     receivedResponses.Add(talkResponse);
@@ -246,11 +246,26 @@ public static class TalkService
                 continue;
             }
 
-            // Skip this talk if its parent was ignored or the pawn is currently unable to speak.
-            if (TalkHistory.IsTalkIgnored(talk.ParentTalkId) || !pawnState.CanDisplayTalk())
+            // Skip this talk if the pawn is currently unable to speak.
+            if (!pawnState.CanDisplayTalk())
             {
                 pawnState.IgnoreTalkResponse();
                 continue;
+            }
+
+            if (TalkHistory.IsTalkIgnored(talk.ParentTalkId))
+            {
+                if (talk.TalkType.IsFromUser())
+                {
+                    // For user dialogues and announcements, do not drop the talk if a prior listener was ignored;
+                    // reset parent link so this response can be spoken independently.
+                    talk.ParentTalkId = Guid.Empty;
+                }
+                else
+                {
+                    pawnState.IgnoreTalkResponse();
+                    continue;
+                }
             }
 
             int replyInterval = Settings.Get().ReplyInterval;
