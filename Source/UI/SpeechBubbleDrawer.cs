@@ -25,7 +25,7 @@ public static class SpeechBubbleDrawer
     private static readonly List<SpeechBubble> Pool = new(InitialPoolSize);
     private static readonly List<SpeechBubble> ActiveBubbles = new(InitialPoolSize);
 
-    public static bool SuppressForScreenshot = false;
+    public const bool SuppressForScreenshot = false;
 
     static SpeechBubbleDrawer()
     {
@@ -48,15 +48,13 @@ public static class SpeechBubbleDrawer
         // Ensure max bubbles per pawn limit
         int pawnBubbleCount = 0;
         SpeechBubble oldestPawnBubble = null;
-        for (int i = 0; i < ActiveBubbles.Count; i++)
+        foreach (var t in ActiveBubbles)
         {
-            if (ActiveBubbles[i].Pawn == pawn)
+            if (t.Pawn != pawn) continue;
+            pawnBubbleCount++;
+            if (oldestPawnBubble == null || t.StartTick < oldestPawnBubble.StartTick)
             {
-                pawnBubbleCount++;
-                if (oldestPawnBubble == null || ActiveBubbles[i].StartTick < oldestPawnBubble.StartTick)
-                {
-                    oldestPawnBubble = ActiveBubbles[i];
-                }
+                oldestPawnBubble = t;
             }
         }
 
@@ -85,7 +83,7 @@ public static class SpeechBubbleDrawer
 
     private static int _lastZoomTier = 2;
 
-    public static int GetCurrentZoomTier()
+    private static int GetCurrentZoomTier()
     {
         var settings = Settings.Get();
         if (settings == null || !settings.BubbleScaleWithZoom) return 2;
@@ -110,7 +108,7 @@ public static class SpeechBubbleDrawer
     public static float GetEffectiveBubbleScale(RimTalkSettings settings)
     {
         float baseScale = settings?.BubbleScale ?? 1f;
-        if (settings == null || !settings.BubbleScaleWithZoom) return baseScale;
+        if (settings is not { BubbleScaleWithZoom: true }) return baseScale;
 
         int tier = GetCurrentZoomTier();
         float mult = tier switch
@@ -127,7 +125,7 @@ public static class SpeechBubbleDrawer
     public static float GetEffectiveFontSize(RimTalkSettings settings)
     {
         float baseSize = settings?.BubbleCustomFontSize ?? 11f;
-        if (settings == null || !settings.BubbleScaleWithZoom) return baseSize;
+        if (settings is not { BubbleScaleWithZoom: true }) return baseSize;
 
         int tier = GetCurrentZoomTier();
         float delta = tier switch
@@ -143,9 +141,9 @@ public static class SpeechBubbleDrawer
 
     public static void Clear()
     {
-        for (int i = 0; i < ActiveBubbles.Count; i++)
+        foreach (var t in ActiveBubbles)
         {
-            ActiveBubbles[i].Deactivate();
+            t.Deactivate();
         }
         ActiveBubbles.Clear();
         _lastZoomTier = 2;
@@ -156,7 +154,7 @@ public static class SpeechBubbleDrawer
         if (Event.current?.type != EventType.Repaint) return;
         if (SuppressForScreenshot || Overlay.SuppressForScreenshot) return;
         if (Find.CurrentMap == null) return;
-        if (WorldRendererUtility.CurrentWorldRenderMode != WorldRenderMode.None) return;
+        if (WorldRendererUtility.CurrentWorldRenderMode == WorldRenderMode.Planet) return;
         if (ActiveBubbles.Count == 0) return;
 
         var settings = Settings.Get();
@@ -350,17 +348,17 @@ public static class SpeechBubbleDrawer
 
     public static void RecomputeAllBubbleDimensions()
     {
-        for (int i = 0; i < ActiveBubbles.Count; i++)
+        foreach (var t in ActiveBubbles)
         {
-            ActiveBubbles[i].ComputeDimensions();
+            t.ComputeDimensions();
         }
     }
 
     private static SpeechBubble GetPooledBubble()
     {
-        for (int i = 0; i < Pool.Count; i++)
+        foreach (var t in Pool)
         {
-            if (!Pool[i].Active) return Pool[i];
+            if (!t.Active) return t;
         }
 
         SpeechBubble newBubble = new SpeechBubble();
