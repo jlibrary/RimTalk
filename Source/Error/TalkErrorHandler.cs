@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Threading;
 using System.Threading.Tasks;
 using RimTalk.Service;
 using RimTalk.Util;
@@ -11,6 +12,7 @@ namespace RimTalk.Error;
 public static class AIErrorHandler
 {
     private static bool _quotaWarningShown;
+    private static int _pendingGenerationFailures;
     private static readonly ConcurrentQueue<Action> PendingMessages = new();
 
     public static void EnqueueMessage(Action action)
@@ -154,10 +156,21 @@ public static class AIErrorHandler
 
     private static void ShowGenerationWarning(Exception ex)
     {
-        Logger.Warning(ex.StackTrace);
+        // The stack trace alone cannot tell a connection timeout from a read timeout,
+        // because only the message says which one it was.
+        Logger.Warning($"{ex.GetType().Name}: {ex.Message}\n{ex.StackTrace}");
+
+        // One message per drain, however many failed. PendingMessages is only drained
+        // from the TickManager postfix, so a long pause holds every failure and then
+        // releases them together the moment the game ticks again. Every failure is
+        // still logged above; this only collapses what the player sees.
+        if (Interlocked.Increment(ref _pendingGenerationFailures) > 1) return;
+
         PendingMessages.Enqueue(() =>
         {
+            int failures = Interlocked.Exchange(ref _pendingGenerationFailures, 0);
             string message = $"{"RimTalk.TalkService.GenerationFailed".Translate()}: {ex.Message}";
+            if (failures > 1) message = $"{message} (x{failures})";
             Messages.Message(message, MessageTypeDefOf.NeutralEvent, false);
         });
     }
