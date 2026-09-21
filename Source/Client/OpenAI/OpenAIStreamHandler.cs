@@ -96,7 +96,7 @@ public class OpenAIStreamHandler(Action<string> onContentReceived) : DownloadHan
                     onContentReceived?.Invoke(content);
                 }
 
-                if (!string.IsNullOrEmpty(choice.FinishReason))
+                if (!string.IsNullOrEmpty(choice?.FinishReason))
                 {
                     _finishReason = choice.FinishReason;
                 }
