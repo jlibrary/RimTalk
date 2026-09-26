@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using RimTalk.Data;
+using RimTalk.Prompt;
 using RimTalk.Util;
 using RimWorld;
 using UnityEngine;
@@ -219,22 +220,22 @@ public static class UIUtil
     {
         if (segment == null) return true;
 
-        var name = segment.EntryName;
-        if (!string.IsNullOrEmpty(name))
+        var id = segment.EntryId;
+        if (!string.IsNullOrEmpty(id))
         {
-            if (name.IndexOf("Base Instruction", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                name.IndexOf("JSON Format", StringComparison.OrdinalIgnoreCase) >= 0)
+            if (string.Equals(id, BuiltInPromptIds.BaseInstruction, StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(id, BuiltInPromptIds.JsonFormat, StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(id, BuiltInPromptIds.FormatReminder, StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }
         }
 
-        var id = segment.EntryId;
-        if (!string.IsNullOrEmpty(id))
+        var name = segment.EntryName;
+        if (!string.IsNullOrEmpty(name))
         {
-            if (string.Equals(id, "base-instruction", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(id, "json-format", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(id, "format-reminder", StringComparison.OrdinalIgnoreCase))
+            if (name.IndexOf(BuiltInPromptNames.BaseInstruction, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                name.IndexOf(BuiltInPromptNames.JsonFormat, StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 return true;
             }
@@ -258,7 +259,10 @@ public static class UIUtil
             var historySegments = new List<string>();
             foreach (var s in request.PromptMessageSegments)
             {
-                if ((s.IsHistory || s.EntryName == "History" || s.EntryName == "Chat History") &&
+                if ((s.IsHistory ||
+                     string.Equals(s.EntryId, BuiltInPromptIds.ChatHistory, StringComparison.OrdinalIgnoreCase) ||
+                     string.Equals(s.EntryName, BuiltInPromptNames.ChatHistory, StringComparison.OrdinalIgnoreCase) ||
+                     string.Equals(s.EntryName, "History", StringComparison.OrdinalIgnoreCase)) &&
                     !string.IsNullOrWhiteSpace(s.Content))
                 {
                     historySegments.Add(s.Content);

@@ -139,7 +139,8 @@ public static class TalkService
         
         // Update prompt with the actual rendered Dialogue Prompt content (excluding trailing reminders)
         var dpSegment = talkRequest.PromptMessageSegments?.FirstOrDefault(s =>
-            string.Equals(s.EntryName, "Dialogue Prompt", StringComparison.OrdinalIgnoreCase));
+            s.EntryId == BuiltInPromptIds.DialoguePrompt ||
+            string.Equals(s.EntryName, BuiltInPromptNames.DialoguePrompt, StringComparison.OrdinalIgnoreCase));
         if (dpSegment != null && !string.IsNullOrEmpty(dpSegment.Content))
         {
             talkRequest.Prompt = dpSegment.Content;

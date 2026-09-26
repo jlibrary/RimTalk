@@ -146,11 +146,45 @@ public class PromptPreset : IExposable
     }
 
     /// <summary>
-    /// Finds entry ID by name.
+    /// Finds entry ID by name or ID.
     /// </summary>
     public string FindEntryIdByName(string entryName)
     {
-        return Entries.FirstOrDefault(e => e.Name == entryName)?.Id;
+        if (string.IsNullOrEmpty(entryName)) return null;
+        var entry = Entries.FirstOrDefault(e =>
+            string.Equals(e.Name, entryName, StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(e.Id, entryName, StringComparison.OrdinalIgnoreCase));
+        return entry?.Id;
+    }
+
+    /// <summary>
+    /// Inserts an entry after an entry with the specified name or ID.
+    /// </summary>
+    public bool InsertEntryAfterName(PromptEntry entry, string afterEntryName)
+    {
+        if (entry == null || string.IsNullOrEmpty(afterEntryName)) return false;
+        var targetId = FindEntryIdByName(afterEntryName);
+        if (targetId == null)
+        {
+            AddEntry(entry);
+            return false;
+        }
+        return InsertEntryAfter(entry, targetId);
+    }
+
+    /// <summary>
+    /// Inserts an entry before an entry with the specified name or ID.
+    /// </summary>
+    public bool InsertEntryBeforeName(PromptEntry entry, string beforeEntryName)
+    {
+        if (entry == null || string.IsNullOrEmpty(beforeEntryName)) return false;
+        var targetId = FindEntryIdByName(beforeEntryName);
+        if (targetId == null)
+        {
+            AddEntry(entry);
+            return false;
+        }
+        return InsertEntryBefore(entry, targetId);
     }
 
     /// <summary>

@@ -452,12 +452,41 @@ public partial class Settings : Mod
                 case SettingsTab.PromptPreset:
                     if (rtSettings.UseAdvancedPromptMode)
                     {
-                        Find.WindowStack.Add(Dialog_MessageBox.CreateConfirmation("RimTalk.Settings.ResetConfirm".Translate(), () =>
+                        var promptMgr = PromptManager.Instance;
+                        if (promptMgr.HasAddonInjectedDefaults())
                         {
-                            PromptManager.Instance.ResetToDefaults();
-                            _selectedPresetId = null;
-                            _selectedEntryId = null;
-                        }));
+                            var dialog = new Dialog_MessageBox(
+                                "RimTalk.Settings.PromptPreset.ResetConfirmWithMods".Translate(),
+                                "RimTalk.Settings.PromptPreset.ResetWithMods".Translate(),
+                                () =>
+                                {
+                                    promptMgr.ResetToModDefaults();
+                                    _selectedPresetId = null;
+                                    _selectedEntryId = null;
+                                },
+                                "GoBack".Translate(),
+                                null,
+                                "RimTalk.Settings.ResetToDefault".Translate(),
+                                buttonADestructive: false
+                            );
+                            dialog.buttonCText = "RimTalk.Settings.PromptPreset.ResetVanillaDefault".Translate();
+                            dialog.buttonCAction = () =>
+                            {
+                                promptMgr.ResetToVanillaDefaults();
+                                _selectedPresetId = null;
+                                _selectedEntryId = null;
+                            };
+                            Find.WindowStack.Add(dialog);
+                        }
+                        else
+                        {
+                            Find.WindowStack.Add(Dialog_MessageBox.CreateConfirmation("RimTalk.Settings.ResetConfirm".Translate(), () =>
+                            {
+                                promptMgr.ResetToVanillaDefaults();
+                                _selectedPresetId = null;
+                                _selectedEntryId = null;
+                            }));
+                        }
                     }
                     else
                     {
@@ -477,7 +506,6 @@ public partial class Settings : Mod
                     break;
             }
         }
-        TooltipHandler.TipRegion(resetBtnRect, "RimTalk.Settings.ResetToDefault".Translate());
 
         if (UIUtil.ButtonText(closeBtnRect, "CloseButton".Translate()))
         {

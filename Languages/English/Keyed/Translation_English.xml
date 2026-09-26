@@ -75,6 +75,9 @@
     <RimTalk.Settings.PromptSetting>Prompt Setting</RimTalk.Settings.PromptSetting>
     <RimTalk.Settings.ShowVariables>Reference</RimTalk.Settings.ShowVariables>
     <RimTalk.Settings.ResetConfirm>Are you sure you want to reset all prompt presets and reference data to default? This cannot be undone.</RimTalk.Settings.ResetConfirm>
+    <RimTalk.Settings.PromptPreset.ResetConfirmWithMods>Are you sure you want to reset prompt presets to default? You can also choose to reset with active mod defaults included.</RimTalk.Settings.PromptPreset.ResetConfirmWithMods>
+    <RimTalk.Settings.PromptPreset.ResetWithMods>Reset with Mods</RimTalk.Settings.PromptPreset.ResetWithMods>
+    <RimTalk.Settings.PromptPreset.ResetVanillaDefault>RimTalk Default</RimTalk.Settings.PromptPreset.ResetVanillaDefault>
     
     <!-- Settings_PromptPreset.cs -->
     <RimTalk.Settings.PromptPreset.SearchPlaceholder>Search objects, properties, functions...</RimTalk.Settings.PromptPreset.SearchPlaceholder>

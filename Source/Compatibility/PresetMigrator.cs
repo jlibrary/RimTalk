@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using RimTalk.Prompt;
+using RimTalk.Data;
 
 namespace RimTalk.Compatibility;
 
@@ -38,23 +39,56 @@ internal static class PresetMigrator
         {
             if (preset?.Entries == null) continue;
 
-            // 1. Fix legacy chat history markers
-            if (!preset.Entries.Any(e => e.IsMainChatHistory))
+            // 1. Fix legacy chat history markers and backfill canonical IDs
+            foreach (var entry in preset.Entries)
             {
-                var legacyEntry = preset.Entries.FirstOrDefault(e => e.Content?.Trim() == "{{chat.history}}");
-                legacyEntry?.IsMainChatHistory = true;
+                if (entry == null) continue;
+
+                if (!entry.IsMainChatHistory && entry.Content?.Trim() == "{{chat.history}}")
+                {
+                    entry.IsMainChatHistory = true;
+                }
+
+                if (string.IsNullOrEmpty(entry.SourceModId))
+                {
+                    if (entry.IsMainChatHistory || string.Equals(entry.Name, BuiltInPromptNames.ChatHistory, StringComparison.OrdinalIgnoreCase))
+                    {
+                        entry.Id = BuiltInPromptIds.ChatHistory;
+                        entry.IsMainChatHistory = true;
+                    }
+                    else if (string.Equals(entry.Name, BuiltInPromptNames.BaseInstruction, StringComparison.OrdinalIgnoreCase))
+                    {
+                        entry.Id = BuiltInPromptIds.BaseInstruction;
+                    }
+                    else if (string.Equals(entry.Name, BuiltInPromptNames.JsonFormat, StringComparison.OrdinalIgnoreCase))
+                    {
+                        entry.Id = BuiltInPromptIds.JsonFormat;
+                    }
+                    else if (string.Equals(entry.Name, BuiltInPromptNames.Context, StringComparison.OrdinalIgnoreCase)
+                             || string.Equals(entry.Name, BuiltInPromptNames.PawnProfiles, StringComparison.OrdinalIgnoreCase))
+                    {
+                        entry.Id = BuiltInPromptIds.Context;
+                    }
+                    else if (string.Equals(entry.Name, BuiltInPromptNames.RecentEvents, StringComparison.OrdinalIgnoreCase))
+                    {
+                        entry.Id = BuiltInPromptIds.RecentEvents;
+                    }
+                    else if (string.Equals(entry.Name, BuiltInPromptNames.DialoguePrompt, StringComparison.OrdinalIgnoreCase))
+                    {
+                        entry.Id = BuiltInPromptIds.DialoguePrompt;
+                    }
+                }
             }
 
             // 2. Migrate unmodified legacy JSON format entries to {{ json.format }}
-            var jsonEntry = preset.Entries.FirstOrDefault(e =>
-                string.Equals(e.Name, "JSON Format", StringComparison.OrdinalIgnoreCase));
+            var jsonEntry = preset.Entries.FirstOrDefault(e => e.IsJsonFormat);
             if (jsonEntry != null)
             {
                 var normalized = jsonEntry.Content?.Trim().Replace("\r\n", "\n");
                 if (normalized != null && (string.Equals(normalized, LegacyJsonFormatInstruction.Trim().Replace("\r\n", "\n"), StringComparison.Ordinal)
                                            || normalized.Contains(DirectiveSnippet)))
                 {
-                    jsonEntry.Content = "{{ json.format }}";
+                    jsonEntry.Content = BuiltInPromptTokens.JsonFormat;
                 }
             }
 

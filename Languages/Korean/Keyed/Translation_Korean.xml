@@ -75,6 +75,9 @@
     <RimTalk.Settings.PromptSetting>프롬프트 설정</RimTalk.Settings.PromptSetting>
     <RimTalk.Settings.ShowVariables>레퍼런스</RimTalk.Settings.ShowVariables>
     <RimTalk.Settings.ResetConfirm>모든 프롬프트 프리셋과 레퍼런스 데이터를 기본값으로 재설정하시겠습니까? 이 작업은 되돌릴 수 없습니다.</RimTalk.Settings.ResetConfirm>
+    <RimTalk.Settings.PromptPreset.ResetConfirmWithMods>프롬프트 프리셋을 기본값으로 재설정하시겠습니까? 활성화된 모드의 기본 설정을 포함하여 재설정할 수도 있습니다.</RimTalk.Settings.PromptPreset.ResetConfirmWithMods>
+    <RimTalk.Settings.PromptPreset.ResetWithMods>모드 포함 기본값</RimTalk.Settings.PromptPreset.ResetWithMods>
+    <RimTalk.Settings.PromptPreset.ResetVanillaDefault>림톡 기본값</RimTalk.Settings.PromptPreset.ResetVanillaDefault>
     
     <!-- Settings_PromptPreset.cs -->
     <RimTalk.Settings.PromptPreset.SearchPlaceholder>객체, 속성, 함수 검색...</RimTalk.Settings.PromptPreset.SearchPlaceholder>

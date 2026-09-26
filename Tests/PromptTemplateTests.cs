@@ -594,14 +594,19 @@ Environment Hazard: {{ fallout_level }}
         });
         Assert.False(RimTalk.Prompt.PromptPresetAssembler.ShouldShowHistoryWarning(preset3));
 
-        // 4. Main history disabled, but isExternalMemoryModActive is true -> false
+        // 4. Main history disabled, but has external mod entry -> false
         var preset4 = new RimTalk.Prompt.PromptPreset("Test4");
         preset4.AddEntry(new RimTalk.Prompt.PromptEntry("Chat History", "{{chat.history}}")
         {
             IsMainChatHistory = true,
             Enabled = false
         });
-        Assert.False(RimTalk.Prompt.PromptPresetAssembler.ShouldShowHistoryWarning(preset4, isExternalMemoryModActive: true));
+        preset4.AddEntry(new RimTalk.Prompt.PromptEntry("External Mod Entry", "mod content")
+        {
+            Enabled = true,
+            SourceModId = "com.example.mod"
+        });
+        Assert.False(RimTalk.Prompt.PromptPresetAssembler.ShouldShowHistoryWarning(preset4));
 
         // 5. Main history disabled, no custom history, no addon -> true
         var preset5 = new RimTalk.Prompt.PromptPreset("Test5");
@@ -732,5 +737,143 @@ Environment Hazard: {{ fallout_level }}
         Assert.Equal("[{\"name\": \"Bob\", \"text\": \"Valid response\"}]", messages[1].content);
         Assert.Equal(RimTalk.Prompt.PromptRole.User, messages[2].role);
         Assert.Equal("Current Prompt", messages[2].content);
+    }
+
+    [Fact]
+    public void VariableStore_Clone_CreatesIndependentDeepCopy()
+    {
+        var store = new RimTalk.Prompt.VariableStore();
+        store.SetVar("mod_key", "original_value");
+
+        var clone = store.Clone();
+        Assert.Equal("original_value", clone.GetVar("mod_key"));
+
+        // Mutating original must not affect clone
+        store.SetVar("mod_key", "mutated_value");
+        store.SetVar("new_key", "value");
+        Assert.Equal("original_value", clone.GetVar("mod_key"));
+        Assert.False(clone.HasVar("new_key"));
+    }
+
+    [Fact]
+    public void PromptPreset_Clone_PreservesModMetadataAndEntries()
+    {
+        var preset = new RimTalk.Prompt.PromptPreset("ModPreset", "Description")
+        {
+            SourceModId = "TestMod.Package",
+            IsActive = true
+        };
+        preset.AddEntry(new RimTalk.Prompt.PromptEntry("ModEntry", "ModContent")
+        {
+            SourceModId = "TestMod.Package",
+            Enabled = false
+        });
+
+        var clone = preset.Clone();
+        Assert.Equal(preset.Name, clone.Name);
+        Assert.Equal("TestMod.Package", clone.SourceModId);
+        Assert.Single(clone.Entries);
+        Assert.Equal("ModEntry", clone.Entries[0].Name);
+        Assert.Equal("TestMod.Package", clone.Entries[0].SourceModId);
+        Assert.False(clone.Entries[0].Enabled);
+
+        // Modifying original must not mutate clone
+        preset.Entries[0].Enabled = true;
+        Assert.False(clone.Entries[0].Enabled);
+    }
+
+    [Fact]
+    public void BuiltInPromptEntry_IdentifiesByCanonicalId_RegardlessOfCustomizedName()
+    {
+        var entry = new RimTalk.Prompt.PromptEntry("My Custom Localized System Prompt", "Do something")
+        {
+            Id = RimTalk.Prompt.BuiltInPromptIds.BaseInstruction
+        };
+
+        Assert.True(entry.IsBaseInstruction);
+        Assert.True(entry.IsBuiltIn);
+        Assert.False(entry.IsJsonFormat);
+    }
+
+    [Fact]
+    public void BuiltInPromptEntry_IdentifiesByStandardName_ForBackwardCompatibility()
+    {
+        var legacyEntry = new RimTalk.Prompt.PromptEntry(RimTalk.Prompt.BuiltInPromptNames.JsonFormat, "{{ json.format }}")
+        {
+            Id = Guid.NewGuid().ToString() // Legacy GUID
+        };
+
+        Assert.True(legacyEntry.IsJsonFormat);
+        Assert.True(legacyEntry.IsBuiltIn);
+        Assert.False(legacyEntry.IsBaseInstruction);
+    }
+
+    [Fact]
+    public void BuildSimpleModePreset_SupportsRenamedBuiltInsWithCanonicalIds()
+    {
+        var activePreset = new RimTalk.Prompt.PromptPreset("RenamedPreset");
+        var baseEntry = new RimTalk.Prompt.PromptEntry("Renamed Base", "Old instruction")
+        {
+            Id = RimTalk.Prompt.BuiltInPromptIds.BaseInstruction
+        };
+        var jsonEntry = new RimTalk.Prompt.PromptEntry("Renamed JSON", "{{ json.format }}")
+        {
+            Id = RimTalk.Prompt.BuiltInPromptIds.JsonFormat
+        };
+
+        activePreset.Entries.Add(baseEntry);
+        activePreset.Entries.Add(jsonEntry);
+
+        var simplePreset = RimTalk.Prompt.PromptPresetAssembler.BuildSimpleModePreset(activePreset, "New instruction");
+
+        // Must override base instruction without creating duplicate
+        var resolvedBase = simplePreset.Entries.FirstOrDefault(e => e.IsBaseInstruction);
+        Assert.NotNull(resolvedBase);
+        Assert.Equal("New instruction", resolvedBase.Content);
+        Assert.Single(simplePreset.Entries, e => e.IsBaseInstruction);
+
+        // Must preserve JSON format
+        var resolvedJson = simplePreset.Entries.FirstOrDefault(e => e.IsJsonFormat);
+        Assert.NotNull(resolvedJson);
+        Assert.Single(simplePreset.Entries, e => e.IsJsonFormat);
+    }
+
+    [Fact]
+    public void PresetMigrator_BackfillsCanonicalIds_ForLegacyPresetsWithGuids()
+    {
+        var preset = new RimTalk.Prompt.PromptPreset("OldPreset");
+        preset.Entries.Add(new RimTalk.Prompt.PromptEntry("Base Instruction", "content") { Id = Guid.NewGuid().ToString() });
+        preset.Entries.Add(new RimTalk.Prompt.PromptEntry("JSON Format", "content") { Id = Guid.NewGuid().ToString() });
+        preset.Entries.Add(new RimTalk.Prompt.PromptEntry("Context", "content") { Id = Guid.NewGuid().ToString() });
+        preset.Entries.Add(new RimTalk.Prompt.PromptEntry("Recent Events", "content") { Id = Guid.NewGuid().ToString() });
+        preset.Entries.Add(new RimTalk.Prompt.PromptEntry("Chat History", "{{chat.history}}") { Id = Guid.NewGuid().ToString() });
+        preset.Entries.Add(new RimTalk.Prompt.PromptEntry("Dialogue Prompt", "content") { Id = Guid.NewGuid().ToString() });
+
+        RimTalk.Compatibility.PresetMigrator.Migrate(new List<RimTalk.Prompt.PromptPreset> { preset });
+
+        Assert.Equal(RimTalk.Prompt.BuiltInPromptIds.BaseInstruction, preset.Entries[0].Id);
+        Assert.Equal(RimTalk.Prompt.BuiltInPromptIds.JsonFormat, preset.Entries[1].Id);
+        Assert.Equal(RimTalk.Prompt.BuiltInPromptIds.Context, preset.Entries[2].Id);
+        Assert.Equal(RimTalk.Prompt.BuiltInPromptIds.RecentEvents, preset.Entries[3].Id);
+        Assert.Equal(RimTalk.Prompt.BuiltInPromptIds.ChatHistory, preset.Entries[4].Id);
+        Assert.True(preset.Entries[4].IsMainChatHistory);
+        Assert.Equal(RimTalk.Prompt.BuiltInPromptIds.DialoguePrompt, preset.Entries[5].Id);
+    }
+
+    [Fact]
+    public void BuiltInPromptEntry_IdentifiesChatHistory_ByMainFlagIdOrName()
+    {
+        var byFlag = new RimTalk.Prompt.PromptEntry("Custom History Name", "{{chat.history}}") { IsMainChatHistory = true };
+        var byId = new RimTalk.Prompt.PromptEntry("Renamed History", "{{chat.history}}") { Id = RimTalk.Prompt.BuiltInPromptIds.ChatHistory };
+        var byName = new RimTalk.Prompt.PromptEntry("Chat History", "{{chat.history}}") { Id = Guid.NewGuid().ToString() };
+
+        Assert.True(byFlag.IsChatHistory);
+        Assert.True(byFlag.IsBuiltIn);
+
+        Assert.True(byId.IsChatHistory);
+        Assert.True(byId.IsBuiltIn);
+
+        Assert.True(byName.IsChatHistory);
+        Assert.True(byName.IsBuiltIn);
     }
 }

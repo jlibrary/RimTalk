@@ -180,7 +180,7 @@ public static class PromptService
     private static bool HasEventsReference(Prompt.PromptEntry entry)
     {
         if (entry == null || !entry.Enabled) return false;
-        if (string.Equals(entry.Name, "Recent Events", StringComparison.OrdinalIgnoreCase)) return true;
+        if (entry.IsRecentEvents) return true;
         return !string.IsNullOrEmpty(entry.Content) && EventsTemplateVariableRegex.IsMatch(entry.Content);
     }
 
