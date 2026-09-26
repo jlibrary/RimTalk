@@ -176,8 +176,7 @@ public partial class Settings
     {
         if (preset == null) return null;
 
-        var entry = preset.Entries.FirstOrDefault(e =>
-            string.Equals(e.Name, "Base Instruction", StringComparison.OrdinalIgnoreCase));
+        var entry = preset.Entries.FirstOrDefault(e => e.IsBaseInstruction);
         if (entry != null) return entry;
 
         entry = preset.Entries.FirstOrDefault(e =>
@@ -186,7 +185,8 @@ public partial class Settings
 
         entry = new PromptEntry
         {
-            Name = "Base Instruction",
+            Id = BuiltInPromptIds.BaseInstruction,
+            Name = BuiltInPromptNames.BaseInstruction,
             Role = PromptRole.System,
             Position = PromptPosition.Relative,
             Content = Constant.DefaultInstruction

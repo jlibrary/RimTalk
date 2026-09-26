@@ -40,6 +40,7 @@
         <Compile Include="../Source/Data/TalkType.cs" Link="Linked/TalkType.cs" />
         <Compile Include="../Source/Data/Role.cs" Link="Linked/Role.cs" />
         <Compile Include="../Source/Prompt/Data/PromptRole.cs" Link="Linked/PromptRole.cs" />
+        <Compile Include="../Source/Prompt/Data/BuiltInPrompt.cs" Link="Linked/BuiltInPrompt.cs" />
         <Compile Include="../Source/Prompt/Data/PromptEntry.cs" Link="Linked/PromptEntry.cs" />
         <Compile Include="../Source/Prompt/Data/PromptPreset.cs" Link="Linked/PromptPreset.cs" />
         <Compile Include="../Source/Data/PromptMessageSegment.cs" Link="Linked/PromptMessageSegment.cs" />
@@ -64,6 +65,7 @@
         <Compile Include="../Source/Memory/MemoryHistory.cs" Link="Linked/MemoryHistory.cs" />
         <Compile Include="../Source/Memory/PawnMemoryTracker.cs" Link="Linked/PawnMemoryTracker.cs" />
         <Compile Include="../Source/Memory/MemoryFormatter.cs" Link="Linked/MemoryFormatter.cs" />
+        <Compile Include="../Source/Compatibility/PresetMigrator.cs" Link="Linked/PresetMigrator.cs" />
     </ItemGroup>
 
 </Project>

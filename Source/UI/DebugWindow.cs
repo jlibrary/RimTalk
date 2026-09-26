@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using RimTalk.Data;
 using RimTalk.Memory;
+using RimTalk.Prompt;
 using RimTalk.Service;
 using RimTalk.Source.Data;
 using RimTalk.Util;
@@ -2152,15 +2153,15 @@ public class DebugWindow : Window
         var history = UIUtil.ExtractHistory(request);
         if (!string.IsNullOrEmpty(history))
         {
-            fallbackSegments.Add(new PromptMessageSegment("history", "Chat History", Role.User, history) { IsHistory = true });
+            fallbackSegments.Add(new PromptMessageSegment(BuiltInPromptIds.ChatHistory, BuiltInPromptNames.ChatHistory, Role.User, history) { IsHistory = true });
         }
         if (!string.IsNullOrEmpty(request?.Context))
         {
-            fallbackSegments.Add(new PromptMessageSegment("context", "Context", Role.System, request.Context));
+            fallbackSegments.Add(new PromptMessageSegment(BuiltInPromptIds.Context, BuiltInPromptNames.Context, Role.System, request.Context));
         }
         if (!string.IsNullOrEmpty(request?.Prompt))
         {
-            fallbackSegments.Add(new PromptMessageSegment("dialogue-prompt", "Dialogue Prompt", Role.User, request.Prompt));
+            fallbackSegments.Add(new PromptMessageSegment(BuiltInPromptIds.DialoguePrompt, BuiltInPromptNames.DialoguePrompt, Role.User, request.Prompt));
         }
 
         if (!string.IsNullOrEmpty(imageBase64))

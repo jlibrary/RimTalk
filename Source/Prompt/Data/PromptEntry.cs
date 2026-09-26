@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using System.Text.RegularExpressions;
 using Verse;
 
@@ -76,6 +77,47 @@ public class PromptEntry : IExposable
     /// If true, this entry is used to insert the chat history and is locked in the UI.
     /// </summary>
     public bool IsMainChatHistory = false;
+
+    /// <summary>Checks whether this entry represents the system Base Instruction.</summary>
+    public bool IsBaseInstruction =>
+        string.Equals(Id, BuiltInPromptIds.BaseInstruction, StringComparison.OrdinalIgnoreCase) ||
+        string.Equals(Name, BuiltInPromptNames.BaseInstruction, StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>Checks whether this entry represents the JSON Format specification.</summary>
+    public bool IsJsonFormat =>
+        string.Equals(Id, BuiltInPromptIds.JsonFormat, StringComparison.OrdinalIgnoreCase) ||
+        string.Equals(Name, BuiltInPromptNames.JsonFormat, StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>Checks whether this entry represents the colony/pawn context.</summary>
+    public bool IsContext =>
+        string.Equals(Id, BuiltInPromptIds.Context, StringComparison.OrdinalIgnoreCase) ||
+        string.Equals(Name, BuiltInPromptNames.Context, StringComparison.OrdinalIgnoreCase) ||
+        string.Equals(Name, BuiltInPromptNames.PawnProfiles, StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>Checks whether this entry represents Recent Events.</summary>
+    public bool IsRecentEvents =>
+        string.Equals(Id, BuiltInPromptIds.RecentEvents, StringComparison.OrdinalIgnoreCase) ||
+        string.Equals(Name, BuiltInPromptNames.RecentEvents, StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>Checks whether this entry represents Chat History.</summary>
+    public bool IsChatHistory =>
+        IsMainChatHistory ||
+        string.Equals(Id, BuiltInPromptIds.ChatHistory, StringComparison.OrdinalIgnoreCase) ||
+        string.Equals(Name, BuiltInPromptNames.ChatHistory, StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>Checks whether this entry represents the Dialogue Prompt.</summary>
+    public bool IsDialoguePrompt =>
+        string.Equals(Id, BuiltInPromptIds.DialoguePrompt, StringComparison.OrdinalIgnoreCase) ||
+        string.Equals(Name, BuiltInPromptNames.DialoguePrompt, StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>Checks whether this entry is one of the built-in system entries.</summary>
+    public bool IsBuiltIn =>
+        IsBaseInstruction ||
+        IsJsonFormat ||
+        IsContext ||
+        IsRecentEvents ||
+        IsChatHistory ||
+        IsDialoguePrompt;
     
     /// <summary>
     /// Updates the ID to be deterministic if this is a mod entry.
@@ -125,7 +167,7 @@ public class PromptEntry : IExposable
         string savedContent = Content;
         if (Scribe.mode == LoadSaveMode.Saving && !string.IsNullOrEmpty(Content))
         {
-            savedContent = "B64:" + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(Content));
+            savedContent = "B64:" + Convert.ToBase64String(Encoding.UTF8.GetBytes(Content));
         }
         
         Scribe_Values.Look(ref savedContent, "content", "");
@@ -136,7 +178,7 @@ public class PromptEntry : IExposable
             {
                 try
                 {
-                    Content = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(savedContent.Substring(4)));
+                    Content = Encoding.UTF8.GetString(Convert.FromBase64String(savedContent.Substring(4)));
                 }
                 catch
                 {
@@ -165,7 +207,7 @@ public class PromptEntry : IExposable
     {
         return new PromptEntry
         {
-            Id = Guid.NewGuid().ToString(), // New ID for cloned entry
+            Id = IsBuiltIn || !string.IsNullOrEmpty(SourceModId) ? Id : Guid.NewGuid().ToString(),
             Name = Name,
             Content = Content,
             Role = Role,
@@ -174,7 +216,7 @@ public class PromptEntry : IExposable
             InChatDepth = InChatDepth,
             Enabled = Enabled,
             IsMainChatHistory = IsMainChatHistory,
-            SourceModId = null
+            SourceModId = SourceModId
         };
     }
 

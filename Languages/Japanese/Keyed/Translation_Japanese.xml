@@ -73,6 +73,9 @@
     <RimTalk.Settings.PromptSetting>プロンプト設定</RimTalk.Settings.PromptSetting>
     <RimTalk.Settings.ShowVariables>リファレンス</RimTalk.Settings.ShowVariables>
     <RimTalk.Settings.ResetConfirm>すべてのプロンプトプリセットとリファレンスデータをデフォルトにリセットしてもよろしいですか？この操作は取り消せません。</RimTalk.Settings.ResetConfirm>
+    <RimTalk.Settings.PromptPreset.ResetConfirmWithMods>プロンプトプリセットを初期値にリセットしてもよろしいですか？有効なMODの初期設定を含めてリセットすることもできます。</RimTalk.Settings.PromptPreset.ResetConfirmWithMods>
+    <RimTalk.Settings.PromptPreset.ResetWithMods>MODを含む初期値</RimTalk.Settings.PromptPreset.ResetWithMods>
+    <RimTalk.Settings.PromptPreset.ResetVanillaDefault>RimTalkデフォルト</RimTalk.Settings.PromptPreset.ResetVanillaDefault>
     
     <!-- Settings_PromptPreset.cs -->
     <RimTalk.Settings.PromptPreset.SearchPlaceholder>オブジェクト、プロパティ、関数を検索...</RimTalk.Settings.PromptPreset.SearchPlaceholder>

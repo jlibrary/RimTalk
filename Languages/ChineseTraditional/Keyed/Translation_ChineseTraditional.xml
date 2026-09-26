@@ -74,6 +74,9 @@
     <RimTalk.Settings.PromptSetting>提示詞設定</RimTalk.Settings.PromptSetting>
     <RimTalk.Settings.ShowVariables>變數參考</RimTalk.Settings.ShowVariables>
     <RimTalk.Settings.ResetConfirm>確定要將所有提示詞預設和參考數據重置為默認值嗎？此操作無法撤銷。</RimTalk.Settings.ResetConfirm>
+    <RimTalk.Settings.PromptPreset.ResetConfirmWithMods>確定要將提示詞預設重置為默認值嗎？您也可以選擇包含已啟用MOD的默認設置進行重置。</RimTalk.Settings.PromptPreset.ResetConfirmWithMods>
+    <RimTalk.Settings.PromptPreset.ResetWithMods>含MOD默認值</RimTalk.Settings.PromptPreset.ResetWithMods>
+    <RimTalk.Settings.PromptPreset.ResetVanillaDefault>RimTalk默認值</RimTalk.Settings.PromptPreset.ResetVanillaDefault>
     
     <!-- Settings_PromptPreset.cs -->
     <RimTalk.Settings.PromptPreset.SearchPlaceholder>搜索對象、屬性、函數...</RimTalk.Settings.PromptPreset.SearchPlaceholder>

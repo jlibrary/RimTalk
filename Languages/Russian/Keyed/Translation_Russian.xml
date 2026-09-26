@@ -74,6 +74,9 @@
     <RimTalk.Settings.PromptSetting>Настройка подсказки</RimTalk.Settings.PromptSetting>
     <RimTalk.Settings.ShowVariables>Переменные</RimTalk.Settings.ShowVariables>
     <RimTalk.Settings.ResetConfirm>Вы уверены, что хотите сбросить все пресеты и справочные данные до значений по умолчанию? Это действие нельзя отменить.</RimTalk.Settings.ResetConfirm>
+    <RimTalk.Settings.PromptPreset.ResetConfirmWithMods>Вы уверены, что хотите сбросить пресеты по умолчанию? Вы также можете сбросить настройки с сохранением значений активных модов.</RimTalk.Settings.PromptPreset.ResetConfirmWithMods>
+    <RimTalk.Settings.PromptPreset.ResetWithMods>Сброс с модами</RimTalk.Settings.PromptPreset.ResetWithMods>
+    <RimTalk.Settings.PromptPreset.ResetVanillaDefault>По умолчанию RimTalk</RimTalk.Settings.PromptPreset.ResetVanillaDefault>
     
     <!-- Settings_PromptPreset.cs -->
     <RimTalk.Settings.PromptPreset.SearchPlaceholder>Поиск объектов, свойств, функций...</RimTalk.Settings.PromptPreset.SearchPlaceholder>

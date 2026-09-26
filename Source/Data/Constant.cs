@@ -53,8 +53,8 @@ public static class Constant
                                                    """;
 
     public const string DefaultRecentEventsInstruction = PromptPresetAssembler.DefaultRecentEventsInstruction;
-    public const string DefaultJsonFormatInstruction = "{{ json.format }}";
-    public const string DefaultJsonAnchorInstruction = "{{ json.anchor }}";
+    public const string DefaultJsonFormatInstruction = BuiltInPromptTokens.JsonFormat;
+    public const string DefaultJsonAnchorInstruction = BuiltInPromptTokens.JsonAnchor;
 
     // Get the current instruction from settings or fallback to default, always append JSON instruction
     // NOTE: This is now primarily used as a fallback. The new PromptManager system is preferred.
@@ -74,8 +74,7 @@ public static class Constant
         var preset = PromptManager.Instance?.GetActivePreset();
         if (preset == null) return DefaultInstruction;
 
-        var entry = preset.Entries.FirstOrDefault(e =>
-            string.Equals(e.Name, "Base Instruction", StringComparison.OrdinalIgnoreCase))
+        var entry = preset.Entries.FirstOrDefault(e => e.IsBaseInstruction)
                     ?? preset.Entries.FirstOrDefault(e =>
                         e.Role == PromptRole.System && e.Position == PromptPosition.Relative);
 

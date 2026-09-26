@@ -69,6 +69,20 @@ public class VariableStore : IExposable
         }
     }
 
+    /// <summary>Creates a thread-safe clone of this variable store</summary>
+    public VariableStore Clone()
+    {
+        var clone = new VariableStore();
+        lock (_lock)
+        {
+            foreach (var kvp in _variables)
+            {
+                clone.SetVar(kvp.Key, kvp.Value);
+            }
+        }
+        return clone;
+    }
+
     /// <summary>Gets all variables (for UI display)</summary>
     public IReadOnlyDictionary<string, string> GetAllVariables()
     {

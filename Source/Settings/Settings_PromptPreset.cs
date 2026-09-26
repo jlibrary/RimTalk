@@ -18,7 +18,7 @@ public partial class Settings
     private static readonly Color AddGreen = new(0.3f, 0.9f, 0.3f);
     private static readonly Color DeleteRed = new(1f, 0.4f, 0.4f);
     private static readonly Color SourceModColor = new(0.95f, 0.78f, 0.35f);
-    private const string DefaultPresetName = "RimTalk Default";
+    private const string DefaultPresetName = PromptManager.DefaultPresetName;
 
     // Scroll positions
     private Vector2 _presetListScrollPos = Vector2.zero;
@@ -80,7 +80,7 @@ public partial class Settings
                              manager.Presets.FirstOrDefault(p => p.IsActive) ??
                              manager.Presets.FirstOrDefault();
 
-        if (PromptPresetAssembler.ShouldShowHistoryWarning(selectedPreset, Memory.MemoryHookService.IsExternalMemoryModActive))
+        if (PromptPresetAssembler.ShouldShowHistoryWarning(selectedPreset))
         {
             DrawHistoryWarningBanner(listingStandard);
         }
@@ -461,7 +461,7 @@ public partial class Settings
         Widgets.Label(new Rect(col2LabelX, y, col2LabelW, 24f), "RimTalk.Settings.PromptPreset.EntryName".Translate());
         Text.Anchor = TextAnchor.UpperLeft;
 
-        if (isHistoryMarker || isModEntry)
+        if (e.IsBuiltIn || isModEntry)
         {
             GUI.enabled = false;
             Widgets.TextField(new Rect(col2InputX, y, col2InputW, 24f), e.Name);
@@ -1014,6 +1014,18 @@ public partial class Settings
     {
         Rect rowRect = new Rect(0f, y, w, 20f);
         if (Mouse.IsOver(rowRect)) Widgets.DrawHighlight(rowRect);
+
+        string tooltipText;
+        if (!string.IsNullOrEmpty(d) && !string.IsNullOrEmpty(v))
+            tooltipText = $"{{{{ {n} }}}}\n{d}\n{v}";
+        else if (!string.IsNullOrEmpty(d))
+            tooltipText = $"{{{{ {n} }}}}\n{d}";
+        else if (!string.IsNullOrEmpty(v))
+            tooltipText = $"{{{{ {n} }}}}\n{v}";
+        else
+            tooltipText = $"{{{{ {n} }}}}";
+
+        TooltipHandler.TipRegion(rowRect, tooltipText);
 
         if (Widgets.ButtonInvisible(rowRect))
         {

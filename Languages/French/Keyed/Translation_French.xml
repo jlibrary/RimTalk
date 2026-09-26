@@ -74,6 +74,9 @@
     <RimTalk.Settings.PromptSetting>Paramètre du prompt</RimTalk.Settings.PromptSetting>
     <RimTalk.Settings.ShowVariables>Référence</RimTalk.Settings.ShowVariables>
     <RimTalk.Settings.ResetConfirm>Êtes-vous sûr de vouloir réinitialiser tous les préréglages de prompt et les données de référence par défaut ? Cela ne peut pas être annulé.</RimTalk.Settings.ResetConfirm>
+    <RimTalk.Settings.PromptPreset.ResetConfirmWithMods>Êtes-vous sûr de vouloir réinitialiser les préréglages de prompt par défaut ? Vous pouvez également réinitialiser avec les valeurs par défaut des mods actifs incluses.</RimTalk.Settings.PromptPreset.ResetConfirmWithMods>
+    <RimTalk.Settings.PromptPreset.ResetWithMods>Réinitialiser avec les mods</RimTalk.Settings.PromptPreset.ResetWithMods>
+    <RimTalk.Settings.PromptPreset.ResetVanillaDefault>Défaut RimTalk</RimTalk.Settings.PromptPreset.ResetVanillaDefault>
     
     <!-- Settings_PromptPreset.cs -->
     <RimTalk.Settings.PromptPreset.SearchPlaceholder>Rechercher des objets, propriétés, fonctions...</RimTalk.Settings.PromptPreset.SearchPlaceholder>
