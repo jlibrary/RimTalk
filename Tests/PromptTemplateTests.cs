@@ -489,6 +489,7 @@ Environment Hazard: {{ fallout_level }}
         Assert.True(ctxIdx < eventsIdx);
         Assert.True(eventsIdx < histIdx);
         Assert.True(histIdx < promptIdx);
+        Assert.Equal(RimTalk.Prompt.PromptRole.System, simplePreset.Entries[eventsIdx].Role);
     }
 
     [Fact]
@@ -614,5 +615,122 @@ Environment Hazard: {{ fallout_level }}
             Enabled = true
         });
         Assert.True(RimTalk.Prompt.PromptPresetAssembler.ShouldShowHistoryWarning(preset5));
+    }
+
+    [Fact]
+    public void Scenario_UseCompactHistory_TogglesBetweenSingleBlockAndMultiTurn()
+    {
+        var preset = new RimTalk.Prompt.PromptPreset("TestCompactHistory");
+        preset.AddEntry(new RimTalk.Prompt.PromptEntry("Base Instruction", "System instruction.")
+        {
+            Position = RimTalk.Prompt.PromptPosition.Relative,
+            Role = RimTalk.Prompt.PromptRole.System
+        });
+        preset.AddEntry(new RimTalk.Prompt.PromptEntry("Chat History", "{{chat.history}}")
+        {
+            IsMainChatHistory = true,
+            Position = RimTalk.Prompt.PromptPosition.Relative,
+            Role = RimTalk.Prompt.PromptRole.User
+        });
+        preset.AddEntry(new RimTalk.Prompt.PromptEntry("Dialogue Prompt", "Current Prompt")
+        {
+            Position = RimTalk.Prompt.PromptPosition.Relative,
+            Role = RimTalk.Prompt.PromptRole.User
+        });
+
+        const string rawJson1 = "[{\"name\": \"ColonistA\", \"text\": \"Hello!\"}]";
+        const string rawJson2 = "[{\"name\": \"ColonistB\", \"text\": \"Greetings!\"}]";
+
+        var chatHistory = new List<(RimTalk.Data.Role role, string message)>
+        {
+            (RimTalk.Data.Role.User, "prompt: Chat"),
+            (RimTalk.Data.Role.AI, rawJson1),
+            (RimTalk.Data.Role.User, "prompt: Reply"),
+            (RimTalk.Data.Role.AI, rawJson2)
+        };
+
+        // 1. When useCompact is true (default ON): groups history into single block
+        var compactMessages = RimTalk.Prompt.PromptPresetAssembler.AssembleMessages(
+            preset,
+            content => content,
+            chatHistory);
+
+        Assert.Contains(compactMessages, m => m.content.Contains("[Chat History]") && m.content.Contains(rawJson1));
+        Assert.DoesNotContain(compactMessages, m => m.role == RimTalk.Prompt.PromptRole.Assistant);
+
+        // 2. When useCompact is false (OFF): decoupled legacy multi-turn alternating messages
+        var multiTurnMessages = RimTalk.Prompt.LegacyMultiTurnPromptBuilder.AssembleMessages(
+            preset,
+            content => content,
+            chatHistory);
+
+        // System message first
+        Assert.Equal(RimTalk.Prompt.PromptRole.System, multiTurnMessages[0].role);
+        Assert.Equal("System instruction.", multiTurnMessages[0].content);
+
+        // History turns strictly alternating with full raw JSON
+        Assert.Equal(RimTalk.Prompt.PromptRole.User, multiTurnMessages[1].role);
+        Assert.Equal("prompt: Chat", multiTurnMessages[1].content);
+
+        Assert.Equal(RimTalk.Prompt.PromptRole.Assistant, multiTurnMessages[2].role);
+        Assert.Equal(rawJson1, multiTurnMessages[2].content);
+
+        Assert.Equal(RimTalk.Prompt.PromptRole.User, multiTurnMessages[3].role);
+        Assert.Equal("prompt: Reply", multiTurnMessages[3].content);
+
+        Assert.Equal(RimTalk.Prompt.PromptRole.Assistant, multiTurnMessages[4].role);
+        Assert.Equal(rawJson2, multiTurnMessages[4].content);
+
+        // Final turn: current Dialogue Prompt as User
+        Assert.Equal(RimTalk.Prompt.PromptRole.User, multiTurnMessages[5].role);
+        Assert.Equal("Current Prompt", multiTurnMessages[5].content);
+
+        Assert.DoesNotContain(multiTurnMessages, m => m.content.Contains("[Chat History]"));
+
+        // Verify strictly alternating non-consecutive roles after system
+        for (int i = 1; i < multiTurnMessages.Count - 1; i++)
+        {
+            Assert.NotEqual(multiTurnMessages[i].role, multiTurnMessages[i + 1].role);
+        }
+    }
+
+    [Fact]
+    public void LegacyMultiTurnPromptBuilder_NormalizesMalformedHistory()
+    {
+        var preset = new RimTalk.Prompt.PromptPreset("TestMalformedHistory");
+        preset.AddEntry(new RimTalk.Prompt.PromptEntry("Chat History", "{{chat.history}}")
+        {
+            IsMainChatHistory = true,
+            Position = RimTalk.Prompt.PromptPosition.Relative,
+            Role = RimTalk.Prompt.PromptRole.User
+        });
+        preset.AddEntry(new RimTalk.Prompt.PromptEntry("Dialogue Prompt", "Current Prompt")
+        {
+            Position = RimTalk.Prompt.PromptPosition.Relative,
+            Role = RimTalk.Prompt.PromptRole.User
+        });
+
+        // History with leading orphaned AI message and trailing orphaned User message
+        var malformedHistory = new List<(RimTalk.Data.Role role, string message)>
+        {
+            (RimTalk.Data.Role.AI, "[{\"name\": \"Old\", \"text\": \"Orphaned AI\"}]"),
+            (RimTalk.Data.Role.User, "prompt: Valid prompt"),
+            (RimTalk.Data.Role.AI, "[{\"name\": \"Bob\", \"text\": \"Valid response\"}]"),
+            (RimTalk.Data.Role.User, "prompt: Orphaned trailing prompt")
+        };
+
+        var messages = RimTalk.Prompt.LegacyMultiTurnPromptBuilder.AssembleMessages(
+            preset,
+            content => content,
+            malformedHistory);
+
+        // Should ignore leading orphaned AI and trailing orphaned User, keeping User -> Assistant -> User(Prompt)
+        Assert.Equal(3, messages.Count);
+        Assert.Equal(RimTalk.Prompt.PromptRole.User, messages[0].role);
+        Assert.Equal("prompt: Valid prompt", messages[0].content);
+        Assert.Equal(RimTalk.Prompt.PromptRole.Assistant, messages[1].role);
+        Assert.Equal("[{\"name\": \"Bob\", \"text\": \"Valid response\"}]", messages[1].content);
+        Assert.Equal(RimTalk.Prompt.PromptRole.User, messages[2].role);
+        Assert.Equal("Current Prompt", messages[2].content);
     }
 }

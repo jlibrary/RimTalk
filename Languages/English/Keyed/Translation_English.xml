@@ -468,6 +468,8 @@ Crucial Tips:
     <RimTalk.Settings.EnableContextOptimization.Tooltip>Useful when dialogue generation is too slow on local models.\nOmits or simplifies some context information to increase speed, but may reduce dialogue quality.</RimTalk.Settings.EnableContextOptimization.Tooltip>
     <RimTalk.Settings.ConversationHistoryCount>Historical Conversation Sessions to Include</RimTalk.Settings.ConversationHistoryCount>
     <RimTalk.Settings.ConversationHistoryCount.Tooltip>Each session contains multiple dialogue turns, which can significantly increase token count</RimTalk.Settings.ConversationHistoryCount.Tooltip>
+    <RimTalk.Settings.UseCompactHistory>Use Condensed Dialogue History</RimTalk.Settings.UseCompactHistory>
+    <RimTalk.Settings.UseCompactHistory.Tooltip>Passes chat history as a single block. Better preserves context and saves tokens, but lightweight models may occasionally repeat lines. Disable to revert to legacy multi-turn history.</RimTalk.Settings.UseCompactHistory.Tooltip>
     <RimTalk.Settings.MaxPawnContextCount>Maximum Number of Pawns to Include</RimTalk.Settings.MaxPawnContextCount>
     <RimTalk.Settings.MaxPawnContextCount.Tooltip>Controls the maximum number of pawns that can participate in a conversation</RimTalk.Settings.MaxPawnContextCount.Tooltip>
     <RimTalk.Settings.MaxEventsCount>Maximum Colony Events to Include</RimTalk.Settings.MaxEventsCount>

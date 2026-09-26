@@ -456,6 +456,8 @@ Rappelle les 2 événements les plus marquants ou récents vécus avec cette per
     <RimTalk.Settings.EnableContextOptimization.Tooltip>Utile lorsque la génération de dialogue est trop lente sur des modèles locaux.\nOmet ou simplifie certaines informations de contexte pour accélérer les réponses, mais peut réduire la qualité du dialogue.</RimTalk.Settings.EnableContextOptimization.Tooltip>
     <RimTalk.Settings.ConversationHistoryCount>Nombre de sessions de conversation à inclure</RimTalk.Settings.ConversationHistoryCount>
     <RimTalk.Settings.ConversationHistoryCount.Tooltip>Chaque session contient plusieurs échanges, ce qui peut augmenter considérablement le nombre de tokens</RimTalk.Settings.ConversationHistoryCount.Tooltip>
+    <RimTalk.Settings.UseCompactHistory>Utiliser l'historique condensé</RimTalk.Settings.UseCompactHistory>
+    <RimTalk.Settings.UseCompactHistory.Tooltip>Transmet l'historique sous forme de bloc unique. Préserve mieux le contexte et économise des tokens, mais les modèles légers peuvent répéter des répliques. Désactivez pour revenir au mode multi-tours classique.</RimTalk.Settings.UseCompactHistory.Tooltip>
     <RimTalk.Settings.MaxPawnContextCount>Nombre maximum de colons à inclure</RimTalk.Settings.MaxPawnContextCount>
     <RimTalk.Settings.MaxPawnContextCount.Tooltip>Définit le nombre maximum de colons pouvant participer à une conversation</RimTalk.Settings.MaxPawnContextCount.Tooltip>
     <RimTalk.Settings.MaxEventsCount>Nombre maximum d'événements à inclure</RimTalk.Settings.MaxEventsCount>

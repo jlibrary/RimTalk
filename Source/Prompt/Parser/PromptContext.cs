@@ -65,7 +65,9 @@ public class PromptContext
         {
             _chatHistory = value;
             _simplifiedHistory = value;
+            _rawHistory = value;
             _simplifiedHistoryText = null;
+            _rawHistoryText = null;
         }
     }
 

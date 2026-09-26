@@ -30,7 +30,7 @@ namespace RimTalk
             { ContextPreset.Essential, new ContextSettings {
                 EnableContextOptimization = true,
                 MaxPawnContextCount = 2,
-                ConversationHistoryCount = 2,
+                ConversationHistoryCount = 1,
                 MaxEventsCount = 3,
                 UseCompactHistory = false,
                 
@@ -64,7 +64,7 @@ namespace RimTalk
             { ContextPreset.Standard, new ContextSettings {
                 EnableContextOptimization = false,
                 MaxPawnContextCount = 3,
-                ConversationHistoryCount = 3,
+                ConversationHistoryCount = 2,
                 MaxEventsCount = 5,
                 UseCompactHistory = false,
                 
@@ -175,7 +175,7 @@ namespace RimTalk
             string extEventModNames = hasExtEventMod ? EventService.GetActiveExternalEventModNames() : string.Empty;
 
             float extraHeight = hasExtEventMod ? 22f : 0f;
-            Rect genSectionRect = listing.GetRect(80f + extraHeight);
+            Rect genSectionRect = listing.GetRect(108f + extraHeight);
 
             // Left General Options Column (Feature Toggles)
             Rect genLeftRect = new Rect(genSectionRect.x, genSectionRect.y, genColWidth, genSectionRect.height);
@@ -185,6 +185,30 @@ namespace RimTalk
             CheckboxLeft(genLeftListing, "RimTalk.Settings.IncludeTopicKeywords".Translate(),
                 ref context.IncludeTopicKeywords,
                 "RimTalk.Settings.IncludeTopicKeywords.Tooltip".Translate());
+            genLeftListing.Gap(4f);
+
+            bool previousUseCompact = context.UseCompactHistory;
+            if (context.ConversationHistoryCount <= 0)
+            {
+                GUI.color = new Color(0.6f, 0.6f, 0.6f, 0.45f);
+                GUI.enabled = false;
+                CheckboxLeft(genLeftListing, "RimTalk.Settings.UseCompactHistory".Translate(),
+                    ref context.UseCompactHistory,
+                    "RimTalk.Settings.UseCompactHistory.Tooltip".Translate());
+                GUI.enabled = true;
+                GUI.color = Color.white;
+            }
+            else
+            {
+                CheckboxLeft(genLeftListing, "RimTalk.Settings.UseCompactHistory".Translate(),
+                    ref context.UseCompactHistory,
+                    "RimTalk.Settings.UseCompactHistory.Tooltip".Translate());
+            }
+
+            if (previousUseCompact != context.UseCompactHistory)
+            {
+                TalkHistory.Clear();
+            }
             genLeftListing.Gap(4f);
 
             CheckboxLeft(genLeftListing, "RimTalk.Settings.EnableMemory".Translate(),

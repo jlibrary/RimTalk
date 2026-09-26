@@ -251,7 +251,7 @@ public class PromptManager : IExposable
                 new()
                 {
                     Name = "Recent Events",
-                    Role = PromptRole.User,
+                    Role = PromptRole.System,
                     Position = PromptPosition.Relative,
                     Content = Constant.DefaultRecentEventsInstruction
                 },
@@ -410,6 +410,26 @@ public class PromptManager : IExposable
         PromptContext context,
         List<PromptMessageSegment> segments)
     {
+        bool useCompact = Settings.Get()?.Context?.UseCompactHistory ?? true;
+        if (!useCompact)
+        {
+            var legacyMarker = preset.Entries.FirstOrDefault(e => e.Enabled && e.Position == PromptPosition.Relative && e.IsMainChatHistory);
+            List<(Role role, string message)> legacyHistory = null;
+            if (legacyMarker != null)
+            {
+                var marker = legacyMarker.Content?.Trim().ToLowerInvariant() ?? "";
+                legacyHistory = marker.Contains("history_simplified")
+                    ? context.GetChatHistory(simplified: true)
+                    : context.GetChatHistory(simplified: false);
+            }
+
+            return LegacyMultiTurnPromptBuilder.AssembleMessages(
+                preset,
+                content => ScribanParser.Render(content, context),
+                legacyHistory,
+                segments);
+        }
+
         var markerEntry = preset.Entries.FirstOrDefault(e => e.Enabled && e.Position == PromptPosition.Relative && e.IsMainChatHistory);
         List<(Role role, string message)> history = null;
         if (markerEntry != null)

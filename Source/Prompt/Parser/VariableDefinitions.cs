@@ -138,8 +138,9 @@ public static class VariableDefinitions
             ("is_user", "True if dialogue is from or to user"),
             ("json.format", "JSON output instructions"),
             ("json.anchor", "Concise trailing JSON anchor instructions"),
-            ("chat.history", "Formatted dialogue history"),
-            ("chat.history_simplified", "Alias of chat.history")
+            ("chat.history", "Dialogue history (per settings)"),
+            ("chat.history_simplified", "Condensed dialogue history"),
+            ("chat.history_raw", "Raw JSON dialogue history")
         };
 
         // 5. Mod-added variables from the API

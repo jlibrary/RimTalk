@@ -221,6 +221,9 @@ public static class TalkHistory
         if (!string.IsNullOrWhiteSpace(topic))
             return topic.Trim();
 
+        if (!string.IsNullOrWhiteSpace(intent))
+            return intent.Trim();
+
         return (talkRequest.RawPrompt ?? "").Trim();
     }
 
@@ -276,7 +279,7 @@ public static class TalkHistory
 
     private static void EnsureMessageLimit(List<(Role role, string message, int tick)> messages)
     {
-        int maxMessages = Settings.Get()?.Context?.ConversationHistoryCount ?? 5;
+        int maxMessages = Settings.Get()?.Context?.ConversationHistoryCount ?? 2;
         while (messages.Count > maxMessages * 2)
         {
             messages.RemoveAt(0);
