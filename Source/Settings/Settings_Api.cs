@@ -721,20 +721,21 @@ public partial class Settings
             Find.WindowStack.Add(new FloatMenu(options));
         }
 
-        if (ModelCache.ContainsKey(url))
+        string cacheKey = $"{url}:{config.ApiKey}";
+        if (ModelCache.TryGetValue(cacheKey, out var value))
         {
-            OpenMenu(ModelCache[url]);
+            OpenMenu(value);
         }
         else
         {
-            Task<List<string>> fetchTask = OpenAIClient.FetchModelsAsync(config.ApiKey, url);
+            Task<List<string>> fetchTask = OpenAIClient.FetchModelsAsync(config.ApiKey, url, config.Provider.GetExtraHeaders());
 
             fetchTask.ContinueWith(task =>
             {
-                var models = task.Result;
+                var models = task.Status == TaskStatus.RanToCompletion ? task.Result : null;
                 if (models != null && models.Any())
                 {
-                    ModelCache[url] = models;
+                    ModelCache[cacheKey] = models;
                 }
                 OpenMenu(models);
             }, TaskScheduler.FromCurrentSynchronizationContext());
