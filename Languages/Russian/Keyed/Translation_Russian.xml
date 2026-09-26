@@ -301,8 +301,8 @@
 • Психотравмы (до 3)
 Тяжелые потрясения (например, утрата близкого) влияют на все разговоры до исцеления.
 
-• Межличностные воспоминания (2 главных)
-Вспоминает 2 самых ярких или недавних события, пережитых с данным собеседником.
+• Межличностные воспоминания (до 4: 2 ярких + 2 недавних)
+Вспоминает до 2 самых значимых исторических событий и до 2 самых недавних происшествий с этим персонажем.
 
 • Вехи (★)
 Постоянные события в отношениях (например, свадьба или спасение), естественно обогащающие их разговоры.</RimTalk.Memory.HelpDesc>
@@ -329,15 +329,22 @@
     <RimTalk.Memory.KilledInBattle>убил(а) {0} в бою</RimTalk.Memory.KilledInBattle>
     <RimTalk.Memory.MurderedFellowColonist>жестоко убил(а) поселенца {0}</RimTalk.Memory.MurderedFellowColonist>
     <RimTalk.Memory.BecameLovers>стали возлюбленными</RimTalk.Memory.BecameLovers>
-    <RimTalk.Memory.DidSurgery>успешно провел(а) операцию</RimTalk.Memory.DidSurgery>
+    <RimTalk.Memory.DidSurgery>перенес(ла) операцию</RimTalk.Memory.DidSurgery>
     <RimTalk.Memory.CapturedMe>схвачен(а) и заключен(а) под стражу</RimTalk.Memory.CapturedMe>
     <RimTalk.Memory.ICaptured>захватил(а) и арестовал(а)</RimTalk.Memory.ICaptured>
     <RimTalk.Memory.SocialFight>устроил(а) жестокую драку</RimTalk.Memory.SocialFight>
     <RimTalk.Memory.Marriage>сыграли радостную свадьбу</RimTalk.Memory.Marriage>
-    <RimTalk.Memory.TendedMe>бережно перевязал(а) раны</RimTalk.Memory.TendedMe>
+    <RimTalk.Memory.TendedMe>перевязал(а) раны</RimTalk.Memory.TendedMe>
     <RimTalk.Memory.TendedPatient>обработал(а) раны</RimTalk.Memory.TendedPatient>
     <RimTalk.Memory.TraumaWithTarget>горе и травма из-за {0} ({1})</RimTalk.Memory.TraumaWithTarget>
     <RimTalk.Memory.TraumaWithoutTarget>горе и травма из-за {0}</RimTalk.Memory.TraumaWithoutTarget>
+    <RimTalk.Memory.GaveBirthWith>вместе с {0} дали жизнь новому человеку</RimTalk.Memory.GaveBirthWith>
+    <RimTalk.Memory.ChildBorn>встретили появление на свет ребенка {0}</RimTalk.Memory.ChildBorn>
+    <RimTalk.Memory.BornToMother>рожден(а) матерью {0}</RimTalk.Memory.BornToMother>
+    <RimTalk.Memory.BornToFather>рожден(а) в семье отца {0}</RimTalk.Memory.BornToFather>
+    <RimTalk.Memory.Divorced>развелись с {0}</RimTalk.Memory.Divorced>
+    <RimTalk.Memory.BrokeUpWith>расстались с {0}</RimTalk.Memory.BrokeUpWith>
+    <RimTalk.Memory.MurderedMyKin>убийца любимого человека {0}</RimTalk.Memory.MurderedMyKin>
 
     <!-- Settings_Api.cs -->
     <RimTalk.Settings.QuickSetupSubtitle>Выберите способ подключения ИИ для активации диалогов.</RimTalk.Settings.QuickSetupSubtitle>

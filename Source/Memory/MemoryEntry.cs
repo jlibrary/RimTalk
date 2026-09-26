@@ -19,6 +19,9 @@ public class MemoryEntry : IExposable
     public bool IsDirective;
     public bool IsCoreTrauma;
     public bool IsMilestone;
+    public MemoryPerspective Perspective = MemoryPerspective.None;
+    public int Count = 1;
+    public int LastTick = -1;
 
     public MemoryEntry()
     {
@@ -30,6 +33,11 @@ public class MemoryEntry : IExposable
     }
 
     public MemoryEntry(int targetPawnId, string targetPawnName, string eventKey, float baseWeight, int createdTick, string note, bool isDirective, bool isCoreTrauma, bool isMilestone)
+        : this(targetPawnId, targetPawnName, eventKey, baseWeight, createdTick, note, isDirective, isCoreTrauma, isMilestone, MemoryPerspective.None, 1, createdTick)
+    {
+    }
+
+    public MemoryEntry(int targetPawnId, string targetPawnName, string eventKey, float baseWeight, int createdTick, string note, bool isDirective, bool isCoreTrauma, bool isMilestone, MemoryPerspective perspective, int count = 1, int lastTick = -1)
     {
         TargetPawnId = targetPawnId;
         TargetPawnName = targetPawnName ?? string.Empty;
@@ -41,6 +49,9 @@ public class MemoryEntry : IExposable
         IsDirective = isDirective;
         IsCoreTrauma = isCoreTrauma;
         IsMilestone = isMilestone;
+        Perspective = perspective;
+        Count = Mathf.Max(1, count);
+        LastTick = lastTick > 0 ? lastTick : createdTick;
     }
 
     public void ExposeData()
@@ -55,6 +66,39 @@ public class MemoryEntry : IExposable
         Scribe_Values.Look(ref IsDirective, "isDirective", false);
         Scribe_Values.Look(ref IsCoreTrauma, "isCoreTrauma", false);
         Scribe_Values.Look(ref IsMilestone, "isMilestone", false);
+        Scribe_Values.Look(ref Perspective, "perspective", MemoryPerspective.None);
+        Scribe_Values.Look(ref Count, "count", 1);
+        Scribe_Values.Look(ref LastTick, "lastTick", -1);
+
+        if (Scribe.mode == LoadSaveMode.PostLoadInit && LastTick <= 0)
+        {
+            LastTick = CreatedTick;
+        }
+    }
+
+    /// <summary>
+    /// Calculates the calibrated half-life in days based on emotional weight and trauma flags.
+    /// Mild episodic events (<= 30f) fade in 4 days.
+    /// Moderate events (31-60f) persist across seasons (8 days).
+    /// Major momentous events (> 60f) leave lasting impressions across quadrums (14 days).
+    /// Core traumas use 7 days.
+    /// </summary>
+    public float GetDynamicHalfLifeDays()
+    {
+        if (IsCoreTrauma) return 7f;
+        float abs = Mathf.Abs(BaseWeight);
+        if (abs > 60f) return 14f;
+        if (abs > 30f) return 8f;
+        return 4f;
+    }
+
+    /// <summary>
+    /// Calculates exponential time-decayed emotional weight using weight-calibrated dynamic half-life.
+    /// Permanent milestones do not experience passive time decay.
+    /// </summary>
+    public float GetDecayedWeight(int currentTick)
+    {
+        return GetDecayedWeight(currentTick, GetDynamicHalfLifeDays());
     }
 
     /// <summary>
@@ -70,6 +114,14 @@ public class MemoryEntry : IExposable
         float halfLifeTicks = Mathf.Max(60000f, halfLifeDays * 60000f);
         float decayFactor = Mathf.Pow(0.5f, elapsedTicks / halfLifeTicks);
         return BaseWeight * decayFactor;
+    }
+
+    /// <summary>
+    /// Calculates recall priority score applying recency fatigue penalty with weight-calibrated dynamic half-life.
+    /// </summary>
+    public float GetRecallScore(int currentTick)
+    {
+        return GetRecallScore(currentTick, GetDynamicHalfLifeDays());
     }
 
     /// <summary>

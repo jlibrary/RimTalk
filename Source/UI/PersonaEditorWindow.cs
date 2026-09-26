@@ -500,7 +500,6 @@ public class PersonaEditorWindow : Window
                         Details = "Directive manually removed via Persona Editor"
                     });
                     memories?.Remove(dir);
-                    Messages.Message("RimTalk.Memory.Cleared".Translate(_pawn.LabelShort), MessageTypeDefOf.TaskCompletion, false);
                     Text.Font = GameFont.Small;
                     break;
                 }

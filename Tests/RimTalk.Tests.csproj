@@ -57,6 +57,7 @@
         <Compile Include="../Source/Util/ErrorUtil.cs" Link="Linked/ErrorUtil.cs" />
         <Compile Include="../Source/Client/OpenAI/OpenAIDto.cs" Link="Linked/OpenAIDto.cs" />
         <Compile Include="../Source/Data/TopicKeywordPool.cs" Link="Linked/TopicKeywordPool.cs" />
+        <Compile Include="../Source/Memory/MemoryPerspective.cs" Link="Linked/MemoryPerspective.cs" />
         <Compile Include="../Source/Memory/MemoryEntry.cs" Link="Linked/MemoryEntry.cs" />
         <Compile Include="../Source/Memory/MemoryChangeType.cs" Link="Linked/MemoryChangeType.cs" />
         <Compile Include="../Source/Memory/MemoryLogEntry.cs" Link="Linked/MemoryLogEntry.cs" />

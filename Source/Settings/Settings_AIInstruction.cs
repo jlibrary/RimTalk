@@ -69,7 +69,7 @@ public partial class Settings
         listingStandard.Gap(6f);
 
         // Warning about rate limits & switch to advanced settings directly above the text box
-        const float buttonWidth = 170f;
+        const float buttonWidth = 190f;
         const float textBorderMargin = 16f;
         float warningRowHeight = showAdvancedSwitch ? 26f : Text.LineHeight;
         Rect warningRowRect = listingStandard.GetRect(warningRowHeight);
