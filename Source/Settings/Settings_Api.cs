@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using RimTalk.Client.OpenAI;
 using RimTalk.Client.Player2;
@@ -21,11 +20,12 @@ public partial class Settings
 
     private bool DrawApiModeCard(Rect rect, string title, string desc, bool isSelected)
     {
+        rect = rect.Rounded();
         // Background
-        Widgets.DrawBoxSolid(rect, isSelected ? new Color(0.2f, 0.4f, 0.6f, 0.85f) : new Color(0.18f, 0.18f, 0.18f, 0.6f));
+        Widgets.DrawBoxSolid(rect, isSelected ? new Color(0.22f, 0.33f, 0.45f, 0.90f) : new Color(0.10f, 0.11f, 0.13f, 0.85f));
 
         // Border
-        GUI.color = isSelected ? new Color(0.4f, 0.75f, 1f, 1f) : new Color(0.35f, 0.35f, 0.35f, 0.6f);
+        GUI.color = isSelected ? new Color(0.40f, 0.65f, 0.85f, 0.95f) : SectionBorderColor;
         Widgets.DrawBox(rect, 1);
         GUI.color = Color.white;
 
@@ -37,6 +37,10 @@ public partial class Settings
         }
 
         bool clicked = Widgets.ButtonInvisible(rect);
+        if (clicked)
+        {
+            SoundDefOf.Click.PlayOneShotOnCamera(null);
+        }
 
         Rect content = rect.ContractedBy(5f);
         Text.Anchor = TextAnchor.UpperCenter;
@@ -114,8 +118,8 @@ public partial class Settings
         Text.Font = GameFont.Small;
         listingStandard.Gap(2f);
 
-        const float cardGap = 12f;
-        const float cardHeight = 54f;
+        const float cardGap = 8f;
+        const float cardHeight = 52f;
         float cardWidth = (listingStandard.ColumnWidth - cardGap) / 2f;
         Rect rowRect = listingStandard.GetRect(cardHeight);
 
@@ -156,7 +160,7 @@ public partial class Settings
             settings.SimpleApiKey = Widgets.TextField(rowRect, settings.SimpleApiKey);
 
             Rect buttonRect = new Rect(rowRect.xMax + spacing, rowRect.y, buttonWidth, rowRect.height);
-            if (Widgets.ButtonText(buttonRect, "RimTalk.Settings.GetFreeApiKeyButton".Translate()))
+            if (UIUtil.ButtonText(buttonRect, "RimTalk.Settings.GetFreeApiKeyButton".Translate()))
             {
                 Application.OpenURL("https://aistudio.google.com/app/apikey");
             }
@@ -165,7 +169,7 @@ public partial class Settings
             Text.Font = GameFont.Tiny;
             GUI.color = Color.gray;
             Rect cloudDescRect = listingStandard.GetRect(Text.LineHeight);
-            Widgets.Label(cloudDescRect, "RimTalk.Settings.GoogleApiKeyDesc".Translate());
+            Widgets.Label(cloudDescRect, "RimTalk.Settings.GoogleApiKeyDesc".Translate(Constant.DefaultCloudModel));
             GUI.color = Color.white;
             Text.Font = GameFont.Small;
         }
@@ -173,7 +177,7 @@ public partial class Settings
         {
             // Player2 Section: Split Cards (Symmetrical Bottom Buttons)
             const float boxHeight = 125f;
-            const float cardGap = 12f;
+            const float cardGap = 8f;
             const float padding = 10f;
             const float btnHeight = 28f;
 
@@ -191,15 +195,15 @@ public partial class Settings
             bool isRightActive = isSimpleActive && !string.IsNullOrEmpty(settings.SimplePlayer2ApiKey);
             bool isAppRunning = (status == true);
 
-            // Color palettes (Muted Emerald/Green theme for both cards)
-            Color greenActiveBg = new Color(0.12f, 0.24f, 0.20f, 0.5f);
-            Color greenActiveBorder = new Color(0.25f, 0.68f, 0.52f, 0.85f);
+            // Color palettes (Muted Forest/Olive Green with soft transparency)
+            Color greenActiveBg = new Color(0.10f, 0.20f, 0.13f, 0.75f);
+            Color greenActiveBorder = new Color(0.30f, 0.58f, 0.36f, 0.90f);
 
             // Inactive & Dimmed
-            Color inactiveBg = new Color(0.12f, 0.14f, 0.17f, 0.5f);
-            Color inactiveBorder = new Color(0.3f, 0.35f, 0.42f, 0.5f);
-            Color dimmedBg = new Color(0.08f, 0.09f, 0.11f, 0.4f);
-            Color dimmedBorder = new Color(0.22f, 0.25f, 0.28f, 0.4f);
+            Color inactiveBg = new Color(0.10f, 0.11f, 0.13f, 0.85f);
+            Color inactiveBorder = SectionBorderColor;
+            Color dimmedBg = new Color(0.08f, 0.09f, 0.11f, 0.7f);
+            Color dimmedBorder = SectionBorderColor;
 
             // 1. Left Card: Option 1 - Desktop App
             Widgets.DrawBoxSolid(leftCard, isLeftActive ? greenActiveBg : inactiveBg);
@@ -215,7 +219,7 @@ public partial class Settings
 
             // Left Status Row (matches inputRow height 24f and Y position for alignment)
             Rect statusRow = new Rect(leftInner.x, leftTitleRect.yMax + 1f, leftInner.width, 24f);
-            GUI.color = isLeftActive ? new Color(0.4f, 0.85f, 0.65f) : Color.gray;
+            GUI.color = isLeftActive ? new Color(0.52f, 0.78f, 0.38f) : Color.gray;
             Text.Font = GameFont.Tiny;
             Text.Anchor = TextAnchor.MiddleLeft;
             Widgets.Label(statusRow, isLeftActive ? "RimTalk.Settings.Player2StatusConnected".Translate() : "RimTalk.Settings.Player2StatusDisconnected".Translate());
@@ -232,12 +236,12 @@ public partial class Settings
 
             // Left Bottom Button
             Rect leftBtnRect = new Rect(leftInner.x, leftCard.yMax - padding - btnHeight, leftInner.width, btnHeight);
-            if (Widgets.ButtonText(leftBtnRect, "RimTalk.Settings.Player2DownloadApp".Translate()))
+            if (UIUtil.ButtonText(leftBtnRect, "RimTalk.Settings.Player2DownloadApp".Translate()))
             {
                 Application.OpenURL("https://player2.game");
             }
 
-            // 2. Right Card: Option 2 - Web API Key (shares same green theme)
+            // 2. Right Card: Option 2 - Web API Key
             Widgets.DrawBoxSolid(rightCard, isAppRunning ? dimmedBg : (isRightActive ? greenActiveBg : inactiveBg));
             GUI.color = isAppRunning ? dimmedBorder : (isRightActive ? greenActiveBorder : inactiveBorder);
             Widgets.DrawBox(rightCard, 1);
@@ -270,7 +274,7 @@ public partial class Settings
                 ? "RimTalk.Settings.Player2AuthWaiting".Translate()
                 : "RimTalk.Settings.Player2GetWebKey".Translate();
 
-            if (Widgets.ButtonText(rightBtnRect, btnLabel))
+            if (UIUtil.ButtonText(rightBtnRect, btnLabel))
             {
                 if (isAuthenticating)
                 {
@@ -302,42 +306,61 @@ public partial class Settings
     {
         RimTalkSettings settings = Get();
 
-        // Cloud providers option with description
-        Rect radioRect1 = listingStandard.GetRect(24f);
-        if (Widgets.RadioButtonLabeled(radioRect1, "RimTalk.Settings.CloudProviders".Translate(), settings.UseCloudProviders))
+        // 1-Row Segmented Switch (Cloud vs Local) + Add Button on the right
+        Rect modeRow = listingStandard.GetRect(28f);
+        const float segWidth = 180f;
+        Rect cloudSegRect = new Rect(modeRow.x, modeRow.y, segWidth, 28f);
+        Rect localSegRect = new Rect(cloudSegRect.xMax + 4f, modeRow.y, segWidth, 28f);
+
+        bool isCloud = settings.UseCloudProviders;
+        Widgets.DrawBoxSolid(cloudSegRect, isCloud ? new Color(0.22f, 0.33f, 0.45f, 0.90f) : new Color(0.10f, 0.11f, 0.13f, 0.85f));
+        GUI.color = isCloud ? new Color(0.40f, 0.65f, 0.85f, 0.95f) : SectionBorderColor;
+        Widgets.DrawBox(cloudSegRect, 1);
+        GUI.color = Color.white;
+        if (Mouse.IsOver(cloudSegRect)) Widgets.DrawHighlight(cloudSegRect);
+        if (Widgets.ButtonInvisible(cloudSegRect))
         {
+            SoundDefOf.Click.PlayOneShotOnCamera(null);
             settings.UseCloudProviders = true;
         }
+        TextAnchor oldAnchor = Text.Anchor;
+        Text.Anchor = TextAnchor.MiddleCenter;
+        Widgets.Label(cloudSegRect, "RimTalk.Settings.CloudProviders".Translate());
 
-        // Add description for cloud providers
-        Text.Font = GameFont.Tiny;
-        GUI.color = Color.gray;
-        Rect cloudDescRect = listingStandard.GetRect(Text.LineHeight);
-        Widgets.Label(cloudDescRect, "RimTalk.Settings.CloudProvidersDesc".Translate());
+        bool isLocal = !settings.UseCloudProviders;
+        Widgets.DrawBoxSolid(localSegRect, isLocal ? new Color(0.22f, 0.33f, 0.45f, 0.90f) : new Color(0.10f, 0.11f, 0.13f, 0.85f));
+        GUI.color = isLocal ? new Color(0.40f, 0.65f, 0.85f, 0.95f) : SectionBorderColor;
+        Widgets.DrawBox(localSegRect, 1);
         GUI.color = Color.white;
-        Text.Font = GameFont.Small;
-
-        listingStandard.Gap(3f);
-
-        // Local provider option with description
-        Rect radioRect2 = listingStandard.GetRect(24f);
-        if (Widgets.RadioButtonLabeled(radioRect2, "RimTalk.Settings.LocalProvider".Translate(), !settings.UseCloudProviders))
+        if (Mouse.IsOver(localSegRect)) Widgets.DrawHighlight(localSegRect);
+        if (Widgets.ButtonInvisible(localSegRect))
         {
+            SoundDefOf.Click.PlayOneShotOnCamera(null);
             settings.UseCloudProviders = false;
             settings.LocalConfig.Provider = AIProvider.Local;
         }
+        Widgets.Label(localSegRect, "RimTalk.Settings.LocalProvider".Translate());
+        Text.Anchor = oldAnchor;
 
-        // Add description for local provider
-        Text.Font = GameFont.Tiny;
-        GUI.color = Color.gray;
-        Rect localDescRect = listingStandard.GetRect(Text.LineHeight);
-        Widgets.Label(localDescRect, "RimTalk.Settings.LocalProviderDesc".Translate());
-        GUI.color = Color.white;
-        Text.Font = GameFont.Small;
+        TooltipHandler.TipRegion(cloudSegRect, "RimTalk.Settings.CloudProvidersDesc".Translate());
+        TooltipHandler.TipRegion(localSegRect, "RimTalk.Settings.LocalProviderDesc".Translate());
 
-        listingStandard.Gap();
+        // Add button on the right if cloud mode
+        if (settings.UseCloudProviders)
+        {
+            float addBtnW = 110f;
+            Rect addBtnRect = new Rect(modeRow.xMax - addBtnW, modeRow.y, addBtnW, 28f);
+            Color prevColor = GUI.color;
+            GUI.color = new Color(0.3f, 0.9f, 0.3f);
+            if (UIUtil.ButtonText(addBtnRect, "+ " + "Add".Translate()))
+            {
+                settings.CloudConfigs.Add(new ApiConfig());
+            }
+            GUI.color = prevColor;
+        }
 
-        // Draw appropriate section based on selection
+        listingStandard.Gap(8f);
+
         if (settings.UseCloudProviders)
         {
             DrawCloudProvidersSection(listingStandard, settings);
@@ -350,34 +373,6 @@ public partial class Settings
     
     private void DrawCloudProvidersSection(Listing_Standard listingStandard, RimTalkSettings settings)
     {
-        Rect headerRect = listingStandard.GetRect(24f);
-
-        // Header with add button
-        float addBtnSize = 24f; 
-        Rect addButtonRect = new Rect(headerRect.x + headerRect.width - addBtnSize, headerRect.y, addBtnSize, addBtnSize);
-        headerRect.width -= (addBtnSize + 5f); 
-
-        Widgets.Label(headerRect, "RimTalk.Settings.CloudApiConfigurations".Translate());
-
-        Text.Font = GameFont.Tiny;
-        GUI.color = Color.gray;
-        Rect cloudDescRect = listingStandard.GetRect(Text.LineHeight * 2);
-        cloudDescRect.width -= 35f;
-        Widgets.Label(cloudDescRect, "RimTalk.Settings.CloudApiConfigurationsDesc".Translate());
-        GUI.color = Color.white;
-
-        // Draw Add Button (+)
-        Color prevColor = GUI.color;
-        GUI.color = new Color(0.3f, 0.9f, 0.3f);
-        if (Widgets.ButtonText(addButtonRect, "+"))
-        {
-            SoundDefOf.Click.PlayOneShotOnCamera(null);
-            settings.CloudConfigs.Add(new ApiConfig());
-        }
-        GUI.color = prevColor;
-        
-        listingStandard.Gap(6f);
-
         // --- Table Headers ---
         Rect tableHeaderRect = listingStandard.GetRect(20f);
         float x = tableHeaderRect.x;
@@ -519,9 +514,8 @@ public partial class Settings
             GUI.color = Color.gray;
         }
 
-        if (Widgets.ButtonText(deleteRect, "×", active: canDelete))
+        if (UIUtil.ButtonText(deleteRect, "×", active: canDelete))
         {
-            SoundDefOf.Click.PlayOneShotOnCamera(null);
             deleteClicked = true;
         }
         GUI.color = prevColor;
@@ -535,17 +529,15 @@ public partial class Settings
         float btnSize = 22f;
         Rect upButtonRect = new Rect(x, y, btnSize, height);
         
-        if (Widgets.ButtonText(upButtonRect, "▲") && index > 0)
+        if (UIUtil.ButtonText(upButtonRect, "▲") && index > 0)
         {
-            SoundDefOf.Click.PlayOneShotOnCamera(null);
             (configs[index], configs[index - 1]) = (configs[index - 1], configs[index]);
         }
 
         Rect downButtonRect = new Rect(x + btnSize + 2f, y, btnSize, height);
 
-        if (Widgets.ButtonText(downButtonRect, "▼") && index < configs.Count - 1)
+        if (UIUtil.ButtonText(downButtonRect, "▼") && index < configs.Count - 1)
         {
-            SoundDefOf.Click.PlayOneShotOnCamera(null);
             (configs[index], configs[index + 1]) = (configs[index + 1], configs[index]);
         }
     }
@@ -563,9 +555,8 @@ public partial class Settings
 
             config.CustomModelName = DrawTextFieldWithPlaceholder(textFieldRect, config.CustomModelName, "Model ID");
             
-            if (Widgets.ButtonText(backButtonRect, "×"))
+            if (UIUtil.ButtonText(backButtonRect, "×"))
             {
-                SoundDefOf.Click.PlayOneShotOnCamera(null);
                 config.SelectedModel = Constant.ChooseModel;
             }
         }
@@ -601,10 +592,8 @@ public partial class Settings
 
             Text.Anchor = TextAnchor.MiddleLeft;
             GUI.color = new Color(0.6f, 0.6f, 0.6f, 0.7f); 
+            Widgets.Label(rect, $" {placeholder}");
             
-            Rect labelRect = new Rect(rect.x + 5f, rect.y, rect.width - 5f, rect.height);
-            Widgets.Label(labelRect, placeholder);
-
             GUI.color = originalColor;
             Text.Anchor = originalAnchor;
         }
@@ -614,10 +603,8 @@ public partial class Settings
 
     private static readonly AIProvider[] DropdownProviders =
     [
-        AIProvider.Google,
-        AIProvider.Player2,
-        AIProvider.OpenAI,
         AIProvider.Claude,
+        AIProvider.OpenAI,
         AIProvider.DeepSeek,
         AIProvider.Grok,
         AIProvider.GLM,
@@ -626,6 +613,8 @@ public partial class Settings
         AIProvider.AlibabaIntl,
         AIProvider.AlibabaCN,
         AIProvider.Moonshot,
+        AIProvider.Google,
+        AIProvider.Player2,
         AIProvider.Custom
     ];
 
@@ -881,9 +870,8 @@ public partial class Settings
             ? "RimTalk.Settings.LocalScanning".Translate()
             : "RimTalk.Settings.LocalAutoDetect".Translate();
 
-        if (Widgets.ButtonText(scanBtnRect, scanLabel, true, true, !isScanningLocal))
+        if (UIUtil.ButtonText(scanBtnRect, scanLabel, true, true, !isScanningLocal))
         {
-            SoundDefOf.Click.PlayOneShotOnCamera(null);
             StartScanLocalEndpoints(config);
         }
     }

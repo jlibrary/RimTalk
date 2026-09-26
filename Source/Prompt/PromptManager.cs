@@ -247,16 +247,16 @@ public class PromptManager : IExposable
                     Position = PromptPosition.Relative,
                     Content = "{{context}}"
                 },
-                // 2. History Section
+                // 2. History Section (Past dialogue lines)
                 new()
                 {
                     Name = "Chat History",
-                    Role = PromptRole.User, // Visual placeholder
+                    Role = PromptRole.User,
                     Position = PromptPosition.Relative,
                     IsMainChatHistory = true,
-                    Content = "{{chat.history}}"  // Special marker - history will be inserted here
+                    Content = "{{chat.history}}"
                 },
-                // 3. Prompt Section
+                // 3. Prompt Section (Immediate intent & situation)
                 new()
                 {
                     Name = "Dialogue Prompt",
@@ -367,9 +367,12 @@ public class PromptManager : IExposable
             talkRequest.Participants = pawns;
         }
         
+        if (talkRequest == null) return [];
+        
         // 1. Prepare shared context data
         var (dialogueType, intent, topic) = PromptContextProvider.GetDialogueTypeData(talkRequest, pawns);
         talkRequest.Context = PromptService.BuildContext(pawns, talkRequest.IsAnnouncement);
+        talkRequest.CausalPrompt = TalkHistory.BuildCausalSummary(talkRequest, intent, topic);
         PromptService.DecoratePrompt(talkRequest, pawns, status);
 
         // 2. Build Context Object
@@ -419,10 +422,10 @@ public class PromptManager : IExposable
         List<(Role role, string message)> history = null;
         if (markerEntry != null)
         {
-            var marker = markerEntry.Content.Trim().ToLowerInvariant();
-            history = marker.Contains("history_simplified")
-                ? context.GetChatHistory(simplified: true)
-                : context.ChatHistory;
+            var marker = markerEntry.Content?.Trim().ToLowerInvariant() ?? "";
+            history = marker.Contains("history_raw")
+                ? context.GetChatHistory(simplified: false)
+                : context.GetChatHistory(simplified: true);
         }
 
         return PromptPresetAssembler.AssembleMessages(

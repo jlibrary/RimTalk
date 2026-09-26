@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using RimTalk.Data;
+using RimTalk.Util;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -10,18 +11,17 @@ namespace RimTalk.UI;
 public class PersonaEditorWindow : Window
 {
     private const int MaxLength = 500; // Reasonable limit
-    private readonly Pawn _pawn;
+    private Pawn _pawn;
     private string _editingPersonality;
     private float _talkInitiationWeight;
     private bool _isGenerating = false;
+    private bool _pawnChanged = false;
     private Vector2 _scrollPos = Vector2.zero;
     private readonly string _textControlName = "RimTalk_Persona_TextArea";
 
     public PersonaEditorWindow(Pawn pawn)
     {
-        _pawn = pawn;
-        _editingPersonality = PersonaService.GetPersonality(pawn) ?? "";
-        _talkInitiationWeight = PersonaService.GetTalkInitiationWeight(pawn);
+        SetTargetPawn(pawn);
 
         doCloseX = true;
         draggable = true;
@@ -31,10 +31,30 @@ public class PersonaEditorWindow : Window
         preventCameraMotion = false;
     }
 
+    private void SetTargetPawn(Pawn pawn)
+    {
+        _pawn = pawn;
+        _editingPersonality = PersonaService.GetPersonality(pawn) ?? "";
+        _talkInitiationWeight = PersonaService.GetTalkInitiationWeight(pawn);
+        _scrollPos = Vector2.zero;
+        _pawnChanged = true;
+    }
+
+    private static bool IsValidTarget(Pawn pawn)
+    {
+        return pawn != null && !pawn.Dead && (pawn.IsColonist || pawn.IsPrisonerOfColony || pawn.IsSlaveOfColony || pawn.HasVocalLink());
+    }
+
     public override Vector2 InitialSize => new Vector2(520f, 440f);
 
     public override void DoWindowContents(Rect inRect)
     {
+        if (_pawnChanged)
+        {
+            _pawnChanged = false;
+            GUI.FocusControl(null);
+        }
+
         Text.Font = GameFont.Medium;
         Rect titleRect = new Rect(inRect.x, inRect.y, inRect.width, 30f);
         Widgets.Label(titleRect, "RimTalk.PersonaEditor.Title".Translate(_pawn.LabelShort));
@@ -132,7 +152,7 @@ public class PersonaEditorWindow : Window
         Rect rollGenButton = new Rect(smartGenButton.xMax + spacing, buttonY, buttonWidth, buttonHeight);
         Rect clearButton = new Rect(rollGenButton.xMax + spacing, buttonY, buttonWidth, buttonHeight);
 
-        if (Widgets.ButtonText(saveButton, "RimTalk.PersonaEditor.Save".Translate()))
+        if (UIUtil.ButtonText(saveButton, "RimTalk.PersonaEditor.Save".Translate()))
         {
             PersonaService.SetPersonality(_pawn, _editingPersonality.Trim());
             PersonaService.SetTalkInitiationWeight(_pawn, _talkInitiationWeight);
@@ -141,7 +161,7 @@ public class PersonaEditorWindow : Window
             Close();
         }
 
-        if (Widgets.ButtonText(smartGenButton, _isGenerating ?
+        if (UIUtil.ButtonText(smartGenButton, _isGenerating ?
                 "RimTalk.PersonaEditor.Generating".Translate().ToString() :
                 "RimTalk.PersonaEditor.SmartGen".Translate().ToString()))
         {
@@ -166,14 +186,14 @@ public class PersonaEditorWindow : Window
             }
         }
 
-        if (Widgets.ButtonText(rollGenButton, "RimTalk.PersonaEditor.RollGen".Translate()))
+        if (UIUtil.ButtonText(rollGenButton, "RimTalk.PersonaEditor.RollGen".Translate()))
         {
             PersonalityData rollGenData = Constant.Personalities.RandomElement();
             _editingPersonality = rollGenData.Persona;
             _talkInitiationWeight = rollGenData.Chattiness;
         }
 
-        if (Widgets.ButtonText(clearButton, "RimTalk.PersonaEditor.Clear".Translate()))
+        if (UIUtil.ButtonText(clearButton, "RimTalk.PersonaEditor.Clear".Translate()))
         {
             _editingPersonality = "";
         }
@@ -185,6 +205,12 @@ public class PersonaEditorWindow : Window
         if (_isGenerating)
         {
             // This will cause the window to repaint continuously while generating
+            return;
+        }
+
+        if (Find.Selector?.SingleSelectedThing is Pawn newPawn && newPawn != _pawn && IsValidTarget(newPawn))
+        {
+            SetTargetPawn(newPawn);
         }
     }
 }

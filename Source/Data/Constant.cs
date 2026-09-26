@@ -31,6 +31,9 @@ public static class Constant
          Monologue = 1 turn. Conversation = 4-8 short turns
          """;
 
+    public const string ChatHistoryHeader = PromptPresetAssembler.ChatHistoryHeader;
+    public const string CurrentTaskHeader = PromptPresetAssembler.CurrentTaskHeader;
+
     public const string JsonInstruction = """
                                            Output JSONL.
                                            Required keys: "name", "text".

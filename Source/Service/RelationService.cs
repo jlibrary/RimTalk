@@ -46,7 +46,7 @@ public static class RelationsService
 
                 // --- Step 3: If no other label found, fall back to opinion-based relationship ---
                 bool isOpinionFallback = false;
-                if (string.IsNullOrEmpty(label) && !pawn.IsVisitor() && !pawn.IsEnemy())
+                if (string.IsNullOrEmpty(label) && !pawn.IsEnemy())
                 {
                     isOpinionFallback = true;
                     if (opinionValue >= FriendOpinionThreshold)
@@ -59,7 +59,7 @@ public static class RelationsService
                     }
                     else
                     {
-                        label = "Acquaintance";
+                        label = IsOutsiderOrStranger(pawn, otherPawn) ? "Stranger" : "Acquaintance";
                     }
                 }
 
@@ -263,7 +263,7 @@ public static class RelationsService
             label = GetStatusLabel(pawn, otherPawn);
         }
 
-        if (string.IsNullOrEmpty(label) && !pawn.IsVisitor() && !pawn.IsEnemy())
+        if (string.IsNullOrEmpty(label) && !pawn.IsEnemy())
         {
             isOpinionFallback = true;
             if (opinionValue >= FriendOpinionThreshold)
@@ -276,10 +276,19 @@ public static class RelationsService
             }
             else
             {
-                label = "Acquaintance";
+                label = IsOutsiderOrStranger(pawn, otherPawn) ? "Stranger" : "Acquaintance";
             }
         }
 
         return !string.IsNullOrEmpty(label);
+    }
+
+    internal static bool IsOutsiderOrStranger(Pawn pawn, Pawn otherPawn)
+    {
+        if (pawn == null || otherPawn == null) return false;
+        if (pawn.IsVisitor() || otherPawn.IsVisitor()) return true;
+        if (!pawn.IsColonist || !otherPawn.IsColonist) return true;
+        if (pawn.Faction != otherPawn.Faction) return true;
+        return false;
     }
 }

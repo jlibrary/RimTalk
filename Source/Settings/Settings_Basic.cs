@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using RimTalk.UI;
-using RimTalk.Util;
+using RimWorld;
 using UnityEngine;
 using Verse;
+using Verse.Sound;
 
 namespace RimTalk;
 
@@ -23,6 +24,55 @@ public partial class Settings
                 return "4x";
             default:
                 return speed.ToString();
+        }
+    }
+
+    private static void CheckboxLeft(Listing_Standard listing, string label, ref bool checkOn, string tooltip = null, Action onGearClicked = null)
+    {
+        Rect rowRect = listing.GetRect(24f);
+        const float checkSize = 24f;
+        const float gap = 6f;
+        const float gearSize = 22f;
+
+        Widgets.DrawHighlightIfMouseover(rowRect);
+
+        Vector2 checkPos = new Vector2(rowRect.x, rowRect.y);
+        Widgets.CheckboxDraw(checkPos.x, checkPos.y, checkOn, false, checkSize);
+
+        float labelX = rowRect.x + checkSize + gap;
+        float labelWidth = rowRect.width - (checkSize + gap) - (onGearClicked != null ? (gearSize + gap) : 0f);
+        Rect labelRect = new Rect(labelX, rowRect.y, labelWidth, 24f);
+
+        TextAnchor oldAnchor = Text.Anchor;
+        Text.Anchor = TextAnchor.MiddleLeft;
+        Widgets.Label(labelRect, label);
+        Text.Anchor = oldAnchor;
+
+        Rect clickableArea = new Rect(rowRect.x, rowRect.y, rowRect.width - (onGearClicked != null ? (gearSize + gap) : 0f), 24f);
+        if (Widgets.ButtonInvisible(clickableArea))
+        {
+            checkOn = !checkOn;
+            if (checkOn)
+                SoundDefOf.Checkbox_TurnedOn.PlayOneShotOnCamera();
+            else
+                SoundDefOf.Checkbox_TurnedOff.PlayOneShotOnCamera();
+        }
+
+        if (onGearClicked != null)
+        {
+            Rect gearRect = new Rect(rowRect.xMax - gearSize, rowRect.y + 1f, gearSize, gearSize);
+            var gearIcon = ContentFinder<Texture2D>.Get("UI/Icons/Options/OptionsGeneral");
+            if (Widgets.ButtonImage(gearRect, gearIcon, new Color(0.85f, 0.85f, 0.85f), GenUI.MouseoverColor))
+            {
+                SoundDefOf.Click.PlayOneShotOnCamera(null);
+                onGearClicked();
+            }
+            TooltipHandler.TipRegion(gearRect, "RimTalk.Settings.FastTrackInteractionsTitle".Translate());
+        }
+
+        if (!string.IsNullOrEmpty(tooltip))
+        {
+            TooltipHandler.TipRegion(clickableArea, tooltip);
         }
     }
 
@@ -91,47 +141,31 @@ public partial class Settings
 
         leftListing.Gap(6f);
 
-        // 3. Checkboxes in Left Column
-        Rect overrideRowRect = leftListing.GetRect(24f);
-        bool hasGear = settings.ProcessNonRimTalkInteractions;
-        Rect checkboxRect = new Rect(overrideRowRect.x, overrideRowRect.y, overrideRowRect.width - (hasGear ? 30f : 0f), 24f);
-        Widgets.CheckboxLabeled(checkboxRect, "RimTalk.Settings.OverrideInteractions".Translate().ToString(),
-            ref settings.ProcessNonRimTalkInteractions);
-        TooltipHandler.TipRegion(checkboxRect, "RimTalk.Settings.OverrideInteractionsTooltip".Translate().ToString());
-
-        if (hasGear)
-        {
-            Rect gearRect = new Rect(checkboxRect.xMax + 6f, overrideRowRect.y, 24f, 24f);
-            var gearIcon = ContentFinder<Texture2D>.Get("UI/Icons/Options/OptionsGeneral");
-            if (Widgets.ButtonImage(gearRect, gearIcon, new Color(0.85f, 0.85f, 0.85f), GenUI.MouseoverColor))
-            {
-                Find.WindowStack.Add(new Dialog_FastTrackInteractions());
-            }
-            TooltipHandler.TipRegion(gearRect, "RimTalk.Settings.FastTrackInteractionsTitle".Translate());
-        }
-
+        // 3. Checkboxes in Left Column (Left-aligned checkmarks)
+        CheckboxLeft(leftListing, "RimTalk.Settings.OverrideInteractions".Translate().ToString(),
+            ref settings.ProcessNonRimTalkInteractions,
+            "RimTalk.Settings.OverrideInteractionsTooltip".Translate().ToString(),
+            settings.ProcessNonRimTalkInteractions ? () => Find.WindowStack.Add(new Dialog_FastTrackInteractions()) : null);
         leftListing.Gap(6f);
-        leftListing.CheckboxLabeled("RimTalk.Settings.AllowSimultaneousConversations".Translate().ToString(),
+        CheckboxLeft(leftListing, "RimTalk.Settings.AllowSimultaneousConversations".Translate().ToString(),
             ref settings.AllowSimultaneousConversations,
             "RimTalk.Settings.AllowSimultaneousConversationsTooltip".Translate().ToString());
         leftListing.Gap(6f);
-        leftListing.CheckboxLabeled("RimTalk.Settings.DisplayTalkWhenDrafted".Translate().ToString(),
+        CheckboxLeft(leftListing, "RimTalk.Settings.DisplayTalkWhenDrafted".Translate().ToString(),
             ref settings.DisplayTalkWhenDrafted,
             "RimTalk.Settings.DisplayTalkWhenDraftedTooltip".Translate().ToString());
         leftListing.Gap(6f);
-        leftListing.CheckboxLabeled("RimTalk.Settings.ContinueDialogueWhileSleeping".Translate().ToString(),
+        CheckboxLeft(leftListing, "RimTalk.Settings.ContinueDialogueWhileSleeping".Translate().ToString(),
             ref settings.ContinueDialogueWhileSleeping,
             "RimTalk.Settings.ContinueDialogueWhileSleepingTooltip".Translate().ToString());
         leftListing.Gap(6f);
-        leftListing.CheckboxLabeled("RimTalk.Settings.EnableSleepDialogue".Translate().ToString(),
+        CheckboxLeft(leftListing, "RimTalk.Settings.EnableSleepDialogue".Translate().ToString(),
             ref settings.EnableSleepDialogue,
             "RimTalk.Settings.EnableSleepDialogueTooltip".Translate().ToString());
         leftListing.Gap(6f);
-        leftListing.CheckboxLabeled("RimTalk.Settings.ApplyMoodAndSocialEffects".Translate().ToString(),
+        CheckboxLeft(leftListing, "RimTalk.Settings.ApplyMoodAndSocialEffects".Translate().ToString(),
             ref settings.ApplyMoodAndSocialEffects,
             "RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip".Translate().ToString());
-        leftListing.Gap(6f);
-        
         leftListing.End();
 
         // --- Right Column ---
@@ -139,114 +173,50 @@ public partial class Settings
             checkboxSectionRect.height);
         Listing_Standard rightListing = new Listing_Standard();
         rightListing.Begin(rightColumnRect);
-        
-        rightListing.CheckboxLabeled("RimTalk.Settings.AllowMonologue".Translate().ToString(),
+
+        CheckboxLeft(rightListing, "RimTalk.Settings.AllowMonologue".Translate().ToString(),
             ref settings.AllowMonologue, "RimTalk.Settings.AllowMonologueTooltip".Translate().ToString());
         rightListing.Gap(6f);
-        rightListing.CheckboxLabeled("RimTalk.Settings.AllowSlavesToTalk".Translate().ToString(),
+        CheckboxLeft(rightListing, "RimTalk.Settings.AllowSlavesToTalk".Translate().ToString(),
             ref settings.AllowSlavesToTalk, "RimTalk.Settings.AllowSlavesToTalkTooltip".Translate().ToString());
         rightListing.Gap(6f);
-        rightListing.CheckboxLabeled("RimTalk.Settings.AllowPrisonersToTalk".Translate().ToString(),
+        CheckboxLeft(rightListing, "RimTalk.Settings.AllowPrisonersToTalk".Translate().ToString(),
             ref settings.AllowPrisonersToTalk, "RimTalk.Settings.AllowPrisonersToTalkTooltip".Translate().ToString());
         rightListing.Gap(6f);
-        rightListing.CheckboxLabeled("RimTalk.Settings.AllowOtherFactionsToTalk".Translate().ToString(),
+        CheckboxLeft(rightListing, "RimTalk.Settings.AllowOtherFactionsToTalk".Translate().ToString(),
             ref settings.AllowOtherFactionsToTalk,
             "RimTalk.Settings.AllowOtherFactionsToTalkTooltip".Translate().ToString());
         rightListing.Gap(6f);
-        rightListing.CheckboxLabeled("RimTalk.Settings.AllowEnemiesToTalk".Translate().ToString(),
+        CheckboxLeft(rightListing, "RimTalk.Settings.AllowEnemiesToTalk".Translate().ToString(),
             ref settings.AllowEnemiesToTalk, "RimTalk.Settings.AllowEnemiesToTalkTooltip".Translate().ToString());
         rightListing.Gap(6f);
-        rightListing.CheckboxLabeled("RimTalk.Settings.AllowBabiesToTalk".Translate().ToString(),
+        CheckboxLeft(rightListing, "RimTalk.Settings.AllowBabiesToTalk".Translate().ToString(),
             ref settings.AllowBabiesToTalk, "RimTalk.Settings.AllowBabiesToTalkTooltip".Translate().ToString());
         rightListing.Gap(6f);
-        rightListing.CheckboxLabeled("RimTalk.Settings.AllowNonHumanToTalk".Translate().ToString(),
+        CheckboxLeft(rightListing, "RimTalk.Settings.AllowNonHumanToTalk".Translate().ToString(),
             ref settings.AllowNonHumanToTalk, "RimTalk.Settings.AllowNonHumanToTalkTooltip".Translate().ToString());
         rightListing.End();
 
         // Advance the main listing standard's vertical position based on the taller of the two columns.
         float tallerColumnHeight = Mathf.Max(leftListing.CurHeight, rightListing.CurHeight);
-        listingStandard.Gap(tallerColumnHeight - estimatedHeight); // Adjust for the initial GetRect height
+        listingStandard.Gap(tallerColumnHeight - estimatedHeight);
 
-        listingStandard.Gap(12f);
+        // Comfortable spacing between checkboxes and bottom buttons
+        listingStandard.Gap(28f);
 
-        const float dropdownWidth = 140f;
-        const float rowGap = 8f;
+        // --- 3 Compact Centered Buttons: [Label embedded in button] ---
+        const float btnWidth = 220f;
+        const float btnHeight = 30f;
+        const float btnGap = 14f;
+        float totalBtnWidth = btnWidth * 3f + btnGap * 2f;
 
-        // 1. --- Open Bubble Settings Window ---
-        var bubbleRowRect = listingStandard.GetRect(30f);
-        var bubbleLabelRect = new Rect(bubbleRowRect.x, bubbleRowRect.y,
-            bubbleRowRect.width - dropdownWidth - 10f, bubbleRowRect.height);
-        originalAnchor = Text.Anchor;
-        Text.Anchor = TextAnchor.MiddleLeft;
-        Widgets.Label(bubbleLabelRect, "RimTalk.Settings.BubbleMode".Translate().ToString());
-        Text.Anchor = originalAnchor;
+        Rect rowRect = listingStandard.GetRect(btnHeight);
+        float startX = rowRect.x + (rowRect.width - totalBtnWidth) / 2f;
 
-        var bubbleBtnRect = new Rect(bubbleRowRect.xMax - dropdownWidth, bubbleRowRect.y, dropdownWidth,
-            bubbleRowRect.height);
-        if (Widgets.ButtonText(bubbleBtnRect, "RimTalk.BubbleSettings.OpenWindow".Translate().ToString()))
-        {
-            Find.WindowStack.Add(new Dialog_BubbleSettings());
-        }
-        TooltipHandler.TipRegion(bubbleRowRect, "RimTalk.Settings.BubbleModeTooltip".Translate().ToString());
-
-        listingStandard.Gap(rowGap);
-
-        // 2. --- Dropdown for PauseAtSpeed ---
-        Rect pauseLineRect = listingStandard.GetRect(30f);
-        Rect labelRect = new Rect(pauseLineRect.x, pauseLineRect.y, pauseLineRect.width - dropdownWidth - 10f,
-            pauseLineRect.height);
-        originalAnchor = Text.Anchor;
-        Text.Anchor = TextAnchor.MiddleLeft;
-        Widgets.Label(labelRect, "RimTalk.Settings.PauseAtSpeed".Translate().ToString());
-        Text.Anchor = originalAnchor;
-
-        Rect dropdownRect = new Rect(pauseLineRect.xMax - dropdownWidth, pauseLineRect.y, dropdownWidth, pauseLineRect.height);
-
-        // Use the helper function to determine the current label for the button
-        string currentSpeedLabel = settings.DisableAiAtSpeed > (int)TimeSpeed.Normal
-            ? GetFormattedSpeedLabel((TimeSpeed)settings.DisableAiAtSpeed)
-            : "RimTalk.Settings.Disabled".Translate().ToString();
-
-        if (Widgets.ButtonText(dropdownRect, currentSpeedLabel))
-        {
-            var options = new List<FloatMenuOption>
-            {
-                new("RimTalk.Settings.Disabled".Translate().ToString(),
-                    () => settings.DisableAiAtSpeed = 0)
-            };
-
-            foreach (TimeSpeed speed in Enum.GetValues(typeof(TimeSpeed)))
-            {
-                // Only include speeds faster than Normal
-                if ((int)speed > (int)TimeSpeed.Normal)
-                {
-                    // Use the helper function for the dropdown option text
-                    string label = GetFormattedSpeedLabel(speed);
-                    TimeSpeed currentSpeed = speed; // Capture the loop variable for the lambda
-                    options.Add(new FloatMenuOption(label, () => settings.DisableAiAtSpeed = (int)currentSpeed));
-                }
-            }
-
-            Find.WindowStack.Add(new FloatMenu(options));
-        }
-
-        TooltipHandler.TipRegion(pauseLineRect, "RimTalk.Settings.DisableAiAtSpeedTooltip".Translate().ToString());
-
-        listingStandard.Gap(rowGap);
-
-        // 3. --- Dropdown for Button Display Mode ---
-        var buttonDisplayRect = listingStandard.GetRect(30f);
-        var buttonDisplayLabelRect = new Rect(buttonDisplayRect.x, buttonDisplayRect.y,
-            buttonDisplayRect.width - dropdownWidth - 10f, buttonDisplayRect.height);
-        originalAnchor = Text.Anchor;
-        Text.Anchor = TextAnchor.MiddleLeft;
-        Widgets.Label(buttonDisplayLabelRect, "RimTalk.Settings.ButtonDisplay".Translate().ToString());
-        Text.Anchor = originalAnchor;
-
-        var buttonDisplayDropdownRect = new Rect(buttonDisplayRect.xMax - dropdownWidth, buttonDisplayRect.y, dropdownWidth,
-            buttonDisplayRect.height);
-
-        if (Widgets.ButtonText(buttonDisplayDropdownRect, settings.ButtonDisplay.ToString()))
+        // 1. Button Display
+        Rect btn1Rect = new Rect(startX, rowRect.y, btnWidth, btnHeight);
+        string btn1Text = $"{"RimTalk.Settings.ButtonDisplay".Translate()}: {settings.ButtonDisplay}";
+        if (Widgets.ButtonText(btn1Rect, btn1Text))
         {
             var options = new List<FloatMenuOption>();
             foreach (ButtonDisplayMode mode in Enum.GetValues(typeof(ButtonDisplayMode)))
@@ -257,41 +227,70 @@ public partial class Settings
 
             Find.WindowStack.Add(new FloatMenu(options));
         }
+        TooltipHandler.TipRegion(btn1Rect, "RimTalk.Settings.ButtonDisplayTooltip".Translate().ToString());
 
-        TooltipHandler.TipRegion(buttonDisplayRect, "RimTalk.Settings.ButtonDisplayTooltip".Translate().ToString());
-
-        listingStandard.Gap(12f);
-        VersionSwitcher.DrawVersionSwitcher(listingStandard);
-
-        listingStandard.Gap(24f);
-        
-        if (listingStandard.ButtonText("RimTalk.Settings.ResetToDefault".Translate().ToString()))
+        // 2. Pause AI at Speed
+        Rect btn2Rect = new Rect(startX + btnWidth + btnGap, rowRect.y, btnWidth, btnHeight);
+        string currentSpeedLabel = settings.DisableAiAtSpeed > (int)TimeSpeed.Normal
+            ? GetFormattedSpeedLabel((TimeSpeed)settings.DisableAiAtSpeed)
+            : "RimTalk.Settings.Disabled".Translate().ToString();
+        string btn2Text = $"{"RimTalk.Settings.PauseAtSpeed".Translate()}: {currentSpeedLabel}";
+        if (Widgets.ButtonText(btn2Rect, btn2Text))
         {
-            settings.TalkInterval = 10;
-            settings.ReplyInterval = 4;
-            _talkIntervalBuffer = "10";
-            _replyIntervalBuffer = "4";
-            settings.ProcessNonRimTalkInteractions = true;
-            settings.AllowSimultaneousConversations = false;
-            settings.ResetBubbleSettings();
-            SpeechBubbleDrawer.RecomputeAllBubbleDimensions();
-            settings.DisplayTalkWhenDrafted = true;
-            settings.AllowMonologue = true;
-            settings.AllowSlavesToTalk = true;
-            settings.AllowPrisonersToTalk = true;
-            settings.AllowOtherFactionsToTalk = false;
-            settings.AllowEnemiesToTalk = false;
-            settings.AllowBabiesToTalk = true;
-            settings.AllowNonHumanToTalk = true;
-            settings.AllowAnnouncement = true;
-            settings.AllowCustomConversation = true;
-            settings.PlayerDialogueMode = PlayerDialogueMode.Manual;
-            settings.ContinueDialogueWhileSleeping = false;
-            settings.EnableSleepDialogue = true;
-            settings.ApplyMoodAndSocialEffects = false;
-            settings.UseSimpleConfig = true;
-            settings.DisableAiAtSpeed = 0;
-            settings.ButtonDisplay = ButtonDisplayMode.Toggle;
+            var options = new List<FloatMenuOption>
+            {
+                new("RimTalk.Settings.Disabled".Translate().ToString(), () => settings.DisableAiAtSpeed = 0)
+            };
+
+            foreach (TimeSpeed speed in Enum.GetValues(typeof(TimeSpeed)))
+            {
+                if ((int)speed > (int)TimeSpeed.Normal)
+                {
+                    string label = GetFormattedSpeedLabel(speed);
+                    TimeSpeed currentSpeed = speed;
+                    options.Add(new FloatMenuOption(label, () => settings.DisableAiAtSpeed = (int)currentSpeed));
+                }
+            }
+
+            Find.WindowStack.Add(new FloatMenu(options));
         }
+        TooltipHandler.TipRegion(btn2Rect, "RimTalk.Settings.DisableAiAtSpeedTooltip".Translate().ToString());
+
+        // 3. Bubble Settings
+        Rect btn3Rect = new Rect(startX + (btnWidth + btnGap) * 2f, rowRect.y, btnWidth, btnHeight);
+        string btn3Text = $"{"RimTalk.BubbleSettings.Title".Translate()}...";
+        if (UIUtil.ButtonText(btn3Rect, btn3Text))
+        {
+            Find.WindowStack.Add(new Dialog_BubbleSettings());
+        }
+        TooltipHandler.TipRegion(btn3Rect, "RimTalk.Settings.BubbleModeTooltip".Translate().ToString());
+    }
+
+    internal void ResetBasicSettings(RimTalkSettings settings)
+    {
+        settings.TalkInterval = 10;
+        settings.ReplyInterval = 4;
+        _talkIntervalBuffer = "10";
+        _replyIntervalBuffer = "4";
+        settings.ProcessNonRimTalkInteractions = true;
+        settings.AllowSimultaneousConversations = false;
+        settings.ResetBubbleSettings();
+        SpeechBubbleDrawer.RecomputeAllBubbleDimensions();
+        settings.DisplayTalkWhenDrafted = true;
+        settings.AllowMonologue = true;
+        settings.AllowSlavesToTalk = true;
+        settings.AllowPrisonersToTalk = true;
+        settings.AllowOtherFactionsToTalk = false;
+        settings.AllowEnemiesToTalk = false;
+        settings.AllowBabiesToTalk = true;
+        settings.AllowNonHumanToTalk = true;
+        settings.AllowAnnouncement = true;
+        settings.AllowCustomConversation = true;
+        settings.PlayerDialogueMode = PlayerDialogueMode.Manual;
+        settings.ContinueDialogueWhileSleeping = false;
+        settings.EnableSleepDialogue = true;
+        settings.ApplyMoodAndSocialEffects = false;
+        settings.DisableAiAtSpeed = 0;
+        settings.ButtonDisplay = ButtonDisplayMode.Toggle;
     }
 }

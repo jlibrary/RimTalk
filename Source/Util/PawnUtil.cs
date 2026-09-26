@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using RimTalk.Data;
-using RimTalk.Source.Data;
 using RimTalk.Service;
+using RimTalk.Source.Data;
 using RimWorld;
 using Verse;
 using Verse.AI;
@@ -32,7 +32,8 @@ public static class PawnUtil
                (settings.AllowSlavesToTalk && pawn.IsSlave) ||
                (settings.AllowPrisonersToTalk && pawn.IsPrisoner) ||
                (settings.AllowOtherFactionsToTalk && pawn.IsVisitor()) ||
-               (settings.AllowEnemiesToTalk && pawn.IsEnemy());
+               (settings.AllowEnemiesToTalk && pawn.IsEnemy()) ||
+               (pawn.Faction == null && !pawn.HostileTo(Faction.OfPlayer));
     }
 
     public static HashSet<Hediff> GetHediffs(this Pawn pawn)
@@ -53,6 +54,7 @@ public static class PawnUtil
         if (pawn.health.hediffSet.BleedRateTotal > 0.3f) return true;
         if (pawn.CurJobDef == JobDefOf.Flee || pawn.CurJobDef == JobDefOf.FleeAndCower) return true;
         if (pawn.IsInCombat()) return true;
+        if (IsLiveThreat(pawn, pawn.mindState?.meleeThreat)) return true;
 
         // Check severe Hediffs
         foreach (var h in pawn.health.hediffSet.hediffs)
@@ -102,6 +104,9 @@ public static class PawnUtil
         if (pawn.stances?.curStance is Stance_Busy busy && busy.verb != null)
             return true;
 
+        if (pawn.IsBrawlingWithAlly(out _))
+            return true;
+
         Pawn hostilePawn = pawn.GetHostilePawnNearBy();
         return hostilePawn != null && pawn.Position.DistanceTo(hostilePawn.Position) <= 20f;
     }
@@ -131,6 +136,7 @@ public static class PawnUtil
             return includeFaction && pawn.Faction != null ? $"Visitor Group({pawn.Faction.Name})" : "Visitor";
         if (pawn.IsQuestLodger()) return "Lodger";
         if (pawn.IsFreeColonist) return pawn.GetMapRole() == MapRole.Invading ? "Invader" : "Colonist";
+        if (pawn.Faction == null && !pawn.IsColonist) return "Stranger";
         return null;
     }
 
@@ -267,6 +273,7 @@ public static class PawnUtil
         if (p.IsEnemy()) return $"{p.LabelShort}(Enemy)";
         if (p.IsVisitor()) return $"{p.LabelShort}(Visitor)";
         if (p.IsQuestLodger()) return $"{p.LabelShort}(Lodger)";
+        if (p.Faction == null && !p.IsColonist) return $"{p.LabelShort}(Stranger)";
         return p.LabelShort;
     }
 
@@ -298,7 +305,6 @@ public static class PawnUtil
             }
 
             string label = GetPawnLabel(p, relevantPawns, useOptimization);
-            string extraStatus = p.IsInDanger(true) ? " [!]" : "";
 
             string entry;
             var pawnState = Cache.Get(p);
@@ -317,11 +323,11 @@ public static class PawnUtil
                         talkRequestStr = $" - {talkRequest.Prompt}";
                     }
                 }
-                entry = $"{label} {activity.StripTags()}{extraStatus}{talkRequestStr}";
+                entry = $"{label} {activity.StripTags()}{talkRequestStr}";
             }
             else
             {
-                entry = $"{label}{extraStatus}";
+                entry = label;
             }
 
             otherDescriptions.Add(entry);
@@ -708,9 +714,95 @@ public static class PawnUtil
     {
         if (pawn == null) return null;
         if (pawn.IsAttacking()) return pawn.TargetCurrentlyAimingAt.Thing;
-        if (pawn.CurJob != null && (pawn.CurJob.def == JobDefOf.AttackMelee || pawn.CurJob.def == JobDefOf.AttackStatic))
+        if (pawn.CurJob != null && (pawn.CurJob.def == JobDefOf.AttackMelee || pawn.CurJob.def == JobDefOf.AttackStatic || pawn.CurJob.def == JobDefOf.SocialFight))
             return pawn.CurJob.targetA.Thing;
         return null;
+    }
+
+    internal static bool IsBrawlingWithAlly(this Pawn pawn, out Pawn targetPawn)
+    {
+        targetPawn = null;
+        if (pawn == null) return false;
+        if (pawn.CurJobDef == JobDefOf.Hunt || pawn.CurJobDef == JobDefOf.Slaughter) return false;
+
+        if (pawn.CurJobDef == JobDefOf.SocialFight)
+        {
+            targetPawn = pawn.CurJob?.targetA.Thing as Pawn;
+            return true;
+        }
+
+        if (pawn.GetAttackTarget() is Pawn target && target.RaceProps?.Humanlike == true &&
+            target.Faction != null && target.Faction == pawn.Faction)
+        {
+            targetPawn = target;
+            return true;
+        }
+
+        return false;
+    }
+
+    internal static bool IsCaringOrCustodialJob(this Pawn pawn, out Pawn targetPawn)
+    {
+        targetPawn = null;
+        if (pawn?.CurJob == null) return false;
+
+        var def = pawn.CurJob.def;
+        if (def == JobDefOf.Rescue ||
+            def == JobDefOf.TendPatient ||
+            def == JobDefOf.FeedPatient ||
+            def == JobDefOf.Capture ||
+            def == JobDefOf.Arrest ||
+            def == JobDefOf.TakeWoundedPrisonerToBed ||
+            def == JobDefOf.EscortPrisonerToBed)
+        {
+            targetPawn = pawn.CurJob.targetA.Thing as Pawn;
+            return targetPawn != null;
+        }
+
+        string name = def?.defName;
+        if (name != null && (name.Contains("Tend") || name.Contains("Feed") || name.Contains("Rescue") || name.Contains("Warden")))
+        {
+            targetPawn = pawn.CurJob.targetA.Thing as Pawn;
+            return targetPawn != null;
+        }
+
+        return false;
+    }
+
+    internal static bool HasRelationalFriction(this Pawn pawn, Pawn target)
+    {
+        return HasRelationalFriction(pawn, target, out _);
+    }
+
+    internal static bool HasRelationalFriction(this Pawn pawn, Pawn target, out bool isSevere)
+    {
+        isSevere = false;
+        if (pawn == null || target == null || pawn == target) return false;
+
+        if (target.IsEnemy() || target.IsPrisoner || target.IsSlave)
+        {
+            isSevere = true;
+            return true;
+        }
+
+        float opinion = pawn.relations?.OpinionOf(target) ?? 0f;
+        if (opinion <= -20f)
+            isSevere = true;
+
+        var targetMemories = target.needs?.mood?.thoughts?.memories?.Memories;
+        if (targetMemories != null)
+        {
+            for (int i = 0; i < targetMemories.Count; i++)
+            {
+                if (targetMemories[i] is Thought_MemorySocial st && st.otherPawn == pawn && st.def?.defName == "HarmedMe")
+                {
+                    isSevere = true;
+                    return true;
+                }
+            }
+        }
+
+        return opinion < 0 || isSevere;
     }
 
     internal static string GetActivity(this Pawn pawn)
@@ -739,6 +831,10 @@ public static class PawnUtil
 
         var lord = Describer.StripConditionSuffix(pawn.GetLord()?.LordJob?.GetReport(pawn));
         var job = Describer.StripConditionSuffix(pawn.jobs?.curDriver?.GetReport());
+        if (pawn.CurJobDef == JobDefOf.Wait_Combat && !pawn.HasActiveHostiles())
+        {
+            job = "on alert";
+        }
 
         string activity = lord == null ? job :
             job == null ? lord :

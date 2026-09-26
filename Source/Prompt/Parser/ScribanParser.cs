@@ -6,14 +6,16 @@ using RimTalk.API;
 using RimTalk.Data;
 using RimTalk.Service;
 using RimTalk.Util;
+using RimWorld;
 using Scriban;
 using Scriban.Parsing;
 using Scriban.Runtime;
+using Scriban.Syntax;
 using UnityEngine;
-using RimWorld;
 using Verse;
 using Cache = RimTalk.Data.Cache;
 using Logger = RimTalk.Util.Logger;
+using Random = UnityEngine.Random;
 
 namespace RimTalk.Prompt;
 
@@ -49,7 +51,7 @@ public static class ScribanParser
             // 2.1 Session variable functions (cross-entry variables)
 			scriptObject.Import("setvar", new Action<string, object>(SetSessionVar));
 			scriptObject.Import("getvar", new Func<string, object>(GetSessionVar));
-			scriptObject.Import("random", new Func<int, int, int>((min, max) => UnityEngine.Random.Range(min, max)));
+			scriptObject.Import("random", new Func<int, int, int>((min, max) => Random.Range(min, max)));
 
             // 2. IMPORT UTILITIES (Extension Methods support)
             // This allows: {{ pawn | IsTalkEligible }} or {{ GetRole pawn }}
@@ -77,9 +79,10 @@ public static class ScribanParser
             scriptObject.Add("json", json);
 
             var chat = new ScriptObject();
-            string historyText = GetChatHistoryText(context);
+            string historyText = GetChatHistoryText(context, simplified: true);
             chat.Add("history", historyText);
-            chat.Add("history_simplified", GetChatHistoryText(context, simplified: true));
+            chat.Add("history_simplified", historyText);
+            chat.Add("history_raw", GetChatHistoryText(context, simplified: false));
             scriptObject.Add("chat", chat);
             
             // 4. SHORTHANDS
@@ -116,7 +119,7 @@ public static class ScribanParser
             };
             
             // 6. THE BRIDGE (Hooks & Magic Shorthands & Case Insensitivity)
-            templateContext.TryGetVariable = (TemplateContext tctx, SourceSpan span, Scriban.Syntax.ScriptVariable variable, out object value) =>
+            templateContext.TryGetVariable = (TemplateContext tctx, SourceSpan span, ScriptVariable variable, out object value) =>
             {
                 value = null;
                 string varName = variable.Name;
@@ -183,7 +186,7 @@ public static class ScribanParser
                 
                 // B. Dictionary/ScriptObject Access (Case-Insensitive)
                 // This handles Global variables (chat.history) and imported functions (GetRole)
-                if (target is System.Collections.Generic.IDictionary<string, object> dict)
+                if (target is IDictionary<string, object> dict)
                 {
                     if (dict.TryGetValue(member, out value)) return true; // Fast exact match
                     
@@ -198,7 +201,7 @@ public static class ScribanParser
                 // B2. Static Class Access (When target is a Type object)
                 if (target is Type t)
                 {
-                    var flags = System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static;
+                    var flags = BindingFlags.Public | BindingFlags.Static;
                     
                     var prop = t.GetProperties(flags)
                         .FirstOrDefault(p => p.Name.Equals(member, StringComparison.OrdinalIgnoreCase));
@@ -221,10 +224,10 @@ public static class ScribanParser
                 
                 // C. CLR Object Access (Case-Insensitive Reflection)
                 // This handles C# properties (pawn.LabelShort)
-                if (target != null && !(target is System.Collections.Generic.IDictionary<string, object>))
+                if (target != null && !(target is IDictionary<string, object>))
                 {
                     var type = target.GetType();
-                    var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public;
+                    var flags = BindingFlags.Instance | BindingFlags.Public;
                     
                     var prop = type.GetProperties(flags)
                         .FirstOrDefault(p => p.Name.Equals(member, StringComparison.OrdinalIgnoreCase));
@@ -381,7 +384,9 @@ public static class ScribanParser
             "user_prompt" or "userprompt" => context.UserPrompt ?? "",
             "is_monologue" or "ismonologue" => context.IsMonologue,
             "talk_type" or "talktype" => context.TalkType,
-            "history" or "chat_history" or "chathistory" => GetChatHistoryText(context),
+            "history" or "chat_history" or "chathistory" => GetChatHistoryText(context, simplified: true),
+            "history_simplified" or "chat_history_simplified" or "chathistorysimplified" => GetChatHistoryText(context, simplified: true),
+            "history_raw" or "chat_history_raw" or "chathistoryraw" => GetChatHistoryText(context, simplified: false),
             "pawn_count" or "pawncount" => context.AllPawns?.Count ?? 0,
             "map_id" or "mapid" => context.Map?.uniqueID ?? 0,
             _ => null
@@ -390,22 +395,6 @@ public static class ScribanParser
 
     private static string GetChatHistoryText(PromptContext context, bool simplified = false)
     {
-        var history = simplified ? context.GetChatHistory(true) : context.ChatHistory;
-        if (history != null && history.Count > 0)
-        {
-            var lines = history.Select((h, i) =>
-            {
-                var text = (h.message ?? "").Replace("\r\n", " ").Replace("\n", " ").Replace("\r", " ");
-                return $"- {i + 1} | role={h.role} | text={text}";
-            });
-            return "Conversation history (reference only; do not repeat or continue):\n" + string.Join("\n", lines);
-        }
-
-        if (context.IsPreview)
-            return "Conversation history (reference only; do not repeat or continue):\n" +
-                   "- 1 | role=User | text=Hello!\n" +
-                   "- 2 | role=AI | text=Greetings from RimTalk. This is a placeholder for chat history.";
-
-        return "";
+        return context?.GetChatHistoryText(simplified) ?? "";
     }
 }

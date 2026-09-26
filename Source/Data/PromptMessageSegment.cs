@@ -1,5 +1,3 @@
-using RimTalk.Source.Data;
-
 namespace RimTalk.Data;
 
 public class PromptMessageSegment
@@ -8,6 +6,7 @@ public class PromptMessageSegment
     public string EntryName { get; set; }
     public Role Role { get; set; }
     public string Content { get; set; }
+    public bool IsHistory { get; set; }
 
     public PromptMessageSegment()
     {

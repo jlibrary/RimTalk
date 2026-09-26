@@ -116,11 +116,20 @@ public static class TalkService
         // Delegate prompt assembly to PromptManager (Handles Simple/Advanced modes and fallbacks)
         talkRequest.PromptMessages = PromptManager.Instance.BuildMessages(talkRequest, pawns, status);
         
-        // Update prompt with the actual rendered content (important for Advanced Mode history)
-        var extracted = PromptManager.ExtractUserPrompt(talkRequest.PromptMessages);
-        if (!string.IsNullOrEmpty(extracted))
+        // Update prompt with the actual rendered Dialogue Prompt content (excluding trailing reminders)
+        var dpSegment = talkRequest.PromptMessageSegments?.FirstOrDefault(s =>
+            string.Equals(s.EntryName, "Dialogue Prompt", StringComparison.OrdinalIgnoreCase));
+        if (dpSegment != null && !string.IsNullOrEmpty(dpSegment.Content))
         {
-            talkRequest.Prompt = extracted;
+            talkRequest.Prompt = dpSegment.Content;
+        }
+        else
+        {
+            var extracted = PromptManager.ExtractUserPrompt(talkRequest.PromptMessages);
+            if (!string.IsNullOrEmpty(extracted))
+            {
+                talkRequest.Prompt = extracted;
+            }
         }
         
         // Offload the AI request and processing to a background thread to avoid blocking the game's main thread.
@@ -172,6 +181,10 @@ public static class TalkService
                     {
                         talkResponse.TalkType = TalkType.User;
                     }
+                    else
+                    {
+                        talkResponse.TalkType = talkRequest.TalkType;
+                    }
 
                     receivedResponses.Add(talkResponse);
 
@@ -207,12 +220,17 @@ public static class TalkService
         string serializedResponses = JsonUtil.SerializeToJson(responses);
         var uniquePawns = talkRequest.Participants ?? [talkRequest.Initiator];
 
+        bool isUserSpeech = talkRequest.TalkType.IsFromUser() || talkRequest.IsAnnouncement;
+        string historyPrompt = !string.IsNullOrWhiteSpace(talkRequest.CausalPrompt)
+            ? talkRequest.CausalPrompt
+            : (isUserSpeech ? (talkRequest.RawPrompt ?? prompt) : null);
+
         for (int i = 0; i < uniquePawns.Count; i++)
         {
             var pawn = uniquePawns[i];
             if (pawn != null)
             {
-                TalkHistory.AddMessageHistory(pawn, prompt, serializedResponses);
+                TalkHistory.AddMessageHistory(pawn, historyPrompt, serializedResponses, isUserSpeech);
             }
         }
     }
@@ -321,7 +339,10 @@ public static class TalkService
         TalkHistory.AddSpoken(talkResponse.Id);
         var apiLog = ApiHistory.GetApiLog(talkResponse.Id);
         if (apiLog != null)
+        {
             apiLog.SpokenTick = GenTicks.TicksGame;
+            apiLog.SpokenTime = DateTime.Now;
+        }
 
         Overlay.NotifyLogUpdated();
         return talkResponse;

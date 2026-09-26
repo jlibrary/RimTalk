@@ -1,6 +1,7 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using RimTalk.Data;
 using RimTalk.Source.Data;
+using RimTalk.Util;
 using RimWorld;
 using Verse;
 
@@ -22,6 +23,8 @@ public class SkillLevelUpPatch
     {
         if (__instance.Level > _previousLevel)
         {
+            if (___pawn == null || ___pawn.IsInDanger(true)) return;
+
             string prompt = $"{___pawn.Name} leveled up {__instance.def.defName} from {_previousLevel} " +
                             $"to {__instance.Level} ({__instance.LevelDescriptor})";
             Cache.Get(___pawn)?.AddTalkRequest(prompt, talkType: TalkType.LevelUp);

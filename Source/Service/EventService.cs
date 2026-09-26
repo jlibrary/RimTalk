@@ -134,33 +134,17 @@ public static class EventService
             .ToList();
 
         int totalMax = contextSettings.MaxEventsCount;
-        int pastQuota = Mathf.Max(1, totalMax / 2);
-        int recentQuota = Mathf.Max(1, totalMax - pastQuota);
-
         var selected = new List<ColonyEventCandidate>();
 
-        // 1. Take up to recentQuota from recentPool
-        var takenRecent = recentPool.Take(recentQuota).ToList();
+        // 1. Prioritize fresh events (< 12h or active on screen)
+        var takenRecent = recentPool.Take(totalMax).ToList();
         selected.AddRange(takenRecent);
 
-        // 2. Take up to pastQuota from pastPool
-        int remainingSlots = totalMax - selected.Count;
-        int pastToTake = Mathf.Min(pastQuota, remainingSlots);
-        var takenPast = pastPool.Take(pastToTake).ToList();
-        selected.AddRange(takenPast);
-
-        // 3. Overflow: If slots still remain, fill with leftover recent candidates
+        // 2. If slots remain, fill with significant past events (>= 12h)
         if (selected.Count < totalMax)
         {
-            var leftoverRecent = recentPool.Skip(takenRecent.Count).Take(totalMax - selected.Count);
-            selected.AddRange(leftoverRecent);
-        }
-
-        // 4. Overflow: If slots still remain, fill with leftover past candidates
-        if (selected.Count < totalMax)
-        {
-            var leftoverPast = pastPool.Skip(takenPast.Count).Take(totalMax - selected.Count);
-            selected.AddRange(leftoverPast);
+            var takenPast = pastPool.Take(totalMax - selected.Count).ToList();
+            selected.AddRange(takenPast);
         }
 
         // Final display ordering: Recent first, then past
@@ -173,7 +157,7 @@ public static class EventService
         {
             string timeStr = FormatElapsedTime(c.ElapsedTicks);
 
-            // Fresh event (< 12 in-game hours): Include 1-line summary if available
+            // Fresh event (< 12 in-game hours): Include concise 1-line summary if available
             if (c.ElapsedHours < 12f && infoLevel != PromptService.InfoLevel.Short)
             {
                 string summary = null;
@@ -188,8 +172,8 @@ public static class EventService
                     var firstLine = summary.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim();
                     if (!string.IsNullOrEmpty(firstLine) && !string.Equals(firstLine, c.Label, StringComparison.OrdinalIgnoreCase))
                     {
-                        if (firstLine.Length > 80)
-                            firstLine = firstLine.Substring(0, 77) + "...";
+                        if (firstLine.Length > 55)
+                            firstLine = firstLine.Substring(0, 52) + "...";
                         formattedLines.Add($"{c.Label} ({timeStr}): {firstLine}");
                         continue;
                     }
@@ -245,10 +229,11 @@ public static class EventService
     public static string FormatElapsedTime(int elapsedTicks)
     {
         float hours = elapsedTicks / 2500f;
-        if (hours < 1f)
-            return "Just now";
         if (hours < 24f)
-            return $"{(int)hours}h ago";
+        {
+            int displayHours = Mathf.Max(1, (int)hours);
+            return $"{displayHours}h ago";
+        }
         int days = Mathf.Max(1, (int)(elapsedTicks / 60000f));
         return $"{days}d ago";
     }

@@ -268,12 +268,12 @@ Scribanマジック (動的コンテンツ)
 
     <!-- Settings_Api.cs -->
     <RimTalk.Settings.QuickSetupSubtitle>AI接続方式を選択すると、入植者の会話がすぐに有効になります。</RimTalk.Settings.QuickSetupSubtitle>
-    <RimTalk.Settings.QuickSetupButton>クイック設定</RimTalk.Settings.QuickSetupButton>
-    <RimTalk.Settings.QuickSetupTooltip>シンプルなクイック設定画面に戻ります。</RimTalk.Settings.QuickSetupTooltip>
-    <RimTalk.Settings.AllSettingsButton>全体設定</RimTalk.Settings.AllSettingsButton>
+    <RimTalk.Settings.QuickSetupButton>簡易設定</RimTalk.Settings.QuickSetupButton>
+    <RimTalk.Settings.QuickSetupTooltip>シンプルな簡易設定画面に戻ります。</RimTalk.Settings.QuickSetupTooltip>
+    <RimTalk.Settings.AllSettingsButton>詳細設定</RimTalk.Settings.AllSettingsButton>
     <RimTalk.Settings.AllSettingsTooltip>ゲームプレイ設定、プロンプトプリセット、コンテキストフィルターなどすべての設定タブを表示します。</RimTalk.Settings.AllSettingsTooltip>
     <RimTalk.Settings.CustomConfigActiveNotice>※ 現在カスタムAPIを使用中です。</RimTalk.Settings.CustomConfigActiveNotice>
-    <RimTalk.Settings.ModeSelectorHeader>AI接続方式の選択（1つのみ選択）：</RimTalk.Settings.ModeSelectorHeader>
+    <RimTalk.Settings.ModeSelectorHeader>AI接続方式の選択：</RimTalk.Settings.ModeSelectorHeader>
     <RimTalk.Settings.ModeGoogleTitle>Google Gemini</RimTalk.Settings.ModeGoogleTitle>
     <RimTalk.Settings.ModeGoogleDesc>無料のWeb APIキー</RimTalk.Settings.ModeGoogleDesc>
     <RimTalk.Settings.ModePlayer2Title>Player2</RimTalk.Settings.ModePlayer2Title>
@@ -296,7 +296,7 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Settings.Player2AuthReopen>承認ページを再度開く</RimTalk.Settings.Player2AuthReopen>
     <RimTalk.Settings.Player2AuthCancel>認証をキャンセル</RimTalk.Settings.Player2AuthCancel>
     <RimTalk.Settings.GoogleApiKeyLabel>Google AI APIキー：</RimTalk.Settings.GoogleApiKeyLabel>
-    <RimTalk.Settings.GoogleApiKeyDesc>無料のgemma-4-26b-a4bモデルを使用します。他のモデルやプロバイダーを使用する場合は、詳細設定を使用してください。</RimTalk.Settings.GoogleApiKeyDesc>
+    <RimTalk.Settings.GoogleApiKeyDesc>無料の{0}モデルを使用します。他のモデルやプロバイダーを使用する場合は、詳細設定を使用してください。</RimTalk.Settings.GoogleApiKeyDesc>
     <RimTalk.Settings.GetFreeApiKeyButton>無料APIキーを取得</RimTalk.Settings.GetFreeApiKeyButton>
     <RimTalk.Settings.SwitchToAdvancedSettings>詳細設定に切り替え</RimTalk.Settings.SwitchToAdvancedSettings>
     <RimTalk.Settings.SwitchToSimpleSettings>簡易設定に切り替え</RimTalk.Settings.SwitchToSimpleSettings>
@@ -403,6 +403,7 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Settings.IncludePrisonerSlaveStatus>囚人/奴隷の抵抗と意志</RimTalk.Settings.IncludePrisonerSlaveStatus>
     <RimTalk.Settings.IncludeRelations>関係</RimTalk.Settings.IncludeRelations>
     <RimTalk.Settings.IncludeEquipment>装備</RimTalk.Settings.IncludeEquipment>
+    <RimTalk.Settings.MindAndSocial>心理と関係</RimTalk.Settings.MindAndSocial>
     <RimTalk.Settings.Environment>環境</RimTalk.Settings.Environment>
     <RimTalk.Settings.IncludeTime>時間</RimTalk.Settings.IncludeTime>
     <RimTalk.Settings.IncludeDate>日付</RimTalk.Settings.IncludeDate>
@@ -415,7 +416,7 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Settings.IncludeSurroundings>近くのアイテム</RimTalk.Settings.IncludeSurroundings>
     <RimTalk.Settings.IncludeWealth>コロニーの富</RimTalk.Settings.IncludeWealth>
     <RimTalk.Settings.IncludeTopicKeywords>新しい会話トピックの生成</RimTalk.Settings.IncludeTopicKeywords>
-    <RimTalk.Settings.IncludeTopicKeywords.Tooltip>ポーンの周囲に特定の話題や状況がない場合、50%の確率で新しい会話トピックをランダムに生成します。</RimTalk.Settings.IncludeTopicKeywords.Tooltip>
+    <RimTalk.Settings.IncludeTopicKeywords.Tooltip>ポーンの周囲に特定の話題や状況がない場合、確率的に新しい会話トピックをランダムに生成します。</RimTalk.Settings.IncludeTopicKeywords.Tooltip>
 
     <!-- DebugWindow.cs -->
     <RimTalk.DebugWindow.ViewByTime>時間順</RimTalk.DebugWindow.ViewByTime>
@@ -592,15 +593,16 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.PlayerSettings.NewPresetName>新しい対話プリセット</RimTalk.PlayerSettings.NewPresetName>
     <RimTalk.PlayerSettings.PresetTitleHeader>タイトル / メニュー名</RimTalk.PlayerSettings.PresetTitleHeader>
     <RimTalk.PlayerSettings.PresetTitlePlaceholder>対話プリセットのタイトル...</RimTalk.PlayerSettings.PresetTitlePlaceholder>
+    <RimTalk.PlayerSettings.PresetPromptPlaceholder>対話内容 / プロンプト...</RimTalk.PlayerSettings.PresetPromptPlaceholder>
 
     <!-- VersionSwitcher.cs -->
     <RimTalk.VersionSwitcher.RollbackLabel>旧バージョンへのロールバック</RimTalk.VersionSwitcher.RollbackLabel>
     <RimTalk.VersionSwitcher.SwitchToPrevious>旧バージョンをコピー（ローカルMod）</RimTalk.VersionSwitcher.SwitchToPrevious>
     <RimTalk.VersionSwitcher.SwitchToSpecificVer>{0} をコピー（ローカルMod）</RimTalk.VersionSwitcher.SwitchToSpecificVer>
     <RimTalk.VersionSwitcher.NoPreviousDllFound>Modフォルダ内に旧バージョンファイル（LastVersion/）が見つかりません。</RimTalk.VersionSwitcher.NoPreviousDllFound>
-    <RimTalk.VersionSwitcher.ConfirmRollbackTitle>バージョン（{0}）へロールバック</RimTalk.VersionSwitcher.ConfirmRollbackTitle>
-    <RimTalk.VersionSwitcher.ConfirmRollbackPrompt>RimTalk（{0}）をローカルの「RimWorld/Mods/RimTalk」フォルダにコピーしますか？</RimTalk.VersionSwitcher.ConfirmRollbackPrompt>
-    <RimTalk.VersionSwitcher.ProceedRollback>コピー</RimTalk.VersionSwitcher.ProceedRollback>
+    <RimTalk.VersionSwitcher.ConfirmRollbackTitle>{0} へロールバック</RimTalk.VersionSwitcher.ConfirmRollbackTitle>
+    <RimTalk.VersionSwitcher.ConfirmRollbackPrompt>ローカルの「RimWorld/Mods/RimTalk」フォルダにコピーしますか？\n\nコピー後、Steam版を無効化してローカルModを有効化すると、自動更新されることなくこのバージョンを維持できます。</RimTalk.VersionSwitcher.ConfirmRollbackPrompt>
+    <RimTalk.VersionSwitcher.ProceedRollback>確認</RimTalk.VersionSwitcher.ProceedRollback>
     <RimTalk.VersionSwitcher.RestartRequiredTitle>コピー完了</RimTalk.VersionSwitcher.RestartRequiredTitle>
     <RimTalk.VersionSwitcher.LocalModCreatedPrompt>「RimWorld/Mods/RimTalk」にコピーされました。\n\nSteam版を無効化し、ローカルModを有効化してRimWorldを再起動してください。</RimTalk.VersionSwitcher.LocalModCreatedPrompt>
 

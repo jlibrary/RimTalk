@@ -193,9 +193,8 @@ public class Dialog_ApiLog : Window
         }
         GUI.enabled = hasError;
         Rect reportRect = new Rect(curBtnX, y, btnW, btnH);
-        if (Widgets.ButtonText(reportRect, "RimTalk.DebugWindow.Report".Translate()))
+        if (UIUtil.ButtonText(reportRect, "RimTalk.DebugWindow.Report".Translate()))
         {
-            SoundDefOf.Click.PlayOneShotOnCamera();
             ConfirmAndReportIssue();
         }
         TooltipHandler.TipRegion(reportRect, "RimTalk.DebugWindow.ReportTooltip".Translate());
@@ -216,9 +215,8 @@ public class Dialog_ApiLog : Window
                 canResend = false;
             }
             GUI.enabled = canResend;
-            if (Widgets.ButtonText(resendRect, "RimTalk.DebugWindow.Resend".Translate()))
+            if (UIUtil.ButtonText(resendRect, "RimTalk.DebugWindow.Resend".Translate()))
             {
-                SoundDefOf.Click.PlayOneShotOnCamera();
                 ExecuteResend();
             }
             TooltipHandler.TipRegion(resendRect, "RimTalk.DebugWindow.ResendTooltip".Translate());
@@ -230,7 +228,7 @@ public class Dialog_ApiLog : Window
         // Copy All Button
         curBtnX -= btnW;
         Rect copyAllRect = new Rect(curBtnX, y, btnW, btnH);
-        if (Widgets.ButtonText(copyAllRect, "RimTalk.DebugWindow.CopyAll".Translate()))
+        if (UIUtil.ButtonText(copyAllRect, "RimTalk.DebugWindow.CopyAll".Translate()))
         {
             GUIUtility.systemCopyBuffer = BuildCompleteReport();
             Messages.Message("RimTalk.DebugWindow.Copied".Translate(), MessageTypeDefOf.TaskCompletion, false);
@@ -706,14 +704,16 @@ public class Dialog_ApiLog : Window
 
     private static bool DrawToggle(Rect rect, string label, ref bool val, string tooltip = null)
     {
+        Widgets.DrawHighlightIfMouseover(rect);
+
         float boxSize = 20f;
         Rect boxRect = new Rect(rect.x, rect.y + (rect.height - boxSize) * 0.5f, boxSize, boxSize);
         Rect labelRect = new Rect(boxRect.xMax + 5f, rect.y + 2f, rect.width - boxSize - 5f, rect.height);
 
         bool prev = val;
-        Widgets.Checkbox(new Vector2(boxRect.x, boxRect.y), ref val, boxSize);
+        Widgets.CheckboxDraw(boxRect.x, boxRect.y, val, false, boxSize);
 
-        if (Widgets.ButtonInvisible(labelRect))
+        if (Widgets.ButtonInvisible(rect))
         {
             val = !val;
             SoundDefOf.Click.PlayOneShotOnCamera();
@@ -766,8 +766,8 @@ public class Dialog_ApiLog : Window
 
             curX += countW + 2f;
             GUI.enabled = _matches.Count > 0;
-            if (Widgets.ButtonText(new Rect(curX, rect.y, arrowBtnW, rect.height), "▲")) PrevMatch();
-            if (Widgets.ButtonText(new Rect(curX + arrowBtnW + 2f, rect.y, arrowBtnW, rect.height), "▼")) NextMatch();
+            if (UIUtil.ButtonText(new Rect(curX, rect.y, arrowBtnW, rect.height), "▲")) PrevMatch();
+            if (UIUtil.ButtonText(new Rect(curX + arrowBtnW + 2f, rect.y, arrowBtnW, rect.height), "▼")) NextMatch();
             GUI.enabled = true;
         }
     }
@@ -900,7 +900,7 @@ public class Dialog_ApiLog : Window
             {
                 GUI.enabled = false;
             }
-            if (Widgets.ButtonText(btn1Rect, "RimTalk.DebugWindow.UploadLog".Translate()))
+            if (UIUtil.ButtonText(btn1Rect, "RimTalk.DebugWindow.UploadLog".Translate()))
             {
                 _parent.StartReportUpload();
             }
@@ -908,14 +908,14 @@ public class Dialog_ApiLog : Window
 
             // 2. Open Steam Discussion
             Rect btn2Rect = new Rect(btnW + buttonGap, buttonsY, btnW, buttonH);
-            if (Widgets.ButtonText(btn2Rect, "RimTalk.DebugWindow.OpenSteamDiscussion".Translate()))
+            if (UIUtil.ButtonText(btn2Rect, "RimTalk.DebugWindow.OpenSteamDiscussion".Translate()))
             {
                 Application.OpenURL(SteamDiscussionUrl);
             }
 
             // 3. Cancel / Close
             Rect btn3Rect = new Rect((btnW + buttonGap) * 2f, buttonsY, btnW, buttonH);
-            if (Widgets.ButtonText(btn3Rect, "Cancel".Translate()))
+            if (UIUtil.ButtonText(btn3Rect, "Cancel".Translate()))
             {
                 Close();
             }

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using RimTalk.Prompt;
+using RimTalk.UI;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -52,12 +53,12 @@ public partial class Settings
         if (settings.UseAdvancedPromptMode)
             DrawAdvancedPromptMode(listingStandard, settings, inRect);
         else
-            DrawSimplePromptMode(listingStandard, settings);
+            DrawSimplePromptMode(listingStandard, settings, inRect);
     }
 
-    private void DrawSimplePromptMode(Listing_Standard listingStandard, RimTalkSettings settings)
+    private void DrawSimplePromptMode(Listing_Standard listingStandard, RimTalkSettings settings, Rect containerRect)
     {
-        DrawAIInstructionSettings(listingStandard, showAdvancedSwitch: true);
+        DrawAIInstructionSettings(listingStandard, showAdvancedSwitch: true, containerRect: containerRect);
     }
 
     private void DrawAdvancedPromptMode(Listing_Standard listingStandard, RimTalkSettings settings, Rect containerRect)
@@ -101,7 +102,7 @@ public partial class Settings
         float viewWidth = listWidth - scrollBarWidth;
         float rowButtonX = viewWidth - buttonSize - 2f;
         float headerButtonX = listPaddingX + rowButtonX;
-        float y = rect.y + 5f;
+        float y = rect.y + 6f;
 
         // Presets Header
         Text.Font = GameFont.Tiny;
@@ -111,7 +112,7 @@ public partial class Settings
 
         GUI.color = AddGreen;
         Rect addPresetRect = new Rect(rect.x + headerButtonX, y, buttonSize, buttonSize);
-        if (Widgets.ButtonText(addPresetRect, "+"))
+        if (UIUtil.ButtonText(addPresetRect, "+"))
         {
             // Use CreateNewPreset to generate from factory default instead of duplicating current
             var p = manager.CreateNewPreset("RimTalk.Settings.PromptPreset.NewPresetName".Translate());
@@ -147,7 +148,7 @@ public partial class Settings
                 GUI.color = Color.white;
             }
 
-            if (Widgets.ButtonText(new Rect(24f, py, viewRect.width - 48f, 24f), p.Name, false))
+            if (UIUtil.ButtonText(new Rect(24f, py, viewRect.width - 48f, 24f), p.Name, false))
             {
                 _selectedPresetId = p.Id;
                 _selectedEntryId = p.Entries.FirstOrDefault()?.Id;
@@ -157,7 +158,7 @@ public partial class Settings
             {
                 Rect delRect = new Rect(rowButtonX, py + 2f, buttonSize, buttonSize);
                 GUI.color = DeleteRed;
-                if (Widgets.ButtonText(delRect, "×"))
+                if (UIUtil.ButtonText(delRect, "×"))
                 {
                     manager.RemovePreset(p.Id);
                     if (_selectedPresetId == p.Id)
@@ -185,7 +186,7 @@ public partial class Settings
 
             bool isAlreadyActive = sel.IsActive;
             if (isAlreadyActive) GUI.enabled = false;
-            if (Widgets.ButtonText(new Rect(rect.x + 5f, y, btnW2, 24f),
+            if (UIUtil.ButtonText(new Rect(rect.x + 5f, y, btnW2, 24f),
                     "RimTalk.Settings.PromptPreset.Activate".Translate()))
             {
                 manager.SetActivePreset(sel.Id);
@@ -193,7 +194,7 @@ public partial class Settings
 
             if (isAlreadyActive) GUI.enabled = true;
 
-            if (Widgets.ButtonText(new Rect(rect.x + 10f + btnW2, y, btnW2, 24f),
+            if (UIUtil.ButtonText(new Rect(rect.x + 10f + btnW2, y, btnW2, 24f),
                     "RimTalk.Settings.PromptPreset.Duplicate".Translate()))
             {
                 var c = manager.DuplicatePreset(sel.Id);
@@ -206,9 +207,9 @@ public partial class Settings
 
             y += 28f;
 
-            if (Widgets.ButtonText(new Rect(rect.x + 5f, y, btnW2, 24f),
+            if (UIUtil.ButtonText(new Rect(rect.x + 5f, y, btnW2, 24f),
                     "RimTalk.Settings.PromptPreset.Import".Translate())) ShowImportMenu(manager);
-            if (Widgets.ButtonText(new Rect(rect.x + 10f + btnW2, y, btnW2, 24f),
+            if (UIUtil.ButtonText(new Rect(rect.x + 10f + btnW2, y, btnW2, 24f),
                     "RimTalk.Settings.PromptPreset.Export".Translate()))
             {
                 if (PresetSerializer.ExportToFile(sel))
@@ -233,7 +234,7 @@ public partial class Settings
             const float entryHeaderHeight = 22f;
             GUI.color = AddGreen;
             Rect addRect = new Rect(rect.x + headerButtonX, y, buttonSize, buttonSize);
-            if (Widgets.ButtonText(addRect, "+"))
+            if (UIUtil.ButtonText(addRect, "+"))
             {
                 var newEntry = new PromptEntry("RimTalk.Settings.PromptPreset.NewEntryName".Translate(), "",
                     PromptRole.User)
@@ -273,14 +274,14 @@ public partial class Settings
                 Widgets.Checkbox(new Vector2(4f, ey + 4f), ref en, 16f);
                 entry.Enabled = en;
 
-                if (Widgets.ButtonText(new Rect(24f, ey, eViewRect.width - 48f, 24f), entry.Name, false))
+                if (UIUtil.ButtonText(new Rect(24f, ey, eViewRect.width - 48f, 24f), entry.Name, false))
                     _selectedEntryId = entry.Id;
 
                 if (!isHistoryMarker)
                 {
                     Rect edel = new Rect(rowButtonX, ey + 2f, buttonSize, buttonSize);
                     GUI.color = DeleteRed;
-                    if (Widgets.ButtonText(edel, "×"))
+                    if (UIUtil.ButtonText(edel, "×"))
                     {
                         sel.RemoveEntry(entry.Id);
                         if (_selectedEntryId == entry.Id) _selectedEntryId = sel.Entries.FirstOrDefault()?.Id;
@@ -307,7 +308,7 @@ public partial class Settings
                     // Up button
                     if (index > 0)
                     {
-                        if (Widgets.ButtonText(new Rect(rect.x + 5f, rect.yMax - 32f, sw, 24f), "▲"))
+                        if (UIUtil.ButtonText(new Rect(rect.x + 5f, rect.yMax - 32f, sw, 24f), "▲"))
                         {
                             sel.Entries.RemoveAt(index);
                             sel.Entries.Insert(index - 1, selectedEntry);
@@ -323,7 +324,7 @@ public partial class Settings
                     // Down button
                     if (index < sel.Entries.Count - 1)
                     {
-                        if (Widgets.ButtonText(new Rect(rect.x + 10f + sw, rect.yMax - 32f, sw, 24f), "▼"))
+                        if (UIUtil.ButtonText(new Rect(rect.x + 10f + sw, rect.yMax - 32f, sw, 24f), "▼"))
                         {
                             sel.Entries.RemoveAt(index);
                             sel.Entries.Insert(index + 1, selectedEntry);
@@ -353,21 +354,22 @@ public partial class Settings
             return;
         }
 
-        float y = rect.y + 2f;
+        float y = rect.y + 6f;
 
         // --- Layout Constants ---
         float labelX = rect.x + 10f;
         float inputX = rect.x + 130f;
         float inputWidth = 200f;
+        float contentRightEdge = rect.xMax - 20f;
         float topButtonWidth = 200f;
-        float topButtonX = rect.x + rect.width - topButtonWidth - 10f;
+        float topButtonX = contentRightEdge - topButtonWidth;
         float dropdownWidth = 120f;
 
         // -- Row 1: Preset Name & Simple Mode --
         Widgets.Label(new Rect(labelX, y, inputX - 10, 24f), "RimTalk.Settings.PromptPreset.PresetName".Translate());
         p.Name = Widgets.TextField(new Rect(inputX, y, inputWidth, 24f), p.Name);
 
-        if (Widgets.ButtonText(new Rect(topButtonX, y, topButtonWidth, 24f),
+        if (UIUtil.ButtonText(new Rect(topButtonX, y, topButtonWidth, 24f),
                 "RimTalk.Settings.SwitchToSimpleSettings".Translate()))
         {
             settings.UseAdvancedPromptMode = false;
@@ -377,17 +379,6 @@ public partial class Settings
 
         y += 28f;
 
-        // -- Row 2: Reset Button --
-        if (Widgets.ButtonText(new Rect(topButtonX, y, topButtonWidth, 24f),
-                "RimTalk.Settings.ResetToDefault".Translate()))
-        {
-            Find.WindowStack.Add(Dialog_MessageBox.CreateConfirmation("RimTalk.Settings.ResetConfirm".Translate(), () =>
-            {
-                manager.ResetToDefaults();
-                _selectedPresetId = null;
-                _selectedEntryId = null;
-            }));
-        }
 
         var e = p.Entries.FirstOrDefault(x => x.Id == _selectedEntryId);
         if (e == null)
@@ -516,7 +507,7 @@ public partial class Settings
 
         // -- TABS (Toggles) --
         float tabWidth = 70f;
-        float rightEdge = rect.xMax - 5f;
+        float rightEdge = rect.xMax - 20f;
 
         void DrawToggleTab(string label, ref bool isOpen, int indexFromRight, bool isRadio = false, int radioMode = 0)
         {
@@ -529,7 +520,7 @@ public partial class Settings
 
             GUI.color = active ? Color.green : Color.white;
 
-            if (Widgets.ButtonText(tabRect, label))
+            if (UIUtil.ButtonText(tabRect, label))
             {
                 if (isRadio)
                 {
@@ -563,7 +554,7 @@ public partial class Settings
         y += 28f;
 
         // -- MAIN AREA (Layout Split Logic) --
-        Rect bottomArea = new Rect(rect.x + 10f, y, rect.width - 20f, rect.yMax - y - 5f);
+        Rect bottomArea = new Rect(rect.x + 10f, y, rect.xMax - (rect.x + 10f), rect.yMax - y - 5f);
 
         // 1. Calculate Horizontal Split (Main vs Side Panel)
         Rect mainWorkRect = bottomArea;
@@ -917,6 +908,7 @@ public partial class Settings
 
         if (Widgets.ButtonInvisible(rowRect))
         {
+            SoundDefOf.Click.PlayOneShotOnCamera(null);
             InsertVariable(n, entry);
         }
 

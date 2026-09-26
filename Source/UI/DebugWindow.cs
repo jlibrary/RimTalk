@@ -751,7 +751,7 @@ public class DebugWindow : Window
         float btnX = 0f;
 
         // Copy All Button
-        if (Widgets.ButtonText(new Rect(btnX, y, btnW, buttonsRowH), "RimTalk.DebugWindow.CopyAll".Translate()))
+        if (UIUtil.ButtonText(new Rect(btnX, y, btnW, buttonsRowH), "RimTalk.DebugWindow.CopyAll".Translate()))
         {
             GUIUtility.systemCopyBuffer = _selectedLog.ToString();
             Messages.Message("RimTalk.DebugWindow.Copied".Translate(), MessageTypeDefOf.TaskCompletion, false);
@@ -763,7 +763,7 @@ public class DebugWindow : Window
             btnX += btnW + 6f;
             Rect reportRect = new Rect(btnX, y, btnW, buttonsRowH);
             GUI.enabled = payload != null;
-            if (Widgets.ButtonText(reportRect, "RimTalk.DebugWindow.ApiLog".Translate()))
+            if (UIUtil.ButtonText(reportRect, "RimTalk.DebugWindow.ApiLog".Translate()))
             {
                 if (payload != null)
                 {
@@ -779,9 +779,8 @@ public class DebugWindow : Window
         var prevResendColor = GUI.color;
         GUI.color = new Color(0.6f, 0.9f, 0.6f);
         Rect resendRect = new Rect(btnX, y, btnW, buttonsRowH);
-        if (Widgets.ButtonText(resendRect, "RimTalk.DebugWindow.Resend".Translate()))
+        if (UIUtil.ButtonText(resendRect, "RimTalk.DebugWindow.Resend".Translate()))
         {
-            SoundDefOf.Click.PlayOneShotOnCamera();
             Resend();
         }
 
@@ -1419,32 +1418,27 @@ public class DebugWindow : Window
 
         long maxVal = Math.Max(1, series.Where(s => s.data != null && s.data.Any()).SelectMany(s => s.data).Max());
 
-        Text.Font = GameFont.Tiny;
-        GUI.color = Color.gray;
-        Widgets.Label(new Rect(rect.x + 5, rect.y + rect.height - 14f, 60, 14f),
-            "RimTalk.DebugWindow.SixtySecondsAgo".Translate());
-        Widgets.Label(new Rect(rect.xMax - 35, rect.y + rect.height - 14f, 35, 14f),
-            "RimTalk.DebugWindow.Now".Translate());
-        GUI.color = Color.white;
+
 
         Rect graphArea = rect.ContractedBy(2f);
 
         foreach (var (data, color, _) in series)
         {
             if (data == null || data.Count < 2) continue;
-            const float verticalPadding = 10f;
-            float graphHeight = graphArea.height - (2 * verticalPadding);
+            const float topPadding = 10f;
+            const float bottomPadding = 0f;
+            float graphHeight = graphArea.height - topPadding - bottomPadding;
             if (graphHeight <= 0) continue;
 
             var points = new List<Vector2>(data.Count);
             for (int i = 0; i < data.Count; i++)
             {
                 float x = graphArea.x + (float)i / (data.Count - 1) * graphArea.width;
-                float y = (graphArea.y + graphArea.height - verticalPadding) - ((float)data[i] / maxVal * graphHeight);
+                float y = (graphArea.y + graphArea.height - bottomPadding) - ((float)data[i] / maxVal * graphHeight);
                 points.Add(new Vector2(x, y));
             }
 
-            for (int i = 0; i < points.Count - 1; i++) Widgets.DrawLine(points[i], points[i + 1], color, 2f);
+            for (int i = 0; i < points.Count - 1; i++) Widgets.DrawLine(points[i], points[i + 1], color, 1f);
 
             // Show token count at the end of each spike (where line drops to 0)
             GUI.color = color;
@@ -1456,20 +1450,21 @@ public class DebugWindow : Window
                     bool isEnd = (i == data.Count - 1) || data[i + 1] <= 0;
                     if (isEnd && i < points.Count)
                     {
-                        Widgets.Label(new Rect(points[i].x - 15, points[i].y - 13f, 50, 14f), Stats.TokenLabels[i].ToString());
+                        float labelY = Mathf.Max(rect.y, points[i].y - 13f);
+                        Widgets.Label(new Rect(points[i].x - 20, labelY, 60, 14f), Stats.TokenLabels[i].ToString());
                     }
                 }
             }
             GUI.color = Color.white;
         }
 
-        var legendRect = new Rect(rect.xMax - 95, rect.y + 3, 90, 18);
+        var legendRect = new Rect(rect.xMax - 110, rect.y + 3, 105, 18);
         Widgets.DrawBoxSolid(legendRect, new Color(0, 0, 0, 0.4f));
         foreach (var (data, color, label) in series)
         {
             Widgets.DrawBoxSolid(new Rect(legendRect.x + 6, legendRect.y + 4, 10, 10), color);
             Text.Font = GameFont.Tiny;
-            Widgets.Label(new Rect(legendRect.x + 20, legendRect.y, 68, 16), label);
+            Widgets.Label(new Rect(legendRect.x + 20, legendRect.y, 80, 16), label);
         }
     }
 
@@ -1535,7 +1530,7 @@ public class DebugWindow : Window
 
         // Row 1: Mod Settings (Button) & Toggle RimTalk (Button)
         var modSettingsRect = new Rect(col1X, y1, colWidth, btnHeight);
-        if (Widgets.ButtonText(modSettingsRect, "RimTalk.DebugWindow.ModSettings".Translate()))
+        if (UIUtil.ButtonText(modSettingsRect, "RimTalk.DebugWindow.ModSettings".Translate()))
             Find.WindowStack.Add(new Dialog_ModSettings(LoadedModManager.GetMod<Settings>()));
 
         var settings = Settings.Get();
@@ -1544,7 +1539,7 @@ public class DebugWindow : Window
         var toggleRect = new Rect(col2X, y1, colWidth, btnHeight);
         var prevColor = GUI.color;
         GUI.color = modEnabled ? new Color(0.6f, 1f, 0.6f) : new Color(0.9f, 0.5f, 0.5f);
-        if (Widgets.ButtonText(toggleRect, toggleLabel))
+        if (UIUtil.ButtonText(toggleRect, toggleLabel))
         {
             settings.IsEnabled = !modEnabled;
         }
@@ -1553,13 +1548,13 @@ public class DebugWindow : Window
 
         // Row 2: Export (Button) & Reset Logs (Button)
         var exportRect = new Rect(col1X, y2, colWidth, btnHeight);
-        if (Widgets.ButtonText(exportRect, "RimTalk.DebugWindow.Export".Translate()))
+        if (UIUtil.ButtonText(exportRect, "RimTalk.DebugWindow.Export".Translate()))
             UIUtil.ExportLogs(_requests);
         TooltipHandler.TipRegion(exportRect, "RimTalk.DebugWindow.ExportTooltip".Translate());
 
         var resetRect = new Rect(col2X, y2, colWidth, btnHeight);
         GUI.color = new Color(1f, 0.4f, 0.4f);
-        if (Widgets.ButtonText(resetRect, "RimTalk.DebugWindow.ResetLogs".Translate()))
+        if (UIUtil.ButtonText(resetRect, "RimTalk.DebugWindow.ResetLogs".Translate()))
             Reset();
         GUI.color = prevColor;
     }
@@ -1716,7 +1711,7 @@ public class DebugWindow : Window
         return "";
     }
 
-    private static List<PromptMessageSegment> ResolvePromptSegments(ApiLog log)
+    internal static List<PromptMessageSegment> ResolvePromptSegments(ApiLog log)
     {
         var targetLog = log;
         if (targetLog != null && targetLog.TalkRequest?.PromptMessageSegments == null &&
@@ -1781,7 +1776,31 @@ public class DebugWindow : Window
             return segments;
         }
 
-        return new List<PromptMessageSegment>();
+        var fallbackSegments = new List<PromptMessageSegment>();
+        var history = UIUtil.ExtractHistory(request);
+        if (!string.IsNullOrEmpty(history))
+        {
+            fallbackSegments.Add(new PromptMessageSegment("history", "Chat History", Role.User, history) { IsHistory = true });
+        }
+        if (!string.IsNullOrEmpty(request?.Context))
+        {
+            fallbackSegments.Add(new PromptMessageSegment("context", "Context", Role.System, request.Context));
+        }
+        if (!string.IsNullOrEmpty(request?.Prompt))
+        {
+            fallbackSegments.Add(new PromptMessageSegment("dialogue-prompt", "Dialogue Prompt", Role.User, request.Prompt));
+        }
+
+        if (!string.IsNullOrEmpty(imageBase64))
+        {
+            fallbackSegments.Add(new PromptMessageSegment(
+                "attached-image-base64",
+                "RimTalk.DebugWindow.AttachedImageBase64".Translate(),
+                Role.User,
+                $"data:image/jpeg;base64,{imageBase64}"));
+        }
+
+        return fallbackSegments;
     }
 
     private float CalculatePromptSegmentsHeight(List<PromptMessageSegment> segments, float width)
@@ -1877,9 +1896,9 @@ public class DebugWindow : Window
         TalkRequest debugRequest = _selectedLog.TalkRequest.Clone();
         
         // If we have modified segments in the UI, apply them to the resent request
-        if (_tempPromptSegments != null && _tempPromptSegments.Count > 0)
+        if (_tempPromptSegments is { Count: > 0 })
         {
-            debugRequest.PromptMessageSegments = _tempPromptSegments.Select(s => new PromptMessageSegment(s.EntryId, s.EntryName, s.Role, s.Content)).ToList();
+            debugRequest.PromptMessageSegments = _tempPromptSegments.Select(s => new PromptMessageSegment(s.EntryId, s.EntryName, s.Role, s.Content) { IsHistory = s.IsHistory }).ToList();
             debugRequest.PromptMessages = debugRequest.PromptMessageSegments.Select(s => (s.Role, s.Content)).ToList();
         }
 

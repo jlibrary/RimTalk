@@ -269,12 +269,12 @@ Conseils Cruciaux :
 
     <!-- Settings_Api.cs -->
     <RimTalk.Settings.QuickSetupSubtitle>Choisissez un mode de connexion IA pour activer les dialogues.</RimTalk.Settings.QuickSetupSubtitle>
-    <RimTalk.Settings.QuickSetupButton>Paramètres rapides</RimTalk.Settings.QuickSetupButton>
-    <RimTalk.Settings.QuickSetupTooltip>Revenir à la vue des paramètres rapides simplifiée.</RimTalk.Settings.QuickSetupTooltip>
-    <RimTalk.Settings.AllSettingsButton>Tous les paramètres</RimTalk.Settings.AllSettingsButton>
+    <RimTalk.Settings.QuickSetupButton>Paramètres simples</RimTalk.Settings.QuickSetupButton>
+    <RimTalk.Settings.QuickSetupTooltip>Revenir à la vue simplifiée des paramètres.</RimTalk.Settings.QuickSetupTooltip>
+    <RimTalk.Settings.AllSettingsButton>Paramètres détaillés</RimTalk.Settings.AllSettingsButton>
     <RimTalk.Settings.AllSettingsTooltip>Afficher tous les onglets de configuration (gameplay, préréglages de prompt, filtres de contexte, etc.).</RimTalk.Settings.AllSettingsTooltip>
     <RimTalk.Settings.CustomConfigActiveNotice>* La configuration d'API personnalisée est actuellement active.</RimTalk.Settings.CustomConfigActiveNotice>
-    <RimTalk.Settings.ModeSelectorHeader>Choisir le mode de connexion IA (un seul choix) :</RimTalk.Settings.ModeSelectorHeader>
+    <RimTalk.Settings.ModeSelectorHeader>Choisir le mode de connexion IA :</RimTalk.Settings.ModeSelectorHeader>
     <RimTalk.Settings.ModeGoogleTitle>Google Gemini</RimTalk.Settings.ModeGoogleTitle>
     <RimTalk.Settings.ModeGoogleDesc>Clé API Web gratuite</RimTalk.Settings.ModeGoogleDesc>
     <RimTalk.Settings.ModePlayer2Title>Player2</RimTalk.Settings.ModePlayer2Title>
@@ -297,7 +297,7 @@ Conseils Cruciaux :
     <RimTalk.Settings.Player2AuthReopen>Rouvrir la page d'approbation</RimTalk.Settings.Player2AuthReopen>
     <RimTalk.Settings.Player2AuthCancel>Annuler l'autorisation</RimTalk.Settings.Player2AuthCancel>
     <RimTalk.Settings.GoogleApiKeyLabel>Clé API Google AI :</RimTalk.Settings.GoogleApiKeyLabel>
-    <RimTalk.Settings.GoogleApiKeyDesc>Utilise le modèle gratuit gemma-4-26b-a4b. Pour d'autres modèles ou fournisseurs, utilisez les Paramètres Avancés.</RimTalk.Settings.GoogleApiKeyDesc>
+    <RimTalk.Settings.GoogleApiKeyDesc>Utilise le modèle gratuit {0}. Pour d'autres modèles ou fournisseurs, utilisez les Paramètres Avancés.</RimTalk.Settings.GoogleApiKeyDesc>
     <RimTalk.Settings.GetFreeApiKeyButton>Obtenir une clé API gratuite</RimTalk.Settings.GetFreeApiKeyButton>
     <RimTalk.Settings.SwitchToAdvancedSettings>Passer aux paramètres avancés</RimTalk.Settings.SwitchToAdvancedSettings>
     <RimTalk.Settings.SwitchToSimpleSettings>Passer aux paramètres simples</RimTalk.Settings.SwitchToSimpleSettings>
@@ -404,6 +404,7 @@ Conseils Cruciaux :
     <RimTalk.Settings.IncludePrisonerSlaveStatus>La résistance et la volonté des prisonniers/esclaves</RimTalk.Settings.IncludePrisonerSlaveStatus>
     <RimTalk.Settings.IncludeRelations>Les relations</RimTalk.Settings.IncludeRelations>
     <RimTalk.Settings.IncludeEquipment>L'équipement</RimTalk.Settings.IncludeEquipment>
+    <RimTalk.Settings.MindAndSocial>Psychologie et relations</RimTalk.Settings.MindAndSocial>
     <RimTalk.Settings.Environment>Environnement</RimTalk.Settings.Environment>
     <RimTalk.Settings.IncludeTime>L'heure</RimTalk.Settings.IncludeTime>
     <RimTalk.Settings.IncludeDate>La date</RimTalk.Settings.IncludeDate>
@@ -416,7 +417,7 @@ Conseils Cruciaux :
     <RimTalk.Settings.IncludeSurroundings>Les objets à proximité</RimTalk.Settings.IncludeSurroundings>
     <RimTalk.Settings.IncludeWealth>La richesse de la colonie</RimTalk.Settings.IncludeWealth>
     <RimTalk.Settings.IncludeTopicKeywords>Générer de nouveaux sujets de conversation</RimTalk.Settings.IncludeTopicKeywords>
-    <RimTalk.Settings.IncludeTopicKeywords.Tooltip>Lorsque les colons n'ont pas d'événements ou de contexte spécifique à aborder, génère aléatoirement un nouveau sujet de conversation avec 50 % de chances.</RimTalk.Settings.IncludeTopicKeywords.Tooltip>
+    <RimTalk.Settings.IncludeTopicKeywords.Tooltip>Lorsque les colons n'ont pas d'événements ou de contexte spécifique à aborder, peut générer aléatoirement un nouveau sujet de conversation.</RimTalk.Settings.IncludeTopicKeywords.Tooltip>
 
     <!-- DebugWindow.cs -->
     <RimTalk.DebugWindow.ViewByTime>Par temps</RimTalk.DebugWindow.ViewByTime>
@@ -593,6 +594,7 @@ Conseils Cruciaux :
     <RimTalk.PlayerSettings.NewPresetName>Nouveau préréglage</RimTalk.PlayerSettings.NewPresetName>
     <RimTalk.PlayerSettings.PresetTitleHeader>Titre / Nom du menu</RimTalk.PlayerSettings.PresetTitleHeader>
     <RimTalk.PlayerSettings.PresetTitlePlaceholder>Titre du préréglage...</RimTalk.PlayerSettings.PresetTitlePlaceholder>
+    <RimTalk.PlayerSettings.PresetPromptPlaceholder>Contenu du dialogue / Invite...</RimTalk.PlayerSettings.PresetPromptPlaceholder>
 
     <!-- VersionSwitcher.cs -->
     <RimTalk.VersionSwitcher.RollbackLabel>Rétablir une version précédente</RimTalk.VersionSwitcher.RollbackLabel>
@@ -600,8 +602,8 @@ Conseils Cruciaux :
     <RimTalk.VersionSwitcher.SwitchToSpecificVer>Copier {0} (Mod local)</RimTalk.VersionSwitcher.SwitchToSpecificVer>
     <RimTalk.VersionSwitcher.NoPreviousDllFound>Fichiers de la version précédente introuvables (LastVersion/).</RimTalk.VersionSwitcher.NoPreviousDllFound>
     <RimTalk.VersionSwitcher.ConfirmRollbackTitle>Rétablir la version {0}</RimTalk.VersionSwitcher.ConfirmRollbackTitle>
-    <RimTalk.VersionSwitcher.ConfirmRollbackPrompt>Copier RimTalk ({0}) dans le dossier local 'RimWorld/Mods/RimTalk' ?</RimTalk.VersionSwitcher.ConfirmRollbackPrompt>
-    <RimTalk.VersionSwitcher.ProceedRollback>Copier</RimTalk.VersionSwitcher.ProceedRollback>
+    <RimTalk.VersionSwitcher.ConfirmRollbackPrompt>Copier dans le dossier local 'RimWorld/Mods/RimTalk' ?\n\nCela crée une copie locale qui ne sera pas écrasée par les mises à jour Steam.</RimTalk.VersionSwitcher.ConfirmRollbackPrompt>
+    <RimTalk.VersionSwitcher.ProceedRollback>Confirmer</RimTalk.VersionSwitcher.ProceedRollback>
     <RimTalk.VersionSwitcher.RestartRequiredTitle>Copié</RimTalk.VersionSwitcher.RestartRequiredTitle>
     <RimTalk.VersionSwitcher.LocalModCreatedPrompt>Copié dans 'RimWorld/Mods/RimTalk'.\n\nDésactivez la version Steam, activez le mod local et redémarrez RimWorld.</RimTalk.VersionSwitcher.LocalModCreatedPrompt>
 

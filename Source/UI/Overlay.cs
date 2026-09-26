@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using HarmonyLib;
 using RimTalk.Data;
 using RimTalk.Service;
@@ -606,7 +605,7 @@ public class Overlay : MapComponent
 
     private static bool DrawTinyButtonText(Rect rect, string label)
     {
-        bool clicked = Widgets.ButtonText(rect, string.Empty);
+        bool clicked = UIUtil.ButtonText(rect, string.Empty);
         var prevAnchor = Text.Anchor;
         var prevFont = Text.Font;
         Text.Anchor = TextAnchor.MiddleCenter;
@@ -621,19 +620,10 @@ public class Overlay : MapComponent
     {
         Text.Font = GameFont.Tiny;
         var rowRect = listing.GetRect(24f);
-        if (Mouse.IsOver(rowRect))
-        {
-            Widgets.DrawHighlight(rowRect);
-        }
-
-        if (!string.IsNullOrEmpty(tooltipKey))
-        {
-            TooltipHandler.TipRegion(rowRect, tooltipKey.Translate());
-        }
+        string tooltip = !string.IsNullOrEmpty(tooltipKey) ? tooltipKey.Translate().ToString() : null;
 
         bool currentValue = initialValue;
-        Widgets.CheckboxLabeled(rowRect, label, ref currentValue);
-        if (currentValue != initialValue)
+        if (UIUtil.CheckboxLabeledLeft(rowRect, label, ref currentValue, tooltip))
         {
             onValueChanged(currentValue);
         }

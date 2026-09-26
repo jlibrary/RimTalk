@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using RimTalk.UI;
 using RimWorld;
 using UnityEngine;
 using Verse;
+using Verse.Sound;
 using Logger = RimTalk.Util.Logger;
 
 namespace RimTalk;
@@ -19,7 +21,17 @@ public partial class Settings
     private const string Core = "Core";
     private const string VerseMessage = "Verse.Message";
 
-    private void ScanForArchivableTypes()
+    public static void OpenEventFilterDialog()
+    {
+        var mod = LoadedModManager.GetMod<Settings>();
+        if (mod != null)
+        {
+            mod.ScanForArchivableTypes();
+            Find.WindowStack.Add(new Dialog_EventFilterSettings(mod));
+        }
+    }
+
+    public void ScanForArchivableTypes()
     {
         if (_archivableTypesScanned) return;
 
@@ -212,7 +224,7 @@ public partial class Settings
             $"Discovered {_discoveredArchivableTypes.Count} archivable types across {_typeHierarchy.Count} parent categories.");
     }
 
-    private void DrawEventFilterSettings(Listing_Standard listingStandard)
+    public void DrawEventFilterSettings(Listing_Standard listingStandard)
     {
         RimTalkSettings settings = Get();
 
@@ -243,15 +255,17 @@ public partial class Settings
 
                 // --- Parent Row ---
                 Rect parentRect = listingStandard.GetRect(24f);
+                Widgets.DrawHighlightIfMouseover(parentRect);
                 float xOffset = 0f;
 
                 // 1. Expander Button
                 if (showExpander)
                 {
-                    Rect expanderRect = new Rect(parentRect.x, parentRect.y, 24f, 24f);
-                    string label = isExpanded ? "[-]" : "[+]";
-                    if (Widgets.ButtonText(expanderRect, label, drawBackground: false))
+                    Rect expanderRect = new Rect(parentRect.x + 3f, parentRect.y + (parentRect.height - 18f) / 2f, 18f, 18f);
+                    Texture2D expanderIcon = isExpanded ? TexButton.Collapse : TexButton.Reveal;
+                    if (Widgets.ButtonImage(expanderRect, expanderIcon))
                     {
+                        SoundDefOf.Click.PlayOneShotOnCamera(null);
                         if (isExpanded) _expandedParents.Remove(parentKey);
                         else _expandedParents.Add(parentKey);
                     }
@@ -264,7 +278,16 @@ public partial class Settings
                 bool newParentEnabled = isParentEnabled;
 
                 Rect checkboxRect = new Rect(parentRect.x + xOffset, parentRect.y, parentRect.width - xOffset, 24f);
-                Widgets.CheckboxLabeled(checkboxRect, parentKey, ref newParentEnabled);
+                if (UIUtil.CheckboxLabeledLeft(checkboxRect, parentKey, ref newParentEnabled))
+                {
+                    settings.EnabledArchivableTypes[parentKey] = newParentEnabled;
+                    // Auto-toggle children
+                    if (hasChildren)
+                    {
+                        foreach (var child in children)
+                            settings.EnabledArchivableTypes[child] = newParentEnabled;
+                    }
+                }
 
                 // Draw Source (Mod Name)
                 if (_sourceMap.TryGetValue(parentKey, out var pSource) &&
@@ -274,21 +297,10 @@ public partial class Settings
                     float nameWidth = Text.CalcSize(parentKey).x;
                     Text.Font = GameFont.Tiny;
                     GUI.color = Color.gray;
-                    Rect sourceRect = new Rect(checkboxRect.x + nameWidth + 10f, checkboxRect.y + 2f, 300f, 24f);
+                    Rect sourceRect = new Rect(checkboxRect.x + 24f + 6f + nameWidth + 10f, checkboxRect.y + 2f, 300f, 24f);
                     Widgets.Label(sourceRect, $"({pSource})");
                     GUI.color = Color.white;
                     Text.Font = GameFont.Small;
-                }
-
-                if (newParentEnabled != isParentEnabled)
-                {
-                    settings.EnabledArchivableTypes[parentKey] = newParentEnabled;
-                    // Auto-toggle children
-                    if (hasChildren)
-                    {
-                        foreach (var child in children)
-                            settings.EnabledArchivableTypes[child] = newParentEnabled;
-                    }
                 }
 
                 // --- Children Rows ---
@@ -302,7 +314,15 @@ public partial class Settings
                     bool isChildEnabled = settings.EnabledArchivableTypes.TryGetValue(childKey, out var cVal) && cVal;
                     bool newChildEnabled = isChildEnabled;
 
-                    Widgets.CheckboxLabeled(childRect, childKey, ref newChildEnabled);
+                    if (UIUtil.CheckboxLabeledLeft(childRect, childKey, ref newChildEnabled))
+                    {
+                        settings.EnabledArchivableTypes[childKey] = newChildEnabled;
+                        // If child enabled -> Force Parent Enabled
+                        if (newChildEnabled && !settings.EnabledArchivableTypes[parentKey])
+                        {
+                            settings.EnabledArchivableTypes[parentKey] = true;
+                        }
+                    }
 
                     // Draw Source (Mod Name)
                     if (_sourceMap.TryGetValue(childKey, out var cSource) &&
@@ -312,20 +332,10 @@ public partial class Settings
                         float nameWidth = Text.CalcSize(childKey).x;
                         Text.Font = GameFont.Tiny;
                         GUI.color = Color.gray;
-                        Rect sourceRect = new Rect(childRect.x + nameWidth + 10f, childRect.y + 2f, 300f, 24f);
+                        Rect sourceRect = new Rect(childRect.x + 24f + 6f + nameWidth + 10f, childRect.y + 2f, 300f, 24f);
                         Widgets.Label(sourceRect, $"({cSource})");
                         GUI.color = Color.white;
                         Text.Font = GameFont.Small;
-                    }
-
-                    if (newChildEnabled != isChildEnabled)
-                    {
-                        settings.EnabledArchivableTypes[childKey] = newChildEnabled;
-                        // If child enabled -> Force Parent Enabled
-                        if (newChildEnabled && !settings.EnabledArchivableTypes[parentKey])
-                        {
-                            settings.EnabledArchivableTypes[parentKey] = true;
-                        }
                     }
                 }
             }
@@ -342,24 +352,21 @@ public partial class Settings
             Text.Font = GameFont.Small;
         }
 
-        listingStandard.Gap(6f);
+    }
 
-        // Reset to defaults button
-        Rect resetButtonRect = listingStandard.GetRect(30f);
-        if (Widgets.ButtonText(resetButtonRect, "RimTalk.Settings.ResetToDefault".Translate()))
+    public void ResetEventFilterToDefault()
+    {
+        RimTalkSettings settings = Get();
+        var messageTypes = new HashSet<string> { VerseMessage };
+        if (_typeHierarchy.TryGetValue(VerseMessage, out var messageChildren))
         {
-            // Identify all Message-related types (Parent + Children) to disable them by default
-            var messageTypes = new HashSet<string> { VerseMessage };
-            if (_typeHierarchy.TryGetValue(VerseMessage, out var messageChildren))
-            {
-                foreach (var child in messageChildren) messageTypes.Add(child);
-            }
+            foreach (var child in messageChildren) messageTypes.Add(child);
+        }
 
-            foreach (var typeName in _discoveredArchivableTypes)
-            {
-                bool defaultEnabled = !messageTypes.Contains(typeName);
-                settings.EnabledArchivableTypes[typeName] = defaultEnabled;
-            }
+        foreach (var typeName in _discoveredArchivableTypes)
+        {
+            bool defaultEnabled = !messageTypes.Contains(typeName);
+            settings.EnabledArchivableTypes[typeName] = defaultEnabled;
         }
     }
 }

@@ -1,7 +1,9 @@
 using RimTalk.Service;
 using RimTalk.Util;
+using RimWorld;
 using UnityEngine;
 using Verse;
+using Verse.Sound;
 
 namespace RimTalk.UI;
 
@@ -120,7 +122,7 @@ public class CustomDialogueWindow : Window
         }
 
         float buttonY = fieldY + 39f;
-        if (Widgets.ButtonText(new Rect(0f, buttonY, inRect.width / 2f - 5f, 35f), "RimTalk.FloatMenu.Send".Translate()))
+        if (UIUtil.ButtonText(new Rect(0f, buttonY, inRect.width / 2f - 5f, 35f), "RimTalk.FloatMenu.Send".Translate()))
         {
             if (!string.IsNullOrWhiteSpace(_text))
             {
@@ -128,7 +130,7 @@ public class CustomDialogueWindow : Window
             }
         }
 
-        if (Widgets.ButtonText(new Rect(inRect.width / 2f + 5f, buttonY, inRect.width / 2f - 5f, 35f), "RimTalk.FloatMenu.Cancel".Translate()))
+        if (UIUtil.ButtonText(new Rect(inRect.width / 2f + 5f, buttonY, inRect.width / 2f - 5f, 35f), "RimTalk.FloatMenu.Cancel".Translate()))
         {
             Close();
         }
@@ -149,6 +151,7 @@ public class CustomDialogueWindow : Window
 
         if (Widgets.ButtonImage(rect, icon))
         {
+            SoundDefOf.Click.PlayOneShotOnCamera(null);
             _mode = mode;
             GUI.FocusControl(TextFieldControlName);
         }
@@ -170,6 +173,7 @@ public class CustomDialogueWindow : Window
 
         if (Widgets.ButtonImage(rect, icon))
         {
+            SoundDefOf.Click.PlayOneShotOnCamera(null);
             isToggled = !isToggled;
             GUI.FocusControl(TextFieldControlName);
         }
