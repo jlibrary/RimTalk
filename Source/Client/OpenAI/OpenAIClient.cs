@@ -403,14 +403,24 @@ public class OpenAIClient(
         return responseText;
     }
 
-    public static async Task<List<string>> FetchModelsAsync(string apiKey, string url)
+    public static Task<List<string>> FetchModelsAsync(string apiKey, string url) =>
+        FetchModelsAsync(apiKey, url, null);
+
+    internal static async Task<List<string>> FetchModelsAsync(string apiKey, string url, Dictionary<string, string> extraHeaders)
     {
         using var webRequest = UnityWebRequest.Get(url);
         if (!string.IsNullOrEmpty(apiKey))
         {
             webRequest.SetRequestHeader("Authorization", "Bearer " + apiKey);
             webRequest.SetRequestHeader("x-api-key", apiKey);
-            webRequest.SetRequestHeader("anthropic-version", "2023-06-01");
+        }
+
+        if (extraHeaders != null)
+        {
+            foreach (var kv in extraHeaders)
+            {
+                webRequest.SetRequestHeader(kv.Key, kv.Value);
+            }
         }
 
         var asyncOp = webRequest.SendWebRequest();
