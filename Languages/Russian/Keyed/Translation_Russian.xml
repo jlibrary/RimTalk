@@ -268,12 +268,12 @@
 
     <!-- Settings_Api.cs -->
     <RimTalk.Settings.QuickSetupSubtitle>Выберите способ подключения ИИ для активации диалогов.</RimTalk.Settings.QuickSetupSubtitle>
-    <RimTalk.Settings.QuickSetupButton>Быстрая настройка</RimTalk.Settings.QuickSetupButton>
-    <RimTalk.Settings.QuickSetupTooltip>Вернуться к упрощенному режиму быстрой настройки.</RimTalk.Settings.QuickSetupTooltip>
-    <RimTalk.Settings.AllSettingsButton>Все настройки</RimTalk.Settings.AllSettingsButton>
+    <RimTalk.Settings.QuickSetupButton>Простая настройка</RimTalk.Settings.QuickSetupButton>
+    <RimTalk.Settings.QuickSetupTooltip>Вернуться к упрощенному режиму настройки.</RimTalk.Settings.QuickSetupTooltip>
+    <RimTalk.Settings.AllSettingsButton>Подробные настройки</RimTalk.Settings.AllSettingsButton>
     <RimTalk.Settings.AllSettingsTooltip>Показать все вкладки конфигурации (настройки игры, шаблоны промптов, фильтры контекста и др.).</RimTalk.Settings.AllSettingsTooltip>
     <RimTalk.Settings.CustomConfigActiveNotice>* В данный момент активна пользовательская конфигурация API.</RimTalk.Settings.CustomConfigActiveNotice>
-    <RimTalk.Settings.ModeSelectorHeader>Выберите способ подключения ИИ (только один):</RimTalk.Settings.ModeSelectorHeader>
+    <RimTalk.Settings.ModeSelectorHeader>Выберите способ подключения ИИ:</RimTalk.Settings.ModeSelectorHeader>
     <RimTalk.Settings.ModeGoogleTitle>Google Gemini</RimTalk.Settings.ModeGoogleTitle>
     <RimTalk.Settings.ModeGoogleDesc>Бесплатный ключ веб-API</RimTalk.Settings.ModeGoogleDesc>
     <RimTalk.Settings.ModePlayer2Title>Player2</RimTalk.Settings.ModePlayer2Title>
@@ -296,7 +296,7 @@
     <RimTalk.Settings.Player2AuthReopen>Открыть страницу подтверждения снова</RimTalk.Settings.Player2AuthReopen>
     <RimTalk.Settings.Player2AuthCancel>Отменить авторизацию</RimTalk.Settings.Player2AuthCancel>
     <RimTalk.Settings.GoogleApiKeyLabel>Ключ API Google AI:</RimTalk.Settings.GoogleApiKeyLabel>
-    <RimTalk.Settings.GoogleApiKeyDesc>Использует бесплатную модель gemma-4-26b-a4b. Для других моделей или провайдеров используйте расширенные настройки.</RimTalk.Settings.GoogleApiKeyDesc>
+    <RimTalk.Settings.GoogleApiKeyDesc>Использует бесплатную модель {0}. Для других моделей или провайдеров используйте расширенные настройки.</RimTalk.Settings.GoogleApiKeyDesc>
     <RimTalk.Settings.GetFreeApiKeyButton>Получить бесплатный ключ API</RimTalk.Settings.GetFreeApiKeyButton>
     <RimTalk.Settings.SwitchToAdvancedSettings>Переключиться на расширенные настройки</RimTalk.Settings.SwitchToAdvancedSettings>
     <RimTalk.Settings.SwitchToSimpleSettings>Переключиться на простые настройки</RimTalk.Settings.SwitchToSimpleSettings>
@@ -403,6 +403,7 @@
     <RimTalk.Settings.IncludePrisonerSlaveStatus>Сопротивление и волю заключенных/рабов</RimTalk.Settings.IncludePrisonerSlaveStatus>
     <RimTalk.Settings.IncludeRelations>Отношения</RimTalk.Settings.IncludeRelations>
     <RimTalk.Settings.IncludeEquipment>Снаряжение</RimTalk.Settings.IncludeEquipment>
+    <RimTalk.Settings.MindAndSocial>Психология и отношения</RimTalk.Settings.MindAndSocial>
     <RimTalk.Settings.Environment>Окружающая среда</RimTalk.Settings.Environment>
     <RimTalk.Settings.IncludeTime>Время</RimTalk.Settings.IncludeTime>
     <RimTalk.Settings.IncludeDate>Дату</RimTalk.Settings.IncludeDate>
@@ -415,7 +416,7 @@
     <RimTalk.Settings.IncludeSurroundings>Близлежащие предметы</RimTalk.Settings.IncludeSurroundings>
     <RimTalk.Settings.IncludeWealth>Богатство колонии</RimTalk.Settings.IncludeWealth>
     <RimTalk.Settings.IncludeTopicKeywords>Создавать новые темы для разговоров</RimTalk.Settings.IncludeTopicKeywords>
-    <RimTalk.Settings.IncludeTopicKeywords.Tooltip>Если у пешек нет конкретных событий или контекста для обсуждения, с вероятностью 50% создается новая случайная тема для разговора.</RimTalk.Settings.IncludeTopicKeywords.Tooltip>
+    <RimTalk.Settings.IncludeTopicKeywords.Tooltip>Если у пешек нет конкретных событий или контекста для обсуждения, случайным образом может создаваться новая тема для разговора.</RimTalk.Settings.IncludeTopicKeywords.Tooltip>
 
     <!-- DebugWindow.cs -->
     <RimTalk.DebugWindow.ViewByTime>По времени</RimTalk.DebugWindow.ViewByTime>
@@ -518,6 +519,14 @@
     <RimTalk.Overlay.FontSize>Размер шрифта</RimTalk.Overlay.FontSize>
     <RimTalk.Overlay.TurnOff>Отключить</RimTalk.Overlay.TurnOff>
     <RimTalk.Overlay.TurnOffTooltip>Отключить оверлей.\nВы можете переключать его, нажимая на значок в правом нижнем углу или на вкладку, в зависимости от настроек.</RimTalk.Overlay.TurnOffTooltip>
+    <RimTalk.Overlay.StatusGenerating>Генерация диалога...</RimTalk.Overlay.StatusGenerating>
+    <RimTalk.Overlay.StatusPendingTalks>Диалоги в очереди на показ</RimTalk.Overlay.StatusPendingTalks>
+    <RimTalk.Overlay.StatusIndicator>Индикатор состояния ИИ</RimTalk.Overlay.StatusIndicator>
+    <RimTalk.Overlay.EnableRimTalkTooltip>Глобальное переключение генерации диалогов RimTalk.</RimTalk.Overlay.EnableRimTalkTooltip>
+    <RimTalk.Overlay.DrawAboveUITooltip>Отображать окно оверлея поверх элементов интерфейса игры.</RimTalk.Overlay.DrawAboveUITooltip>
+    <RimTalk.Overlay.ShowGroupColorsTooltip>Показывать цветные полосы слева для группировки связанных диалогов.</RimTalk.Overlay.ShowGroupColorsTooltip>
+    <RimTalk.Overlay.AlignNameColumnTooltip>Выравнивать текст диалогов по самому длинному имени говорящего.</RimTalk.Overlay.AlignNameColumnTooltip>
+    <RimTalk.Overlay.StatusIndicatorTooltip>Показывать 3-позиционный светодиод в левом нижнем углу, указывающий на генерацию ИИ и очередь диалогов.</RimTalk.Overlay.StatusIndicatorTooltip>
 
     <!-- FloatMenuMakerMapGetOptionsPatch.cs -->
     <RimTalk.FloatMenu.ChatWith>Общаться с {0}</RimTalk.FloatMenu.ChatWith>
@@ -584,6 +593,7 @@
     <RimTalk.PlayerSettings.NewPresetName>Новый пресет</RimTalk.PlayerSettings.NewPresetName>
     <RimTalk.PlayerSettings.PresetTitleHeader>Заголовок / Название в меню</RimTalk.PlayerSettings.PresetTitleHeader>
     <RimTalk.PlayerSettings.PresetTitlePlaceholder>Название пресета...</RimTalk.PlayerSettings.PresetTitlePlaceholder>
+    <RimTalk.PlayerSettings.PresetPromptPlaceholder>Содержание диалога / Промпт...</RimTalk.PlayerSettings.PresetPromptPlaceholder>
 
     <!-- VersionSwitcher.cs -->
     <RimTalk.VersionSwitcher.RollbackLabel>Откат к предыдущей версии</RimTalk.VersionSwitcher.RollbackLabel>
@@ -591,8 +601,8 @@
     <RimTalk.VersionSwitcher.SwitchToSpecificVer>Скопировать {0} (Локальный мод)</RimTalk.VersionSwitcher.SwitchToSpecificVer>
     <RimTalk.VersionSwitcher.NoPreviousDllFound>Файлы предыдущей версии не найдены (LastVersion/).</RimTalk.VersionSwitcher.NoPreviousDllFound>
     <RimTalk.VersionSwitcher.ConfirmRollbackTitle>Откат к версии {0}</RimTalk.VersionSwitcher.ConfirmRollbackTitle>
-    <RimTalk.VersionSwitcher.ConfirmRollbackPrompt>Скопировать RimTalk ({0}) в локальную папку 'RimWorld/Mods/RimTalk'?</RimTalk.VersionSwitcher.ConfirmRollbackPrompt>
-    <RimTalk.VersionSwitcher.ProceedRollback>Скопировать</RimTalk.VersionSwitcher.ProceedRollback>
+    <RimTalk.VersionSwitcher.ConfirmRollbackPrompt>Скопировать в локальную папку 'RimWorld/Mods/RimTalk'?\n\nЭто создаст локальную копию, которая не будет перезаписана обновлениями Steam.</RimTalk.VersionSwitcher.ConfirmRollbackPrompt>
+    <RimTalk.VersionSwitcher.ProceedRollback>Подтвердить</RimTalk.VersionSwitcher.ProceedRollback>
     <RimTalk.VersionSwitcher.RestartRequiredTitle>Скопировано</RimTalk.VersionSwitcher.RestartRequiredTitle>
     <RimTalk.VersionSwitcher.LocalModCreatedPrompt>Скопировано в 'RimWorld/Mods/RimTalk'.\n\nОтключите версию Steam, включите локальный мод и перезапустите RimWorld.</RimTalk.VersionSwitcher.LocalModCreatedPrompt>
 

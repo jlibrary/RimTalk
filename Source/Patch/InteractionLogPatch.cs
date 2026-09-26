@@ -46,28 +46,28 @@ public static class InteractionLogPatch
         if (interactionDef == null) return;
 
         bool isFastTrack = settings.IsFastTrackInteraction(interactionDef.defName);
-        bool isChitchat = interactionDef == InteractionDefOf.Chitchat ||
-                          interactionDef == InteractionDefOf.DeepTalk;
+
+        // Skip vanilla procedural chitchat and deep talk unless explicitly enabled as fast-track
+        if (!isFastTrack && (interactionDef == InteractionDefOf.Chitchat || interactionDef == InteractionDefOf.DeepTalk))
+            return;
 
         Pawn initiator = InitiatorField?.GetValue(interaction) as Pawn;
         if (initiator == null || initiator.Map != Find.CurrentMap) return;
 
         // Fast-path: Skip immediately if initiator is not cached/eligible or already has queued requests
         var pawnState = Cache.Get(initiator);
-        if (pawnState == null || (!isFastTrack && isChitchat && pawnState.TalkRequests.Count > 0))
+        if (pawnState == null || (!isFastTrack && pawnState.TalkRequests.Count > 0))
             return;
 
         Pawn recipient = RecipientField?.GetValue(interaction) as Pawn;
 
-        // If in danger then stop chitchat
-        if (!isFastTrack && isChitchat
+        // If in danger then stop non-fast-track interactions
+        if (!isFastTrack
             && (initiator.IsInDanger()
-                || initiator.GetHostilePawnNearBy() != null
                 || (recipient != null && !IsRecipientNearbyAndTalkable(initiator, recipient))))
         {
             return;
         }
-
         if (isFastTrack)
         {
             pawnState.DrainIncomingTalkResponses();
@@ -101,7 +101,8 @@ public static class InteractionLogPatch
         float detectionDistance = 10f * hearingLevel;
         if (!initiator.Position.InHorDistOf(recipient.Position, detectionDistance)) return false;
 
-        return initiator.GetRoom() == recipient.GetRoom();
+        return initiator.GetRoom() == recipient.GetRoom() ||
+               GenSight.LineOfSight(initiator.Position, recipient.Position, initiator.Map);
     }
 
     public static bool IsRimTalkInteraction(LogEntry entry)

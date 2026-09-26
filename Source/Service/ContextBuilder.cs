@@ -418,7 +418,8 @@ public static class ContextBuilder
         {
             var speaker = talkRequest.Recipient ?? (pawns.Count > 1 ? pawns[1] : null);
             var speaker1Name = speaker != null ? PromptService.GetUniqueName(speaker, pawns) : "Someone";
-            var speakerRole = speaker != null ? $"({speaker.GetRole()})" : "";
+            var role = speaker?.GetRole();
+            var speakerRole = !string.IsNullOrEmpty(role) ? $"({role})" : "";
             topicSb.Append($"{speaker1Name}{speakerRole} said to {shortName}: '{talkRequest.Prompt}'. ");
 
             var mode = Settings.Get().PlayerDialogueMode;
@@ -445,6 +446,8 @@ public static class ContextBuilder
         {
             bool inCombat = mainPawn.IsInCombat() || mainPawn.GetMapRole() == MapRole.Invading;
             bool hasActiveHostiles = inCombat && mainPawn.HasActiveHostiles();
+            Pawn partner = pawns.Count > 1 ? (pawns[0] == mainPawn ? (pawns.Count > 1 ? pawns[1] : null) : pawns[0]) : null;
+            bool isStrangerEncounter = partner != null && IsStrangerEncounter(mainPawn, partner, pawns);
 
             if (inCombat)
             {
@@ -456,6 +459,11 @@ public static class ContextBuilder
                 if (mainPawn.CurJobDef == JobDefOf.Flee || mainPawn.CurJobDef == JobDefOf.FleeAndCower)
                 {
                     intentSb.Append($"{shortName} dialogue short, panicked/retreating tone (fleeing)");
+                }
+                else if (mainPawn.IsBrawlingWithAlly(out var brawlTarget))
+                {
+                    string targetName = brawlTarget?.LabelShortCap ?? "opponent";
+                    intentSb.Append($"{shortName} dialogue short, angry/heated tone (brawling with {targetName})");
                 }
                 else if (!hasActiveHostiles)
                 {
@@ -476,27 +484,88 @@ public static class ContextBuilder
             }
             else
             {
-                intentSb.Append(talkRequest.Prompt != null
+                intentSb.Append(talkRequest.Prompt != null || isStrangerEncounter
                     ? $"{shortName} start conversation, taking turns"
-                    : $"{shortName} continue, taking turns");
+                    : $"{shortName} continue conversation, taking turns");
             }
 
+            if (!inCombat && mainPawn.IsCaringOrCustodialJob(out var careTarget) && mainPawn.HasRelationalFriction(careTarget))
+            {
+                string targetName = PromptService.GetUniqueName(careTarget, pawns);
+                intentSb.Append($"\nTone toward {targetName}: Stern, reluctant, or coldly professional. Performing care/duty out of colony necessity or survival—NOT out of affection, forgiveness, or tearful worry.");
+            }
+            else if (!inCombat && partner != null)
+            {
+                if (mainPawn.HasRelationalFriction(partner, out bool isSevere))
+                {
+                    string partnerName = PromptService.GetUniqueName(partner, pawns);
+                    if (isSevere)
+                    {
+                        intentSb.Append($"\nTone toward {partnerName}: Bitter, resentful, or coldly hostile. Harboring intense grief or bitter grudges—do NOT act warm, friendly, or comforting.");
+                    }
+                    else
+                    {
+                        intentSb.Append($"\nTone toward {partnerName}: Curt, guarded, or distant. Annoyed or reluctant—do NOT act warm, playful, or affectionate.");
+                    }
+                }
+                else if (isStrangerEncounter)
+                {
+                    string partnerName = PromptService.GetUniqueName(partner, pawns);
+                    intentSb.Append($"\nTone toward {partnerName}: First encounter—brief greeting, introduction, or cautious inquiry; reserved, not familiar.");
+                }
+            }
+
+            string mentalBreakDirective = null;
             if (mainPawn.InMentalState)
-                topicSb.Append("be distressed (mental break)");
+            {
+                string mentalLabel = mainPawn.MentalStateDef?.LabelCap ?? "distressed";
+                string baseDirective = $"in mental break ({mentalLabel}): express raw distress or unstable emotions, vary emotional focus, avoid repeating exact phrases";
+                
+                string topicKeywords = (talkRequest.TalkType != TalkType.Urgent && Settings.Get().Context.IncludeTopicKeywords)
+                    ? TopicService.TryGetTopic(mainPawn)
+                    : null;
+
+                if (topicKeywords != null)
+                {
+                    topicSb.Append($"in mental break ({mentalLabel})\nObsessive thought / delusion: {topicKeywords}.");
+                    mentalBreakDirective = $"{baseDirective}\nObsessive thought / delusion: {topicKeywords} (weave chaotically with mental break).";
+                }
+                else
+                {
+                    topicSb.Append($"in mental break ({mentalLabel})");
+                    mentalBreakDirective = baseDirective;
+                }
+            }
             else if (mainPawn.Downed && !mainPawn.IsBaby())
+            {
                 topicSb.Append("(downed in pain. Short, strained dialogue)");
+            }
             else if (talkRequest.Prompt != null)
+            {
                 topicSb.Append(talkRequest.Prompt);
-            else if (talkRequest.TalkType != TalkType.Urgent && Settings.Get().Context.IncludeTopicKeywords)
+            }
+
+            // Inject topic keywords whenever dialogue is not urgent, skipping on first stranger encounter to allow natural introduction
+            if (!mainPawn.InMentalState && !isStrangerEncounter && talkRequest.TalkType != TalkType.Urgent && Settings.Get().Context.IncludeTopicKeywords)
             {
                 string topicKeywords = TopicService.TryGetTopic(mainPawn);
                 if (topicKeywords != null)
+                {
+                    if (topicSb.Length > 0)
+                        topicSb.Append("\n");
                     topicSb.Append($"Topic keywords: {topicKeywords}.");
+                }
             }
 
             sb.Append(intentSb);
-            if (topicSb.Length > 0)
+            if (mentalBreakDirective != null)
+            {
+                sb.Append("\n").Append(mentalBreakDirective);
+            }
+            else if (topicSb.Length > 0)
+            {
                 sb.Append("\n").Append(topicSb);
+            }
         }
 
         intent = intentSb.ToString();
@@ -579,5 +648,26 @@ public static class ContextBuilder
     public static string Sanitize(string text, Pawn pawn = null)
     {
         return CommonUtil.Sanitize(text, pawn);
+    }
+
+    private static bool IsStrangerEncounter(Pawn mainPawn, Pawn partner, List<Pawn> pawns)
+    {
+        if (mainPawn == null || partner == null) return false;
+        try
+        {
+            if (!RelationsService.IsOutsiderOrStranger(mainPawn, partner)) return false;
+            if (mainPawn.GetMostImportantRelation(partner) != null) return false;
+            if (mainPawn.relations != null && mainPawn.relations.OpinionOf(partner) >= 20f) return false;
+            if (TalkHistory.GetHistoryCount(mainPawn) > 0 && TalkHistory.GetHistoryCount(partner) > 0)
+            {
+                var history = TalkHistory.GetMessageHistory(pawns, simplified: true);
+                if (history != null && history.Count > 0) return false;
+            }
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
     }
 }

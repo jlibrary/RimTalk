@@ -34,22 +34,22 @@ public static class TopicKeywordPool
     [
         // Past Life & Origins
         "childhood", "hometown", "past job", "family memories", "old mentors",
-        "forgotten skills", "school days", "past mistakes", "first journey", "family heirlooms",
+        "forgotten skills", "early training", "past mistakes", "first journey", "old battles",
         "childhood games", "lost keepsakes", "cryptosleep stories", "accent and dialect",
-        "past celebrations", "earliest memory", "life before landing", "old friends",
+        "past celebrations", "earliest memory", "life before here", "old friends",
 
         // Tastes, Habits & Quirks
-        "taste in music", "favorite flavors", "bad habits", "useless skills", "meaning of names",
+        "campfire songs", "favorite flavors", "bad habits", "useless skills", "meaning of names",
         "superstitions", "personal rituals", "hidden talents", "things people misunderstand", "sense of humor",
-        "pet peeves", "definition of home", "awkward memories", "guilty pleasures", "personal pride",
+        "daily annoyances", "definition of home", "awkward memories", "simple comforts", "personal pride",
 
         // Inner Mind & Psychology
-        "trust", "secrets", "loyalty", "forgiveness", "loneliness",
+        "trust", "secrets", "trusting strangers", "forgiveness", "loneliness",
         "guilt and regrets", "stubbornness", "patience", "fears", "peace of mind",
 
         // Philosophy, Values & Future Aspirations
-        "future dreams", "retirement dreams", "luck and fate", "fate vs choice", "meaning of survival",
-        "what comes next", "value of money", "fear of aging", "hope", "human nature",
+        "future dreams", "escaping the rim", "luck and fate", "fate vs choice", "meaning of survival",
+        "what comes next", "value of silver", "fear of aging", "hope", "human nature",
         "legacy", "good luck charms", "second chances", "justice", "curiosity about space",
 
         // RimWorld Lore, Legends & Frontier Rumors

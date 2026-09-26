@@ -68,7 +68,26 @@ public static class ContextHelper
             ? pawn.genes.XenotypeLabel
             : pawn.def.LabelCap.RawText;
 
-        return $"{pawn.LabelShort}({pawn.ageTracker.AgeBiologicalYears}{pawn.gender.GetLabelShort()}/{pawn.GetRole(true)}/{race})";
+        var age = pawn.ageTracker?.AgeBiologicalYears ?? 0;
+        var gender = pawn.gender switch
+        {
+            Gender.Male => "Male",
+            Gender.Female => "Female",
+            _ => ""
+        };
+
+        var stage = age switch
+        {
+            < 3 => ", Baby",
+            < 13 => ", Child",
+            < 18 => ", Teen",
+            _ => ""
+        };
+
+        var genderPart = string.IsNullOrEmpty(gender) ? "" : $" {gender}";
+        var ageDesc = $"Age {age}{genderPart}{stage}";
+
+        return $"{pawn.LabelShort}({ageDesc}/{pawn.GetRole(true)}/{race})";
     }
 
     public static bool IsWall(Thing thing)

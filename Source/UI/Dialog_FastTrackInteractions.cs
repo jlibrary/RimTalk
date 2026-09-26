@@ -4,7 +4,6 @@ using System.Linq;
 using RimWorld;
 using UnityEngine;
 using Verse;
-using Verse.Sound;
 
 namespace RimTalk.UI;
 
@@ -87,7 +86,7 @@ public class Dialog_FastTrackInteractions : Window
         _filterText = Widgets.TextField(searchRect, _filterText);
 
         Rect selectAllRect = new Rect(searchRect.xMax + 10f, controlY, 100f, 28f);
-        if (Widgets.ButtonText(selectAllRect, "RimTalk.Settings.SelectAll".Translate()))
+        if (UIUtil.ButtonText(selectAllRect, "RimTalk.Settings.SelectAll".Translate()))
         {
             foreach (var def in GetEligibleInteractionDefs())
             {
@@ -97,7 +96,7 @@ public class Dialog_FastTrackInteractions : Window
         }
 
         Rect deselectAllRect = new Rect(selectAllRect.xMax + 10f, controlY, 100f, 28f);
-        if (Widgets.ButtonText(deselectAllRect, "RimTalk.Settings.DeselectAll".Translate()))
+        if (UIUtil.ButtonText(deselectAllRect, "RimTalk.Settings.DeselectAll".Translate()))
         {
             foreach (var def in GetEligibleInteractionDefs())
             {
@@ -137,8 +136,9 @@ public class Dialog_FastTrackInteractions : Window
             Rect groupHeaderRect = new Rect(0f, curY, viewRect.width, 24f);
             Widgets.DrawHighlightIfMouseover(groupHeaderRect);
 
-            Rect toggleRect = new Rect(groupHeaderRect.x, groupHeaderRect.y, 20f, 24f);
-            if (Widgets.ButtonText(toggleRect, isCollapsed ? "[+]" : "[-]", drawBackground: false))
+            Rect toggleRect = new Rect(groupHeaderRect.x + 2f, groupHeaderRect.y + (groupHeaderRect.height - 18f) / 2f, 18f, 18f);
+            Texture2D toggleIcon = isCollapsed ? TexButton.Reveal : TexButton.Collapse;
+            if (Widgets.ButtonImage(toggleRect, toggleIcon))
             {
                 if (isCollapsed) _collapsedMods.Remove(group.Key);
                 else _collapsedMods.Add(group.Key);
@@ -169,8 +169,8 @@ public class Dialog_FastTrackInteractions : Window
                 state = MultiCheckboxState.Partial;
             }
 
-            Rect checkRect = new Rect(viewRect.width - 24f, groupHeaderRect.y, 24f, 24f);
-            MultiCheckboxState newState = Widgets.CheckboxMulti(checkRect, state);
+            Rect headerCheckAndLabelRect = new Rect(toggleRect.xMax + 4f, groupHeaderRect.y, groupHeaderRect.width - (toggleRect.xMax + 4f), 24f);
+            MultiCheckboxState newState = UIUtil.CheckboxMultiLabeledLeft(headerCheckAndLabelRect, $"{group.Key} ({group.Count()})", state, Color.cyan);
             if (newState != state)
             {
                 bool target = state != MultiCheckboxState.On;
@@ -181,37 +181,13 @@ public class Dialog_FastTrackInteractions : Window
                 settings.Write();
             }
 
-            Rect headerLabelRect = new Rect(toggleRect.xMax + 6f, groupHeaderRect.y, checkRect.x - (toggleRect.xMax + 6f) - 6f, 24f);
-            GUI.color = Color.cyan;
-            Widgets.Label(headerLabelRect, $"{group.Key} ({group.Count()})");
-            GUI.color = Color.white;
-
-            if (Widgets.ButtonInvisible(headerLabelRect))
-            {
-                bool target = state != MultiCheckboxState.On;
-                foreach (var def in group)
-                {
-                    settings.FastTrackInteractions[def.defName] = target;
-                }
-                settings.Write();
-                if (target)
-                {
-                    SoundDefOf.Checkbox_TurnedOn.PlayOneShotOnCamera();
-                }
-                else
-                {
-                    SoundDefOf.Checkbox_TurnedOff.PlayOneShotOnCamera();
-                }
-            }
-
             curY += 26f;
 
             if (!isCollapsed)
             {
                 foreach (var def in group)
                 {
-                    Rect rowRect = new Rect(24f, curY, viewRect.width - 24f, 24f);
-                    Widgets.DrawHighlightIfMouseover(rowRect);
+                    Rect rowRect = new Rect(40f, curY, viewRect.width - 40f, 24f);
 
                     bool isEnabled = settings.IsFastTrackInteraction(def.defName);
                     bool newVal = isEnabled;
@@ -220,16 +196,10 @@ public class Dialog_FastTrackInteractions : Window
                         ? $"{def.LabelCap} ({def.defName})"
                         : def.defName;
 
-                    Widgets.CheckboxLabeled(rowRect, displayLabel, ref newVal);
-                    if (newVal != isEnabled)
+                    if (UIUtil.CheckboxLabeledLeft(rowRect, displayLabel, ref newVal, def.description))
                     {
                         settings.FastTrackInteractions[def.defName] = newVal;
                         settings.Write();
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(def.description))
-                    {
-                        TooltipHandler.TipRegion(rowRect, def.description);
                     }
 
                     curY += 26f;
@@ -241,7 +211,7 @@ public class Dialog_FastTrackInteractions : Window
 
         // 5. Close Button (bottom)
         Rect closeBtnRect = new Rect((inRect.width - 120f) / 2f, inRect.height - 35f, 120f, 30f);
-        if (Widgets.ButtonText(closeBtnRect, "Close".Translate()))
+        if (UIUtil.ButtonText(closeBtnRect, "Close".Translate()))
         {
             Close();
         }

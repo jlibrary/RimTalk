@@ -1,7 +1,7 @@
 using System;
-using System.Linq;
 using RimTalk.Data;
 using RimTalk.Prompt;
+using RimTalk.UI;
 using RimTalk.Util;
 using UnityEngine;
 using Verse;
@@ -10,7 +10,7 @@ namespace RimTalk;
 
 public partial class Settings
 {
-    private void DrawAIInstructionSettings(Listing_Standard listingStandard, bool showAdvancedSwitch = false)
+    private void DrawAIInstructionSettings(Listing_Standard listingStandard, bool showAdvancedSwitch = false, Rect containerRect = default)
     {
         RimTalkSettings settings = Get();
 
@@ -54,16 +54,17 @@ public partial class Settings
 
         float textHeight = Text.CalcHeight(aiInstructionPrompt,
             listingStandard.ColumnWidth - (showAdvancedSwitch ? 180f : 0f));
-        float headerHeight = Mathf.Max(textHeight, 30f);
+        float buttonTopPadding = 6f;
+        float headerHeight = Mathf.Max(textHeight, 26f) + buttonTopPadding;
 
         Rect headerRect = listingStandard.GetRect(headerHeight);
 
         if (showAdvancedSwitch)
         {
             float buttonWidth = 170f;
-            Rect buttonRect = new Rect(headerRect.xMax - buttonWidth, headerRect.y, buttonWidth, 28f);
+            Rect buttonRect = new Rect(headerRect.xMax - buttonWidth, headerRect.y + buttonTopPadding, buttonWidth, 26f);
 
-            if (Widgets.ButtonText(buttonRect, "RimTalk.Settings.SwitchToAdvancedSettings".Translate()))
+            if (UIUtil.ButtonText(buttonRect, "RimTalk.Settings.SwitchToAdvancedSettings".Translate()))
             {
                 Find.WindowStack.Add(Dialog_MessageBox.CreateConfirmation(
                     "RimTalk.Settings.AdvancedModeWarning".Translate(),
@@ -75,8 +76,8 @@ public partial class Settings
                     }));
             }
 
-            Rect labelRect = new Rect(headerRect.x, headerRect.y, headerRect.width - buttonWidth - 10f,
-                headerRect.height);
+            Rect labelRect = new Rect(headerRect.x, headerRect.y + buttonTopPadding, headerRect.width - buttonWidth - 10f,
+                headerHeight - buttonTopPadding);
 
             Text.Anchor = TextAnchor.MiddleLeft;
             Widgets.Label(labelRect, aiInstructionPrompt);
@@ -84,7 +85,9 @@ public partial class Settings
         }
         else
         {
-            Widgets.Label(headerRect, aiInstructionPrompt);
+            Rect labelRect = new Rect(headerRect.x, headerRect.y + buttonTopPadding, headerRect.width,
+                headerHeight - buttonTopPadding);
+            Widgets.Label(labelRect, aiInstructionPrompt);
         }
 
         listingStandard.Gap(6f);
@@ -121,7 +124,10 @@ public partial class Settings
         Text.Font = GameFont.Small;
         listingStandard.Gap(6f);
 
-        float textAreaHeight = 350f;
+        float remainingHeight = containerRect.height > 0f
+            ? containerRect.height - listingStandard.CurHeight - 15f
+            : 350f;
+        float textAreaHeight = Mathf.Max(200f, remainingHeight);
         Rect textAreaRect = listingStandard.GetRect(textAreaHeight);
 
         float innerWidth = textAreaRect.width - 16f;
@@ -163,25 +169,6 @@ public partial class Settings
             {
                 baseEntry.Content = newInstruction;
             }
-        }
-
-        listingStandard.Gap(6f);
-
-        Rect resetButtonRect = listingStandard.GetRect(30f);
-        if (Widgets.ButtonText(resetButtonRect, "RimTalk.Settings.ResetToDefault".Translate()))
-        {
-            _textAreaBuffer = Constant.DefaultInstruction;
-
-            if (isSimpleMode)
-            {
-                settings.SimpleModeInstruction = Constant.DefaultInstruction;
-            }
-            else if (baseEntry != null)
-            {
-                baseEntry.Content = Constant.DefaultInstruction;
-            }
-
-            listingStandard.Gap(10f);
         }
     }
 

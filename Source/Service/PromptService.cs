@@ -136,7 +136,7 @@ public static class PromptService
         var contextSettings = Settings.Get().Context;
         if (!contextSettings.IncludeEvents || contextSettings.MaxEventsCount <= 0) return string.Empty;
 
-        var events = ContextBuilder.GetEventsContext(mainPawn.Map, PromptService.InfoLevel.Normal);
+        var events = ContextBuilder.GetEventsContext(mainPawn.Map, InfoLevel.Normal);
         if (string.IsNullOrEmpty(events)) return string.Empty;
 
         return ApplyEnvironmentWithHook(mainPawn.Map, ContextCategories.Environment.Events, events);
@@ -194,7 +194,14 @@ public static class PromptService
         var pawnTitle = pawn.GetTitle();
         var title = string.IsNullOrWhiteSpace(pawnTitle) ? "" : $" ({pawnTitle})";
         var genderAndAge = Regex.Replace(pawn.MainDesc(false), @"\(\d+\)", "").Trim();
-        sb.AppendLine($"{name}{title} ({genderAndAge})");
+        var stage = pawn.ageTracker?.AgeBiologicalYears switch
+        {
+            < 3 => ", Baby",
+            < 13 => ", Child",
+            < 18 => ", Teenager",
+            _ => ""
+        };
+        sb.AppendLine($"{name}{title} ({genderAndAge}{stage})");
 
         var role = pawn.GetRole(true);
         if (role != null)
@@ -269,14 +276,14 @@ public static class PromptService
         var mainPawn = pawns[0];
         var shortName = GetUniqueName(mainPawn, pawns);
 
+        sb.AppendLine(Constant.CurrentTaskHeader);
+
         // Dialogue type
         ContextBuilder.BuildDialogueType(sb, talkRequest, pawns, shortName, mainPawn);
         sb.Append($"\n{status}");
 
         if (AIService.IsFirstInstruction())
             sb.Append($"\nin {Constant.Lang}");
-
-        sb.Append($"\n\n{Constant.GetJsonInstruction(Settings.Get().ApplyMoodAndSocialEffects)}");
 
         talkRequest.Prompt = sb.ToString();
     }

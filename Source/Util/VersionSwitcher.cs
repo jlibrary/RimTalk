@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -14,41 +17,66 @@ public static class VersionSwitcher
     private static string GetModRootDir() =>
         LoadedModManager.GetMod<Settings>()?.Content?.RootDir ?? "";
 
+    public static List<string> GetAvailableVersions()
+    {
+        var versions = new List<string>();
+        string root = GetModRootDir();
+        if (string.IsNullOrEmpty(root)) return versions;
+
+        string lastVerDir = Path.Combine(root, LastVersionFolder);
+        if (!Directory.Exists(lastVerDir)) return versions;
+
+        string gameVer = $"{VersionControl.CurrentMajor}.{VersionControl.CurrentMinor}";
+
+        foreach (string dir in Directory.GetDirectories(lastVerDir))
+        {
+            string dirName = Path.GetFileName(dir);
+            if (dirName == "1.5" || dirName == "1.6") continue;
+
+            string dllPath = Path.Combine(dir, gameVer, DllName);
+            if (File.Exists(dllPath))
+            {
+                string verTag = dirName.StartsWith("v", StringComparison.OrdinalIgnoreCase) ? dirName : "v" + dirName;
+                if (!versions.Contains(verTag))
+                    versions.Add(verTag);
+            }
+        }
+
+        versions.Sort((a, b) =>
+        {
+            if (Version.TryParse(a.TrimStart('v', 'V'), out var va) &&
+                Version.TryParse(b.TrimStart('v', 'V'), out var vb))
+            {
+                return vb.CompareTo(va);
+            }
+            return string.Compare(b, a, StringComparison.OrdinalIgnoreCase);
+        });
+
+        return versions;
+    }
+
     private static string GetLastDllPath()
     {
         string root = GetModRootDir();
         if (string.IsNullOrEmpty(root)) return "";
 
-        string ver = $"{VersionControl.CurrentMajor}.{VersionControl.CurrentMinor}";
-        string path = Path.Combine(root, LastVersionFolder, ver, DllName);
-        if (File.Exists(path)) return path;
+        string gameVer = $"{VersionControl.CurrentMajor}.{VersionControl.CurrentMinor}";
+        var versions = GetAvailableVersions();
+        if (versions.Count > 0)
+        {
+            string path = Path.Combine(root, LastVersionFolder, versions[0], gameVer, DllName);
+            if (File.Exists(path)) return path;
+        }
 
-        // Fallback checks
-        string flatPath = Path.Combine(root, LastVersionFolder, DllName);
-        if (File.Exists(flatPath)) return flatPath;
-
-        string legacyPath = Path.Combine(root, ver, "LastDLL", DllName);
-        if (File.Exists(legacyPath)) return legacyPath;
+        string fallbackPath = Path.Combine(root, LastVersionFolder, gameVer, DllName);
+        if (File.Exists(fallbackPath)) return fallbackPath;
 
         return "";
     }
 
-    public static bool IsPreviousDllAvailable() => File.Exists(GetLastDllPath());
+    public static bool IsPreviousDllAvailable() => GetAvailableVersions().Count > 0 || File.Exists(GetLastDllPath());
 
-    public static string GetPreviousVersionString()
-    {
-        string root = GetModRootDir();
-        if (string.IsNullOrEmpty(root)) return null;
-
-        string versionFile = Path.Combine(root, LastVersionFolder, "version.txt");
-        if (File.Exists(versionFile))
-        {
-            string ver = File.ReadAllText(versionFile).Trim();
-            if (!string.IsNullOrEmpty(ver))
-                return ver.StartsWith("v", StringComparison.OrdinalIgnoreCase) ? ver : "v" + ver;
-        }
-        return null;
-    }
+    public static string GetPreviousVersionString() => GetAvailableVersions().FirstOrDefault();
 
     public static string GetLocalModsFolder()
     {
@@ -98,10 +126,48 @@ public static class VersionSwitcher
         }
     }
 
+    public static void OpenRollbackMenu()
+    {
+        var versions = GetAvailableVersions();
+        if (versions.Count == 0)
+        {
+            Messages.Message("RimTalk.VersionSwitcher.NoPreviousDllFound".Translate().ToString(), MessageTypeDefOf.RejectInput, false);
+            return;
+        }
+
+        if (versions.Count == 1)
+        {
+            PromptRollbackConfirmation(versions[0]);
+            return;
+        }
+
+        var options = new List<FloatMenuOption>();
+        foreach (string ver in versions)
+        {
+            string v = ver;
+            string label = "RimTalk.VersionSwitcher.SwitchToSpecificVer".Translate(v).ToString();
+            options.Add(new FloatMenuOption(label, () => PromptRollbackConfirmation(v)));
+        }
+
+        Find.WindowStack.Add(new FloatMenu(options));
+    }
+
     public static void PromptRollbackConfirmation()
     {
-        string prevVer = GetPreviousVersionString() ?? "Previous";
+        var versions = GetAvailableVersions();
+        if (versions.Count <= 1)
+        {
+            string prevVer = versions.FirstOrDefault() ?? GetPreviousVersionString() ?? "Previous";
+            PromptRollbackConfirmation(prevVer);
+        }
+        else
+        {
+            OpenRollbackMenu();
+        }
+    }
 
+    public static void PromptRollbackConfirmation(string prevVer)
+    {
         Find.WindowStack.Add(new Dialog_MessageBox(
             "RimTalk.VersionSwitcher.ConfirmRollbackPrompt".Translate(prevVer).ToString(),
             "RimTalk.VersionSwitcher.ProceedRollback".Translate().ToString(),
@@ -130,12 +196,17 @@ public static class VersionSwitcher
                 CopyDirectory(content.RootDir, localRimTalk);
             }
 
-            // 2. In the target mod folder, swap 1.5 and 1.6 assemblies with LastVersion
+            // 2. In the target mod folder, swap 1.5 and 1.6 assemblies with LastVersion/<prevVer> or LastVersion
             string targetModDir = isAlreadyLocal ? content.RootDir : localRimTalk;
             string[] versions = new[] { "1.5", "1.6" };
             foreach (string ver in versions)
             {
-                string lastDll = Path.Combine(targetModDir, LastVersionFolder, ver, DllName);
+                string lastDll = Path.Combine(targetModDir, LastVersionFolder, prevVer, ver, DllName);
+                if (!File.Exists(lastDll))
+                    lastDll = Path.Combine(targetModDir, LastVersionFolder, prevVer, DllName);
+
+                if (!File.Exists(lastDll))
+                    lastDll = Path.Combine(targetModDir, LastVersionFolder, ver, DllName);
                 if (!File.Exists(lastDll))
                     lastDll = Path.Combine(targetModDir, LastVersionFolder, DllName);
 
@@ -153,7 +224,7 @@ public static class VersionSwitcher
             {
                 string xml = File.ReadAllText(aboutXmlPath);
                 string cleanVer = prevVer.TrimStart('v', 'V');
-                xml = System.Text.RegularExpressions.Regex.Replace(xml, @"<modVersion>.*?</modVersion>", $"<modVersion>{cleanVer}</modVersion>");
+                xml = Regex.Replace(xml, @"<modVersion>.*?</modVersion>", $"<modVersion>{cleanVer}</modVersion>");
                 File.WriteAllText(aboutXmlPath, xml);
             }
 
@@ -174,7 +245,8 @@ public static class VersionSwitcher
     public static void DrawVersionSwitcher(Listing_Standard listing)
     {
         bool hasLastDll = IsPreviousDllAvailable();
-        string prevVer = GetPreviousVersionString();
+        var versions = GetAvailableVersions();
+        string prevVer = versions.Count == 1 ? versions[0] : null;
 
         listing.Gap(12f);
         Rect rect = listing.GetRect(32f);
@@ -196,7 +268,7 @@ public static class VersionSwitcher
         {
             if (Widgets.ButtonText(btnRect, btnText))
             {
-                PromptRollbackConfirmation();
+                OpenRollbackMenu();
             }
         }
         else

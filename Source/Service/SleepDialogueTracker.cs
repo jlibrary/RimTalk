@@ -149,6 +149,7 @@ public static class SleepDialogueTracker
 
         Pawn pawn = request.Initiator;
         if (!IsValidForSleepDialogue(pawn)) return false;
+        if (request.Recipient != null && !IsValidForSleepDialogue(request.Recipient)) return false;
 
         return request.SleepDialogueKind switch
         {
@@ -194,7 +195,7 @@ public static class SleepDialogueTracker
     private static bool IsValidForSleepDialogue(Pawn pawn)
     {
         if (pawn is not { Spawned: true, Dead: false, Downed: false }) return false;
-        if (pawn.IsEnemy() || pawn.IsPrisoner || pawn.IsInDanger(true) || pawn.InMentalState) return false;
+        if (pawn.IsEnemy() || pawn.IsPrisoner || pawn.IsInDanger(true) || pawn.InMentalState || pawn.mindState?.meleeThreat != null) return false;
         if (ModsConfig.BiotechActive && pawn.Deathresting) return false;
         if (pawn.health?.hediffSet?.HasHediff(HediffDefOf.Anesthetic) == true) return false;
         if (pawn.CurJob?.restUntilHealed == true) return false;

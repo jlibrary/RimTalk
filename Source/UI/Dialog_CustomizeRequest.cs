@@ -204,17 +204,15 @@ public class Dialog_CustomizeRequest : Window
             float btnGap = 8f;
             float btnW = (width - btnGap) / 2f;
 
-            if (Widgets.ButtonText(new Rect(x, templateBtnY, btnW, templateBtnH), "RimTalk.Settings.SampleUseTemplate".Translate()))
+            if (UIUtil.ButtonText(new Rect(x, templateBtnY, btnW, templateBtnH), "RimTalk.Settings.SampleUseTemplate".Translate()))
             {
                 _jsonText = sample.Json;
-                SoundDefOf.Click.PlayOneShotOnCamera();
             }
 
-            if (Widgets.ButtonText(new Rect(x + btnW + btnGap, templateBtnY, btnW, templateBtnH), "RimTalk.Settings.SampleMergeTemplate".Translate()))
+            if (UIUtil.ButtonText(new Rect(x + btnW + btnGap, templateBtnY, btnW, templateBtnH), "RimTalk.Settings.SampleMergeTemplate".Translate()))
             {
                 _jsonText = JsonUtil.MergeJson(_jsonText, sample.Json);
                 _jsonText = JsonUtil.FormatJson(_jsonText);
-                SoundDefOf.Click.PlayOneShotOnCamera();
             }
 
             // Monospace Code Preview Box (Selectable & Copyable)
@@ -230,16 +228,27 @@ public class Dialog_CustomizeRequest : Window
                 Widgets.DrawBox(codeBoxRect);
                 GUI.color = prevBoxBorder;
 
-                float innerPreviewW = codeBoxRect.width - 16f;
-                float jsonH = _monoStyle.CalcHeight(new GUIContent(sample.Json), innerPreviewW);
-                Rect previewViewRect = new Rect(0f, 0f, innerPreviewW, Mathf.Max(codeBoxH, jsonH + 12f));
+                float padding = 6f;
+                Rect codeInnerRect = codeBoxRect.ContractedBy(padding);
 
-                Widgets.BeginScrollView(codeBoxRect, ref _previewScrollPos, previewViewRect);
-                // GUI.TextArea allows text selection and Ctrl+C / Cmd+C copying
-                GUI.TextArea(new Rect(4f, 4f, innerPreviewW - 8f, Mathf.Max(jsonH, codeBoxH - 8f)), sample.Json, _monoStyle);
-                Widgets.EndScrollView();
+                DrawCodePreview(codeInnerRect, sample.Json);
             }
         }
+    }
+
+    private void DrawCodePreview(Rect rect, string text)
+    {
+        float innerWidth = rect.width;
+        float textCalcHeight = _monoStyle.CalcHeight(new GUIContent(string.IsNullOrEmpty(text) ? " " : text), innerWidth);
+        float contentHeight = Mathf.Max(rect.height, textCalcHeight + 20f);
+
+        Rect viewRect = new Rect(0f, 0f, innerWidth, contentHeight);
+        Widgets.BeginScrollView(rect, ref _previewScrollPos, viewRect);
+
+        Rect textRect = new Rect(4f, 4f, innerWidth - 8f, contentHeight - 8f);
+        GUI.TextArea(textRect, text ?? "", _monoStyle);
+
+        Widgets.EndScrollView();
     }
 
     private void DrawBottomBar(Rect rect)
@@ -250,7 +259,7 @@ public class Dialog_CustomizeRequest : Window
 
         // Reset to Default
         const float resetWidth = 115f;
-        if (Widgets.ButtonText(new Rect(x, y, resetWidth, h), "RimTalk.Settings.ResetToDefault".Translate()))
+        if (UIUtil.ButtonText(new Rect(x, y, resetWidth, h), "RimTalk.Settings.ResetToDefault".Translate()))
         {
             _jsonText = "";
         }
@@ -258,7 +267,7 @@ public class Dialog_CustomizeRequest : Window
 
         // Format JSON
         const float formatWidth = 90f;
-        if (Widgets.ButtonText(new Rect(x, y, formatWidth, h), "RimTalk.Settings.FormatJson".Translate()))
+        if (UIUtil.ButtonText(new Rect(x, y, formatWidth, h), "RimTalk.Settings.FormatJson".Translate()))
         {
             _jsonText = JsonUtil.FormatJson(_jsonText);
         }
@@ -272,7 +281,7 @@ public class Dialog_CustomizeRequest : Window
 
         // Save Button
         bool isValid = JsonUtil.IsValidJson(_jsonText, out _);
-        if (Widgets.ButtonText(new Rect(saveX, y, saveWidth, h), "RimTalk.Settings.CustomJsonSave".Translate(), active: isValid))
+        if (UIUtil.ButtonText(new Rect(saveX, y, saveWidth, h), "RimTalk.Settings.CustomJsonSave".Translate(), active: isValid))
         {
             _config.CustomRequestJson = string.IsNullOrWhiteSpace(_jsonText) ? "" : _jsonText.Trim();
             AIClientFactory.Clear();
@@ -280,7 +289,7 @@ public class Dialog_CustomizeRequest : Window
         }
 
         // Cancel Button
-        if (Widgets.ButtonText(new Rect(cancelX, y, cancelWidth, h), "RimTalk.Settings.CustomJsonCancel".Translate()))
+        if (UIUtil.ButtonText(new Rect(cancelX, y, cancelWidth, h), "RimTalk.Settings.CustomJsonCancel".Translate()))
         {
             Close();
         }
@@ -316,7 +325,7 @@ public class Dialog_CustomizeRequest : Window
         const float btnWidth = 90f;
         Rect btnRect = new Rect(rect.xMax - btnWidth - 3f, rect.y + 2f, btnWidth, rect.height - 4f);
         TooltipHandler.TipRegion(btnRect, "RimTalk.Settings.ResetReasoningTooltip".Translate());
-        if (Widgets.ButtonText(btnRect, "RimTalk.Settings.ResetReasoning".Translate(), active: !string.IsNullOrEmpty(level)))
+        if (UIUtil.ButtonText(btnRect, "RimTalk.Settings.ResetReasoning".Translate(), active: !string.IsNullOrEmpty(level)))
         {
             var settings = Settings.Get();
             if (settings?.DetectedThinkingLevels != null)
@@ -327,7 +336,6 @@ public class Dialog_CustomizeRequest : Window
                 settings.DetectedThinkingLevels.Remove(key);
                 settings.Write();
                 AIClientFactory.Clear();
-                SoundDefOf.Click.PlayOneShotOnCamera();
             }
         }
 

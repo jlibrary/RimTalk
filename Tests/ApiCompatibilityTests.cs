@@ -33,12 +33,38 @@ public class ApiCompatibilityTests
         return candidates.FirstOrDefault(File.Exists);
     }
 
+    private static string? GetBaselineAssemblyPath(string repoRoot)
+    {
+        string lastVersionRoot = Path.Combine(repoRoot, "LastVersion");
+        if (Directory.Exists(lastVersionRoot))
+        {
+            var versionDirs = Directory.GetDirectories(lastVersionRoot)
+                .Select(d => new DirectoryInfo(d).Name)
+                .Where(name => name != "1.5" && name != "1.6" && Version.TryParse(name.TrimStart('v', 'V'), out _))
+                .OrderByDescending(name => Version.Parse(name.TrimStart('v', 'V')))
+                .ToList();
+
+            foreach (var ver in versionDirs)
+            {
+                string candidate = Path.Combine(lastVersionRoot, ver, "1.6", "RimTalk.dll");
+                if (File.Exists(candidate))
+                    return candidate;
+            }
+        }
+
+        string flatCandidate = Path.Combine(repoRoot, "LastVersion", "1.6", "RimTalk.dll");
+        if (File.Exists(flatCandidate))
+            return flatCandidate;
+
+        return null;
+    }
+
     [Fact]
     public void VerifyPublicApiBackwardCompatibility_WithLastVersion()
     {
         string repoRoot = FindRepoRoot();
-        string baselinePath = Path.Combine(repoRoot, "LastVersion", "1.6", "RimTalk.dll");
-        Assert.True(File.Exists(baselinePath), $"Baseline assembly not found at: {baselinePath}");
+        string? baselinePath = GetBaselineAssemblyPath(repoRoot);
+        Assert.True(baselinePath != null && File.Exists(baselinePath), $"Baseline assembly not found in LastVersion.");
 
         string? currentPath = GetCurrentAssemblyPath(repoRoot);
         Assert.True(currentPath != null && File.Exists(currentPath),
@@ -128,9 +154,6 @@ public class ApiCompatibilityTests
             var baseMethods = baseType.Methods.Where(m => m.IsPublic && !m.IsSpecialName);
             foreach (var baseMethod in baseMethods)
             {
-                if (typeName == "RimTalk.Client.Player2.Player2Client" && baseMethod.Name == "CheckPlayer2StatusAndNotify")
-                    continue;
-
                 string methodSig = GetMethodSignature(baseMethod);
                 bool matchFound = currType.Methods.Any(currMethod =>
                     currMethod.IsPublic &&

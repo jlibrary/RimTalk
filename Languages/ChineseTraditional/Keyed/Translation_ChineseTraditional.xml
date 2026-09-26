@@ -269,12 +269,12 @@ Scriban 魔法 (動態內容)
 
     <!-- Settings_Api.cs -->
     <RimTalk.Settings.QuickSetupSubtitle>選擇 AI 連接方式即可啟用殖民者對話。</RimTalk.Settings.QuickSetupSubtitle>
-    <RimTalk.Settings.QuickSetupButton>快速設定</RimTalk.Settings.QuickSetupButton>
-    <RimTalk.Settings.QuickSetupTooltip>返回簡化的快速設定介面。</RimTalk.Settings.QuickSetupTooltip>
-    <RimTalk.Settings.AllSettingsButton>完整設定</RimTalk.Settings.AllSettingsButton>
+    <RimTalk.Settings.QuickSetupButton>簡易設定</RimTalk.Settings.QuickSetupButton>
+    <RimTalk.Settings.QuickSetupTooltip>返回簡化的簡易設定介面。</RimTalk.Settings.QuickSetupTooltip>
+    <RimTalk.Settings.AllSettingsButton>詳細設定</RimTalk.Settings.AllSettingsButton>
     <RimTalk.Settings.AllSettingsTooltip>顯示包括遊戲玩法、提示詞預設、上下文過濾器等所有配置標籤頁。</RimTalk.Settings.AllSettingsTooltip>
     <RimTalk.Settings.CustomConfigActiveNotice>※ 目前正在使用自訂 API。</RimTalk.Settings.CustomConfigActiveNotice>
-    <RimTalk.Settings.ModeSelectorHeader>選擇 AI 連接方式（僅選一項）：</RimTalk.Settings.ModeSelectorHeader>
+    <RimTalk.Settings.ModeSelectorHeader>選擇 AI 連接方式：</RimTalk.Settings.ModeSelectorHeader>
     <RimTalk.Settings.ModeGoogleTitle>Google Gemini</RimTalk.Settings.ModeGoogleTitle>
     <RimTalk.Settings.ModeGoogleDesc>免費網頁 API 金鑰</RimTalk.Settings.ModeGoogleDesc>
     <RimTalk.Settings.ModePlayer2Title>Player2</RimTalk.Settings.ModePlayer2Title>
@@ -297,7 +297,7 @@ Scriban 魔法 (動態內容)
     <RimTalk.Settings.Player2AuthReopen>重新開啟授權頁面</RimTalk.Settings.Player2AuthReopen>
     <RimTalk.Settings.Player2AuthCancel>取消授權</RimTalk.Settings.Player2AuthCancel>
     <RimTalk.Settings.GoogleApiKeyLabel>Google AI API 金鑰：</RimTalk.Settings.GoogleApiKeyLabel>
-    <RimTalk.Settings.GoogleApiKeyDesc>使用免費的 gemma-4-26b-a4b 模型。如需其他模型或提供商，請使用進階設定。</RimTalk.Settings.GoogleApiKeyDesc>
+    <RimTalk.Settings.GoogleApiKeyDesc>使用免費的 {0} 模型。如需其他模型或提供商，請使用進階設定。</RimTalk.Settings.GoogleApiKeyDesc>
     <RimTalk.Settings.GetFreeApiKeyButton>獲取免費 API 金鑰</RimTalk.Settings.GetFreeApiKeyButton>
     <RimTalk.Settings.SwitchToAdvancedSettings>切換到進階設定</RimTalk.Settings.SwitchToAdvancedSettings>
     <RimTalk.Settings.SwitchToSimpleSettings>切換到簡易設定</RimTalk.Settings.SwitchToSimpleSettings>
@@ -404,6 +404,7 @@ Scriban 魔法 (動態內容)
     <RimTalk.Settings.IncludePrisonerSlaveStatus>囚犯/奴隸的抵抗和意志</RimTalk.Settings.IncludePrisonerSlaveStatus>
     <RimTalk.Settings.IncludeRelations>人際關係</RimTalk.Settings.IncludeRelations>
     <RimTalk.Settings.IncludeEquipment>裝備</RimTalk.Settings.IncludeEquipment>
+    <RimTalk.Settings.MindAndSocial>心理與社交</RimTalk.Settings.MindAndSocial>
     <RimTalk.Settings.Environment>環境</RimTalk.Settings.Environment>
     <RimTalk.Settings.IncludeTime>時間</RimTalk.Settings.IncludeTime>
     <RimTalk.Settings.IncludeDate>日期</RimTalk.Settings.IncludeDate>
@@ -416,7 +417,7 @@ Scriban 魔法 (動態內容)
     <RimTalk.Settings.IncludeSurroundings>附近的物品</RimTalk.Settings.IncludeSurroundings>
     <RimTalk.Settings.IncludeWealth>殖民地財富</RimTalk.Settings.IncludeWealth>
     <RimTalk.Settings.IncludeTopicKeywords>生成新的對話話題</RimTalk.Settings.IncludeTopicKeywords>
-    <RimTalk.Settings.IncludeTopicKeywords.Tooltip>當殖民者周圍沒有具體事件或上下文可供討論時，有50%的機率隨機生成一個新的對話話題。</RimTalk.Settings.IncludeTopicKeywords.Tooltip>
+    <RimTalk.Settings.IncludeTopicKeywords.Tooltip>當殖民者周圍沒有具體事件或上下文可供討論時，有一定機率隨機生成一個新的對話話題。</RimTalk.Settings.IncludeTopicKeywords.Tooltip>
 
     <!-- DebugWindow.cs -->
     <RimTalk.DebugWindow.ViewByTime>依時間</RimTalk.DebugWindow.ViewByTime>
@@ -594,15 +595,16 @@ Scriban 魔法 (動態內容)
     <RimTalk.PlayerSettings.NewPresetName>新對話預設</RimTalk.PlayerSettings.NewPresetName>
     <RimTalk.PlayerSettings.PresetTitleHeader>標題 / 選單名</RimTalk.PlayerSettings.PresetTitleHeader>
     <RimTalk.PlayerSettings.PresetTitlePlaceholder>對話預設標題...</RimTalk.PlayerSettings.PresetTitlePlaceholder>
+    <RimTalk.PlayerSettings.PresetPromptPlaceholder>對話內容 / 提示詞...</RimTalk.PlayerSettings.PresetPromptPlaceholder>
 
     <!-- VersionSwitcher.cs -->
     <RimTalk.VersionSwitcher.RollbackLabel>回滾舊版本</RimTalk.VersionSwitcher.RollbackLabel>
     <RimTalk.VersionSwitcher.SwitchToPrevious>複製舊版本（本地模組）</RimTalk.VersionSwitcher.SwitchToPrevious>
     <RimTalk.VersionSwitcher.SwitchToSpecificVer>複製 {0}（本地模組）</RimTalk.VersionSwitcher.SwitchToSpecificVer>
     <RimTalk.VersionSwitcher.NoPreviousDllFound>在模組目錄中未找到舊版本檔案 (LastVersion/)。</RimTalk.VersionSwitcher.NoPreviousDllFound>
-    <RimTalk.VersionSwitcher.ConfirmRollbackTitle>回滾至版本 ({0})</RimTalk.VersionSwitcher.ConfirmRollbackTitle>
-    <RimTalk.VersionSwitcher.ConfirmRollbackPrompt>將 RimTalk ({0}) 複製到本地 'RimWorld/Mods/RimTalk' 目錄？</RimTalk.VersionSwitcher.ConfirmRollbackPrompt>
-    <RimTalk.VersionSwitcher.ProceedRollback>複製</RimTalk.VersionSwitcher.ProceedRollback>
+    <RimTalk.VersionSwitcher.ConfirmRollbackTitle>回滾至 {0}</RimTalk.VersionSwitcher.ConfirmRollbackTitle>
+    <RimTalk.VersionSwitcher.ConfirmRollbackPrompt>是否複製到本地 'RimWorld/Mods/RimTalk' 目錄？\n\n複製後停用工作坊版本並啟用本地模組，即可保持此版本不受自動更新影響。</RimTalk.VersionSwitcher.ConfirmRollbackPrompt>
+    <RimTalk.VersionSwitcher.ProceedRollback>確認</RimTalk.VersionSwitcher.ProceedRollback>
     <RimTalk.VersionSwitcher.RestartRequiredTitle>複製完成</RimTalk.VersionSwitcher.RestartRequiredTitle>
     <RimTalk.VersionSwitcher.LocalModCreatedPrompt>已複製到 'RimWorld/Mods/RimTalk'。\n\n請在模組選單中停用 Steam 版本，啟用本地模組後重新啟動 RimWorld。</RimTalk.VersionSwitcher.LocalModCreatedPrompt>
 

@@ -26,6 +26,7 @@ public class ApiLog(string name, TalkRequest talkRequest, string response, Paylo
     public DateTime Timestamp { get; } = timestamp;
     public int ElapsedMs;
     public int SpokenTick { get; set; } = 0;
+    public DateTime? SpokenTime { get; set; }
     public bool IsError { get; set; }
     public Channel Channel { get; set; } = channel;
     
@@ -50,6 +51,8 @@ public class ApiLog(string name, TalkRequest talkRequest, string response, Paylo
     {
         var sb = new StringBuilder();
         sb.AppendLine($"Timestamp: {Timestamp:yyyy-MM-dd HH:mm:ss}");
+        if (SpokenTime.HasValue)
+            sb.AppendLine($"SpokenTime: {SpokenTime.Value:yyyy-MM-dd HH:mm:ss}");
         sb.AppendLine($"Pawn: {Name ?? "-"}");
         sb.AppendLine($"Target: {TargetName ?? "-"}");
         sb.AppendLine($"InteractionType: {InteractionType ?? "-"}");

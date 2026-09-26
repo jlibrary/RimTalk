@@ -213,11 +213,10 @@ public class Dialog_BubbleSettings : Window
         listing.Gap(4f);
 
         // 9. Toggles: Emotion/Group Colors, Urgent Shake & Zoom Scaling
-        listing.CheckboxLabeled("RimTalk.BubbleSettings.UseColors".Translate(), ref settings.BubbleUseColors, "RimTalk.BubbleSettings.UseColorsTooltip".Translate());
-        listing.CheckboxLabeled("RimTalk.BubbleSettings.UrgentShake".Translate(), ref settings.BubbleUrgentShake, "RimTalk.BubbleSettings.UrgentShakeTooltip".Translate());
+        listing.CheckboxLabeledLeft("RimTalk.BubbleSettings.UseColors".Translate(), ref settings.BubbleUseColors, "RimTalk.BubbleSettings.UseColorsTooltip".Translate());
+        listing.CheckboxLabeledLeft("RimTalk.BubbleSettings.UrgentShake".Translate(), ref settings.BubbleUrgentShake, "RimTalk.BubbleSettings.UrgentShakeTooltip".Translate());
         bool prevScaleWithZoom = settings.BubbleScaleWithZoom;
-        listing.CheckboxLabeled("RimTalk.BubbleSettings.ScaleWithZoom".Translate(), ref settings.BubbleScaleWithZoom, "RimTalk.BubbleSettings.ScaleWithZoomTooltip".Translate());
-        if (prevScaleWithZoom != settings.BubbleScaleWithZoom)
+        if (listing.CheckboxLabeledLeft("RimTalk.BubbleSettings.ScaleWithZoom".Translate(), ref settings.BubbleScaleWithZoom, "RimTalk.BubbleSettings.ScaleWithZoomTooltip".Translate()))
         {
             SpeechBubbleDrawer.RecomputeAllBubbleDimensions();
         }
@@ -229,14 +228,14 @@ public class Dialog_BubbleSettings : Window
         float bottomBtnH = 32f;
         float bottomBtnY = inRect.height - bottomBtnH;
         Rect resetBtnRect = new Rect(inRect.x, bottomBtnY, 150f, bottomBtnH);
-        if (Widgets.ButtonText(resetBtnRect, "RimTalk.Settings.ResetToDefault".Translate()))
+        if (UIUtil.ButtonText(resetBtnRect, "RimTalk.Settings.ResetToDefault".Translate()))
         {
             settings.ResetBubbleSettings();
             SpeechBubbleDrawer.RecomputeAllBubbleDimensions();
         }
 
         Rect closeBtnRect = new Rect(inRect.xMax - 110f, bottomBtnY, 110f, bottomBtnH);
-        if (Widgets.ButtonText(closeBtnRect, "CloseButton".Translate()))
+        if (UIUtil.ButtonText(closeBtnRect, "CloseButton".Translate()))
         {
             Close();
         }
@@ -250,7 +249,7 @@ public class Dialog_BubbleSettings : Window
             GUI.color = Color.green;
         }
 
-        bool clicked = Widgets.ButtonText(rect, label);
+        bool clicked = UIUtil.ButtonText(rect, label);
 
         GUI.color = origColor;
         return clicked;

@@ -17,7 +17,8 @@ public static class HediffPatch
         if (pawnState != null && hediff.Visible && !pawnState.Hediffs.Contains(hediff))
         {
             pawnState.Hediffs = ___pawn.GetHediffs();
-                
+            if (___pawn.IsInDanger(true)) return;
+
             var prompt = $"{hediff.Part?.Label}-{hediff.LabelCap}";
             pawnState.AddTalkRequest(prompt, talkType: TalkType.Hediff);
         }

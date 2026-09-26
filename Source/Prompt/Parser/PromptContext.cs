@@ -44,13 +44,88 @@ public class PromptContext
     /// <summary>Full dialogue prompt (result of DecoratePrompt, includes time/weather/location/etc.)</summary>
     public string DialoguePrompt { get; set; }
     
+    private List<(Role role, string message)> _simplifiedHistory;
+    private List<(Role role, string message)> _rawHistory;
+    private string _simplifiedHistoryText;
+    private string _rawHistoryText;
+    private List<(Role role, string message)> _chatHistory;
+
     /// <summary>Chat history (Role, Message) - for inserting history in entries</summary>
-    public List<(Role role, string message)> ChatHistory { get; set; } = new();
+    public List<(Role role, string message)> ChatHistory
+    {
+        get
+        {
+            if (_chatHistory == null)
+            {
+                _chatHistory = GetChatHistory(simplified: true);
+            }
+            return _chatHistory;
+        }
+        set
+        {
+            _chatHistory = value;
+            _simplifiedHistory = value;
+            _simplifiedHistoryText = null;
+        }
+    }
 
     public List<(Role role, string message)> GetChatHistory(bool simplified)
     {
-        if (CurrentPawn == null) return [];
-        return TalkHistory.GetMessageHistory(CurrentPawn, simplified);
+        if (simplified)
+        {
+            if (_simplifiedHistory != null) return _simplifiedHistory;
+            return _simplifiedHistory = FetchChatHistory(true);
+        }
+
+        if (_rawHistory != null) return _rawHistory;
+        return _rawHistory = FetchChatHistory(false);
+    }
+
+    private List<(Role role, string message)> FetchChatHistory(bool simplified)
+    {
+        if (AllPawns is { Count: > 0 })
+            return TalkHistory.GetMessageHistory(AllPawns, simplified);
+        if (CurrentPawn != null)
+            return TalkHistory.GetMessageHistory(CurrentPawn, simplified);
+        return _chatHistory ?? [];
+    }
+
+    public string GetChatHistoryText(bool simplified = false)
+    {
+        if (simplified)
+        {
+            if (_simplifiedHistoryText != null) return _simplifiedHistoryText;
+            return _simplifiedHistoryText = BuildChatHistoryText(true);
+        }
+        else
+        {
+            if (_rawHistoryText != null) return _rawHistoryText;
+            return _rawHistoryText = BuildChatHistoryText(false);
+        }
+    }
+
+    private string BuildChatHistoryText(bool simplified)
+    {
+        var history = GetChatHistory(simplified);
+        if (history != null && history.Count > 0)
+        {
+            var lines = new List<string>();
+            foreach (var (_, message) in history)
+            {
+                if (string.IsNullOrWhiteSpace(message)) continue;
+                lines.Add(message.Trim());
+            }
+
+            if (lines.Count > 0)
+                return $"{PromptPresetAssembler.ChatHistoryHeader}\n{string.Join("\n", lines)}";
+        }
+
+        if (IsPreview)
+            return $"{PromptPresetAssembler.ChatHistoryHeader}\n" +
+                   "ColonistA: Hello!\n" +
+                   "ColonistB: Greetings from RimTalk. This is a placeholder for chat history.";
+
+        return "";
     }
 
     // Convenience properties - obtained from TalkRequest
@@ -105,12 +180,9 @@ public class PromptContext
             Map = request?.Initiator?.Map,
             VariableStore = PromptManager.Instance?.VariableStore ?? new VariableStore(),
             // Use data already built in TalkRequest
-            PawnContext = request?.Context,
+            PawnContext = request?.Context
             // DialogueType and DialogueStatus are set separately by the caller
             // to avoid pollution from DecoratePrompt which fills request.Prompt with full context
-            ChatHistory = request?.Initiator != null
-                ? TalkHistory.GetMessageHistory(request.Initiator)
-                : []
         };
     }
 }

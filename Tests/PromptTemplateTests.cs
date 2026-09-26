@@ -321,6 +321,57 @@ Instruction: Speak exactly 1 short monologue turn reflecting inner thoughts. Do 
     }
 
     [Fact]
+    public void AssembleMessages_HistoryRaw_EmitsAlternatingMessages_WhileDefaultHistoryEmitsSingleBlock()
+    {
+        var fakeHistory = new List<(RimTalk.Data.Role role, string message)>
+        {
+            (RimTalk.Data.Role.User, "Turn 1: Where are we?"),
+            (RimTalk.Data.Role.AI, "Turn 2: Near the ruins."),
+            (RimTalk.Data.Role.User, "Turn 3: I hear mechanoids.")
+        };
+
+        // 1. Default preset using {{chat.history}} -> Single User message block
+        var defaultPreset = new RimTalk.Prompt.PromptPreset("DefaultPreset");
+        defaultPreset.AddEntry(new RimTalk.Prompt.PromptEntry("HistoryMarker", "{{chat.history}}", RimTalk.Prompt.PromptRole.User)
+        {
+            Position = RimTalk.Prompt.PromptPosition.Relative,
+            IsMainChatHistory = true
+        });
+
+        var defaultAssembled = RimTalk.Prompt.PromptPresetAssembler.AssembleMessages(
+            defaultPreset,
+            content => content,
+            fakeHistory);
+
+        Assert.Single(defaultAssembled);
+        Assert.Equal(RimTalk.Prompt.PromptRole.User, defaultAssembled[0].role);
+        Assert.StartsWith(RimTalk.Prompt.PromptPresetAssembler.ChatHistoryHeader, defaultAssembled[0].content);
+        Assert.Contains("Turn 1: Where are we?", defaultAssembled[0].content);
+        Assert.Contains("Turn 2: Near the ruins.", defaultAssembled[0].content);
+
+        // 2. Preset using {{chat.history_raw}} -> Revives alternating multi-message objects
+        var rawPreset = new RimTalk.Prompt.PromptPreset("RawPreset");
+        rawPreset.AddEntry(new RimTalk.Prompt.PromptEntry("HistoryMarker", "{{chat.history_raw}}", RimTalk.Prompt.PromptRole.User)
+        {
+            Position = RimTalk.Prompt.PromptPosition.Relative,
+            IsMainChatHistory = true
+        });
+
+        var rawAssembled = RimTalk.Prompt.PromptPresetAssembler.AssembleMessages(
+            rawPreset,
+            content => content,
+            fakeHistory);
+
+        Assert.Equal(3, rawAssembled.Count);
+        Assert.Equal(RimTalk.Prompt.PromptRole.User, rawAssembled[0].role);
+        Assert.Equal("Turn 1: Where are we?", rawAssembled[0].role == RimTalk.Prompt.PromptRole.User ? rawAssembled[0].content : "");
+        Assert.Equal(RimTalk.Prompt.PromptRole.Assistant, rawAssembled[1].role);
+        Assert.Equal("Turn 2: Near the ruins.", rawAssembled[1].content);
+        Assert.Equal(RimTalk.Prompt.PromptRole.User, rawAssembled[2].role);
+        Assert.Equal("Turn 3: I hear mechanoids.", rawAssembled[2].content);
+    }
+
+    [Fact]
     public void ComplexPreset_ModEntryLifecycle_HonorsBlacklistAndDeterministicIds()
     {
         var preset = new RimTalk.Prompt.PromptPreset("ModLifecyclePreset");
@@ -586,12 +637,12 @@ Environment Hazard: {{ fallout_level }}
             fallbackInstruction: "Fallback instruction",
             fallbackJsonInstruction: fallbackJson);
 
-        // All 5 essential entries must be present and enabled
+        // Essential entries must be present and enabled
         Assert.Contains(simplePreset.Entries, e => e.Name == "Base Instruction" && e.Enabled && e.Content == "Simple instruction");
-        Assert.Contains(simplePreset.Entries, e => e.Name == "JSON Format" && e.Enabled && e.Content == fallbackJson);
         Assert.Contains(simplePreset.Entries, e => e.Name == "Context" && e.Enabled && e.Content == "{{context}}");
-        Assert.Contains(simplePreset.Entries, e => e.Name == "Chat History" && e.Enabled && e.IsMainChatHistory && e.Content == "{{chat.history}}");
         Assert.Contains(simplePreset.Entries, e => e.Name == "Dialogue Prompt" && e.Enabled && e.Content == "{{prompt}}");
+        Assert.Contains(simplePreset.Entries, e => e.Name == "Chat History" && e.Enabled && e.IsMainChatHistory && e.Content == "{{chat.history}}");
+        Assert.Contains(simplePreset.Entries, e => e.Name == "JSON Format" && e.Enabled && e.Content == fallbackJson);
 
         // Order check: Base Instruction -> JSON Format -> Context -> Chat History -> Dialogue Prompt
         int baseIdx = simplePreset.Entries.FindIndex(e => e.Name == "Base Instruction");
@@ -604,5 +655,68 @@ Environment Hazard: {{ fallout_level }}
         Assert.True(jsonIdx < ctxIdx);
         Assert.True(ctxIdx < histIdx);
         Assert.True(histIdx < promptIdx);
+    }
+
+    [Fact]
+    public void AssembleMessages_TrailingFormatReminder_AppendedAtVeryBottom()
+    {
+        var preset = new RimTalk.Prompt.PromptPreset("TestPreset")
+        {
+            Entries = new List<RimTalk.Prompt.PromptEntry>
+            {
+                new("Base Instruction", "You are an AI.") { Role = RimTalk.Prompt.PromptRole.System, Position = RimTalk.Prompt.PromptPosition.Relative },
+                new("JSON Format", "Output valid JSON only.") { Role = RimTalk.Prompt.PromptRole.System, Position = RimTalk.Prompt.PromptPosition.Relative },
+                new("Dialogue Prompt", "Alice speaks to Bob.") { Role = RimTalk.Prompt.PromptRole.User, Position = RimTalk.Prompt.PromptPosition.Relative },
+                new("Addon Narrative Context", "Faction relations: Hostile.") { Role = RimTalk.Prompt.PromptRole.User, Position = RimTalk.Prompt.PromptPosition.Relative }
+            }
+        };
+
+        var segments = new List<RimTalk.Data.PromptMessageSegment>();
+        var assembled = RimTalk.Prompt.PromptPresetAssembler.AssembleMessages(
+            preset,
+            c => c,
+            new List<(RimTalk.Data.Role role, string message)>(),
+            segments);
+
+        // System message has Base Instruction and JSON Format
+        Assert.Equal(RimTalk.Prompt.PromptRole.System, assembled[0].role);
+        Assert.Contains("Output valid JSON only.", assembled[0].content);
+
+        // Format reminder must be at the very bottom of the assembled user message with exact format content
+        Assert.EndsWith("Output valid JSON only.", assembled[^1].content);
+    }
+
+
+    [Fact]
+    public void AssembleMessages_SingleBlockHistory_IncludesContextTriggersNaturally()
+    {
+        var historyWithTriggers = new List<(RimTalk.Data.Role role, string message)>
+        {
+            (RimTalk.Data.Role.User, "prompt: Alice continue\nTopic idea: campfire songs\nAlice cooking meal"),
+            (RimTalk.Data.Role.AI, "(15s ago) Alice: Sing with me.\n(10s ago) Bob: Not right now."),
+            (RimTalk.Data.Role.User, "prompt: Alice initiated: [Insult] directed at Bob"),
+            (RimTalk.Data.Role.AI, "(5s ago) Alice: You're always so boring!")
+        };
+
+        var defaultPreset = new RimTalk.Prompt.PromptPreset("DefaultPreset");
+        defaultPreset.AddEntry(new RimTalk.Prompt.PromptEntry("HistoryMarker", "{{chat.history}}", RimTalk.Prompt.PromptRole.User)
+        {
+            Position = RimTalk.Prompt.PromptPosition.Relative,
+            IsMainChatHistory = true
+        });
+
+        var assembled = RimTalk.Prompt.PromptPresetAssembler.AssembleMessages(
+            defaultPreset,
+            content => content,
+            historyWithTriggers);
+
+        Assert.Single(assembled);
+        var block = assembled[0].content;
+        Assert.StartsWith(RimTalk.Prompt.PromptPresetAssembler.ChatHistoryHeader, block);
+        Assert.Contains("prompt: Alice continue", block);
+        Assert.Contains("Topic idea: campfire songs", block);
+        Assert.Contains("(15s ago) Alice: Sing with me.", block);
+        Assert.Contains("prompt: Alice initiated: [Insult] directed at Bob", block);
+        Assert.Contains("(5s ago) Alice: You're always so boring!", block);
     }
 }

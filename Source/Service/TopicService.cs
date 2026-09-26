@@ -28,7 +28,7 @@ public static class TopicService
     }
 
     /// <summary>
-    /// Returns a topic string with probability roll, or guaranteed topic if it's the pawn's first talk.
+    /// Returns a topic string based on conversation state triggers, or guaranteed topic if it's the pawn's first talk.
     /// Non-humanlikes (animals, mechanoids, entities) and mutants never receive human narrative topics.
     /// </summary>
     public static string TryGetTopic(Pawn pawn = null)
@@ -38,18 +38,42 @@ public static class TopicService
 
         lock (Lock)
         {
-            bool isFirstTalk = pawn != null && Cache.Get(pawn)?.LastTalkTick == 0;
-            if (!isFirstTalk && Rng.NextDouble() >= 0.50) return null;
+            if (!ShouldTriggerTopic(pawn)) return null;
             EnsureDecks();
             return TopicCore();
         }
+    }
+
+    private static bool ShouldTriggerTopic(Pawn pawn)
+    {
+        if (pawn == null) return Rng.NextDouble() < 0.70;
+        if (pawn.InMentalState) return true;
+
+        bool isFirstTalk = Cache.Get(pawn)?.LastTalkTick == 0;
+        if (isFirstTalk) return true;
+
+        int currentTick = Current.ProgramState == ProgramState.Playing ? GenTicks.TicksGame : 0;
+        int lastTick = TalkHistory.GetLastMessageTick(pawn);
+
+        // 1. Fresh conversation session (no prior history or more than 1 in-game hour since last speech)
+        if (lastTick <= 0 || (currentTick > 0 && currentTick - lastTick > 2500))
+            return true;
+
+        // 2. Ongoing conversation: check how long the current exchange has been active
+        int historyCount = TalkHistory.GetHistoryCount(pawn);
+        // If 3 or more messages have passed, previous topic is exhausted -> pivot to a new topic
+        if (historyCount >= 3)
+            return true;
+
+        // During a fresh 1-2 turn exchange, avoid abrupt topic derailment so pawns can respond to each other
+        return false;
     }
 
     private static string TopicCore()
     {
         string approach = PeekDeck(_approachDeck) ?? "casual remark";
         string subject  = PeekDeck(_subjectDeck)  ?? "daily life";
-        return $"[{approach}, {subject}]";
+        return $"{approach}, {subject}";
     }
 
     private static string PeekDeck(Queue<string> deck)

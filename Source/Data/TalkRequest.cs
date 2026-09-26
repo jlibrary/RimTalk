@@ -40,6 +40,7 @@ public class TalkRequest(string prompt, Pawn initiator, Pawn recipient = null, T
     public string ImageBase64 { get; set; }
     public string RawJsonOverride { get; set; }
     public SleepDialogueKind SleepDialogueKind { get; set; }
+    public string CausalPrompt { get; set; }
     
     /// <summary>
     /// All pawns participating in the dialogue (filled in sync layer)
