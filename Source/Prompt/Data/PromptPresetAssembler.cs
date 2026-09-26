@@ -11,8 +11,16 @@ namespace RimTalk.Prompt;
 /// </summary>
 internal static class PromptPresetAssembler
 {
-    public const string ChatHistoryHeader = "[Chat History]\n!prior dialogues, NEVER repeat!";
-    public const string CurrentTaskHeader = "[Current Task]";
+    public const string ChatHistoryHeader = "[Chat History]\n(Past dialogue. Advance the scene naturally without echoing earlier lines):";
+    public const string CurrentTaskHeader = "[Situation]";
+    public const string SituationHeader = CurrentTaskHeader;
+    public const string DefaultRecentEventsInstruction = """
+                                                          {{- if events && events != "" -}}
+                                                          [Recent Events]
+                                                          (Recent colony incidents; let them naturally shape mood, tone, or thoughts if still relevant, never force):
+                                                          {{ events }}
+                                                          {{- end -}}
+                                                          """;
 
     internal static PromptRole GetEffectiveRole(PromptEntry entry)
     {
@@ -81,6 +89,7 @@ internal static class PromptPresetAssembler
             }
 
             var content = renderFunc != null ? renderFunc(entry.Content) : entry.Content;
+            content = content?.Trim();
             if (!string.IsNullOrWhiteSpace(content))
             {
                 var role = GetEffectiveRole(entry);
@@ -101,7 +110,14 @@ internal static class PromptPresetAssembler
         var activeJsonEntry = preset.Entries.FirstOrDefault(e => e.Enabled && string.Equals(e.Name, "JSON Format", StringComparison.OrdinalIgnoreCase));
         if (activeJsonEntry != null)
         {
-            var content = renderFunc != null ? renderFunc(activeJsonEntry.Content) : activeJsonEntry.Content;
+            var rawContent = activeJsonEntry.Content;
+            if (rawContent != null && string.Equals(rawContent.Trim().Replace(" ", ""), "{{json.format}}", StringComparison.OrdinalIgnoreCase))
+            {
+                rawContent = "{{ json.anchor }}";
+            }
+
+            var content = renderFunc != null ? renderFunc(rawContent) : rawContent;
+            content = content?.Trim();
             if (!string.IsNullOrWhiteSpace(content))
             {
                 result.Add((PromptRole.User, content));
@@ -115,6 +131,7 @@ internal static class PromptPresetAssembler
         foreach (var entry in preset.GetInChatEntries())
         {
             var content = renderFunc != null ? renderFunc(entry.Content) : entry.Content;
+            content = content?.Trim();
             if (!string.IsNullOrWhiteSpace(content))
             {
                 var role = GetEffectiveRole(entry);
@@ -152,6 +169,7 @@ internal static class PromptPresetAssembler
         bool hasJsonFormat = false;
         bool hasContext = false;
         bool hasChatHistory = false;
+        bool hasRecentEvents = false;
         bool hasDialoguePrompt = false;
 
         string effectiveInstruction = !string.IsNullOrWhiteSpace(simpleInstruction)
@@ -186,6 +204,11 @@ internal static class PromptPresetAssembler
                         || string.Equals(clone.Name, "Pawn Profiles", StringComparison.OrdinalIgnoreCase))
                     {
                         hasContext = true;
+                    }
+
+                    if (string.Equals(clone.Name, "Recent Events", StringComparison.OrdinalIgnoreCase))
+                    {
+                        hasRecentEvents = true;
                     }
 
                     if (string.Equals(clone.Name, "Dialogue Prompt", StringComparison.OrdinalIgnoreCase))
@@ -228,7 +251,7 @@ internal static class PromptPresetAssembler
                 Position = PromptPosition.Relative,
                 Content = !string.IsNullOrEmpty(fallbackJsonInstruction)
                     ? fallbackJsonInstruction
-                    : "Output JSONL.\nRequired keys: \"name\", \"text\"."
+                    : "{{ json.format }}"
             });
         }
 
@@ -244,6 +267,23 @@ internal static class PromptPresetAssembler
                 Role = PromptRole.System,
                 Position = PromptPosition.Relative,
                 Content = "{{context}}"
+            });
+        }
+
+        if (!hasRecentEvents)
+        {
+            int histIndex = simplePreset.Entries.FindIndex(e =>
+                e.IsMainChatHistory || string.Equals(e.Name, "Chat History", StringComparison.OrdinalIgnoreCase));
+            int dpIndex = simplePreset.Entries.FindIndex(e =>
+                string.Equals(e.Name, "Dialogue Prompt", StringComparison.OrdinalIgnoreCase));
+            int insertIndex = histIndex >= 0 ? histIndex : (dpIndex >= 0 ? dpIndex : simplePreset.Entries.Count);
+
+            simplePreset.Entries.Insert(insertIndex, new PromptEntry
+            {
+                Name = "Recent Events",
+                Role = PromptRole.User,
+                Position = PromptPosition.Relative,
+                Content = DefaultRecentEventsInstruction
             });
         }
 
@@ -302,6 +342,32 @@ internal static class PromptPresetAssembler
             || string.Equals(entry.Name, "JSON Format", StringComparison.OrdinalIgnoreCase)
             || string.Equals(entry.Name, "Context", StringComparison.OrdinalIgnoreCase)
             || string.Equals(entry.Name, "Pawn Profiles", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(entry.Name, "Recent Events", StringComparison.OrdinalIgnoreCase)
             || string.Equals(entry.Name, "Dialogue Prompt", StringComparison.OrdinalIgnoreCase);
     }
+
+    public static bool ShouldShowHistoryWarning(PromptPreset preset, bool isExternalMemoryModActive = false)
+    {
+        if (preset?.Entries == null || isExternalMemoryModActive) return false;
+
+        bool hasExternalModEntry = false;
+        for (int i = 0; i < preset.Entries.Count; i++)
+        {
+            var e = preset.Entries[i];
+            if (!e.Enabled) continue;
+
+            if (e.IsMainChatHistory || (!string.IsNullOrEmpty(e.Content) &&
+                (e.Content.IndexOf("chat.history", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                 e.Content.IndexOf("ctx.history", StringComparison.OrdinalIgnoreCase) >= 0)))
+            {
+                return false;
+            }
+
+            if (!string.IsNullOrEmpty(e.SourceModId))
+                hasExternalModEntry = true;
+        }
+
+        return !hasExternalModEntry;
+    }
 }
+

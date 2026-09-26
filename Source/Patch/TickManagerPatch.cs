@@ -44,6 +44,10 @@ internal static class TickManagerPatch
         if (!_initialCacheRefresh || IsNow(UpdateCacheInterval))
         {
             Cache.Refresh();
+            if (!_initialCacheRefresh)
+            {
+                ArchivePatch.SyncActiveLetters();
+            }
             _initialCacheRefresh = true;
         }
         

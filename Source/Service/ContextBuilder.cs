@@ -11,6 +11,7 @@ using RimTalk.Util;
 using RimWorld;
 using UnityEngine;
 using Verse;
+using Logger = RimTalk.Util.Logger;
 
 namespace RimTalk.Service;
 
@@ -18,6 +19,9 @@ public static class ContextBuilder
 {
     private static readonly MethodInfo VisibleHediffsMethod =
         AccessTools.Method(typeof(HealthCardUtility), "VisibleHediffs");
+
+    private static readonly Func<Pawn, bool, IEnumerable<Hediff>> VisibleHediffsFunc =
+        VisibleHediffsMethod != null ? AccessTools.MethodDelegate<Func<Pawn, bool, IEnumerable<Hediff>>>(VisibleHediffsMethod) : null;
 
     public static string GetRaceContext(Pawn pawn, PromptService.InfoLevel infoLevel)
     {
@@ -34,23 +38,18 @@ public static class ContextBuilder
             pawn.genes?.GenesListForReading == null)
             return null;
 
-        var notableGenes = pawn.genes.GenesListForReading
-            .Where(g => g.def.biostatMet != 0 || g.def.biostatCpx != 0)
-            .Select(g => g.def.LabelCap);
+        var matchingGenes = pawn.genes.GenesListForReading
+            .Where(g => g.def.biostatMet != 0 || g.def.biostatCpx != 0);
 
-        // For Short level, limit to top 3 most impactful genes
-        if (infoLevel == PromptService.InfoLevel.Short)
-        {
-            notableGenes = pawn.genes.GenesListForReading
-                .Where(g => g.def.biostatMet != 0 || g.def.biostatCpx != 0)
+        IEnumerable<TaggedString> notableGenes = infoLevel == PromptService.InfoLevel.Short
+            ? matchingGenes
                 .OrderByDescending(g => Mathf.Abs(g.def.biostatMet) + g.def.biostatCpx)
                 .Take(3)
-                .Select(g => g.def.LabelCap);
-        }
+                .Select(g => g.def.LabelCap)
+            : matchingGenes.Select(g => g.def.LabelCap);
 
-        if (notableGenes.Any())
-            return $"Notable Genes: {string.Join(", ", notableGenes)}";
-        return null;
+        var list = notableGenes.ToList();
+        return list.Count > 0 ? $"Notable Genes: {string.Join(", ", list)}" : null;
     }
 
     public static string GetAllGenesContext(Pawn pawn, PromptService.InfoLevel infoLevel)
@@ -116,11 +115,12 @@ public static class ContextBuilder
 
         var sb = new StringBuilder();
 
-        // For Short level, only include childhood title
+        // For Short level, include most defining backstory title (adulthood preferred, childhood fallback)
         if (infoLevel == PromptService.InfoLevel.Short)
         {
-            if (pawn.story?.Adulthood != null)
-                return $"Background: {pawn.story.Adulthood.TitleCapFor(pawn.gender)}";
+            var backstory = pawn.story?.Adulthood ?? pawn.story?.Childhood;
+            if (backstory != null)
+                return $"Background: {backstory.TitleCapFor(pawn.gender)}";
         }
         else
         {
@@ -212,7 +212,9 @@ public static class ContextBuilder
         if (!contextSettings.IncludeHealth)
             return null;
 
-        var hediffs = (IEnumerable<Hediff>)VisibleHediffsMethod.Invoke(null, [pawn, false]);
+        var hediffs = VisibleHediffsFunc != null
+            ? VisibleHediffsFunc(pawn, false)
+            : (IEnumerable<Hediff>)VisibleHediffsMethod?.Invoke(null, [pawn, false]);
         if (hediffs == null) return null;
 
         // For Short level, only show top 3 most recent/severe hediffs
@@ -440,13 +442,16 @@ public static class ContextBuilder
                     intentSb.Append($"Generate dialogue starting after this. Do not generate any further lines for {speaker1Name}");
             }
 
+            if (Settings.Get()?.Context?.EnableMemory ?? false)
+                intentSb.Append($". If an order or rule was given, update \"directives\" for {shortName} only; otherwise omit \"directives\"");
+
             sb.Append(topicSb).Append(intentSb);
         }
         else
         {
             bool inCombat = mainPawn.IsInCombat() || mainPawn.GetMapRole() == MapRole.Invading;
             bool hasActiveHostiles = inCombat && mainPawn.HasActiveHostiles();
-            Pawn partner = pawns.Count > 1 ? (pawns[0] == mainPawn ? (pawns.Count > 1 ? pawns[1] : null) : pawns[0]) : null;
+            Pawn partner = pawns.Count > 1 ? (pawns[0] == mainPawn ? pawns[1] : pawns[0]) : null;
             bool isStrangerEncounter = partner != null && IsStrangerEncounter(mainPawn, partner, pawns);
 
             if (inCombat)
@@ -480,7 +485,7 @@ public static class ContextBuilder
             {
                 intentSb.Append(talkRequest.Prompt != null
                     ? $"{shortName} start monologue (only {shortName} speaks)"
-                    : $"{shortName} continue monologue (only {shortName} speaks)");
+                    : $"{shortName} monologue (only {shortName} speaks)");
             }
             else
             {
@@ -521,10 +526,7 @@ public static class ContextBuilder
                 string mentalLabel = mainPawn.MentalStateDef?.LabelCap ?? "distressed";
                 string baseDirective = $"in mental break ({mentalLabel}): express raw distress or unstable emotions, vary emotional focus, avoid repeating exact phrases";
                 
-                string topicKeywords = (talkRequest.TalkType != TalkType.Urgent && Settings.Get().Context.IncludeTopicKeywords)
-                    ? TopicService.TryGetTopic(mainPawn)
-                    : null;
-
+                string topicKeywords = TopicService.ResolveMentalBreakTopicForRequest(talkRequest, mainPawn);
                 if (topicKeywords != null)
                 {
                     topicSb.Append($"in mental break ({mentalLabel})\nObsessive thought / delusion: {topicKeywords}.");
@@ -540,21 +542,26 @@ public static class ContextBuilder
             {
                 topicSb.Append("(downed in pain. Short, strained dialogue)");
             }
-            else if (talkRequest.Prompt != null)
+            else if (talkRequest != null && talkRequest.Prompt != null)
             {
                 topicSb.Append(talkRequest.Prompt);
             }
 
-            // Inject topic keywords whenever dialogue is not urgent, skipping on first stranger encounter to allow natural introduction
-            if (!mainPawn.InMentalState && !isStrangerEncounter && talkRequest.TalkType != TalkType.Urgent && Settings.Get().Context.IncludeTopicKeywords)
+            bool isMonologue = pawns.Count <= 1 || (talkRequest != null && talkRequest.IsMonologue);
+            string promptTopicDirective = null;
+            string generalTopicKeywords = TopicService.ResolveTopicForRequest(talkRequest, mainPawn, isStrangerEncounter, isMonologue);
+
+            if (generalTopicKeywords != null)
             {
-                string topicKeywords = TopicService.TryGetTopic(mainPawn);
-                if (topicKeywords != null)
-                {
-                    if (topicSb.Length > 0)
-                        topicSb.Append("\n");
-                    topicSb.Append($"Topic keywords: {topicKeywords}.");
-                }
+                if (topicSb.Length > 0)
+                    topicSb.Append("\n");
+                topicSb.Append($"Topic: {generalTopicKeywords}");
+                promptTopicDirective = $"(Topic angle: {generalTopicKeywords} — explore naturally, never force verbatim)";
+            }
+
+            if (promptTopicDirective != null)
+            {
+                sb.Append(promptTopicDirective).Append("\n");
             }
 
             sb.Append(intentSb);
@@ -562,7 +569,11 @@ public static class ContextBuilder
             {
                 sb.Append("\n").Append(mentalBreakDirective);
             }
-            else if (topicSb.Length > 0)
+            else if (talkRequest.Prompt != null)
+            {
+                sb.Append("\n").Append(talkRequest.Prompt);
+            }
+            else if (topicSb.Length > 0 && promptTopicDirective == null)
             {
                 sb.Append("\n").Append(topicSb);
             }
@@ -570,6 +581,27 @@ public static class ContextBuilder
 
         intent = intentSb.ToString();
         topic = topicSb.ToString();
+    }
+
+    private static void AppendInjectedPawnSections(StringBuilder sb, Pawn pawn, ContextCategory category, ContextHookRegistry.InjectPosition position)
+    {
+        if (!ContextHookRegistry.HasAnyInjections) return;
+        foreach (var (name, pos, _, provider) in ContextHookRegistry.GetInjectedSectionsAt(category))
+        {
+            if (pos == position && provider is Func<Pawn, string> p)
+            {
+                try
+                {
+                    var text = p(pawn);
+                    if (!string.IsNullOrEmpty(text))
+                        sb.Append("\n").Append(text);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Warning($"Error in injected pawn section '{name}' for category '{category}': {ex.Message}");
+                }
+            }
+        }
     }
 
     public static void BuildLocationContext(StringBuilder sb, ContextSettings contextSettings, Pawn mainPawn)
@@ -587,10 +619,12 @@ public static class ContextBuilder
             ? $"{locationStatus};{temperature}C"
             : $"{locationStatus};{temperature}C;{roomRole}";
         
+        AppendInjectedPawnSections(sb, mainPawn, ContextCategories.Pawn.Location, ContextHookRegistry.InjectPosition.Before);
         // Apply pawn hooks (location is now a pawn property)
         locationInfo = ContextHookRegistry.ApplyPawnHooks(
             ContextCategories.Pawn.Location, mainPawn, locationInfo);
         sb.Append($"\nLocation: {locationInfo}");
+        AppendInjectedPawnSections(sb, mainPawn, ContextCategories.Pawn.Location, ContextHookRegistry.InjectPosition.After);
     }
 
     public static void BuildEnvironmentContext(StringBuilder sb, ContextSettings contextSettings, Pawn mainPawn)
@@ -600,9 +634,11 @@ public static class ContextBuilder
             var terrain = mainPawn.Position.GetTerrain(mainPawn.Map);
             if (terrain != null)
             {
+                AppendInjectedPawnSections(sb, mainPawn, ContextCategories.Pawn.Terrain, ContextHookRegistry.InjectPosition.Before);
                 var value = ContextHookRegistry.ApplyPawnHooks(
                     ContextCategories.Pawn.Terrain, mainPawn, terrain.LabelCap);
                 sb.Append($"\nTerrain: {value}");
+                AppendInjectedPawnSections(sb, mainPawn, ContextCategories.Pawn.Terrain, ContextHookRegistry.InjectPosition.After);
             }
         }
 
@@ -611,19 +647,23 @@ public static class ContextBuilder
             var beautyLabel = Describer.Beauty(mainPawn);
             if (!string.IsNullOrEmpty(beautyLabel))
             {
+                AppendInjectedPawnSections(sb, mainPawn, ContextCategories.Pawn.Beauty, ContextHookRegistry.InjectPosition.Before);
                 var value = ContextHookRegistry.ApplyPawnHooks(
                     ContextCategories.Pawn.Beauty, mainPawn, beautyLabel);
                 sb.Append($"\nSurroundings beauty: {value}");
+                AppendInjectedPawnSections(sb, mainPawn, ContextCategories.Pawn.Beauty, ContextHookRegistry.InjectPosition.After);
             }
         }
 
         var pawnRoom = mainPawn.GetRoom();
         if (contextSettings.IncludeCleanliness && pawnRoom is { PsychologicallyOutdoors: false })
         {
+            AppendInjectedPawnSections(sb, mainPawn, ContextCategories.Pawn.Cleanliness, ContextHookRegistry.InjectPosition.Before);
             var value = ContextHookRegistry.ApplyPawnHooks(
                 ContextCategories.Pawn.Cleanliness, mainPawn,
                 Describer.Cleanliness(pawnRoom.GetStat(RoomStatDefOf.Cleanliness)));
             sb.Append($"\nCleanliness: {value}");
+            AppendInjectedPawnSections(sb, mainPawn, ContextCategories.Pawn.Cleanliness, ContextHookRegistry.InjectPosition.After);
         }
 
         if (contextSettings.IncludeSurroundings)
@@ -631,10 +671,12 @@ public static class ContextBuilder
             var surroundingsText = ContextHelper.CollectNearbyContextText(mainPawn, 3);
             if (!string.IsNullOrEmpty(surroundingsText))
             {
+                AppendInjectedPawnSections(sb, mainPawn, ContextCategories.Pawn.Surroundings, ContextHookRegistry.InjectPosition.Before);
                 var value = ContextHookRegistry.ApplyPawnHooks(
                     ContextCategories.Pawn.Surroundings, mainPawn, surroundingsText);
                 sb.Append("\nSurroundings:\n");
                 sb.Append(value);
+                AppendInjectedPawnSections(sb, mainPawn, ContextCategories.Pawn.Surroundings, ContextHookRegistry.InjectPosition.After);
             }
         }
     }

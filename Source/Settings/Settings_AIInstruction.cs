@@ -10,6 +10,9 @@ namespace RimTalk;
 
 public partial class Settings
 {
+    private static readonly Color SoftGreen = new(0.6f, 0.9f, 0.6f);
+    private static readonly Color SoftYellow = new(1f, 0.85f, 0.5f);
+
     private void DrawAIInstructionSettings(Listing_Standard listingStandard, bool showAdvancedSwitch = false, Rect containerRect = default)
     {
         RimTalkSettings settings = Get();
@@ -49,11 +52,12 @@ public partial class Settings
             _textAreaInitialized = true;
         }
 
-        var modelName = settings.GetCurrentModel();
-        var aiInstructionPrompt = "RimTalk.Settings.AIInstructionPrompt".Translate(modelName);
+        var aiInstructionPrompt = "RimTalk.Settings.AIInstructionPrompt".Translate();
 
+        const float rightMargin = 16f;
+        const float buttonWidth = 170f;
         float textHeight = Text.CalcHeight(aiInstructionPrompt,
-            listingStandard.ColumnWidth - (showAdvancedSwitch ? 180f : 0f));
+            listingStandard.ColumnWidth - (showAdvancedSwitch ? buttonWidth + rightMargin + 10f : 0f));
         float buttonTopPadding = 6f;
         float headerHeight = Mathf.Max(textHeight, 26f) + buttonTopPadding;
 
@@ -61,8 +65,7 @@ public partial class Settings
 
         if (showAdvancedSwitch)
         {
-            float buttonWidth = 170f;
-            Rect buttonRect = new Rect(headerRect.xMax - buttonWidth, headerRect.y + buttonTopPadding, buttonWidth, 26f);
+            Rect buttonRect = new Rect(headerRect.xMax - rightMargin - buttonWidth, headerRect.y + buttonTopPadding, buttonWidth, 26f);
 
             if (UIUtil.ButtonText(buttonRect, "RimTalk.Settings.SwitchToAdvancedSettings".Translate()))
             {
@@ -76,7 +79,7 @@ public partial class Settings
                     }));
             }
 
-            Rect labelRect = new Rect(headerRect.x, headerRect.y + buttonTopPadding, headerRect.width - buttonWidth - 10f,
+            Rect labelRect = new Rect(headerRect.x, headerRect.y + buttonTopPadding, buttonRect.x - headerRect.x - 10f,
                 headerHeight - buttonTopPadding);
 
             Text.Anchor = TextAnchor.MiddleLeft;
@@ -94,7 +97,7 @@ public partial class Settings
 
         // Context information tip
         Text.Font = GameFont.Tiny;
-        GUI.color = Color.green;
+        GUI.color = SoftGreen;
         Rect contextTipRect = listingStandard.GetRect(Text.LineHeight);
         Widgets.Label(contextTipRect, "RimTalk.Settings.AutoIncludedTip".Translate());
         GUI.color = Color.white;
@@ -103,29 +106,16 @@ public partial class Settings
 
         // Warning about rate limits
         Text.Font = GameFont.Tiny;
-        GUI.color = Color.yellow;
+        GUI.color = SoftYellow;
         Rect rateLimitRect = listingStandard.GetRect(Text.LineHeight);
         Widgets.Label(rateLimitRect, "RimTalk.Settings.RateLimitWarning".Translate());
         GUI.color = Color.white;
         Text.Font = GameFont.Small;
         listingStandard.Gap(6f);
 
-        // Token info display
-        int currentTokens = CommonUtil.EstimateTokenCount(_textAreaBuffer);
-        int maxAllowedTokens = CommonUtil.GetMaxAllowedTokens(settings.TalkInterval);
-        string tokenInfo = "RimTalk.Settings.TokenInfo".Translate(currentTokens, maxAllowedTokens);
-
-        GUI.color = currentTokens > maxAllowedTokens ? Color.red : Color.green;
-
-        Text.Font = GameFont.Tiny;
-        Rect tokenInfoRect = listingStandard.GetRect(Text.LineHeight);
-        Widgets.Label(tokenInfoRect, tokenInfo);
-        GUI.color = Color.white;
-        Text.Font = GameFont.Small;
-        listingStandard.Gap(6f);
-
+        const float countHeight = 20f;
         float remainingHeight = containerRect.height > 0f
-            ? containerRect.height - listingStandard.CurHeight - 15f
+            ? containerRect.height - listingStandard.CurHeight - countHeight - 15f
             : 350f;
         float textAreaHeight = Mathf.Max(200f, remainingHeight);
         Rect textAreaRect = listingStandard.GetRect(textAreaHeight);
@@ -155,6 +145,19 @@ public partial class Settings
         }
 
         Widgets.EndScrollView();
+
+        // Token count display
+        listingStandard.Gap(2f);
+        Rect countRect = listingStandard.GetRect(18f);
+        countRect.width = innerWidth;
+        Text.Font = GameFont.Tiny;
+        GUI.color = Color.gray;
+        Text.Anchor = TextAnchor.MiddleRight;
+        int currentTokens = CommonUtil.EstimateTokenCount(_textAreaBuffer);
+        Widgets.Label(countRect, "RimTalk.Settings.TokenInfo".Translate(currentTokens));
+        Text.Anchor = TextAnchor.UpperLeft;
+        GUI.color = Color.white;
+        Text.Font = GameFont.Small;
 
         if (newInstruction != _textAreaBuffer)
         {

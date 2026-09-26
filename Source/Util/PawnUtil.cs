@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using RimTalk.Data;
-using RimTalk.Service;
+using RimTalk.Memory;
 using RimTalk.Source.Data;
+using RimTalk.Service;
 using RimWorld;
 using Verse;
 using Verse.AI;
@@ -38,7 +39,15 @@ public static class PawnUtil
 
     public static HashSet<Hediff> GetHediffs(this Pawn pawn)
     {
-        return pawn?.health.hediffSet.hediffs.Where(hediff => hediff.Visible).ToHashSet();
+        var result = new HashSet<Hediff>();
+        var list = pawn?.health?.hediffSet?.hediffs;
+        if (list == null) return result;
+        for (int i = 0; i < list.Count; i++)
+        {
+            var h = list[i];
+            if (h.Visible) result.Add(h);
+        }
+        return result;
     }
 
     public static bool IsInDanger(this Pawn pawn, bool includeMentalState = false)
@@ -108,7 +117,7 @@ public static class PawnUtil
             return true;
 
         Pawn hostilePawn = pawn.GetHostilePawnNearBy();
-        return hostilePawn != null && pawn.Position.DistanceTo(hostilePawn.Position) <= 20f;
+        return hostilePawn != null && pawn.Position.DistanceToSquared(hostilePawn.Position) <= 400f;
     }
 
     /// <summary>A remembered target only counts while it is still there and still a threat.</summary>
@@ -117,12 +126,12 @@ public static class PawnUtil
         if (target == null || target.Destroyed || !target.Spawned) return false;
         if (target.Map != pawn.Map) return false;
         if (target is Pawn tp && (tp.Dead || tp.Downed)) return false;
-        return pawn.Position.DistanceTo(target.Position) <= 30f;
+        return pawn.Position.DistanceToSquared(target.Position) <= 900f;
     }
 
     public static string GetRole(this Pawn pawn, bool includeFaction = false)
     {
-        if (pawn == null) return null;
+        if (pawn == null || pawn.IsPlayer()) return null;
         if (pawn.IsPrisoner) return "Prisoner";
         if (pawn.IsSlave) return "Slave";
         if (pawn.IsEnemy())
@@ -217,18 +226,27 @@ public static class PawnUtil
 
     public static (string, bool) GetPawnStatusFull(this Pawn pawn, List<Pawn> nearbyPawns, bool isAnnouncement)
     {
+        var (fullStatus, _, isInDanger) = GetPawnStatus(pawn, nearbyPawns, isAnnouncement);
+        return (fullStatus, isInDanger);
+    }
+
+    public static (string fullStatus, string bareStatus, bool isInDanger) GetPawnStatus(this Pawn pawn, List<Pawn> nearbyPawns, bool isAnnouncement)
+    {
         var settings = Settings.Get();
-        if (pawn == null) return (null, false);
-        if (pawn.IsPlayer() && !isAnnouncement) return (settings.PlayerName, false);
+        if (pawn == null) return (null, null, false);
+        if (pawn.IsPlayer() && !isAnnouncement) return (settings.PlayerName, settings.PlayerName, false);
 
         bool isInDanger = false;
-        var lines = new List<string>();
         var relevantPawns = CollectRelevantPawns(pawn, nearbyPawns);
         bool useOptimization = settings.Context.EnableContextOptimization;
 
+        string fullFirstLine;
+        string bareFirstLine;
+
         if (pawn.IsPlayer())
         {
-            lines.Add(settings.PlayerName);
+            fullFirstLine = settings.PlayerName;
+            bareFirstLine = settings.PlayerName;
         }
         else
         {
@@ -236,15 +254,22 @@ public static class PawnUtil
             string pawnActivity = GetPawnActivity(pawn, relevantPawns, useOptimization);
             if (pawn.IsInDanger())
             {
-                lines.Add($"{pawnLabel} {pawnActivity} [IN DANGER]");
+                fullFirstLine = !string.IsNullOrEmpty(pawnActivity)
+                    ? $"{pawnLabel} {pawnActivity} [IN DANGER]"
+                    : $"{pawnLabel} [IN DANGER]";
+                bareFirstLine = $"{pawnLabel} [IN DANGER]";
                 isInDanger = true;
             }
             else
             {
-                lines.Add($"{pawnLabel} {pawnActivity}");
+                fullFirstLine = !string.IsNullOrEmpty(pawnActivity)
+                    ? $"{pawnLabel} {pawnActivity}"
+                    : pawnLabel;
+                bareFirstLine = pawnLabel;
             }
         }
 
+        var lines = new List<string>();
         if (nearbyPawns != null && nearbyPawns.Any())
         {
             int maxCount = isAnnouncement
@@ -262,7 +287,11 @@ public static class PawnUtil
         }
 
         AddContextualInfo(pawn.IsPlayer() ? nearbyPawns?.FirstOrDefault(p => !p.IsPlayer()) ?? pawn : pawn, lines, ref isInDanger);
-        return (string.Join("\n", lines), isInDanger);
+        string rest = string.Join("\n", lines);
+        string fullStatus = rest.Length > 0 ? $"{fullFirstLine}\n{rest}" : fullFirstLine;
+        string bareStatus = rest.Length > 0 ? $"{bareFirstLine}\n{rest}" : bareFirstLine;
+
+        return (fullStatus, bareStatus, isInDanger);
     }
 
     // Strips verbose age/stats noise during combat, preserving only the name and essential status (e.g. Slave, Prisoner)
@@ -280,18 +309,19 @@ public static class PawnUtil
     private static string GetCombinedNearbyList(Pawn mainPawn, List<Pawn> nearbyPawns,
         HashSet<Pawn> relevantPawns, bool useOptimization, int maxCount, ref bool situationIsCritical)
     {
-        if (nearbyPawns == null || !nearbyPawns.Any())
+        if (nearbyPawns == null || nearbyPawns.Count == 0)
             return "Nearby: none";
 
-        var pawnsToScan = nearbyPawns.Take(maxCount);
+        int count = Math.Min(nearbyPawns.Count, maxCount);
         var mainTarget = mainPawn.GetAttackTarget();
 
         var sameTargetPawns = new List<Pawn>();
         var otherDescriptions = new List<string>();
         bool localDangerFound = false;
 
-        foreach (var p in pawnsToScan)
+        for (int i = 0; i < count; i++)
         {
+            var p = nearbyPawns[i];
             if (p == null || p.IsPlayer()) continue;
 
             if (p.IsInDanger(true) && p.Faction == mainPawn.Faction)
@@ -342,7 +372,10 @@ public static class PawnUtil
         // Group allies attacking the same target into a single concise line
         if (sameTargetPawns.Count > 0)
         {
-            string targets = string.Join(", ", sameTargetPawns.Select(GetCompactCombatLabel));
+            var targetLabels = new List<string>(sameTargetPawns.Count);
+            for (int i = 0; i < sameTargetPawns.Count; i++)
+                targetLabels.Add(GetCompactCombatLabel(sameTargetPawns[i]));
+            string targets = string.Join(", ", targetLabels);
             if (otherDescriptions.Count == 0)
                 return $"Nearby fighting same target: {targets}";
 
@@ -361,10 +394,15 @@ public static class PawnUtil
 
         if (nearbyPawns != null)
         {
-            relevantPawns.UnionWith(nearbyPawns);
+            for (int i = 0; i < nearbyPawns.Count; i++)
+            {
+                var nearby = nearbyPawns[i];
+                if (nearby == null) continue;
+                relevantPawns.Add(nearby);
 
-            foreach (var nearby in nearbyPawns.Where(p => p.CurJob != null))
-                AddJobTargetsToRelevantPawns(nearby.CurJob, relevantPawns);
+                if (nearby.CurJob != null)
+                    AddJobTargetsToRelevantPawns(nearby.CurJob, relevantPawns);
+            }
         }
 
         return relevantPawns;
@@ -387,7 +425,7 @@ public static class PawnUtil
         if (useOptimization || string.IsNullOrEmpty(activity))
             return activity;
 
-        return DecorateText(activity, relevantPawns);
+        return DecorateText(activity, relevantPawns, pawn);
     }
 
     private static void AddContextualInfo(Pawn pawn, List<string> lines, ref bool isInDanger)
@@ -435,19 +473,19 @@ public static class PawnUtil
         var (threatCount, nearestHostile, threatSummary, dangerAssessment, isSevere) = pawn.GetHostileThreatInfo();
         if (nearestHostile != null)
         {
-            float distance = pawn.Position.DistanceTo(nearestHostile.Position);
+            float distSq = pawn.Position.DistanceToSquared(nearestHostile.Position);
             Faction referenceFaction = GetReferenceFaction(pawn);
             bool isMentalBreak = threatCount == 1 && nearestHostile.InMentalState && referenceFaction != null && nearestHostile.Faction == referenceFaction;
             string scaleLabel = isMentalBreak
                 ? "Mental Break"
                 : (threatCount == 1 ? "1 Hostile" : $"{threatCount} Hostiles");
 
-            if (distance <= 10f)
+            if (distSq <= 100f)
             {
                 lines.Add($"Combat ({dangerAssessment}): Engaging in battle with {GetThreatLabel(nearestHostile, referenceFaction)}!");
                 isInDanger = true;
             }
-            else if (distance <= 20f)
+            else if (distSq <= 400f)
             {
                 lines.Add($"Threat ({dangerAssessment} - {scaleLabel}): {threatSummary} dangerously close!");
                 if (isSevere) isInDanger = true;
@@ -487,21 +525,43 @@ public static class PawnUtil
     /// <summary>
     /// Decorates text by replacing pawn names with their decorated versions
     /// </summary>
-    private static string DecorateText(string text, HashSet<Pawn> relevantPawns)
+    private static string DecorateText(string text, HashSet<Pawn> relevantPawns, Pawn selfPawn = null)
     {
-        if (string.IsNullOrEmpty(text) || relevantPawns == null || !relevantPawns.Any())
+        if (string.IsNullOrEmpty(text) || relevantPawns == null || relevantPawns.Count == 0)
             return text;
 
-        // Build replacement map
-        var replacements = relevantPawns
-            .Select(p => new { Key = p.LabelShort, Value = ContextHelper.GetDecoratedName(p) })
-            .Where(x => !string.IsNullOrEmpty(x.Key))
-            .OrderByDescending(x => x.Key.Length) // Longer names first to avoid partial matches
-            .ToList();
+        List<KeyValuePair<string, string>> replacements = null;
+        string selfLabel = null;
+        foreach (var p in relevantPawns)
+        {
+            if (p == null) continue;
+            string key = p.LabelShort;
+            if (string.IsNullOrEmpty(key)) continue;
 
-        // Apply replacements
-        return replacements.Aggregate(text, (current, replacement) =>
-            current.Replace(replacement.Key, replacement.Value));
+            string replacement = selfPawn != null && p == selfPawn
+                ? selfLabel ??= "RimTalk.PawnUtil.Self".Translate().ToString()
+                : ContextHelper.GetDecoratedName(p);
+
+            replacements ??= new List<KeyValuePair<string, string>>(relevantPawns.Count);
+            replacements.Add(new KeyValuePair<string, string>(key, replacement));
+        }
+
+        if (replacements == null || replacements.Count == 0)
+            return text;
+
+        // Longer names first to avoid partial matches
+        replacements.Sort((a, b) => b.Key.Length.CompareTo(a.Key.Length));
+
+        for (int i = 0; i < replacements.Count; i++)
+        {
+            var kv = replacements[i];
+            if (text.Contains(kv.Key))
+            {
+                text = text.Replace(kv.Key, kv.Value);
+            }
+        }
+
+        return text;
     }
 
     public static (int totalCount, Pawn nearest, string summary, string dangerAssessment, bool isSevere) GetHostileThreatInfo(this Pawn pawn)
@@ -595,7 +655,12 @@ public static class PawnUtil
             isSevere = true;
         }
 
-        string summary = string.Join(", ", threatCounts.Select(kv => kv.Value > 1 ? $"{kv.Key} x{kv.Value}" : kv.Key));
+        var parts = new List<string>(threatCounts.Count);
+        foreach (var kv in threatCounts)
+        {
+            parts.Add(kv.Value > 1 ? $"{kv.Key} x{kv.Value}" : kv.Key);
+        }
+        string summary = string.Join(", ", parts);
         return (totalCount, closestPawn, summary, dangerAssessment, isSevere);
     }
 
@@ -707,8 +772,6 @@ public static class PawnUtil
         "RR_LearnRemotely"
     ];
 
-    private static readonly string[] MovementJobPatterns = ["Goto", "Flee", "Wait", "Wander"];
-
     // Resolves current attack target across ranged aiming stances and melee attack jobs
     internal static Thing GetAttackTarget(this Pawn pawn)
     {
@@ -779,26 +842,57 @@ public static class PawnUtil
         isSevere = false;
         if (pawn == null || target == null || pawn == target) return false;
 
-        if (target.IsEnemy() || target.IsPrisoner || target.IsSlave)
+        if (target.IsEnemy())
         {
             isSevere = true;
             return true;
         }
 
         float opinion = pawn.relations?.OpinionOf(target) ?? 0f;
+
+        // Prisoners or slaves cause friction unless there is positive affinity (e.g. spouse, friends)
+        if ((target.IsPrisoner || target.IsSlave) && opinion <= 20f)
+        {
+            isSevere = true;
+            return true;
+        }
+
         if (opinion <= -20f)
             isSevere = true;
 
-        var targetMemories = target.needs?.mood?.thoughts?.memories?.Memories;
-        if (targetMemories != null)
+        MemoryHookService.SyncActiveSocialThoughts(pawn, target);
+
+        if (isSevere)
+            return true;
+
+        var hediff = Hediff_Persona.GetOrAddNew(pawn);
+        if (hediff?.Memories != null)
         {
-            for (int i = 0; i < targetMemories.Count; i++)
+            int currentTick = Current.ProgramState == ProgramState.Playing ? GenTicks.TicksGame : 0;
+            const float halfLife = PawnMemoryTracker.DefaultHalfLifeDays;
+            bool hasFrictionFromMemory = false;
+
+            for (int i = 0; i < hediff.Memories.Count; i++)
             {
-                if (targetMemories[i] is Thought_MemorySocial st && st.otherPawn == pawn && st.def?.defName == "HarmedMe")
+                var m = hediff.Memories[i];
+                if (m != null && m.TargetPawnId == target.thingIDNumber)
                 {
-                    isSevere = true;
-                    return true;
+                    float score = m.GetRecallScore(currentTick, halfLife);
+                    if (score <= -30f)
+                    {
+                        isSevere = true;
+                        return true;
+                    }
+                    if (score <= -15f)
+                    {
+                        hasFrictionFromMemory = true;
+                    }
                 }
+            }
+
+            if (hasFrictionFromMemory)
+            {
+                return true;
             }
         }
 
@@ -845,19 +939,6 @@ public static class PawnUtil
             activity = AppendResearchProgress(activity);
         }
 
-        bool Near(LocalTargetInfo t) => t.IsValid && pawn.Position.InHorDistOf(t.Cell, 5f);
-
-        if (pawn.pather?.Moving == true
-            && pawn.CurJob != null
-            && !Near(pawn.CurJob.targetA)
-            && !Near(pawn.CurJob.targetB)
-            && !Near(pawn.CurJob.targetC)
-            && !MovementJobPatterns.Any(p => pawn.CurJob.def.defName.IndexOf(p, StringComparison.OrdinalIgnoreCase) >= 0)) 
-        {
-            // One flowing phrase, not a disconnected "(traveling to)" tag stapled onto a gerund.
-            activity = $"traveling to {activity}";
-        }
-
         return activity;
     }
 
@@ -871,12 +952,15 @@ public static class PawnUtil
         return $"{activity} (Project: {project.label} - {Describer.Progress(percentage)})";
     }
 
+    private static readonly TargetIndex[] AllTargetIndices = [TargetIndex.A, TargetIndex.B, TargetIndex.C];
+
     private static void AddJobTargetsToRelevantPawns(Job job, HashSet<Pawn> relevantPawns)
     {
         if (job == null) return;
 
-        foreach (TargetIndex index in Enum.GetValues(typeof(TargetIndex)))
+        for (int i = 0; i < AllTargetIndices.Length; i++)
         {
+            TargetIndex index = AllTargetIndices[i];
             try
             {
                 var target = job.GetTarget(index);

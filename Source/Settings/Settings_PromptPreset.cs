@@ -76,6 +76,15 @@ public partial class Settings
             }
         }
 
+        var selectedPreset = manager.Presets.FirstOrDefault(p => p.Id == _selectedPresetId) ??
+                             manager.Presets.FirstOrDefault(p => p.IsActive) ??
+                             manager.Presets.FirstOrDefault();
+
+        if (PromptPresetAssembler.ShouldShowHistoryWarning(selectedPreset, Memory.MemoryHookService.IsExternalMemoryModActive))
+        {
+            DrawHistoryWarningBanner(listingStandard);
+        }
+
         float currentY = listingStandard.CurHeight;
         float availableHeight = Mathf.Max(300f, containerRect.height - currentY - 10f);
 
@@ -89,6 +98,34 @@ public partial class Settings
         Rect rightPanelRect = new Rect(mainRect.x + leftPanelWidth + panelGap, mainRect.y,
             mainRect.width - (leftPanelWidth + panelGap), mainRect.height);
         DrawEntryEditor(rightPanelRect, manager, settings);
+    }
+
+    private static void DrawHistoryWarningBanner(Listing_Standard listing)
+    {
+        const float bannerHeight = 26f;
+        Rect bannerRect = listing.GetRect(bannerHeight);
+        listing.Gap(4f);
+
+        // Background & Outline
+        Widgets.DrawBoxSolid(bannerRect, new Color(0.22f, 0.16f, 0.08f, 0.90f));
+        GUI.color = new Color(0.95f, 0.65f, 0.20f, 0.85f);
+        Widgets.DrawBox(bannerRect, 1);
+
+        // Icon
+        Rect iconRect = new Rect(bannerRect.x + 6f, bannerRect.y + 5f, 16f, 16f);
+        GUI.color = new Color(1f, 0.75f, 0.20f);
+        GUI.DrawTexture(iconRect, TexButton.Info);
+
+        // Warning Label
+        Rect textRect = new Rect(iconRect.xMax + 6f, bannerRect.y, bannerRect.width - iconRect.xMax - 12f, bannerHeight);
+        TextAnchor prevAnchor = Text.Anchor;
+        Text.Anchor = TextAnchor.MiddleLeft;
+        Text.Font = GameFont.Tiny;
+        GUI.color = new Color(1f, 0.92f, 0.80f);
+        Widgets.Label(textRect, "RimTalk.Settings.PromptPreset.HistoryDisabledWarning".Translate());
+        GUI.color = Color.white;
+        Text.Font = GameFont.Small;
+        Text.Anchor = prevAnchor;
     }
 
     private void DrawPresetListPanel(Rect rect, PromptManager manager)

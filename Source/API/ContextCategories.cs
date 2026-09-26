@@ -45,6 +45,7 @@ public static class ContextCategories
         public static readonly ContextCategory Beauty = new("beauty", ContextType.Pawn);
         public static readonly ContextCategory Cleanliness = new("cleanliness", ContextType.Pawn);
         public static readonly ContextCategory Surroundings = new("surroundings", ContextType.Pawn);
+        public static readonly ContextCategory Memory = new("memory", ContextType.Pawn);
         
         private static readonly Lazy<IReadOnlyList<ContextCategory>> _all = new(() =>
             typeof(Pawn).GetFields(BindingFlags.Public | BindingFlags.Static)

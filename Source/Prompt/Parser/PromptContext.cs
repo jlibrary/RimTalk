@@ -132,6 +132,8 @@ public class PromptContext
     public bool IsMonologue => TalkRequest?.IsMonologue ?? false;
     public TalkType TalkType => TalkRequest?.TalkType ?? TalkType.Other;
     public string UserPrompt => TalkType.IsFromUser() ? TalkRequest?.RawPrompt : null;
+    public bool IsFromUser => TalkType.IsFromUser();
+    public bool IsUser => TalkType.IsFromUser();
 
     // Compatibility property - Pawns alias
     public List<Pawn> Pawns => AllPawns;

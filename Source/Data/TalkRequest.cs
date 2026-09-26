@@ -41,6 +41,8 @@ public class TalkRequest(string prompt, Pawn initiator, Pawn recipient = null, T
     public string RawJsonOverride { get; set; }
     public SleepDialogueKind SleepDialogueKind { get; set; }
     public string CausalPrompt { get; set; }
+    public string Topic { get; set; }
+    public bool TopicEvaluated { get; set; }
     
     /// <summary>
     /// All pawns participating in the dialogue (filled in sync layer)
@@ -82,6 +84,11 @@ public class TalkRequest(string prompt, Pawn initiator, Pawn recipient = null, T
         if (TalkType.IsFromUser()) return false;
         if (TalkType == TalkType.Sleep)
         {
+            return GenTicks.TicksGame - CreatedTick > 5000;
+        }
+        if (TalkType is TalkType.Event or TalkType.QuestOffer or TalkType.QuestEnd)
+        {
+            // 2 in-game hours (2500 ticks/hour * 2 = 5000 ticks)
             return GenTicks.TicksGame - CreatedTick > 5000;
         }
         int duration = 20;

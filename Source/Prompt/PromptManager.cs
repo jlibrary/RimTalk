@@ -238,7 +238,7 @@ public class PromptManager : IExposable
                     Name = "JSON Format",
                     Role = PromptRole.System,
                     Position = PromptPosition.Relative,
-                    Content = Constant.JsonInstruction + "\n{{ if settings.ApplyMoodAndSocialEffects }}\n" + Constant.SocialInstruction + "\n{{ end }}"
+                    Content = Constant.DefaultJsonFormatInstruction
                 },
                 new()
                 {
@@ -247,7 +247,14 @@ public class PromptManager : IExposable
                     Position = PromptPosition.Relative,
                     Content = "{{context}}"
                 },
-                // 2. History Section (Past dialogue lines)
+                // 2. Events & History Section
+                new()
+                {
+                    Name = "Recent Events",
+                    Role = PromptRole.User,
+                    Position = PromptPosition.Relative,
+                    Content = Constant.DefaultRecentEventsInstruction
+                },
                 new()
                 {
                     Name = "Chat History",
@@ -291,26 +298,11 @@ public class PromptManager : IExposable
         Presets ??= new List<PromptPreset>();
         VariableStore ??= new VariableStore();
 
-        // Migration: Fix legacy chat history markers and clean up orphaned mod entries
+        // Migration: Fix legacy presets and clean up orphaned mod entries
         if (Scribe.mode == LoadSaveMode.PostLoadInit || Scribe.mode == LoadSaveMode.LoadingVars)
         {
             CleanOrphanedModEntries();
-
-            foreach (var preset in Presets)
-            {
-                // If no entry is marked as history, but we have one with the legacy content tag
-                if (!preset.Entries.Any(e => e.IsMainChatHistory))
-                {
-                    var legacyEntry = preset.Entries.FirstOrDefault(e => e.Content.Trim() == "{{chat.history}}");
-                    if (legacyEntry != null)
-                    {
-                        legacyEntry.IsMainChatHistory = true;
-                    }
-                }
-
-                preset.Entries.RemoveAll(e =>
-                    string.Equals(e.Name, "Legacy Custom Instruction", StringComparison.OrdinalIgnoreCase));
-            }
+            Compatibility.PresetMigrator.Migrate(Presets);
         }
         
         // Don't initialize defaults here - game systems may not be ready
@@ -396,7 +388,7 @@ public class PromptManager : IExposable
                 preset,
                 settings.SimpleModeInstruction,
                 Constant.DefaultInstruction,
-                Constant.JsonInstruction + "\n{{ if settings.ApplyMoodAndSocialEffects }}\n" + Constant.SocialInstruction + "\n{{ end }}");
+                Constant.DefaultJsonFormatInstruction);
         }
         else
         {
@@ -422,10 +414,7 @@ public class PromptManager : IExposable
         List<(Role role, string message)> history = null;
         if (markerEntry != null)
         {
-            var marker = markerEntry.Content?.Trim().ToLowerInvariant() ?? "";
-            history = marker.Contains("history_raw")
-                ? context.GetChatHistory(simplified: false)
-                : context.GetChatHistory(simplified: true);
+            history = context.GetChatHistory(simplified: true);
         }
 
         return PromptPresetAssembler.AssembleMessages(

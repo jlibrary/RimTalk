@@ -1,7 +1,7 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using RimTalk.Data;
 using RimTalk.Util;
 using RimWorld;
 using UnityEngine;
@@ -14,11 +14,20 @@ namespace RimTalk.Service;
 /// </summary>
 public static class EventService
 {
+    private static readonly string[] KnownExternalEventModIds =
+    {
+        "saltgin.rimtalkeventmemory"
+    };
+
     /// <summary>
     /// Checks if a known external event-handling addon mod is active.
     /// </summary>
-    public static bool IsExternalEventModActive =>
-        ModsConfig.IsActive("saltgin.rimtalkeventmemory");
+    public static bool IsExternalEventModActive => ModUtil.IsAnyModActive(KnownExternalEventModIds);
+
+    /// <summary>
+    /// Returns the display names of currently active external event addon mods, fetched directly from their mod metadata.
+    /// </summary>
+    public static string GetActiveExternalEventModNames() => ModUtil.GetActiveModNames(KnownExternalEventModIds);
 
     /// <summary>
     /// Default include events toggle: false if an external event mod is active, otherwise true.
@@ -35,6 +44,10 @@ public static class EventService
         public bool IsActiveOnScreen { get; set; }
         public int Score { get; set; }
     }
+
+    private static readonly ConcurrentDictionary<string, int> RecentInjectedTicks = new();
+    private const int FatigueDurationTicks = 5000; // 2 in-game hours (2500 ticks/hr * 2)
+    private const int FatiguePenaltyScore = 250;
 
     /// <summary>
     /// Builds formatted events context string for the specified map based on active letters and past archive.
@@ -66,7 +79,10 @@ public static class EventService
                 float elapsedHours = elapsedTicks / 2500f;
 
                 int baseScore = GetEventBaseScore(letter, label);
-                int score = baseScore + 200 - (elapsedTicks / 1000);
+                float maxAllowedHours = GetEventMaxRetentionHours(letter, label);
+                if (elapsedHours > maxAllowedHours) continue;
+
+                int score = CalculateEventScore(letter, label, baseScore, elapsedTicks, true, currentTick);
 
                 candidates.Add(new ColonyEventCandidate
                 {
@@ -103,7 +119,7 @@ public static class EventService
 
                 if (elapsedHours > maxAllowedHours) continue;
 
-                int score = baseScore - (elapsedTicks / 1000);
+                int score = CalculateEventScore(letter, label, baseScore, elapsedTicks, false, currentTick);
 
                 candidates.Add(new ColonyEventCandidate
                 {
@@ -120,15 +136,15 @@ public static class EventService
 
         if (candidates.Count == 0) return null;
 
-        // Separate candidates into Recent (< 12h or Active on screen) vs Past Important (>= 12h)
+        // Separate candidates into Recent (< 12h) vs Past Important (>= 12h)
         var recentPool = candidates
-            .Where(c => c.IsActiveOnScreen || c.ElapsedHours < 12f)
+            .Where(c => c.ElapsedHours < 12f)
             .OrderByDescending(c => c.Score)
             .ThenByDescending(c => c.ArrivalTick)
             .ToList();
 
         var pastPool = candidates
-            .Where(c => !c.IsActiveOnScreen && c.ElapsedHours >= 12f)
+            .Where(c => c.ElapsedHours >= 12f)
             .OrderByDescending(c => c.Score)
             .ThenByDescending(c => c.ArrivalTick)
             .ToList();
@@ -152,39 +168,56 @@ public static class EventService
             .OrderBy(c => c.ElapsedTicks)
             .ToList();
 
-        var formattedLines = new List<string>();
+        var formattedLines = new List<string>(orderedSelection.Count);
         foreach (var c in orderedSelection)
         {
             string timeStr = FormatElapsedTime(c.ElapsedTicks);
-
-            // Fresh event (< 12 in-game hours): Include concise 1-line summary if available
-            if (c.ElapsedHours < 12f && infoLevel != PromptService.InfoLevel.Short)
-            {
-                string summary = null;
-                try
-                {
-                    summary = (c.Letter as IArchivable)?.ArchivedTooltip?.StripTags()?.Trim();
-                }
-                catch { }
-
-                if (!string.IsNullOrEmpty(summary) && !string.Equals(summary, c.Label, StringComparison.OrdinalIgnoreCase))
-                {
-                    var firstLine = summary.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim();
-                    if (!string.IsNullOrEmpty(firstLine) && !string.Equals(firstLine, c.Label, StringComparison.OrdinalIgnoreCase))
-                    {
-                        if (firstLine.Length > 55)
-                            firstLine = firstLine.Substring(0, 52) + "...";
-                        formattedLines.Add($"{c.Label} ({timeStr}): {firstLine}");
-                        continue;
-                    }
-                }
-            }
-
-            // Older memory (>= 12 hours) or short mode: Title with time only
             formattedLines.Add($"{c.Label} ({timeStr})");
         }
 
+        if (currentTick > 0 && orderedSelection.Count > 0)
+        {
+            foreach (var c in orderedSelection)
+            {
+                RecentInjectedTicks[GetEventKey(c.Letter, c.Label)] = currentTick;
+            }
+
+            if (RecentInjectedTicks.Count > 40)
+            {
+                foreach (var kvp in RecentInjectedTicks)
+                {
+                    if (currentTick - kvp.Value > 120000)
+                        RecentInjectedTicks.TryRemove(kvp.Key, out _);
+                }
+            }
+        }
+
         return formattedLines.Count > 0 ? string.Join("\n", formattedLines) : null;
+    }
+
+    private static string GetEventKey(Letter letter, string label)
+    {
+        if (letter != null && letter.ID > 0)
+            return $"{letter.ID}_{label}";
+        return label ?? "";
+    }
+
+    private static int CalculateEventScore(Letter letter, string label, int baseScore, int elapsedTicks, bool isActiveOnScreen, int currentTick)
+    {
+        int score = baseScore + (isActiveOnScreen ? 200 : 0) - (elapsedTicks / 1000);
+        if (currentTick > 0)
+        {
+            string key = GetEventKey(letter, label);
+            if (RecentInjectedTicks.TryGetValue(key, out int lastTick))
+            {
+                int diff = currentTick - lastTick;
+                if (diff >= 0 && diff < FatigueDurationTicks)
+                {
+                    score -= FatiguePenaltyScore;
+                }
+            }
+        }
+        return score;
     }
 
     private static bool IsLetterMapRelevant(Letter letter, Map map)
@@ -223,7 +256,7 @@ public static class EventService
         int baseScore = GetEventBaseScore(letter, label);
         if (baseScore >= 1000) return 48f; // Critical: 2 days (48 hours)
         if (baseScore >= 500) return 24f;  // Major: 1 day (24 hours)
-        return 6f; // Minor: 6 hours
+        return 12f; // Minor: 12 hours
     }
 
     public static string FormatElapsedTime(int elapsedTicks)
@@ -236,10 +269,5 @@ public static class EventService
         }
         int days = Mathf.Max(1, (int)(elapsedTicks / 60000f));
         return $"{days}d ago";
-    }
-
-    public static string FormatElapsedTime(int elapsedTicks, bool isKorean)
-    {
-        return FormatElapsedTime(elapsedTicks);
     }
 }

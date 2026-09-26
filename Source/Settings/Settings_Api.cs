@@ -39,7 +39,10 @@ public partial class Settings
         bool clicked = Widgets.ButtonInvisible(rect);
         if (clicked)
         {
-            SoundDefOf.Click.PlayOneShotOnCamera(null);
+            if (!isSelected)
+                SoundDefOf.Tick_High.PlayOneShotOnCamera(null);
+            else
+                SoundDefOf.Click.PlayOneShotOnCamera(null);
         }
 
         Rect content = rect.ContractedBy(5f);
@@ -320,7 +323,11 @@ public partial class Settings
         if (Mouse.IsOver(cloudSegRect)) Widgets.DrawHighlight(cloudSegRect);
         if (Widgets.ButtonInvisible(cloudSegRect))
         {
-            SoundDefOf.Click.PlayOneShotOnCamera(null);
+            if (!isCloud)
+                SoundDefOf.Tick_High.PlayOneShotOnCamera(null);
+            else
+                SoundDefOf.Click.PlayOneShotOnCamera(null);
+
             settings.UseCloudProviders = true;
         }
         TextAnchor oldAnchor = Text.Anchor;
@@ -335,7 +342,11 @@ public partial class Settings
         if (Mouse.IsOver(localSegRect)) Widgets.DrawHighlight(localSegRect);
         if (Widgets.ButtonInvisible(localSegRect))
         {
-            SoundDefOf.Click.PlayOneShotOnCamera(null);
+            if (!isLocal)
+                SoundDefOf.Tick_High.PlayOneShotOnCamera(null);
+            else
+                SoundDefOf.Click.PlayOneShotOnCamera(null);
+
             settings.UseCloudProviders = false;
             settings.LocalConfig.Provider = AIProvider.Local;
         }

@@ -98,6 +98,7 @@
     <RimTalk.Settings.PromptPreset.Depth>Глубина:</RimTalk.Settings.PromptPreset.Depth>
     <RimTalk.Settings.PromptPreset.ModVariables>Переменные мода</RimTalk.Settings.PromptPreset.ModVariables>
     <RimTalk.Settings.PromptPreset.VariablePreviewHint>Показывает все доступные объекты, свойства и функции. Значения из игры отображаются при наличии.</RimTalk.Settings.PromptPreset.VariablePreviewHint>
+    <RimTalk.Settings.PromptPreset.HistoryDisabledWarning>История диалогов (Chat History) отключена. Поселенцы не будут помнить недавние разговоры, если другой мод не предоставляет историю.</RimTalk.Settings.PromptPreset.HistoryDisabledWarning>
     
     <!-- Import/Export -->
     <RimTalk.Settings.PromptPreset.Export>Экспорт</RimTalk.Settings.PromptPreset.Export>
@@ -243,20 +244,20 @@
     <RimTalk.Settings.BubbleModeTooltip>Выберите способ отображения облачков диалога над персонажами.</RimTalk.Settings.BubbleModeTooltip>
     <RimTalk.Settings.BubbleDuration>Длительность отображения облачков</RimTalk.Settings.BubbleDuration>
 
-    <RimTalk.Settings.AIInstructionPrompt>Инструкция для ИИ (модель: {0})</RimTalk.Settings.AIInstructionPrompt>
+    <RimTalk.Settings.AIInstructionPrompt>Инструкция для ИИ</RimTalk.Settings.AIInstructionPrompt>
     <RimTalk.Settings.AutoIncludedTip>Совет: Детали пешки (черты, отношения, раса, возраст и т. д.) включаются автоматически. Пишите общие инструкции, которые работают для всех персонажей и колоний.</RimTalk.Settings.AutoIncludedTip>
     <RimTalk.Settings.RateLimitWarning>Предупреждение: Более длинные запросы будут потреблять больше токенов и быстрее достигать лимитов.</RimTalk.Settings.RateLimitWarning>
-    <RimTalk.Settings.TokenInfo>Текущее: ~{0} токенов | Рекомендуемый лимит: {1} токенов</RimTalk.Settings.TokenInfo>
+    <RimTalk.Settings.TokenInfo>Токены: {0}</RimTalk.Settings.TokenInfo>
     <RimTalk.Settings.ResetToDefault>Сбросить по умолчанию</RimTalk.Settings.ResetToDefault>
     <RimTalk.Settings.EventFilterTip>Совет: Только отмеченные типы событий будут обрабатываться ИИ. Снимите флажки с типов, на которые вы не хотите, чтобы ИИ реагировал.</RimTalk.Settings.EventFilterTip>
     <RimTalk.Settings.NoArchivableTypes>Архивируемые типы не найдены. Попробуйте начать игру, а затем повторить сканирование.</RimTalk.Settings.NoArchivableTypes>
 
     <!-- Dialog_PersonaEditor.cs -->
-    <RimTalk.PersonaEditor.Title>Стиль разговора {0}</RimTalk.PersonaEditor.Title>
-    <RimTalk.PersonaEditor.Instruct>Опишите, как этот колонист говорит и ведет себя. Для лучших результатов будьте кратки (до 300 символов).</RimTalk.PersonaEditor.Instruct>
+    <RimTalk.PersonaEditor.Title>Персона {0}</RimTalk.PersonaEditor.Title>
+    <RimTalk.PersonaEditor.Instruct>Опишите, как этот колонист говорит и ведет себя. Для лучших результатов будьте кратки.</RimTalk.PersonaEditor.Instruct>
     <RimTalk.PersonaEditor.Characters>Символы: {0}</RimTalk.PersonaEditor.Characters>
     <RimTalk.PersonaEditor.Save>Сохранить</RimTalk.PersonaEditor.Save>
-    <RimTalk.PersonaEditor.Updated>Обновлен стиль разговора для {0}</RimTalk.PersonaEditor.Updated>
+    <RimTalk.PersonaEditor.Updated>Персона обновлена для {0}</RimTalk.PersonaEditor.Updated>
     <RimTalk.PersonaEditor.TalkFrequencyDesc>Управляет тем, как часто этот колонист начинает разговоры. Даже на самом низком уровне они все равно будут отвечать, когда с ними говорят другие. Это влияет только на частоту инициации разговора.</RimTalk.PersonaEditor.TalkFrequencyDesc>
     <RimTalk.PersonaEditor.Chattiness>Частота диалогов</RimTalk.PersonaEditor.Chattiness>
     <RimTalk.PersonaEditor.Quiet>Тихий</RimTalk.PersonaEditor.Quiet>
@@ -265,6 +266,78 @@
     <RimTalk.PersonaEditor.SmartGen>Умная генерация</RimTalk.PersonaEditor.SmartGen>
     <RimTalk.PersonaEditor.RollGen>Случайная генерация</RimTalk.PersonaEditor.RollGen>
     <RimTalk.PersonaEditor.Clear>Очистить</RimTalk.PersonaEditor.Clear>
+    <RimTalk.PersonaEditor.TabPersonality>Личность</RimTalk.PersonaEditor.TabPersonality>
+    <RimTalk.PersonaEditor.TabMemories>Воспоминания</RimTalk.PersonaEditor.TabMemories>
+    <RimTalk.Memory.ConsolidateNow>Очистить забытые</RimTalk.Memory.ConsolidateNow>
+    <RimTalk.Memory.ClearAll>Очистить все</RimTalk.Memory.ClearAll>
+    <RimTalk.Memory.ClearAllConfirm>Вы уверены, что хотите удалить все воспоминания для {0}?</RimTalk.Memory.ClearAllConfirm>
+    <RimTalk.Memory.ConsolidationStarted>Забытые воспоминания удалены для {0}.</RimTalk.Memory.ConsolidationStarted>
+    <RimTalk.Memory.Cleared>Все воспоминания для {0} были удалены.</RimTalk.Memory.Cleared>
+    <RimTalk.Memory.ActiveOrdersNone>[Активные указания]: Нет (Нет активных указаний игрока)</RimTalk.Memory.ActiveOrdersNone>
+    <RimTalk.Memory.ActiveOrdersHeader>АКТИВНЫЕ УКАЗАНИЯ ИГРОКА:</RimTalk.Memory.ActiveOrdersHeader>
+    <RimTalk.Memory.CoreTraumaPrefix>[Психотравма]: </RimTalk.Memory.CoreTraumaPrefix>
+    <RimTalk.Memory.CoreTraumaNone>[Психотравма]: Нет (Психически стабилен)</RimTalk.Memory.CoreTraumaNone>
+    <RimTalk.Memory.TableTarget>Цель</RimTalk.Memory.TableTarget>
+    <RimTalk.Memory.TableEvent>Событие</RimTalk.Memory.TableEvent>
+    <RimTalk.Memory.TableTime>Время</RimTalk.Memory.TableTime>
+    <RimTalk.Memory.TableWeight>Вес</RimTalk.Memory.TableWeight>
+    <RimTalk.Memory.WeightTip>Текущий вес: {0} (Базовый: {1})</RimTalk.Memory.WeightTip>
+    <RimTalk.Memory.WeightMilestoneTip>Постоянная веха (Вес: {0})</RimTalk.Memory.WeightMilestoneTip>
+    <RimTalk.Memory.TimeTip>Произошло: {0} ({1} назад)</RimTalk.Memory.TimeTip>
+    <RimTalk.Memory.TimeJustNow>Только что</RimTalk.Memory.TimeJustNow>
+    <RimTalk.Memory.TableNote>Описание</RimTalk.Memory.TableNote>
+    <RimTalk.Memory.NoMemories>Воспоминаний пока не записано.</RimTalk.Memory.NoMemories>
+    <RimTalk.Memory.TargetPlayer>Игрок</RimTalk.Memory.TargetPlayer>
+    <RimTalk.Memory.TargetSelfAll>Сам</RimTalk.Memory.TargetSelfAll>
+    <RimTalk.Memory.ColonySeniority>Стаж в колонии: {0} л.</RimTalk.Memory.ColonySeniority>
+    <RimTalk.Memory.HelpTitle>Воспоминания и директивы</RimTalk.Memory.HelpTitle>
+    <RimTalk.Memory.HelpDesc>Это экспериментальная функция, которая будет дорабатываться на основе отзывов.
+
+• Указания игрока (до 5)
+- Назначение: приказы или роли, отданные в диалоге, обобщаются ИИ в ключевые директивы для всех разговоров.
+- Изменение/удаление: обновляйте или отменяйте их в новых диалогах или удаляйте прямо в этом окне кнопкой [×].
+(Соблюдение сложных или отрицательных инструкций зависит от возможностей модели ИИ)
+
+• Психотравмы (до 3)
+Тяжелые потрясения (например, утрата близкого) влияют на все разговоры до исцеления.
+
+• Межличностные воспоминания (2 главных)
+Вспоминает 2 самых ярких или недавних события, пережитых с данным собеседником.
+
+• Вехи (★)
+Постоянные события в отношениях (например, свадьба или спасение), естественно обогащающие их разговоры.</RimTalk.Memory.HelpDesc>
+    <RimTalk.Memory.DisabledWarning>Память пешек отключена в настройках.\nВы можете включить её в Настройки мода > Фильтры контекста.</RimTalk.Memory.DisabledWarning>
+
+    <!-- Episodic Memory Notes -->
+    <RimTalk.Memory.AttackedBy>атакован(а) {0}</RimTalk.Memory.AttackedBy>
+    <RimTalk.Memory.InsultedBy>оскорблен(а) {0}</RimTalk.Memory.InsultedBy>
+    <RimTalk.Memory.SlightedBy>пренебрежительно встречен(а) {0}</RimTalk.Memory.SlightedBy>
+    <RimTalk.Memory.IHarmed>напал(а) на {0}</RimTalk.Memory.IHarmed>
+    <RimTalk.Memory.IRescued>спас(ла) {0}</RimTalk.Memory.IRescued>
+    <RimTalk.Memory.IBotchedSurgery>провалил(а) операцию на {0}</RimTalk.Memory.IBotchedSurgery>
+    <RimTalk.Memory.IRecruited>завербовал(а) {0}</RimTalk.Memory.IRecruited>
+    <RimTalk.Memory.IInsulted>оскорбил(а) {0}</RimTalk.Memory.IInsulted>
+    <RimTalk.Memory.SavedLife>{0} спас(ла) жизнь при смерти</RimTalk.Memory.SavedLife>
+    <RimTalk.Memory.RescuedBy>спасен(а) {0}</RimTalk.Memory.RescuedBy>
+    <RimTalk.Memory.IExecuted>казнил(а) {0}</RimTalk.Memory.IExecuted>
+    <RimTalk.Memory.ExecutedPrisoner>казнил(а) заключенного {0}</RimTalk.Memory.ExecutedPrisoner>
+    <RimTalk.Memory.IKilled>убил(а) {0}</RimTalk.Memory.IKilled>
+    <RimTalk.Memory.KilledColonistWithoutRemorse>убил(а) поселенца {0} без сожаления</RimTalk.Memory.KilledColonistWithoutRemorse>
+    <RimTalk.Memory.KilledColonistGuilt>терзается чувством вины за убийство поселенца {0}</RimTalk.Memory.KilledColonistGuilt>
+    <RimTalk.Memory.WitnessMurderCallous>{0} хладнокровно добил(а) поселенца {1}</RimTalk.Memory.WitnessMurderCallous>
+    <RimTalk.Memory.WitnessMurderHorrified>{0} в ужасе после убийства поселенца {1}</RimTalk.Memory.WitnessMurderHorrified>
+    <RimTalk.Memory.KilledInBattle>убил(а) {0} в бою</RimTalk.Memory.KilledInBattle>
+    <RimTalk.Memory.MurderedFellowColonist>жестоко убил(а) поселенца {0}</RimTalk.Memory.MurderedFellowColonist>
+    <RimTalk.Memory.BecameLovers>стали возлюбленными</RimTalk.Memory.BecameLovers>
+    <RimTalk.Memory.DidSurgery>успешно провел(а) операцию</RimTalk.Memory.DidSurgery>
+    <RimTalk.Memory.CapturedMe>схвачен(а) и заключен(а) под стражу</RimTalk.Memory.CapturedMe>
+    <RimTalk.Memory.ICaptured>захватил(а) и арестовал(а)</RimTalk.Memory.ICaptured>
+    <RimTalk.Memory.SocialFight>устроил(а) жестокую драку</RimTalk.Memory.SocialFight>
+    <RimTalk.Memory.Marriage>сыграли радостную свадьбу</RimTalk.Memory.Marriage>
+    <RimTalk.Memory.TendedMe>бережно перевязал(а) раны</RimTalk.Memory.TendedMe>
+    <RimTalk.Memory.TendedPatient>обработал(а) раны</RimTalk.Memory.TendedPatient>
+    <RimTalk.Memory.TraumaWithTarget>горе и травма из-за {0} ({1})</RimTalk.Memory.TraumaWithTarget>
+    <RimTalk.Memory.TraumaWithoutTarget>горе и травма из-за {0}</RimTalk.Memory.TraumaWithoutTarget>
 
     <!-- Settings_Api.cs -->
     <RimTalk.Settings.QuickSetupSubtitle>Выберите способ подключения ИИ для активации диалогов.</RimTalk.Settings.QuickSetupSubtitle>
@@ -378,17 +451,18 @@
     <RimTalk.Settings.Preset.Custom.Desc>Настройки, определённые пользователем</RimTalk.Settings.Preset.Custom.Desc>
 
     <RimTalk.Settings.ContextOptions>Параметры контекста</RimTalk.Settings.ContextOptions>
-    <RimTalk.Settings.EnableContextOptimization>Включить оптимизацию контекста</RimTalk.Settings.EnableContextOptimization>
-    <RimTalk.Settings.EnableContextOptimization.Tooltip>Оптимизирует контекст для уменьшения числа токенов, сохраняя при этом ключевую информацию.\nПримечание: это может снизить качество генерируемого диалога.</RimTalk.Settings.EnableContextOptimization.Tooltip>
+    <RimTalk.Settings.EnableContextOptimization>Сжатие контекста</RimTalk.Settings.EnableContextOptimization>
+    <RimTalk.Settings.EnableContextOptimization.Tooltip>Полезно, если генерация диалогов на локальных моделях занимает слишком много времени.\nОпускает или упрощает часть контекста для ускорения, но может снизить качество диалогов.</RimTalk.Settings.EnableContextOptimization.Tooltip>
     <RimTalk.Settings.ConversationHistoryCount>Количество предыдущих сессий диалога для включения</RimTalk.Settings.ConversationHistoryCount>
     <RimTalk.Settings.ConversationHistoryCount.Tooltip>Каждая сессия содержит несколько реплик, что может значительно увеличить число токенов</RimTalk.Settings.ConversationHistoryCount.Tooltip>
     <RimTalk.Settings.MaxPawnContextCount>Максимальное количество пешек для включения</RimTalk.Settings.MaxPawnContextCount>
     <RimTalk.Settings.MaxPawnContextCount.Tooltip>Определяет максимальное количество пешек, которые могут участвовать в разговоре</RimTalk.Settings.MaxPawnContextCount.Tooltip>
     <RimTalk.Settings.MaxEventsCount>Максимальное количество событий</RimTalk.Settings.MaxEventsCount>
     <RimTalk.Settings.MaxEventsCount.Tooltip>Определяет максимальное количество активных событий и писем-уведомлений колонии в контексте</RimTalk.Settings.MaxEventsCount.Tooltip>
-    <RimTalk.Settings.IncludeEvents>Включить события поселения</RimTalk.Settings.IncludeEvents>
+    <RimTalk.Settings.IncludeEvents>События поселения</RimTalk.Settings.IncludeEvents>
     <RimTalk.Settings.IncludeEvents.Tooltip>Определяет, будут ли активные события и письма-уведомления включаться в контекст, и задает их максимальное количество</RimTalk.Settings.IncludeEvents.Tooltip>
-    <RimTalk.Settings.ExternalEventModDetected>Обнаружен внешний мод событий (RimTalk Event+). Встроенные события по умолчанию отключены для предотвращения дублирования контекста. Установите этот флажок, если хотите включить их.</RimTalk.Settings.ExternalEventModDetected>
+    <RimTalk.Settings.ExternalEventModDetected>Обнаружен {0} (содержимое может дублироваться в запросах при включении обоих)</RimTalk.Settings.ExternalEventModDetected>
+    <RimTalk.Settings.ExternalMemoryModDetected>Обнаружен {0} (содержимое может дублироваться в запросах при включении обоих)</RimTalk.Settings.ExternalMemoryModDetected>
 
     <RimTalk.Settings.PawnInfo>Информация о пешке</RimTalk.Settings.PawnInfo>
     <RimTalk.Settings.IncludeRace>Расу</RimTalk.Settings.IncludeRace>
@@ -417,11 +491,14 @@
     <RimTalk.Settings.IncludeWealth>Богатство колонии</RimTalk.Settings.IncludeWealth>
     <RimTalk.Settings.IncludeTopicKeywords>Создавать новые темы для разговоров</RimTalk.Settings.IncludeTopicKeywords>
     <RimTalk.Settings.IncludeTopicKeywords.Tooltip>Если у пешек нет конкретных событий или контекста для обсуждения, случайным образом может создаваться новая тема для разговора.</RimTalk.Settings.IncludeTopicKeywords.Tooltip>
+    <RimTalk.Settings.EnableMemory>Воспоминания и директивы</RimTalk.Settings.EnableMemory>
+    <RimTalk.Settings.EnableMemory.Tooltip>Запоминает ключевые события между пешками (спасения, конфликты, утраты), а также прямые указания игрока, формируя отношение в диалогах. Работает на основе игровых данных без дополнительных затрат API и просадок производительности. Память о событиях постепенно угасает со временем.</RimTalk.Settings.EnableMemory.Tooltip>
 
     <!-- DebugWindow.cs -->
     <RimTalk.DebugWindow.ViewByTime>По времени</RimTalk.DebugWindow.ViewByTime>
     <RimTalk.DebugWindow.ViewByPawn>По персонажам</RimTalk.DebugWindow.ViewByPawn>
     <RimTalk.DebugWindow.ViewTalkRequests>Запросы</RimTalk.DebugWindow.ViewTalkRequests>
+    <RimTalk.DebugWindow.ViewMemoryLog>Воспоминания и директивы</RimTalk.DebugWindow.ViewMemoryLog>
     <RimTalk.DebugWindow.FilterPawn>Имя</RimTalk.DebugWindow.FilterPawn>
     <RimTalk.DebugWindow.Search>Поиск</RimTalk.DebugWindow.Search>
     <RimTalk.DebugWindow.State>Состояние</RimTalk.DebugWindow.State>
@@ -502,6 +579,24 @@
     <RimTalk.DebugWindow.HeaderElapsed>Время</RimTalk.DebugWindow.HeaderElapsed>
     <RimTalk.DebugWindow.HeaderInitiator>Инициатор</RimTalk.DebugWindow.HeaderInitiator>
     <RimTalk.DebugWindow.HeaderRecipient>Получатель</RimTalk.DebugWindow.HeaderRecipient>
+    <RimTalk.DebugWindow.HeaderTick>Тик</RimTalk.DebugWindow.HeaderTick>
+    <RimTalk.DebugWindow.HeaderTarget>Цель</RimTalk.DebugWindow.HeaderTarget>
+    <RimTalk.DebugWindow.HeaderChangeType>Изменение</RimTalk.DebugWindow.HeaderChangeType>
+    <RimTalk.DebugWindow.HeaderWeight>Вес</RimTalk.DebugWindow.HeaderWeight>
+    <RimTalk.DebugWindow.HeaderEventNote>Событие и содержание</RimTalk.DebugWindow.HeaderEventNote>
+    <RimTalk.DebugWindow.HeaderEventKey>Ключ события</RimTalk.DebugWindow.HeaderEventKey>
+    <RimTalk.DebugWindow.HeaderNoteContent>Содержание памяти / указания</RimTalk.DebugWindow.HeaderNoteContent>
+    <RimTalk.DebugWindow.HeaderReasonContext>Причина срабатывания / Контекст</RimTalk.DebugWindow.HeaderReasonContext>
+    <RimTalk.DebugWindow.MemoryTypeAdded>Добавлено</RimTalk.DebugWindow.MemoryTypeAdded>
+    <RimTalk.DebugWindow.MemoryTypeUpdated>Обновлено</RimTalk.DebugWindow.MemoryTypeUpdated>
+    <RimTalk.DebugWindow.MemoryTypeDirectiveSet>Указание задано</RimTalk.DebugWindow.MemoryTypeDirectiveSet>
+    <RimTalk.DebugWindow.MemoryTypeDirectiveRemoved>Указание удалено</RimTalk.DebugWindow.MemoryTypeDirectiveRemoved>
+    <RimTalk.DebugWindow.MemoryTypeCoreTraumaAdded>Психотравма</RimTalk.DebugWindow.MemoryTypeCoreTraumaAdded>
+    <RimTalk.DebugWindow.MemoryTypePurgedDecay>Удалено (забыто)</RimTalk.DebugWindow.MemoryTypePurgedDecay>
+    <RimTalk.DebugWindow.MemoryTypeEvicted>Вытеснено (лимит)</RimTalk.DebugWindow.MemoryTypeEvicted>
+    <RimTalk.DebugWindow.MemoryTypeConsolidated>Сокращено</RimTalk.DebugWindow.MemoryTypeConsolidated>
+    <RimTalk.DebugWindow.MemoryTypeCleared>Очищено</RimTalk.DebugWindow.MemoryTypeCleared>
+    <RimTalk.DebugWindow.MemoryTypeMilestoneRecorded>Веха</RimTalk.DebugWindow.MemoryTypeMilestoneRecorded>
     <RimTalk.DebugWindow.HistoryCleared>История разговоров очищена.</RimTalk.DebugWindow.HistoryCleared>
     <RimTalk.DebugWindow.FormatEntry>Запись</RimTalk.DebugWindow.FormatEntry>
     <RimTalk.DebugWindow.FormatRole>Роль</RimTalk.DebugWindow.FormatRole>
@@ -597,8 +692,8 @@
 
     <!-- VersionSwitcher.cs -->
     <RimTalk.VersionSwitcher.RollbackLabel>Откат к предыдущей версии</RimTalk.VersionSwitcher.RollbackLabel>
-    <RimTalk.VersionSwitcher.SwitchToPrevious>Скопировать старую версию (Локальный мод)</RimTalk.VersionSwitcher.SwitchToPrevious>
-    <RimTalk.VersionSwitcher.SwitchToSpecificVer>Скопировать {0} (Локальный мод)</RimTalk.VersionSwitcher.SwitchToSpecificVer>
+    <RimTalk.VersionSwitcher.SwitchToPrevious>Установить предыдущую версию (Локальный мод)</RimTalk.VersionSwitcher.SwitchToPrevious>
+    <RimTalk.VersionSwitcher.SwitchToSpecificVer>Установить {0} (Локальный мод)</RimTalk.VersionSwitcher.SwitchToSpecificVer>
     <RimTalk.VersionSwitcher.NoPreviousDllFound>Файлы предыдущей версии не найдены (LastVersion/).</RimTalk.VersionSwitcher.NoPreviousDllFound>
     <RimTalk.VersionSwitcher.ConfirmRollbackTitle>Откат к версии {0}</RimTalk.VersionSwitcher.ConfirmRollbackTitle>
     <RimTalk.VersionSwitcher.ConfirmRollbackPrompt>Скопировать в локальную папку 'RimWorld/Mods/RimTalk'?\n\nЭто создаст локальную копию, которая не будет перезаписана обновлениями Steam.</RimTalk.VersionSwitcher.ConfirmRollbackPrompt>
@@ -637,4 +732,7 @@
     <RimTalk.BubbleSettings.BorderNormal>Обычная</RimTalk.BubbleSettings.BorderNormal>
     <RimTalk.BubbleSettings.BorderThick>Толстая</RimTalk.BubbleSettings.BorderThick>
     <RimTalk.BubbleSettings.OpenWindow>Открыть настройки...</RimTalk.BubbleSettings.OpenWindow>
+
+    <!-- Context / Pawn Status -->
+    <RimTalk.PawnUtil.Self>себя</RimTalk.PawnUtil.Self>
 </LanguageData>

@@ -388,6 +388,8 @@ public static class ContextHookRegistry
     
     public static string ApplyPawnHooks(ContextCategory category, Pawn pawn, string originalValue)
     {
+        if (!HasAnyHooks) return originalValue;
+
         // Override hooks - first successful one wins
         if (OverrideHooks.TryGetValue(category, out var overrideList))
         {
@@ -449,6 +451,8 @@ public static class ContextHookRegistry
     
     public static string ApplyEnvironmentHooks(ContextCategory category, Map map, string originalValue)
     {
+        if (!HasAnyHooks) return originalValue;
+
         // Override hooks
         if (OverrideHooks.TryGetValue(category, out var overrideList))
         {
@@ -513,11 +517,13 @@ public static class ContextHookRegistry
     public static IEnumerable<(string Name, InjectPosition Position, int Priority, Delegate Provider)>
         GetInjectedSectionsAt(ContextCategory anchor)
     {
-        return InjectedSections
-            .Where(s => s.Anchor.Equals(anchor))
-            .OrderBy(s => s.Position)
-            .ThenBy(s => s.Priority)
-            .Select(s => (s.Name, s.Position, s.Priority, s.Provider));
+        if (InjectedSections.Count == 0) yield break;
+        for (int i = 0; i < InjectedSections.Count; i++)
+        {
+            var s = InjectedSections[i];
+            if (s.Anchor.Equals(anchor))
+                yield return (s.Name, s.Position, s.Priority, s.Provider);
+        }
     }
     
     public static Func<Pawn, string> GetInjectedPawnSection(string name)

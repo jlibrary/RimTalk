@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
 using RimTalk.Data;
@@ -12,6 +11,8 @@ namespace RimTalk.Patches;
 [HarmonyPatch(typeof(GameDataSaveLoader), nameof(GameDataSaveLoader.SaveGame))]
 public static class SaveGamePatch
 {
+    private static readonly FieldInfo AgeTicksField = AccessTools.Field(typeof(LogEntry), "ticksAbs");
+
     [HarmonyPrefix]
     public static void PreSaveGame()
     {
@@ -37,8 +38,7 @@ public static class SaveGamePatch
                     rimTalkEntry.ExtraSentencePacks ?? []
                 );
 
-                var ageTicksField = typeof(LogEntry).GetField("ticksAbs", BindingFlags.NonPublic | BindingFlags.Instance);
-                ageTicksField?.SetValue(newEntry, rimTalkEntry.TicksAbs);
+                AgeTicksField?.SetValue(newEntry, rimTalkEntry.TicksAbs);
                     
                 worldComp.SetTextFor(newEntry, rimTalkEntry.CachedString);
 

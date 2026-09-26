@@ -33,6 +33,7 @@ public class PlayLogEntry_RimTalkInteraction : PlayLogEntry_Interaction
     public int ConversationId { get; set; } = -1;
     public InteractionType InteractionType { get; set; } = InteractionType.None;
     public TalkType TalkType { get; set; } = TalkType.Other;
+    public bool HasDirective { get; set; }
 
     // Override this method to customize the log message
     protected override string ToGameStringFromPOV_Worker(Thing pov, bool forceLog)

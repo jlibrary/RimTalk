@@ -1,19 +1,29 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using HarmonyLib;
 using RimTalk.Data;
 using RimTalk.Source.Data;
 using RimWorld;
 using Verse;
-using Cache = RimTalk.Data.Cache;
 
 namespace RimTalk.Patch;
 
+[StaticConstructorOnStartup]
 [HarmonyPatch(typeof(Archive), nameof(Archive.Add))]
 public static class ArchivePatch
 {
+    static ArchivePatch()
+    {
+        Settings.MigrateArchivableSettings();
+    }
+
     public static void Prefix(IArchivable archivable)
+    {
+        ProcessArchivable(archivable);
+    }
+
+    public static void ProcessArchivable(IArchivable archivable)
     {
         if (!ShouldProcessArchivable(archivable))
         {
@@ -28,6 +38,27 @@ public static class ArchivePatch
         TalkRequestPool.Add(prompt, mapId: eventMap?.uniqueID ?? -1, talkType: talkType);
     }
 
+    public static void SyncActiveLetters()
+    {
+        var letterStack = Find.LetterStack;
+        if (letterStack?.LettersListForReading == null) return;
+
+        int currentTick = GenTicks.TicksGame;
+        var activeRequests = TalkRequestPool.GetAllActive().ToList();
+
+        foreach (var letter in letterStack.LettersListForReading)
+        {
+            if (letter == null) continue;
+            int arrivalTick = letter.arrivalTick > 0 ? letter.arrivalTick : currentTick;
+            if (currentTick - arrivalTick > 5000) continue;
+
+            var (prompt, _) = GeneratePrompt(letter);
+            if (activeRequests.Any(r => r.Prompt == prompt)) continue;
+
+            ProcessArchivable(letter);
+        }
+    }
+
     private static bool ShouldProcessArchivable(IArchivable archivable)
     {
         var settings = Settings.Get();
@@ -39,8 +70,13 @@ public static class ArchivePatch
             if (!enabledTypes.TryGetValue("Verse.Message", out var isTypeEnabled) || !isTypeEnabled)
                 return false;
 
-            if (message.def != null && enabledTypes.TryGetValue(message.def.defName, out var isDefEnabled) && !isDefEnabled)
-                return false;
+            if (message.def != null)
+            {
+                if (enabledTypes.TryGetValue("Verse.Message:" + message.def.defName, out var isMsgDefEnabled))
+                    return isMsgDefEnabled;
+                if (enabledTypes.TryGetValue(message.def.defName, out var isDefEnabled))
+                    return isDefEnabled;
+            }
 
             return true;
         }
@@ -54,13 +90,22 @@ public static class ArchivePatch
 
         if (archivable is Letter letter && letter.def != null)
         {
-            if (enabledTypes.TryGetValue(letter.def.defName, out var isDefEnabled) && !isDefEnabled)
+            if (enabledTypes.TryGetValue(letter.def.defName, out var isDefEnabled))
             {
-                return false;
+                if (!isDefEnabled && IsSharedMessageDef(letter.def.defName))
+                {
+                    return isEnabled;
+                }
+                return isDefEnabled;
             }
         }
 
         return true;
+    }
+
+    private static bool IsSharedMessageDef(string defName)
+    {
+        return DefDatabase<MessageTypeDef>.GetNamedSilentFail(defName) != null;
     }
 
 
@@ -69,42 +114,98 @@ public static class ArchivePatch
         var talkType = TalkType.Event;
         string prompt;
         string targetSuffix = GetTargetSuffix(archivable);
+        string label = archivable?.ArchivedLabel?.StripTags()?.Trim();
 
         if (archivable is ChoiceLetter { quest: not null } choiceLetter)
         {
             if (choiceLetter.quest.State == QuestState.NotYetAccepted)
             {
                 talkType = TalkType.QuestOffer;
-                prompt = $"(Talk if you want to accept quest)\n[{choiceLetter.quest.description.ToString().StripTags()}]";
+                string desc = TruncateEventDescription(choiceLetter.quest.description.ToString());
+                prompt = !string.IsNullOrWhiteSpace(label)
+                    ? $"(Talk if you want to accept quest: {label})\n[{desc}]"
+                    : $"(Talk if you want to accept quest)\n[{desc}]";
             }
             else
             {
                 talkType = TalkType.QuestEnd;
-                prompt = $"(Talk about quest result)\n[{archivable.ArchivedTooltip.StripTags()}]";
-            }
-        }
-        else if (archivable is Letter and not ChoiceLetter)
-        {
-            var label = archivable.ArchivedLabel ?? string.Empty;
-            var tip = archivable.ArchivedTooltip ?? string.Empty;
-            
-            if (ContainsQuestReference(label, tip))
-            {
-                talkType = TalkType.QuestEnd;
-                prompt = $"(Talk about quest result)\n[{tip.StripTags()}]";
-            }
-            else
-            {
-                prompt = $"(Talk about incident)\n[{tip.StripTags()}{targetSuffix}]";
+                string desc = TruncateEventDescription(archivable.ArchivedTooltip);
+                prompt = !string.IsNullOrWhiteSpace(label)
+                    ? $"(Talk about quest result: {label})\n[{desc}]"
+                    : $"(Talk about quest result)\n[{desc}]";
             }
         }
         else
         {
-            // Other events
-            prompt = $"(Talk about incident)\n[{archivable.ArchivedTooltip.StripTags()}{targetSuffix}]";
+            var tip = archivable?.ArchivedTooltip ?? string.Empty;
+            if (ContainsQuestReference(label ?? string.Empty, tip))
+            {
+                talkType = TalkType.QuestEnd;
+                string desc = TruncateEventDescription(tip);
+                prompt = !string.IsNullOrWhiteSpace(label)
+                    ? $"(Talk about quest result: {label})\n[{desc}]"
+                    : $"(Talk about quest result)\n[{desc}]";
+            }
+            else
+            {
+                string desc = TruncateEventDescription(tip);
+                prompt = !string.IsNullOrWhiteSpace(label)
+                    ? $"(Talk about incident: {label})\n[{desc}{targetSuffix}]"
+                    : $"(Talk about incident)\n[{desc}{targetSuffix}]";
+            }
         }
 
         return (prompt, talkType);
+    }
+
+    private static string TruncateEventDescription(string text, int maxLength = 140)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return string.Empty;
+        var cleaned = text.StripTags().Trim();
+        if (cleaned.Length <= maxLength) return cleaned;
+
+        var paragraphs = cleaned.Split(new[] { "\r\n\r\n", "\n\n", "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+        if (paragraphs.Length > 1)
+        {
+            var sb = new StringBuilder();
+            foreach (var p in paragraphs)
+            {
+                var trimmed = p.Trim();
+                if (trimmed.Length == 0) continue;
+
+                if (sb.Length + trimmed.Length + 1 > maxLength)
+                {
+                    if (sb.Length == 0)
+                    {
+                        return TruncateToSentenceOrLength(trimmed, maxLength);
+                    }
+                    break;
+                }
+
+                if (sb.Length > 0) sb.Append("\n");
+                sb.Append(trimmed);
+            }
+
+            if (sb.Length > 0)
+                return sb.ToString();
+        }
+
+        return TruncateToSentenceOrLength(cleaned, maxLength);
+    }
+
+    private static string TruncateToSentenceOrLength(string text, int maxLength)
+    {
+        if (text.Length <= maxLength) return text;
+        int maxScan = Math.Min(maxLength + 20, text.Length);
+        for (int i = maxScan - 1; i >= 30; i--)
+        {
+            char c = text[i];
+            if (c == '.' || c == '!' || c == '?')
+            {
+                return text.Substring(0, i + 1).Trim();
+            }
+        }
+        return text.Substring(0, maxLength).Trim() + "...";
     }
 
     private static string GetTargetSuffix(IArchivable archivable)

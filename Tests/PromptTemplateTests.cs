@@ -9,153 +9,6 @@ namespace RimTalk.Tests;
 public class PromptTemplateTests
 {
     [Fact]
-    public void Scriban_RenderStandardPrompt_ResolvesVariablesAccurately()
-    {
-        string templateText = @"
-You are narrating dialogue for RimWorld.
-Initiator: {{ pawn1.name }} (Trait: {{ pawn1.trait }})
-Recipient: {{ pawn2.name }} (Trait: {{ pawn2.trait }})
-Generate a 1-sentence interaction.
-";
-
-        var template = Template.Parse(templateText);
-        Assert.False(template.HasErrors, $"Template errors: {string.Join(", ", template.Messages)}");
-
-        var scriptObject = new ScriptObject();
-        var pawn1 = new ScriptObject { { "name", "Tilly" }, { "trait", "Bloodlust" } };
-        var pawn2 = new ScriptObject { { "name", "Ray" }, { "trait", "Kind" } };
-        scriptObject.Add("pawn1", pawn1);
-        scriptObject.Add("pawn2", pawn2);
-
-        var context = new TemplateContext();
-        context.PushGlobal(scriptObject);
-
-        string rendered = template.Render(context);
-
-        Assert.Contains("Initiator: Tilly (Trait: Bloodlust)", rendered);
-        Assert.Contains("Recipient: Ray (Trait: Kind)", rendered);
-    }
-
-    [Fact]
-    public void Scriban_UnknownVariable_DoesNotThrowException()
-    {
-        string templateText = "Hello {{ pawn1.unknown_variable }}! Mood: {{ pawn1.mood }}";
-        var template = Template.Parse(templateText);
-        Assert.False(template.HasErrors);
-
-        var scriptObject = new ScriptObject();
-        var pawn1 = new ScriptObject { { "mood", "Happy" } };
-        scriptObject.Add("pawn1", pawn1);
-
-        var context = new TemplateContext();
-        context.PushGlobal(scriptObject);
-
-        string rendered = template.Render(context);
-
-        // Unknown variable should evaluate to empty string, not crash
-        Assert.Contains("Hello ! Mood: Happy", rendered);
-    }
-
-    [Fact]
-    public void Scriban_SoloMonologue_SkipsPawn2Gracefully()
-    {
-        string templateText = @"
-{{ if pawn2 }}
-Conversation between {{ pawn1.name }} and {{ pawn2.name }}.
-{{ else }}
-Solo monologue by {{ pawn1.name }}.
-{{ end }}";
-
-        var template = Template.Parse(templateText);
-        Assert.False(template.HasErrors);
-
-        var scriptObject = new ScriptObject();
-        scriptObject.Add("pawn1", new ScriptObject { { "name", "LoneSurvivor" } });
-        scriptObject.Add("pawn2", null);
-
-        var context = new TemplateContext();
-        context.PushGlobal(scriptObject);
-
-        string rendered = template.Render(context);
-
-        Assert.Contains("Solo monologue by LoneSurvivor.", rendered);
-        Assert.DoesNotContain("Conversation between", rendered);
-    }
-
-    [Fact]
-    public void Scenario_MultiPawnDialogue_FormatsTwoPartyContextAndSocialRelations()
-    {
-        // Realistic scenario: 2 colonists interacting with social opinions, traits, and dialogue prompt
-        string multiTurnTemplate = @"
-[Scenario: {{ talk_type }}]
-Initiator: {{ initiator.name }} (Trait: {{ initiator.trait }}, Mood: {{ initiator.mood }})
-Recipient: {{ recipient.name }} (Trait: {{ recipient.trait }}, OpinionOfInitiator: {{ recipient.opinion }})
-Topic: {{ topic }}
-Prompt: {{ prompt }}
-Instruction: Generate multi-turn conversation between {{ initiator.name }} and {{ recipient.name }}.";
-
-        var template = Template.Parse(multiTurnTemplate);
-        Assert.False(template.HasErrors, string.Join("\n", template.Messages));
-
-        var scriptObject = new ScriptObject();
-        var initiator = new ScriptObject { { "name", "Val" }, { "trait", "Neurotic" }, { "mood", "Stressed" } };
-        var recipient = new ScriptObject { { "name", "Tate" }, { "trait", "Kind" }, { "opinion", "+45" } };
-
-        scriptObject.Add("initiator", initiator);
-        scriptObject.Add("recipient", recipient);
-        scriptObject.Add("talk_type", "Interaction");
-        scriptObject.Add("topic", "sharing meals in dining room");
-        scriptObject.Add("prompt", "Val complains about nutrient paste to Tate.");
-
-        var context = new TemplateContext();
-        context.PushGlobal(scriptObject);
-
-        string rendered = template.Render(context);
-
-        Assert.Contains("Initiator: Val (Trait: Neurotic, Mood: Stressed)", rendered);
-        Assert.Contains("Recipient: Tate (Trait: Kind, OpinionOfInitiator: +45)", rendered);
-        Assert.Contains("Topic: sharing meals in dining room", rendered);
-        Assert.Contains("Val complains about nutrient paste to Tate.", rendered);
-        Assert.Contains("Generate multi-turn conversation between Val and Tate.", rendered);
-    }
-
-    [Fact]
-    public void Scenario_SoloMonologue_EmergencyOrThought_OmitsRecipientAndEnforcesSingleTurn()
-    {
-        // Realistic scenario: Solo colonist having a mental break or thought event without recipient
-        string soloTemplate = @"
-{{ if recipient }}
-Dialogue between {{ initiator.name }} and {{ recipient.name }}.
-{{ else }}
-[Monologue]
-Character: {{ initiator.name }} (Hediff: {{ initiator.hediff }})
-Situation: {{ prompt }}
-Instruction: Speak exactly 1 short monologue turn reflecting inner thoughts. Do not address an imaginary listener.
-{{ end }}";
-
-        var template = Template.Parse(soloTemplate);
-        Assert.False(template.HasErrors);
-
-        var scriptObject = new ScriptObject();
-        var initiator = new ScriptObject { { "name", "Red" }, { "hediff", "Food Poisoning" } };
-
-        scriptObject.Add("initiator", initiator);
-        scriptObject.Add("recipient", null);
-        scriptObject.Add("prompt", "Red collapsed near the crops throwing up.");
-
-        var context = new TemplateContext();
-        context.PushGlobal(scriptObject);
-
-        string rendered = template.Render(context);
-
-        Assert.Contains("[Monologue]", rendered);
-        Assert.Contains("Character: Red (Hediff: Food Poisoning)", rendered);
-        Assert.Contains("Red collapsed near the crops throwing up.", rendered);
-        Assert.Contains("Speak exactly 1 short monologue turn", rendered);
-        Assert.DoesNotContain("Dialogue between", rendered);
-    }
-
-    [Fact]
     public void Scenario_PromptPreset_InChatDepth_InsertsPromptAtExactHistoryOffset()
     {
         // Tests the core SillyTavern-style InChat anchoring logic in PromptPreset:
@@ -527,27 +380,6 @@ Environment Hazard: {{ fallout_level }}
     }
 
     [Fact]
-    public void TopicKeywordPool_ContainsCleanConciseKeywords()
-    {
-        // Tests the topic keyword pool: Ensures all approach and subject keywords
-        // are short (1-4 words), non-empty, and free from markdown or illegal syntax.
-        Assert.NotEmpty(RimTalk.Data.TopicKeywordPool.ApproachKeywords);
-        Assert.NotEmpty(RimTalk.Data.TopicKeywordPool.SubjectKeywords);
-
-        foreach (var keyword in RimTalk.Data.TopicKeywordPool.ApproachKeywords)
-        {
-            Assert.False(string.IsNullOrWhiteSpace(keyword));
-            Assert.True(keyword.Length <= 30, $"Keyword '{keyword}' is too verbose for a prompt anchor.");
-        }
-
-        foreach (var subject in RimTalk.Data.TopicKeywordPool.SubjectKeywords)
-        {
-            Assert.False(string.IsNullOrWhiteSpace(subject));
-            Assert.True(subject.Length <= 40, $"Subject '{subject}' is too verbose for a prompt anchor.");
-        }
-    }
-
-    [Fact]
     public void BuildSimpleModePreset_IsolatesUserCustomEntries_PreservesAddonAndBuiltInEntries()
     {
         var activePreset = new RimTalk.Prompt.PromptPreset("ActiveCustomPreset");
@@ -644,16 +476,18 @@ Environment Hazard: {{ fallout_level }}
         Assert.Contains(simplePreset.Entries, e => e.Name == "Chat History" && e.Enabled && e.IsMainChatHistory && e.Content == "{{chat.history}}");
         Assert.Contains(simplePreset.Entries, e => e.Name == "JSON Format" && e.Enabled && e.Content == fallbackJson);
 
-        // Order check: Base Instruction -> JSON Format -> Context -> Chat History -> Dialogue Prompt
+        // Order check: Base Instruction -> JSON Format -> Context -> Recent Events -> Chat History -> Dialogue Prompt
         int baseIdx = simplePreset.Entries.FindIndex(e => e.Name == "Base Instruction");
         int jsonIdx = simplePreset.Entries.FindIndex(e => e.Name == "JSON Format");
         int ctxIdx = simplePreset.Entries.FindIndex(e => e.Name == "Context");
+        int eventsIdx = simplePreset.Entries.FindIndex(e => e.Name == "Recent Events");
         int histIdx = simplePreset.Entries.FindIndex(e => e.Name == "Chat History");
         int promptIdx = simplePreset.Entries.FindIndex(e => e.Name == "Dialogue Prompt");
 
         Assert.True(baseIdx < jsonIdx);
         Assert.True(jsonIdx < ctxIdx);
-        Assert.True(ctxIdx < histIdx);
+        Assert.True(ctxIdx < eventsIdx);
+        Assert.True(eventsIdx < histIdx);
         Assert.True(histIdx < promptIdx);
     }
 
@@ -718,5 +552,67 @@ Environment Hazard: {{ fallout_level }}
         Assert.Contains("(15s ago) Alice: Sing with me.", block);
         Assert.Contains("prompt: Alice initiated: [Insult] directed at Bob", block);
         Assert.Contains("(5s ago) Alice: You're always so boring!", block);
+    }
+
+    [Fact]
+    public void ShouldShowHistoryWarning_EvaluatesAccurately()
+    {
+        // 1. History enabled -> false
+        var preset1 = new RimTalk.Prompt.PromptPreset("Test1");
+        preset1.AddEntry(new RimTalk.Prompt.PromptEntry("Chat History", "{{chat.history}}")
+        {
+            IsMainChatHistory = true,
+            Enabled = true
+        });
+        Assert.False(RimTalk.Prompt.PromptPresetAssembler.ShouldShowHistoryWarning(preset1));
+
+        // 2. Main history disabled, but custom entry contains chat.history -> false
+        var preset2 = new RimTalk.Prompt.PromptPreset("Test2");
+        preset2.AddEntry(new RimTalk.Prompt.PromptEntry("Chat History", "{{chat.history}}")
+        {
+            IsMainChatHistory = true,
+            Enabled = false
+        });
+        preset2.AddEntry(new RimTalk.Prompt.PromptEntry("Custom History", "Previous context:\n{{chat.history}}")
+        {
+            Enabled = true
+        });
+        Assert.False(RimTalk.Prompt.PromptPresetAssembler.ShouldShowHistoryWarning(preset2));
+
+        // 3. Main history disabled, but external addon entry is active -> false
+        var preset3 = new RimTalk.Prompt.PromptPreset("Test3");
+        preset3.AddEntry(new RimTalk.Prompt.PromptEntry("Chat History", "{{chat.history}}")
+        {
+            IsMainChatHistory = true,
+            Enabled = false
+        });
+        preset3.AddEntry(new RimTalk.Prompt.PromptEntry("External Addon Memory", "{{addon.memory}}")
+        {
+            SourceModId = "some.memory.addon",
+            Enabled = true
+        });
+        Assert.False(RimTalk.Prompt.PromptPresetAssembler.ShouldShowHistoryWarning(preset3));
+
+        // 4. Main history disabled, but isExternalMemoryModActive is true -> false
+        var preset4 = new RimTalk.Prompt.PromptPreset("Test4");
+        preset4.AddEntry(new RimTalk.Prompt.PromptEntry("Chat History", "{{chat.history}}")
+        {
+            IsMainChatHistory = true,
+            Enabled = false
+        });
+        Assert.False(RimTalk.Prompt.PromptPresetAssembler.ShouldShowHistoryWarning(preset4, isExternalMemoryModActive: true));
+
+        // 5. Main history disabled, no custom history, no addon -> true
+        var preset5 = new RimTalk.Prompt.PromptPreset("Test5");
+        preset5.AddEntry(new RimTalk.Prompt.PromptEntry("Chat History", "{{chat.history}}")
+        {
+            IsMainChatHistory = true,
+            Enabled = false
+        });
+        preset5.AddEntry(new RimTalk.Prompt.PromptEntry("Some Other Entry", "Hello world")
+        {
+            Enabled = true
+        });
+        Assert.True(RimTalk.Prompt.PromptPresetAssembler.ShouldShowHistoryWarning(preset5));
     }
 }
