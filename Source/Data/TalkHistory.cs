@@ -2,7 +2,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using RimTalk.Service;
 using RimTalk.Source.Data;
 using RimTalk.Util;
 using Verse;
@@ -11,9 +10,9 @@ namespace RimTalk.Data;
 
 public static class TalkHistory
 {
-    private static readonly ConcurrentDictionary<int, List<(Role role, string message, int tick, bool isUserSpeech)>> MessageHistory = new();
+    private static readonly ConcurrentDictionary<int, List<(Role role, string message, int tick)>> MessageHistory = new();
     private static readonly ConcurrentDictionary<Guid, int> SpokenTickCache = new() { [Guid.Empty] = 0 };
-    private static readonly ConcurrentBag<Guid> IgnoredCache = [];
+    private static readonly ConcurrentDictionary<Guid, byte> IgnoredCache = new();
     private static readonly ConcurrentDictionary<string, byte> IgnoredTexts = new();
     
     // Add a new talk with the current game tick
@@ -24,7 +23,7 @@ public static class TalkHistory
     
     public static void AddIgnored(Guid id)
     {
-        IgnoredCache.Add(id);
+        IgnoredCache.TryAdd(id, 0);
         var log = ApiHistory.GetApiLog(id);
         if (log == null) return;
         log.SpokenTick = -1;
@@ -39,15 +38,10 @@ public static class TalkHistory
     
     public static bool IsTalkIgnored(Guid id)
     {
-        return IgnoredCache.Contains(id);
+        return IgnoredCache.ContainsKey(id);
     }
 
     public static void AddMessageHistory(Pawn pawn, string request, string response)
-    {
-        AddMessageHistory(pawn, request, response, isUserSpeech: false);
-    }
-
-    public static void AddMessageHistory(Pawn pawn, string request, string response, bool isUserSpeech)
     {
         var messages = MessageHistory.GetOrAdd(pawn.thingIDNumber, _ => []);
         int tick = Current.ProgramState == ProgramState.Playing ? GenTicks.TicksGame : 0;
@@ -55,9 +49,9 @@ public static class TalkHistory
         lock (messages)
         {
             if (!string.IsNullOrWhiteSpace(request))
-                messages.Add((Role.User, request, tick, isUserSpeech));
+                messages.Add((Role.User, request, tick));
             if (!string.IsNullOrWhiteSpace(response))
-                messages.Add((Role.AI, response, tick, true));
+                messages.Add((Role.AI, response, tick));
             EnsureMessageLimit(messages);
         }
     }
@@ -93,7 +87,7 @@ public static class TalkHistory
         const int cutoffTicks = 20000; // 8 in-game hours (2500 ticks/hr * 8)
 
         // 1. Gather all conversation entries across participating pawns
-        var merged = new List<(Role role, string message, int tick, bool isUserSpeech)>();
+        var merged = new List<(Role role, string message, int tick)>();
         var seen = new HashSet<string>();
 
         for (int i = 0; i < pawns.Count; i++)
@@ -147,11 +141,11 @@ public static class TalkHistory
         int currentTick = Current.ProgramState == ProgramState.Playing ? GenTicks.TicksGame : 0;
         const int cutoffTicks = 20000; // 8 in-game hours (2500 ticks/hr * 8)
 
-        List<(Role role, string message, int tick, bool isUserSpeech)> snapshot;
+        List<(Role role, string message, int tick)> snapshot;
         lock (history)
         {
             if (history.Count == 0) return [];
-            snapshot = new List<(Role role, string message, int tick, bool isUserSpeech)>(history.Count);
+            snapshot = new List<(Role role, string message, int tick)>(history.Count);
             for (int i = 0; i < history.Count; i++)
             {
                 var msg = history[i];
@@ -166,7 +160,7 @@ public static class TalkHistory
     }
 
     private static List<(Role role, string message)> FormatHistoryMessages(
-        List<(Role role, string message, int tick, bool isUserSpeech)> rawMessages,
+        List<(Role role, string message, int tick)> rawMessages,
         int currentTick,
         bool simplified)
     {
@@ -218,13 +212,69 @@ public static class TalkHistory
         if (talkRequest.TalkType.IsFromUser() || talkRequest.IsAnnouncement)
             return (talkRequest.RawPrompt ?? topic ?? "").Trim();
 
+        // For events and quests, record only the compact incident label in history (avoids bloating multi-turn context)
+        if (talkRequest.TalkType is TalkType.Event or TalkType.QuestOffer or TalkType.QuestEnd)
+        {
+            return ExtractEventLabel(talkRequest.Prompt ?? topic);
+        }
+
         if (!string.IsNullOrWhiteSpace(topic))
             return topic.Trim();
 
         return (talkRequest.RawPrompt ?? "").Trim();
     }
 
-    private static void EnsureMessageLimit(List<(Role role, string message, int tick, bool isUserSpeech)> messages)
+    private static string ExtractEventLabel(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return "Incident";
+
+        var firstLine = text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim() ?? "";
+        if (firstLine.StartsWith("(") && firstLine.Contains(":"))
+        {
+            int colonIdx = firstLine.IndexOf(':');
+            int closeParen = firstLine.LastIndexOf(')');
+            if (colonIdx >= 0 && closeParen > colonIdx)
+            {
+                string extracted = firstLine.Substring(colonIdx + 1, closeParen - colonIdx - 1).Trim();
+                if (!string.IsNullOrEmpty(extracted))
+                {
+                    string target = ExtractTargetSuffix(text);
+                    return !string.IsNullOrEmpty(target) && !extracted.Contains(target)
+                        ? $"{extracted} {target}"
+                        : extracted;
+                }
+            }
+        }
+
+        var cleaned = text.Trim();
+        int openBracket = cleaned.IndexOf('[');
+        int closeBracket = cleaned.IndexOf(']');
+        if (openBracket >= 0)
+        {
+            int end = closeBracket > openBracket ? closeBracket : cleaned.Length;
+            cleaned = cleaned.Substring(openBracket + 1, end - openBracket - 1).Trim();
+        }
+        var bodyLine = cleaned.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim();
+        if (string.IsNullOrWhiteSpace(bodyLine)) return "Incident";
+        if (bodyLine.Length > 60) bodyLine = bodyLine.Substring(0, 57) + "...";
+        return bodyLine;
+    }
+
+    private static string ExtractTargetSuffix(string text)
+    {
+        int targetIdx = text.IndexOf("(Target:", StringComparison.OrdinalIgnoreCase);
+        if (targetIdx >= 0)
+        {
+            int endParen = text.IndexOf(')', targetIdx);
+            if (endParen > targetIdx)
+            {
+                return text.Substring(targetIdx, endParen - targetIdx + 1).Trim();
+            }
+        }
+        return null;
+    }
+
+    private static void EnsureMessageLimit(List<(Role role, string message, int tick)> messages)
     {
         int maxMessages = Settings.Get()?.Context?.ConversationHistoryCount ?? 5;
         while (messages.Count > maxMessages * 2)
@@ -303,6 +353,7 @@ public static class TalkHistory
     public static void Clear()
     {
         MessageHistory.Clear();
+        IgnoredCache.Clear();
         IgnoredTexts.Clear();
         // clearing spokenCache may block child talks waiting to display
     }

@@ -25,6 +25,44 @@ public class TalkResponse(TalkType talkType, string name, string text) : IJsonDa
 
     [DataMember(Name = "target", EmitDefaultValue = false)]
     public string? TargetName { get; set; }
+
+    [DataMember(Name = "directive", EmitDefaultValue = false)]
+    public string? Directive { get; set; }
+
+    [DataMember(Name = "directives", EmitDefaultValue = false)]
+    public System.Collections.Generic.List<string>? Directives { get; set; }
+
+    // Internal game logic only. Do NOT add [DataMember]; it leaks into LLM history JSON payloads.
+    public bool HasDirectiveModified { get; set; }
+
+    public System.Collections.Generic.List<string> GetAllDirectives()
+    {
+        var list = new System.Collections.Generic.List<string>();
+        if (Directives != null)
+        {
+            for (int i = 0; i < Directives.Count; i++)
+            {
+                var d = Directives[i];
+                if (!string.IsNullOrWhiteSpace(d))
+                {
+                    string trimmed = d.Trim();
+                    if (trimmed.Length > 120) trimmed = trimmed.Substring(0, 120).TrimEnd();
+                    if (!list.Contains(trimmed))
+                        list.Add(trimmed);
+                }
+            }
+        }
+        string single = Directive?.Trim() ?? string.Empty;
+        if (!string.IsNullOrWhiteSpace(single))
+        {
+            if (single.Length > 120) single = single.Substring(0, 120).TrimEnd();
+            if (!list.Contains(single))
+            {
+                list.Add(single);
+            }
+        }
+        return list;
+    }
     
     public Guid ParentTalkId { get; set; }
     

@@ -152,18 +152,19 @@ public partial class Settings
 
             if (string.IsNullOrEmpty(parentType)) continue;
 
+            string childKey = VerseMessage + ":" + def.defName;
             archivableTypes.Add(parentType);
-            archivableTypes.Add(def.defName);
+            archivableTypes.Add(childKey);
 
             if (!_typeHierarchy.ContainsKey(parentType))
                 _typeHierarchy[parentType] = new List<string>();
 
-            if (!_typeHierarchy[parentType].Contains(def.defName))
-                _typeHierarchy[parentType].Add(def.defName);
+            if (!_typeHierarchy[parentType].Contains(childKey))
+                _typeHierarchy[parentType].Add(childKey);
 
             // Store Source
             string defSource = def.modContentPack?.Name ?? Core;
-            _sourceMap[def.defName] = defSource;
+            _sourceMap[childKey] = defSource;
 
             // Ensure parent has a source
             if (!_sourceMap.ContainsKey(parentType))
@@ -176,19 +177,6 @@ public partial class Settings
                      !_sourceMap.ContainsKey(type) && likelyCoreTypes.Contains(type)))
         {
             _sourceMap[type] = Core;
-        }
-
-        // Deduplicate: If a type appears in Verse.Message, remove it from other parents (e.g. StandardLetter)
-        // This prevents double entries for things like "NegativeEvent" which exist as both LetterDef and MessageTypeDef
-        if (_typeHierarchy.TryGetValue(VerseMessage, out var msgChildren))
-        {
-            var messageKeys = new HashSet<string>(msgChildren);
-            foreach (List<string> children in from parent in _typeHierarchy.Keys.ToList()
-                     where parent != VerseMessage
-                     select _typeHierarchy[parent])
-            {
-                children.RemoveAll(child => messageKeys.Contains(child));
-            }
         }
 
         _discoveredArchivableTypes = archivableTypes.OrderBy(x => x).ToList();
@@ -220,6 +208,8 @@ public partial class Settings
             }
         }
 
+        MigrateArchivableSettings();
+
         Logger.Message(
             $"Discovered {_discoveredArchivableTypes.Count} archivable types across {_typeHierarchy.Count} parent categories.");
     }
@@ -230,7 +220,7 @@ public partial class Settings
 
         // Instructions
         Text.Font = GameFont.Tiny;
-        GUI.color = Color.cyan;
+        GUI.color = SoftCyan;
         var eventFilterTip = "RimTalk.Settings.EventFilterTip".Translate();
         var eventFilterTipRect = listingStandard.GetRect(Text.CalcHeight(eventFilterTip, listingStandard.ColumnWidth));
         Widgets.Label(eventFilterTipRect, eventFilterTip);
@@ -314,7 +304,11 @@ public partial class Settings
                     bool isChildEnabled = settings.EnabledArchivableTypes.TryGetValue(childKey, out var cVal) && cVal;
                     bool newChildEnabled = isChildEnabled;
 
-                    if (UIUtil.CheckboxLabeledLeft(childRect, childKey, ref newChildEnabled))
+                    string displayLabel = childKey.StartsWith(VerseMessage + ":")
+                        ? childKey.Substring((VerseMessage + ":").Length)
+                        : childKey;
+
+                    if (UIUtil.CheckboxLabeledLeft(childRect, displayLabel, ref newChildEnabled))
                     {
                         settings.EnabledArchivableTypes[childKey] = newChildEnabled;
                         // If child enabled -> Force Parent Enabled
@@ -329,7 +323,7 @@ public partial class Settings
                         !string.IsNullOrEmpty(cSource) &&
                         cSource != Core)
                     {
-                        float nameWidth = Text.CalcSize(childKey).x;
+                        float nameWidth = Text.CalcSize(displayLabel).x;
                         Text.Font = GameFont.Tiny;
                         GUI.color = Color.gray;
                         Rect sourceRect = new Rect(childRect.x + 24f + 6f + nameWidth + 10f, childRect.y + 2f, 300f, 24f);
@@ -367,6 +361,38 @@ public partial class Settings
         {
             bool defaultEnabled = !messageTypes.Contains(typeName);
             settings.EnabledArchivableTypes[typeName] = defaultEnabled;
+        }
+    }
+
+    public static void MigrateArchivableSettings()
+    {
+        var settings = Get();
+        if (settings?.EnabledArchivableTypes == null) return;
+
+        bool modified = false;
+        foreach (var def in DefDatabase<MessageTypeDef>.AllDefs)
+        {
+            string oldKey = def.defName;
+            string newKey = VerseMessage + ":" + def.defName;
+            if (settings.EnabledArchivableTypes.TryGetValue(oldKey, out var oldVal))
+            {
+                if (!settings.EnabledArchivableTypes.ContainsKey(newKey))
+                {
+                    settings.EnabledArchivableTypes[newKey] = oldVal;
+                    modified = true;
+                }
+
+                if (DefDatabase<LetterDef>.GetNamedSilentFail(oldKey) != null && !oldVal)
+                {
+                    settings.EnabledArchivableTypes[oldKey] = true;
+                    modified = true;
+                }
+            }
+        }
+
+        if (modified)
+        {
+            settings.Write();
         }
     }
 }

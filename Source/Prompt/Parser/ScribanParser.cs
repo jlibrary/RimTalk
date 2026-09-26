@@ -5,6 +5,7 @@ using System.Reflection;
 using RimTalk.API;
 using RimTalk.Data;
 using RimTalk.Service;
+using RimTalk.Source.Data;
 using RimTalk.Util;
 using RimWorld;
 using Scriban;
@@ -74,8 +75,14 @@ public static class ScribanParser
             foreach (var name in new[] { "time", "hour", "day", "quadrum", "year", "season", "weather", "temperature", "wealth", "events" })
                 scriptObject.Add(name, game[name]);
             
+            bool isUser = context.TalkType.IsFromUser();
+            scriptObject.Add("is_user", isUser);
+            scriptObject.Add("is_from_user", isUser);
+
             var json = new ScriptObject();
-            json.Add("format", Constant.GetJsonInstruction(Settings.Get().ApplyMoodAndSocialEffects));
+            bool enableDirectives = Settings.Get()?.Context?.EnableMemory ?? false;
+            json.Add("format", Constant.GetJsonInstruction(Settings.Get().ApplyMoodAndSocialEffects, isUser, enableDirectives));
+            json.Add("anchor", Constant.GetJsonAnchor(Settings.Get().ApplyMoodAndSocialEffects, isUser, enableDirectives));
             scriptObject.Add("json", json);
 
             var chat = new ScriptObject();
@@ -88,6 +95,7 @@ public static class ScribanParser
             // 4. SHORTHANDS
             scriptObject.Add("prompt", context.DialoguePrompt);
             scriptObject.Add("context", context.PawnContext);
+            scriptObject.Add("memory", GetMemoryDirective(context));
             
             // 5. GLOBALVARIABLES
             if (context.VariableStore != null)
@@ -143,6 +151,13 @@ public static class ScribanParser
                     return true;
                 }
 
+                // C. RimTalk API Environment Variables (fallback for root environment variables like {{ radiation }})
+                if (ContextHookRegistry.TryGetEnvironmentVariable(varName, context?.Map ?? context?.CurrentPawn?.Map, out var envValue))
+                {
+                    value = envValue;
+                    return true;
+                }
+
                 return false;
             };
 
@@ -166,10 +181,11 @@ public static class ScribanParser
                         value = custom;
                         return true;
                     }
-                    var cat = ContextCategories.TryGetPawnCategory(normalized);
-                    if (cat.HasValue) {
-                        var raw = GetMagicPawnValue(p, normalized);
-                        value = ContextHookRegistry.ApplyPawnHooks(cat.Value, p, raw);
+                    var raw = GetMagicPawnValue(p, normalized, context);
+                    if (raw != null)
+                    {
+                        var cat = ContextCategories.TryGetPawnCategory(normalized);
+                        value = cat.HasValue ? ContextHookRegistry.ApplyPawnHooks(cat.Value, p, raw) : raw;
                         return true;
                     }
                 }
@@ -261,23 +277,26 @@ public static class ScribanParser
         }
     }
 
-    private static string GetMagicPawnValue(Pawn pawn, string member) {
+    private static string GetMagicPawnValue(Pawn pawn, string member, PromptContext context = null) {
         return member.ToLowerInvariant() switch {
             "name" => pawn.LabelShort,
             "fullname" => pawn.Name?.ToStringFull ?? "",
-            "gender" => pawn.gender.ToString(),
+            "def" => pawn.def?.defName ?? "",
+            "kind" => pawn.kindDef?.label ?? "",
+            "title" => pawn.story?.Title ?? "",
+            "gender" => pawn.gender.GetLabel(),
             "age" => pawn.ageTracker?.AgeBiologicalYears.ToString() ?? "",
-            "race" => ModsConfig.BiotechActive && pawn.genes?.Xenotype != null
-                ? pawn.genes.XenotypeLabel
-                : pawn.def?.LabelCap.RawText ?? "",
-            "title" => pawn.GetTitle(),
+            "chronological_age" => pawn.ageTracker?.AgeChronologicalYears.ToString() ?? "",
+            "lifestage" => pawn.ageTracker?.CurLifeStage?.label ?? "",
             "faction" => pawn.Faction?.Name ?? "",
-            "job" => pawn.GetActivity(),
-            "role" => pawn.GetRole(),
-            "mood" => pawn.needs?.mood?.MoodString ?? "",
-            "moodpercent" => pawn.needs?.mood != null
-                ? pawn.needs.mood.CurLevelPercentage.ToString("P0")
+            "mental_state" => pawn.MentalState?.def?.label ?? "",
+            "job" => pawn.CurJob != null 
+                ? pawn.CurJob.GetReport(pawn)?.TrimEnd('.') ?? pawn.CurJob.def?.reportString ?? "" 
                 : "",
+            "race" => pawn.genes?.XenotypeLabel ?? pawn.def?.label ?? "",
+            "role" => pawn.GetRole(false) ?? "",
+            "mood" => pawn.needs?.mood?.MoodString ?? "",
+            "moodpercent" => pawn.needs?.mood != null ? Mathf.RoundToInt(pawn.needs.mood.CurLevelPercentage * 100).ToString() : "",
             "personality" => Cache.Get(pawn)?.Personality ?? "",
             "profile" => PromptService.CreatePawnContext(pawn, PromptService.InfoLevel.Normal) ?? "",
             "backstory" => ContextBuilder.GetBackstoryContext(pawn, PromptService.InfoLevel.Normal) ?? "",
@@ -296,6 +315,7 @@ public static class ScribanParser
             "fullsocial" => RelationsService.GetAllSocialString(pawn),
             "fullrelation" => RelationsService.GetAllRelationsString(pawn),
             "fullinteraction" => RelationsService.GetAllInteractionString(pawn),
+            "memory" => GetMemoryDirectiveForPawn(pawn, context),
             "location" => PromptContextProvider.GetLocationString(pawn),
             "terrain" => pawn.Map != null ? pawn.Position.GetTerrain(pawn.Map)?.LabelCap ?? "" : "",
             "beauty" => PromptContextProvider.GetBeautyString(pawn),
@@ -303,6 +323,30 @@ public static class ScribanParser
             "surroundings" => ContextHelper.CollectNearbyContextText(pawn, 3) ?? "",
             _ => null
         };
+    }
+
+    private static string GetMemoryDirective(PromptContext context)
+    {
+        if (context?.CurrentPawn == null) return string.Empty;
+        var target = context.TalkRequest?.Recipient ?? context.AllPawns?.FirstOrDefault(p => p != context.CurrentPawn);
+        var hediff = Hediff_Persona.GetOrAddNew(context.CurrentPawn);
+        return hediff?.GetImpressionOf(target) ?? string.Empty;
+    }
+
+    private static string GetMemoryDirectiveForPawn(Pawn pawn, PromptContext context)
+    {
+        if (pawn == null) return string.Empty;
+        Pawn target = null;
+        if (pawn == context?.CurrentPawn)
+        {
+            target = context?.TalkRequest?.Recipient ?? context?.AllPawns?.FirstOrDefault(p => p != pawn);
+        }
+        else
+        {
+            target = context?.CurrentPawn ?? context?.AllPawns?.FirstOrDefault(p => p != pawn);
+        }
+        var hediff = Hediff_Persona.GetOrAddNew(pawn);
+        return hediff?.GetImpressionOf(target) ?? string.Empty;
     }
 
     private static ScriptObject CreateGameState(Map map)

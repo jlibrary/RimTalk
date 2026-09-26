@@ -13,34 +13,62 @@ namespace RimTalk.Patches;
 [HarmonyPatch(typeof(BattleLog), nameof(BattleLog.Add))]
 public static class BattleLogPatch
 {
+    private static readonly System.Reflection.FieldInfo WeaponDefField = AccessTools.Field(typeof(BattleLogEntry_RangedImpact), "weaponDef");
+    private static readonly System.Reflection.FieldInfo ProjectileDefField = AccessTools.Field(typeof(BattleLogEntry_RangedImpact), "projectileDef");
+    private static readonly System.Reflection.FieldInfo DeflectedField = AccessTools.Field(typeof(BattleLogEntry_RangedImpact), "deflected");
+    private static readonly System.Reflection.FieldInfo DamagedPartsField = AccessTools.Field(typeof(BattleLogEntry_RangedImpact), "damagedParts");
+
+    private static readonly System.Reflection.FieldInfo RuleDefField = AccessTools.Field(typeof(BattleLogEntry_MeleeCombat), "ruleDef");
+    private static readonly System.Reflection.FieldInfo ToolLabelField = AccessTools.Field(typeof(BattleLogEntry_MeleeCombat), "toolLabel");
+
+    private static int _lastBattleTalkTick = -9999;
+    private const int MinBattleTalkIntervalTicks = 180; // 3 seconds cooldown between queuing combat talk bursts
+
     private static void Postfix(LogEntry entry)
     {
-        var pawnsInvolved = entry.GetConcerns().OfType<Pawn>().ToList();
-        if (pawnsInvolved.Count < 2) return;
+        if (entry == null || !Settings.Get().IsEnabled) return;
+
+        int currentTick = GenTicks.TicksGame;
+        if (currentTick - _lastBattleTalkTick < MinBattleTalkIntervalTicks) return;
+
+        Pawn initiator = null;
+        Pawn recipient = null;
+        var concerns = entry.GetConcerns();
+        if (concerns != null)
+        {
+            foreach (var thing in concerns)
+            {
+                if (thing is Pawn p)
+                {
+                    if (initiator == null) initiator = p;
+                    else { recipient = p; break; }
+                }
+            }
+        }
+        if (initiator == null || recipient == null) return;
             
-        var initiator = pawnsInvolved[0];
-        var recipient = pawnsInvolved[1];
-            
-        if (Cache.Get(initiator) == null && Cache.Get(recipient) == null) return; 
+        var initiatorState = Cache.Get(initiator);
+        var recipientState = Cache.Get(recipient);
+        if (initiatorState == null && recipientState == null) return; 
             
         string prompt = GenerateDirectPrompt(entry, initiator, recipient);
-
         if (string.IsNullOrEmpty(prompt)) return;
+
+        _lastBattleTalkTick = currentTick;
             
-        Cache.Get(initiator)?.AddTalkRequest(prompt, recipient, TalkType.Urgent);
-        Cache.Get(recipient)?.AddTalkRequest(prompt, initiator, TalkType.Urgent);
+        initiatorState?.AddTalkRequest(prompt, recipient, TalkType.Urgent);
+        recipientState?.AddTalkRequest(prompt, initiator, TalkType.Urgent);
             
         var pawns = PawnSelector.GetNearByTalkablePawns(initiator, recipient, PawnSelector.DetectionType.Viewing);
-        foreach (var pawn in pawns.Take(2))
+        for (int i = 0; i < pawns.Count && i < 2; i++)
         {
-            Cache.Get(pawn)?.AddTalkRequest(prompt, initiator, TalkType.Urgent);
+            Cache.Get(pawns[i])?.AddTalkRequest(prompt, initiator, TalkType.Urgent);
         }
     }
 
     /// <summary>
-    /// Generates a prompt for the LLM. It first tries a high-performance, direct-access method.
-    /// If that fails (e.g., due to a game update), it logs the error and falls back to the
-    /// slower, more stable vanilla game method.
+    /// Generates a prompt for the LLM using direct cached reflection.
+    /// Falls back to vanilla ToGameStringFromPOV if reflection yields null.
     /// </summary>
     private static string GenerateDirectPrompt(LogEntry entry, Pawn initiator, Pawn recipient)
     {
@@ -51,13 +79,12 @@ public static class BattleLogPatch
                 
             if (entry is BattleLogEntry_RangedImpact impactEntry)
             {
-                var traverse = Traverse.Create(impactEntry);
-                var weaponDef = traverse.Field<ThingDef>("weaponDef").Value;
-                var projectileDef = traverse.Field<ThingDef>("projectileDef").Value;
+                var weaponDef = WeaponDefField?.GetValue(impactEntry) as ThingDef;
+                var projectileDef = ProjectileDefField?.GetValue(impactEntry) as ThingDef;
                 string weaponLabel = weaponDef?.label ?? projectileDef?.label ?? "a projectile";
 
-                var deflected = traverse.Field<bool>("deflected").Value;
-                var damagedParts = traverse.Field<List<BodyPartRecord>>("damagedParts").Value;
+                bool deflected = DeflectedField != null && (bool)DeflectedField.GetValue(impactEntry);
+                var damagedParts = DamagedPartsField?.GetValue(impactEntry) as List<BodyPartRecord>;
 
                 if (deflected)
                 {
@@ -72,12 +99,11 @@ public static class BattleLogPatch
 
             if (entry is BattleLogEntry_MeleeCombat meleeEntry)
             {
-                var traverse = Traverse.Create(meleeEntry);
-                var ruleDef = traverse.Field<RulePackDef>("ruleDef").Value;
+                var ruleDef = RuleDefField?.GetValue(meleeEntry) as RulePackDef;
                 if (ruleDef == null) return null;
 
                 string ruleDefName = ruleDef.defName;
-                string toolLabel = traverse.Field<string>("toolLabel").Value;
+                string toolLabel = ToolLabelField?.GetValue(meleeEntry) as string;
 
                 if (ruleDefName == "Combat_MeleeBite") return $"{initiatorLabel} bit {recipientLabel}.";
                 if (ruleDefName == "Combat_MeleeScratch") return $"{initiatorLabel} scratched {recipientLabel}.";
@@ -88,11 +114,7 @@ public static class BattleLogPatch
         }
         catch (Exception ex)
         {
-            // --- Fallback Path ---
-            // The fast path failed, likely due to a game update. 
             Logger.ErrorOnce($"Battle prompt generation failed.\n {ex.Message}", entry.GetHashCode());
-                
-            // Use the original slow method and strip out any rich text tags.
             return entry.ToGameStringFromPOV(initiator).StripTags();
         }
 

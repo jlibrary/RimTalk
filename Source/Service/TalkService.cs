@@ -20,6 +20,8 @@ namespace RimTalk.Service;
 public static class TalkService
 {
     private static readonly List<TalkType> PriorityTalkTypes = [TalkType.Urgent, TalkType.User, TalkType.Announcement];
+    private static InteractionDef _cachedInteractionDef;
+    private static InteractionDef RimTalkInteractionDef => _cachedInteractionDef ??= DefDatabase<InteractionDef>.GetNamedSilentFail("RimTalkInteraction");
 
 
     public static int PendingTalksCount
@@ -70,10 +72,11 @@ public static class TalkService
         if (isPlayerAnnouncement) nearbyPawns.Insert(0, talkRequest.Initiator);
         else if (talkRequest.Recipient != null && talkRequest.Recipient.IsPlayer()) nearbyPawns.Insert(0, talkRequest.Recipient);
 
-        var (status, isInDanger) = mainPawn.GetPawnStatusFull(nearbyPawns, talkRequest.IsAnnouncement);
+        var (status, bareStatus, isInDanger) = mainPawn.GetPawnStatus(nearbyPawns, talkRequest.IsAnnouncement);
         
-        // Avoid spamming generations if the pawn's status hasn't changed recently.
-        if (!talkRequest.TalkType.IsFromUser() && talkRequest.TalkType != TalkType.Interaction && status == pawn1.LastStatus && pawn1.RejectCount < 2)
+        // Avoid spamming generations if the pawn's status hasn't changed recently (skip check for explicit events/quests/user).
+        bool isEventOrQuest = talkRequest.TalkType is TalkType.Event or TalkType.QuestOffer or TalkType.QuestEnd;
+        if (!talkRequest.TalkType.IsFromUser() && talkRequest.TalkType != TalkType.Interaction && !isEventOrQuest && status == pawn1.LastStatus && pawn1.RejectCount < 2)
         {
             pawn1.RejectCount++;
             return false;
@@ -113,8 +116,26 @@ public static class TalkService
         // Store dialogue participants for disambiguating duplicate pawn names during async streaming response processing
         talkRequest.Participants = pawns;
 
+        string promptStatus = status;
+        if (talkRequest.IsMonologue)
+        {
+            string currentJob = mainPawn.jobs?.curDriver?.GetReport();
+            bool isRepeatedMonologue = !isInDanger && !isEventOrQuest
+                && !string.IsNullOrEmpty(currentJob) && currentJob == pawn1.LastSpokenActivity;
+            pawn1.LastSpokenActivity = currentJob;
+
+            if (isRepeatedMonologue)
+            {
+                promptStatus = bareStatus;
+            }
+        }
+        else
+        {
+            pawn1.LastSpokenActivity = null;
+        }
+
         // Delegate prompt assembly to PromptManager (Handles Simple/Advanced modes and fallbacks)
-        talkRequest.PromptMessages = PromptManager.Instance.BuildMessages(talkRequest, pawns, status);
+        talkRequest.PromptMessages = PromptManager.Instance.BuildMessages(talkRequest, pawns, promptStatus);
         
         // Update prompt with the actual rendered Dialogue Prompt content (excluding trailing reminders)
         var dpSegment = talkRequest.PromptMessageSegments?.FirstOrDefault(s =>
@@ -152,6 +173,30 @@ public static class TalkService
             
             var receivedResponses = new List<TalkResponse>();
 
+            Pawn addressedPawn = null;
+            if (talkRequest.TalkType.IsFromUser() && !talkRequest.IsAnnouncement)
+            {
+                addressedPawn = !talkRequest.Initiator.IsPlayer() ? talkRequest.Initiator : talkRequest.Recipient;
+                if (addressedPawn == null || addressedPawn.IsPlayer())
+                {
+                    var participants = talkRequest.Participants;
+                    if (participants != null)
+                    {
+                        for (int p = 0; p < participants.Count; p++)
+                        {
+                            if (participants[p] != null && !participants[p].IsPlayer())
+                            {
+                                addressedPawn = participants[p];
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            bool directiveProcessed = false;
+            bool directiveModified = false;
+
             // Call the streaming chat service. The callback is executed as each piece of dialogue is parsed.
             await AIService.ChatStreaming(talkRequest, talkResponse =>
                 {
@@ -186,6 +231,43 @@ public static class TalkService
                         talkResponse.TalkType = talkRequest.TalkType;
                     }
 
+                    // Process player directives before queueing so HasDirectiveModified is set before the bubble displays
+                    if (!directiveProcessed && talkResponse.Directives != null && talkRequest.TalkType.IsFromUser() && (Settings.Get()?.Context?.EnableMemory ?? false))
+                    {
+                        directiveProcessed = true;
+                        if (talkRequest.IsAnnouncement)
+                        {
+                            var uniquePawns = talkRequest.Participants ?? [talkRequest.Initiator];
+                            bool anyMod = false;
+                            for (int p = 0; p < uniquePawns.Count; p++)
+                            {
+                                var targetPawn = uniquePawns[p];
+                                if (targetPawn != null && !targetPawn.IsPlayer())
+                                {
+                                    if (Hediff_Persona.GetOrAddNew(targetPawn)?.UpdateDirectives(talkResponse.Directives) == true)
+                                        anyMod = true;
+                                }
+                            }
+                            talkResponse.HasDirectiveModified = anyMod;
+                        }
+                        else if (addressedPawn != null && !addressedPawn.IsPlayer())
+                        {
+                            directiveModified = Hediff_Persona.GetOrAddNew(addressedPawn)?.UpdateDirectives(talkResponse.Directives) == true;
+                        }
+                    }
+
+                    if (directiveModified)
+                    {
+                        var target = pawnState.Pawn == addressedPawn
+                            ? talkResponse
+                            : receivedResponses.FirstOrDefault(r => r.Name == addressedPawn?.LabelShort);
+                        if (target != null)
+                        {
+                            target.HasDirectiveModified = true;
+                            directiveModified = false;
+                        }
+                    }
+
                     receivedResponses.Add(talkResponse);
 
                     // Hand off to the main thread for display later; PawnState.TalkResponses itself must only ever be touched from the main thread.
@@ -202,7 +284,7 @@ public static class TalkService
         }
         catch (Exception ex)
         {
-            Logger.Error(ex.StackTrace);
+            Logger.Error($"Dialogue generation failed: {ex}");
         }
         finally
         {
@@ -230,7 +312,7 @@ public static class TalkService
             var pawn = uniquePawns[i];
             if (pawn != null)
             {
-                TalkHistory.AddMessageHistory(pawn, historyPrompt, serializedResponses, isUserSpeech);
+                TalkHistory.AddMessageHistory(pawn, historyPrompt, serializedResponses);
             }
         }
     }
@@ -351,7 +433,9 @@ public static class TalkService
     private static void CreateInteraction(Pawn pawn, TalkResponse talk)
     {
         // Create the interaction log entry, which triggers the display of the talk bubble in-game.
-        InteractionDef intDef = DefDatabase<InteractionDef>.GetNamed("RimTalkInteraction");
+        InteractionDef intDef = RimTalkInteractionDef;
+        if (intDef == null) return;
+
         var recipient = talk.GetTarget() ?? pawn;
         var playLogEntryInteraction = new PlayLogEntry_RimTalkInteraction(intDef, pawn, recipient, null);
         var apiLog = ApiHistory.GetApiLog(talk.Id);
@@ -361,6 +445,11 @@ public static class TalkService
         }
         playLogEntryInteraction.InteractionType = talk.GetInteractionType();
         playLogEntryInteraction.TalkType = talk.TalkType;
+
+        if (talk.HasDirectiveModified)
+        {
+            playLogEntryInteraction.HasDirective = true;
+        }
 
         if (playLogEntryInteraction.CachedString.NullOrEmpty())
             return;

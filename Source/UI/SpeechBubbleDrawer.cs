@@ -37,6 +37,11 @@ public static class SpeechBubbleDrawer
 
     public static void AddBubble(Pawn pawn, string text, int conversationId = -1, InteractionType interactionType = InteractionType.None, TalkType talkType = TalkType.Other)
     {
+        AddBubble(pawn, text, conversationId, interactionType, talkType, false);
+    }
+
+    public static void AddBubble(Pawn pawn, string text, int conversationId, InteractionType interactionType, TalkType talkType, bool hasDirective)
+    {
         if (pawn == null || string.IsNullOrWhiteSpace(text)) return;
 
         var settings = Settings.Get();
@@ -66,6 +71,7 @@ public static class SpeechBubbleDrawer
 
         SpeechBubble bubble = GetPooledBubble();
         bubble.Init(pawn, text.Trim(), conversationId, interactionType, talkType);
+        bubble.HasDirective = hasDirective;
         ActiveBubbles.Add(bubble);
     }
 
@@ -78,7 +84,7 @@ public static class SpeechBubbleDrawer
         if (string.IsNullOrWhiteSpace(dialogue)) return;
 
         var rt = entry as PlayLogEntry_RimTalkInteraction;
-        AddBubble(initiator, dialogue, rt?.ConversationId ?? -1, rt?.InteractionType ?? InteractionType.None, rt?.TalkType ?? TalkType.Other);
+        AddBubble(initiator, dialogue, rt?.ConversationId ?? -1, rt?.InteractionType ?? InteractionType.None, rt?.TalkType ?? TalkType.Other, rt?.HasDirective == true);
     }
 
     private static int _lastZoomTier = 2;
@@ -215,6 +221,7 @@ public static class SpeechBubbleDrawer
         GameFont targetFont = GameFont.Small;
         int originalSize = Text.fontStyles[(int)targetFont].fontSize;
         float baseFontSize = GetEffectiveFontSize(settings);
+        float scale = GetEffectiveBubbleScale(settings);
 
         try
         {
@@ -335,6 +342,18 @@ public static class SpeechBubbleDrawer
 
                 string fullText = bubble.WrappedText ?? bubble.Text;
                 Widgets.Label(textRect, fullText);
+
+                // 4. Draw directive indicator icon at bubble bottom-right corner
+                if (bubble.HasDirective && Widgets.CheckboxOnTex != null)
+                {
+                    float iconSize = Mathf.Round(14f * scale);
+                    Rect iconRect = new Rect(bubbleRect.xMax - iconSize * 0.5f, bubbleRect.yMax - iconSize * 0.5f, iconSize, iconSize);
+
+                    float pulse = 0.75f + 0.25f * Mathf.Sin(elapsed * 3.5f);
+
+                    GUI.color = new Color(1f, 1f, 1f, fadeAlpha * pulse);
+                    GUI.DrawTexture(iconRect, Widgets.CheckboxOnTex);
+                }
             }
         }
         finally

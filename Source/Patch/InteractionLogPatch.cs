@@ -114,14 +114,8 @@ public static class InteractionLogPatch
 
     public static InteractionDef GetInteractionDef(LogEntry entry)
     {
-        if (entry is PlayLogEntry_Interaction)
-        {
-            return IntDefField?.GetValue(entry) as InteractionDef;
-        }
-        if (entry != null)
-        {
-            return AccessTools.Field(entry.GetType(), "intDef")?.GetValue(entry) as InteractionDef;
-        }
-        return null;
+        return entry is PlayLogEntry_Interaction
+            ? IntDefField?.GetValue(entry) as InteractionDef
+            : null;
     }
 }

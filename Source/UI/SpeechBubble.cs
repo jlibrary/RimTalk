@@ -27,6 +27,7 @@ public class SpeechBubble
     public bool IsAggressive;
     public bool IsDowned;
     public int ConversationId = -1;
+    public bool HasDirective;
     public bool Active;
     public int LastTypewriterLength = -1;
     public string CachedTypewriterText;
@@ -45,6 +46,7 @@ public class SpeechBubble
         ElapsedRealSec = 0f;
         Active = true;
         ConversationId = conversationId;
+        HasDirective = false;
 
         // Determine special contextual states
         IsDowned = pawn?.Downed ?? false;
@@ -242,6 +244,7 @@ public class SpeechBubble
         IsAggressive = false;
         IsDowned = false;
         ConversationId = -1;
+        HasDirective = false;
         TotalDurationSec = 0f;
         ElapsedRealSec = 0f;
         LastTypewriterLength = -1;

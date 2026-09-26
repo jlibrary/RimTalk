@@ -157,7 +157,19 @@ public static class UIUtil
             {
                 var createdTime = (log.TalkRequest != null ? log.TalkRequest.CreatedTime : log.Timestamp).ToString("yyyy-MM-dd HH:mm:ss");
                 var spokenTime = log.SpokenTime?.ToString("yyyy-MM-dd HH:mm:ss") ?? "";
-                var target = log.TargetName ?? log.TalkRequest?.Recipient?.LabelShort ?? "";
+                var target = log.TargetName;
+                if (string.IsNullOrEmpty(target) && log.TalkRequest != null)
+                {
+                    var recipient = log.TalkRequest.Recipient?.LabelShort;
+                    var initiator = log.TalkRequest.Initiator?.LabelShort;
+                    if (!string.IsNullOrEmpty(recipient) && recipient != log.Name)
+                        target = recipient;
+                    else if (!string.IsNullOrEmpty(initiator) && initiator != log.Name)
+                        target = initiator;
+                    else
+                        target = "";
+                }
+                target ??= "";
                 var state = log.GetState().ToString();
                 var talkType = log.TalkRequest?.TalkType.ToString() ?? "";
                 var payload = ApiHistory.GetPayload(log) ?? log.Payload;

@@ -73,7 +73,8 @@ public static class PromptService
                         string playerContext = $"{displayName} (Player)\nPersonality: {playerPersona.Trim()}";
                         var playerState = Cache.Get(pawn);
                         if (playerState != null) playerState.Context = playerContext;
-                        context.AppendLine($"[P{i + 1}]").AppendLine(playerContext);
+                        EnsureSectionSpacing(context);
+                        context.AppendLine($"[P{i + 1}]").AppendLine(playerContext.TrimEnd());
                     }
                 }
                 continue;
@@ -88,7 +89,8 @@ public static class PromptService
 
                 var pawnState = Cache.Get(pawn);
                 if (pawnState != null) pawnState.Context = minimalContext;
-                context.AppendLine($"[P{i + 1}]").AppendLine(minimalContext);
+                EnsureSectionSpacing(context);
+                context.AppendLine($"[P{i + 1}]").AppendLine(minimalContext.TrimEnd());
                 continue;
             }
 
@@ -103,7 +105,48 @@ public static class PromptService
             pawnContext = CommonUtil.StripFormattingTags(pawnContext);
 
             Cache.Get(pawn).Context = pawnContext;
-            context.AppendLine($"[P{i + 1}]").AppendLine(pawnContext);
+
+            EnsureSectionSpacing(context);
+
+            context.AppendLine($"[P{i + 1}]").AppendLine(pawnContext.TrimEnd());
+
+            // Append each pawn's active directives and memory impression
+            var contextSettings = Settings.Get()?.Context;
+            if (contextSettings != null && contextSettings.EnableMemory)
+            {
+                Pawn listener = null;
+                if (!isAnnouncement && pawns.Count > 1)
+                {
+                    // Primary conversational partner is P2 for P1, and P1 for other participants
+                    listener = (i == 0) ? pawns[1] : pawns[0];
+                }
+                else if (pawns.Count == 1 && pawn.CurJob?.targetA.Thing is Pawn jobTarget && jobTarget != pawn)
+                {
+                    // For single-pawn interactions (tending, feeding, wardening), target is the job patient/prisoner
+                    listener = jobTarget;
+                }
+
+                var memoryContext = BuildMemoryContextString(pawn, listener);
+                if (!string.IsNullOrWhiteSpace(memoryContext))
+                {
+                    context.AppendLine(memoryContext.TrimEnd());
+                }
+
+                // If P1 is in a 3+ participant scene, also include relational impressions toward other participants (e.g. victim P3)
+                if (i == 0 && pawns.Count > 2)
+                {
+                    for (int p = 2; p < pawns.Count; p++)
+                    {
+                        var otherPawn = pawns[p];
+                        if (otherPawn == null || otherPawn == pawn || otherPawn == listener) continue;
+                        var otherMemory = BuildRelationalMemoryString(pawn, otherPawn);
+                        if (!string.IsNullOrWhiteSpace(otherMemory))
+                        {
+                            context.AppendLine(otherMemory.TrimEnd());
+                        }
+                    }
+                }
+            }
         }
 
         if (pawns.Count > 0 && pawns[0] != null)
@@ -111,21 +154,75 @@ public static class PromptService
             var envContext = BuildEnvironmentContextString(pawns[0]);
             if (!string.IsNullOrWhiteSpace(envContext))
             {
-                if (context.Length > 0 && !context.ToString().EndsWith("\n\n"))
-                    context.AppendLine();
+                EnsureSectionSpacing(context);
                 context.AppendLine("[Environment]").AppendLine(envContext);
             }
 
-            var eventsContext = BuildEventsContextString(pawns[0]);
-            if (!string.IsNullOrWhiteSpace(eventsContext))
+            var activePreset = Prompt.PromptManager.Instance?.GetActivePreset();
+            bool handledInPreset = activePreset?.Entries?.Any(HasEventsReference) == true;
+
+            if (!handledInPreset)
             {
-                if (context.Length > 0 && !context.ToString().EndsWith("\n\n"))
-                    context.AppendLine();
-                context.AppendLine("[Events]").AppendLine(eventsContext);
+                var eventsContext = BuildEventsContextString(pawns[0]);
+                if (!string.IsNullOrWhiteSpace(eventsContext))
+                {
+                    EnsureSectionSpacing(context);
+                    context.AppendLine("[Events]").AppendLine(eventsContext);
+                }
             }
         }
 
         return context.ToString().TrimEnd();
+    }
+
+    private static readonly Regex EventsTemplateVariableRegex = new(@"\{\{[^}]*\b(game\.)?events\b[^}]*\}\}", RegexOptions.Compiled);
+
+    private static bool HasEventsReference(Prompt.PromptEntry entry)
+    {
+        if (entry == null || !entry.Enabled) return false;
+        if (string.Equals(entry.Name, "Recent Events", StringComparison.OrdinalIgnoreCase)) return true;
+        return !string.IsNullOrEmpty(entry.Content) && EventsTemplateVariableRegex.IsMatch(entry.Content);
+    }
+
+    private static void EnsureSectionSpacing(StringBuilder sb)
+    {
+        if (sb.Length == 0) return;
+        if (sb.Length < 2 || sb[sb.Length - 1] != '\n' || sb[sb.Length - 2] != '\n')
+            sb.AppendLine();
+    }
+
+    /// <summary>Creates the episodic memory impression section between the speaker and listener (or internal mindset if solo).</summary>
+    public static string BuildMemoryContextString(Pawn speaker, Pawn listener)
+    {
+        if (speaker == null || speaker.IsEnemy()) return string.Empty;
+
+        var contextSettings = Settings.Get()?.Context;
+        if (contextSettings == null || !contextSettings.EnableMemory) return string.Empty;
+
+        var hediff = Hediff_Persona.GetOrAddNew(speaker);
+        var impression = hediff?.GetImpressionOf(listener);
+        if (string.IsNullOrEmpty(impression)) return string.Empty;
+
+        var sb = new StringBuilder();
+        AppendWithHook(sb, speaker, ContextCategories.Pawn.Memory, impression);
+        return sb.ToString().TrimEnd();
+    }
+
+    /// <summary>Creates the episodic memory impression section toward a specific target without repeating directives or core traumas.</summary>
+    public static string BuildRelationalMemoryString(Pawn speaker, Pawn target)
+    {
+        if (speaker == null || target == null || speaker.IsEnemy()) return string.Empty;
+
+        var contextSettings = Settings.Get()?.Context;
+        if (contextSettings == null || !contextSettings.EnableMemory) return string.Empty;
+
+        var hediff = Hediff_Persona.GetOrAddNew(speaker);
+        var impression = hediff?.GetRelationalMemoryOf(target);
+        if (string.IsNullOrEmpty(impression)) return string.Empty;
+
+        var sb = new StringBuilder();
+        AppendWithHook(sb, speaker, ContextCategories.Pawn.Memory, impression);
+        return sb.ToString().TrimEnd();
     }
 
     /// <summary>Creates the events context section (Active Letters and Notifications).</summary>
@@ -204,8 +301,7 @@ public static class PromptService
         sb.AppendLine($"{name}{title} ({genderAndAge}{stage})");
 
         var role = pawn.GetRole(true);
-        if (role != null)
-            sb.AppendLine($"Role: {role}");
+        AppendWithHook(sb, pawn, ContextCategories.Pawn.Role, role != null ? $"Role: {role}" : null);
 
         // Each section applies hooks via AppendWithHook
         AppendWithHook(sb, pawn, ContextCategories.Pawn.Race, ContextBuilder.GetRaceContext(pawn, infoLevel));
@@ -238,8 +334,7 @@ public static class PromptService
         AppendWithHook(sb, pawn, ContextCategories.Pawn.Health, ContextBuilder.GetHealthContext(pawn, infoLevel));
 
         var personality = Cache.Get(pawn)?.Personality;
-        if (personality != null)
-            sb.AppendLine($"Personality: {personality}");
+        AppendWithHook(sb, pawn, ContextCategories.Pawn.Personality, personality != null ? $"Personality: {personality}" : null);
 
         // Stop here for invaders
         if (pawn.IsEnemy())
@@ -276,11 +371,13 @@ public static class PromptService
         var mainPawn = pawns[0];
         var shortName = GetUniqueName(mainPawn, pawns);
 
-        sb.AppendLine(Constant.CurrentTaskHeader);
+        sb.AppendLine(Constant.SituationHeader);
+
+        if (!string.IsNullOrWhiteSpace(status))
+            sb.AppendLine(status);
 
         // Dialogue type
         ContextBuilder.BuildDialogueType(sb, talkRequest, pawns, shortName, mainPawn);
-        sb.Append($"\n{status}");
 
         if (AIService.IsFirstInstruction())
             sb.Append($"\nin {Constant.Lang}");
@@ -304,9 +401,9 @@ public static class PromptService
     {
         // Render Before injections
         if (ContextHookRegistry.HasAnyInjections)
-            foreach (var (_, pos, _, provider) in ContextHookRegistry.GetInjectedSectionsAt(category))
+            foreach (var (name, pos, _, provider) in ContextHookRegistry.GetInjectedSectionsAt(category))
                 if (pos == ContextHookRegistry.InjectPosition.Before && provider is Func<Pawn, string> p)
-                    AppendIfNotEmpty(sb, p(pawn));
+                    AppendInjectedPawnSection(sb, name, category, p, pawn);
         
         // Apply hooks (always call to allow Override hooks on empty categories)
         var hooked = ContextHookRegistry.ApplyPawnHooks(category, pawn, text ?? "");
@@ -314,9 +411,9 @@ public static class PromptService
         
         // Render After injections
         if (ContextHookRegistry.HasAnyInjections)
-            foreach (var (_, pos, _, provider) in ContextHookRegistry.GetInjectedSectionsAt(category))
+            foreach (var (name, pos, _, provider) in ContextHookRegistry.GetInjectedSectionsAt(category))
                 if (pos == ContextHookRegistry.InjectPosition.After && provider is Func<Pawn, string> p)
-                    AppendIfNotEmpty(sb, p(pawn));
+                    AppendInjectedPawnSection(sb, name, category, p, pawn);
     }
     
     /// <summary>
@@ -328,9 +425,9 @@ public static class PromptService
         
         // Render Before injections
         if (ContextHookRegistry.HasAnyInjections)
-            foreach (var (_, pos, _, provider) in ContextHookRegistry.GetInjectedSectionsAt(category))
+            foreach (var (name, pos, _, provider) in ContextHookRegistry.GetInjectedSectionsAt(category))
                 if (pos == ContextHookRegistry.InjectPosition.Before && provider is Func<Map, string> p)
-                    AppendIfNotEmpty(sb, p(map));
+                    AppendInjectedEnvironmentSection(sb, name, category, p, map);
         
         // Apply hooks
         var hooked = ContextHookRegistry.ApplyEnvironmentHooks(category, map, text ?? "");
@@ -338,10 +435,34 @@ public static class PromptService
         
         // Render After injections
         if (ContextHookRegistry.HasAnyInjections)
-            foreach (var (_, pos, _, provider) in ContextHookRegistry.GetInjectedSectionsAt(category))
+            foreach (var (name, pos, _, provider) in ContextHookRegistry.GetInjectedSectionsAt(category))
                 if (pos == ContextHookRegistry.InjectPosition.After && provider is Func<Map, string> p)
-                    AppendIfNotEmpty(sb, p(map));
+                    AppendInjectedEnvironmentSection(sb, name, category, p, map);
         
         return sb.ToString().TrimEnd();
+    }
+
+    private static void AppendInjectedPawnSection(StringBuilder sb, string name, ContextCategory category, Func<Pawn, string> p, Pawn pawn)
+    {
+        try
+        {
+            AppendIfNotEmpty(sb, p(pawn));
+        }
+        catch (Exception ex)
+        {
+            Logger.Warning($"Error in injected pawn section '{name}' for '{category}': {ex.Message}");
+        }
+    }
+
+    private static void AppendInjectedEnvironmentSection(StringBuilder sb, string name, ContextCategory category, Func<Map, string> p, Map map)
+    {
+        try
+        {
+            AppendIfNotEmpty(sb, p(map));
+        }
+        catch (Exception ex)
+        {
+            Logger.Warning($"Error in injected environment section '{name}' for '{category}': {ex.Message}");
+        }
     }
 }

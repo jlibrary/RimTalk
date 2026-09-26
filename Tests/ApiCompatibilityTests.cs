@@ -59,6 +59,14 @@ public class ApiCompatibilityTests
         return null;
     }
 
+    // Intentional overloads on non-hooked utility/data methods safe from Harmony collisions
+    private static readonly HashSet<string> AllowedOverloads = new(StringComparer.Ordinal)
+    {
+        "RimTalk.Data.Constant.GetJsonInstruction",
+        "RimTalk.Service.TopicService.TryGetTopic",
+        "RimTalk.Data.TalkHistory.GetMessageHistory",
+    };
+
     [Fact]
     public void VerifyPublicApiBackwardCompatibility_WithLastVersion()
     {
@@ -85,8 +93,8 @@ public class ApiCompatibilityTests
 
         foreach (var (typeName, baseType) in baselineTypes)
         {
-            // UI classes are internal windows and widgets, not part of third-party addon public contracts
-            if (typeName.StartsWith("RimTalk.UI."))
+            // UI classes and internal utilities are not part of third-party addon public contracts
+            if (typeName.StartsWith("RimTalk.UI.") || typeName.StartsWith("RimTalk.Util."))
                 continue;
 
             if (!currentTypes.TryGetValue(typeName, out var currType))
@@ -151,7 +159,7 @@ public class ApiCompatibilityTests
             }
 
             // Check public methods
-            var baseMethods = baseType.Methods.Where(m => m.IsPublic && !m.IsSpecialName);
+            var baseMethods = baseType.Methods.Where(m => m.IsPublic && !m.IsSpecialName).ToList();
             foreach (var baseMethod in baseMethods)
             {
                 string methodSig = GetMethodSignature(baseMethod);
@@ -164,6 +172,26 @@ public class ApiCompatibilityTests
                 if (!matchFound)
                 {
                     breakingChanges.Add($"Missing/Modified Method: '{typeName}.{methodSig}' was removed or its parameter/return types changed.");
+                }
+            }
+
+            // Check for newly introduced overloads on previously unique methods.
+            // Harmony patches that omit argument types (e.g. [HarmonyPatch(type, "MethodName")])
+            // throw AmbiguousMatchException if a method that was unique in LastVersion now has multiple overloads.
+            var baseMethodGroups = baseMethods.GroupBy(m => m.Name);
+            foreach (var group in baseMethodGroups)
+            {
+                if (group.Count() == 1)
+                {
+                    string fullMethodKey = $"{typeName}.{group.Key}";
+                    if (AllowedOverloads.Contains(fullMethodKey))
+                        continue;
+
+                    int currCount = currType.Methods.Count(m => m.IsPublic && !m.IsSpecialName && m.Name == group.Key);
+                    if (currCount > 1)
+                    {
+                        breakingChanges.Add($"Ambiguous Harmony Overload: '{fullMethodKey}' was unique in LastVersion but now has {currCount} overloads. This causes third-party parameterless Harmony patches to throw AmbiguousMatchException.");
+                    }
                 }
             }
 

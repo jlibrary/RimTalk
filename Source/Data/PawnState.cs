@@ -15,6 +15,7 @@ public class PawnState(Pawn pawn)
     public string Context { get; set; }
     public int LastTalkTick { get; set; } = 0;
     public string LastStatus { get; set; } = "";
+    public string LastSpokenActivity { get; set; }
     public int RejectCount { get; set; }
     public readonly List<TalkResponse> TalkResponses = [];
     private readonly ConcurrentQueue<TalkResponse> _incomingTalkResponses = new();

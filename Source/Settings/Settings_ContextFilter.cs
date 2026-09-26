@@ -20,6 +20,7 @@ namespace RimTalk
 
     public partial class Settings
     {
+        private static readonly Color SoftCyan = new(0.40f, 0.80f, 0.90f);
         private ContextPreset _currentPreset = ContextPreset.Custom;
         private readonly ContextSettings _changeBuffer = new();
         private bool _presetInitialized; 
@@ -29,8 +30,9 @@ namespace RimTalk
             { ContextPreset.Essential, new ContextSettings {
                 EnableContextOptimization = true,
                 MaxPawnContextCount = 2,
-                ConversationHistoryCount = 1,
+                ConversationHistoryCount = 2,
                 MaxEventsCount = 3,
+                UseCompactHistory = false,
                 
                 IncludeRace = true,
                 IncludeNotableGenes = false,
@@ -56,13 +58,15 @@ namespace RimTalk
                 IncludeSurroundings = false,
                 IncludeWealth = false,
                 IncludeEvents = false,
-                IncludeTopicKeywords = false
+                IncludeTopicKeywords = true,
+                EnableMemory = false
             }},
             { ContextPreset.Standard, new ContextSettings {
                 EnableContextOptimization = false,
                 MaxPawnContextCount = 3,
-                ConversationHistoryCount = 2,
+                ConversationHistoryCount = 3,
                 MaxEventsCount = 5,
+                UseCompactHistory = false,
                 
                 IncludeRace = true,
                 IncludeNotableGenes = true,
@@ -88,13 +92,15 @@ namespace RimTalk
                 IncludeSurroundings = false,
                 IncludeWealth = false,
                 IncludeEvents = EventService.DefaultIncludeEvents,
-                IncludeTopicKeywords = true
+                IncludeTopicKeywords = true,
+                EnableMemory = false
             }},
             { ContextPreset.Comprehensive, new ContextSettings {
                 EnableContextOptimization = false,
                 MaxPawnContextCount = 3,
                 ConversationHistoryCount = 3,
-                MaxEventsCount = 10,
+                MaxEventsCount = 7,
+                UseCompactHistory = true,
                 
                 IncludeRace = true,
                 IncludeNotableGenes = true,
@@ -120,7 +126,8 @@ namespace RimTalk
                 IncludeSurroundings = true,
                 IncludeWealth = true,
                 IncludeEvents = EventService.DefaultIncludeEvents,
-                IncludeTopicKeywords = true
+                IncludeTopicKeywords = true,
+                EnableMemory = true
             }}
         };
 
@@ -143,7 +150,7 @@ namespace RimTalk
             listing.Gap(6f);
 
             Text.Font = GameFont.Tiny;
-            GUI.color = Color.cyan;
+            GUI.color = SoftCyan;
             Widgets.Label(listing.GetRect(Text.LineHeight), "RimTalk.Settings.ContextFilterTip".Translate());
             GUI.color = Color.white;
             Text.Font = GameFont.Small;
@@ -165,46 +172,29 @@ namespace RimTalk
             float genColWidth = (listing.ColumnWidth - genColumnGap) / 2f;
 
             bool hasExtEventMod = EventService.IsExternalEventModActive;
-            string eventModMsg = hasExtEventMod ? "RimTalk.Settings.ExternalEventModDetected".Translate().ToString() : null;
-            float extMsgHeight = 0f;
-            if (hasExtEventMod)
-            {
-                Text.Font = GameFont.Tiny;
-                extMsgHeight = Text.CalcHeight(eventModMsg, genColWidth) + 4f;
-                Text.Font = GameFont.Small;
-            }
+            string extEventModNames = hasExtEventMod ? EventService.GetActiveExternalEventModNames() : string.Empty;
 
-            Rect genSectionRect = listing.GetRect(Mathf.Max(96f, 82f + extMsgHeight));
+            float extraHeight = hasExtEventMod ? 22f : 0f;
+            Rect genSectionRect = listing.GetRect(80f + extraHeight);
 
             // Left General Options Column (Feature Toggles)
             Rect genLeftRect = new Rect(genSectionRect.x, genSectionRect.y, genColWidth, genSectionRect.height);
             Listing_Standard genLeftListing = new Listing_Standard();
             genLeftListing.Begin(genLeftRect);
 
-            CheckboxLeft(genLeftListing, "RimTalk.Settings.EnableContextOptimization".Translate(),
-                ref context.EnableContextOptimization,
-                "RimTalk.Settings.EnableContextOptimization.Tooltip".Translate());
-            genLeftListing.Gap(4f);
-
-            DrawCheckboxWithNumericInput(genLeftListing, "RimTalk.Settings.IncludeEvents", ref context.IncludeEvents, ref context.MaxEventsCount, ref _maxEventsBuffer, 1, 9999);
-            if (hasExtEventMod)
-            {
-                genLeftListing.Gap(2f);
-                GUI.color = new Color(1f, 0.75f, 0.3f);
-                Text.Font = GameFont.Tiny;
-                Widgets.Label(genLeftListing.GetRect(extMsgHeight - 4f), eventModMsg);
-                Text.Font = GameFont.Small;
-                GUI.color = Color.white;
-                genLeftListing.Gap(2f);
-            }
-            else
-            {
-                genLeftListing.Gap(4f);
-            }
-
             CheckboxLeft(genLeftListing, "RimTalk.Settings.IncludeTopicKeywords".Translate(),
                 ref context.IncludeTopicKeywords,
                 "RimTalk.Settings.IncludeTopicKeywords.Tooltip".Translate());
+            genLeftListing.Gap(4f);
+
+            CheckboxLeft(genLeftListing, "RimTalk.Settings.EnableMemory".Translate(),
+                ref context.EnableMemory,
+                "RimTalk.Settings.EnableMemory.Tooltip".Translate());
+            genLeftListing.Gap(4f);
+
+            CheckboxLeft(genLeftListing, "RimTalk.Settings.EnableContextOptimization".Translate(),
+                ref context.EnableContextOptimization,
+                "RimTalk.Settings.EnableContextOptimization.Tooltip".Translate());
             genLeftListing.End();
 
             // Right General Options Column (Limits & Filter Action)
@@ -216,20 +206,24 @@ namespace RimTalk
             genRightListing.Gap(4f);
 
             DrawNumericInput(genRightListing, "RimTalk.Settings.ConversationHistoryCount", ref context.ConversationHistoryCount, ref _conversationHistoryBuffer, 0, 9999);
-            genRightListing.Gap(8f);
+            genRightListing.Gap(4f);
 
-            // Event Reaction Filter Button
-            Rect rowRect = genRightListing.GetRect(30f);
-            Rect eventFilterBtnRect = new Rect(rowRect.x, rowRect.y, 160f, 30f);
-            if (UIUtil.ButtonText(eventFilterBtnRect, "RimTalk.Settings.EventFilter".Translate() + "..."))
+            DrawCheckboxWithNumericInput(genRightListing, "RimTalk.Settings.IncludeEvents", ref context.IncludeEvents, ref context.MaxEventsCount, ref _maxEventsBuffer, 1, 9999,
+                onGearClicked: OpenEventFilterDialog, gearTooltipKey: "RimTalk.Settings.EventFilterTip");
+            if (hasExtEventMod)
             {
-                OpenEventFilterDialog();
+                genRightListing.Gap(2f);
+                string eventModMsg = "RimTalk.Settings.ExternalEventModDetected".Translate(extEventModNames).ToString();
+                GUI.color = new Color(1f, 0.85f, 0.5f);
+                Text.Font = GameFont.Tiny;
+                Widgets.Label(genRightListing.GetRect(18f), eventModMsg);
+                Text.Font = GameFont.Small;
+                GUI.color = Color.white;
             }
-            TooltipHandler.TipRegion(eventFilterBtnRect, "RimTalk.Settings.EventFilterTip".Translate());
 
             genRightListing.End();
 
-            listing.Gap(6f);
+            listing.Gap(16f);
 
             DrawColumns(listing, context);
 
@@ -284,7 +278,11 @@ namespace RimTalk
 
             if (Widgets.ButtonInvisible(rect))
             {
-                SoundDefOf.Click.PlayOneShotOnCamera(null);
+                if (!isSelected)
+                    SoundDefOf.Tick_High.PlayOneShotOnCamera(null);
+                else
+                    SoundDefOf.Click.PlayOneShotOnCamera(null);
+
                 _currentPreset = preset;
                 if (preset != ContextPreset.Custom) ApplyPreset(context, preset);
             }
@@ -398,11 +396,13 @@ namespace RimTalk
             listing.Gap(tallerColumnHeight + 12f);
         }
 
-        private void DrawCheckboxWithNumericInput(Listing_Standard listing, string labelKey, ref bool checkboxVal, ref int intVal, ref string buffer, int min, int max)
+        private void DrawCheckboxWithNumericInput(Listing_Standard listing, string labelKey, ref bool checkboxVal, ref int intVal, ref string buffer, int min, int max, Action onGearClicked = null, string gearTooltipKey = null)
         {
             const float textFieldWidth = 50f;
             const float checkSize = 24f;
             const float gap = 6f;
+            const float gearSize = 22f;
+            const float gearGap = 4f;
 
             Rect rowRect = listing.GetRect(24f);
             Widgets.DrawHighlightIfMouseover(rowRect);
@@ -410,8 +410,10 @@ namespace RimTalk
             Vector2 checkPos = new Vector2(rowRect.x, rowRect.y);
             Widgets.CheckboxDraw(checkPos.x, checkPos.y, checkboxVal, false, checkSize);
 
+            float rightReservedWidth = textFieldWidth + (onGearClicked != null ? (gearSize + gearGap) : 0f);
+
             float labelX = rowRect.x + checkSize + gap;
-            float labelWidth = rowRect.width - (checkSize + gap) - textFieldWidth - 8f;
+            float labelWidth = rowRect.width - (checkSize + gap) - rightReservedWidth - 6f;
             Rect labelRect = new Rect(labelX, rowRect.y, labelWidth, 24f);
 
             TextAnchor oldAnchor = Text.Anchor;
@@ -419,7 +421,7 @@ namespace RimTalk
             Widgets.Label(labelRect, labelKey.Translate());
             Text.Anchor = oldAnchor;
 
-            Rect clickableArea = new Rect(rowRect.x, rowRect.y, rowRect.width - textFieldWidth - 8f, 24f);
+            Rect clickableArea = new Rect(rowRect.x, rowRect.y, rowRect.width - rightReservedWidth - 6f, 24f);
             if (Widgets.ButtonInvisible(clickableArea))
             {
                 checkboxVal = !checkboxVal;
@@ -429,7 +431,9 @@ namespace RimTalk
                     SoundDefOf.Checkbox_TurnedOff.PlayOneShotOnCamera();
             }
 
+            // Keep numeric input aligned with the numeric inputs above
             Rect fieldRect = new Rect(rowRect.xMax - textFieldWidth, rowRect.y, textFieldWidth, 24f);
+
             if (!checkboxVal)
             {
                 GUI.color = new Color(0.6f, 0.6f, 0.6f, 0.45f);
@@ -442,7 +446,25 @@ namespace RimTalk
             {
                 Widgets.TextFieldNumeric(fieldRect, ref intVal, ref buffer, min, max);
             }
-            TooltipHandler.TipRegion(rowRect, (labelKey + ".Tooltip").Translate());
+
+            if (onGearClicked != null)
+            {
+                // Place gear icon to the left of numeric input
+                Rect gearRect = new Rect(fieldRect.x - gearGap - gearSize, rowRect.y + 1f, gearSize, gearSize);
+                var gearIcon = ContentFinder<Texture2D>.Get("UI/Icons/Options/OptionsGeneral");
+                if (Widgets.ButtonImage(gearRect, gearIcon, new Color(0.85f, 0.85f, 0.85f), GenUI.MouseoverColor))
+                {
+                    onGearClicked();
+                }
+                if (!string.IsNullOrEmpty(gearTooltipKey))
+                {
+                    TooltipHandler.TipRegion(gearRect, gearTooltipKey.Translate());
+                }
+            }
+
+            var tip = (labelKey + ".Tooltip").Translate();
+            TooltipHandler.TipRegion(clickableArea, tip);
+            TooltipHandler.TipRegion(fieldRect, tip);
         }
 
         private void ApplyPreset(ContextSettings context, ContextPreset preset)
@@ -450,8 +472,13 @@ namespace RimTalk
             if (PresetDefinitions.TryGetValue(preset, out var source))
             {
                 bool previousIncludeEvents = context.IncludeEvents;
+                bool previousUseCompact = context.UseCompactHistory;
                 CopyFields(source, context);
                 context.IncludeEvents = previousIncludeEvents;
+                if (previousUseCompact != context.UseCompactHistory)
+                {
+                    TalkHistory.Clear();
+                }
                 _currentPreset = preset;
                 _maxPawnContextBuffer = context.MaxPawnContextCount.ToString();
                 _conversationHistoryBuffer = context.ConversationHistoryCount.ToString();

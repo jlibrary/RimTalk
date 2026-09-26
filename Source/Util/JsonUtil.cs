@@ -174,57 +174,33 @@ public static class JsonUtil
 
             char first = text[postCommaIndex];
 
-            // In an object context, a comma separator must be followed by a new key ("key":)
-            if (inValue)
+            // Next element can be an object key ("key":) or an array element ("elem", / "elem"])
+            if (IsJsonQuote(first))
             {
-                if (IsJsonQuote(first))
+                for (int i = postCommaIndex + 1; i < text.Length; i++)
                 {
-                    for (int i = postCommaIndex + 1; i < text.Length; i++)
+                    if (IsJsonQuote(text[i]))
                     {
-                        if (IsJsonQuote(text[i]))
+                        for (int j = i + 1; j < text.Length; j++)
                         {
-                            for (int j = i + 1; j < text.Length; j++)
-                            {
-                                char next = text[j];
-                                if (char.IsWhiteSpace(next))
-                                    continue;
-                                if (next == ':')
-                                    return true;
-                                break;
-                            }
+                            char next = text[j];
+                            if (char.IsWhiteSpace(next))
+                                continue;
+                            if (next == ':' || next == ',' || next == ']')
+                                return true;
+                            break;
                         }
                     }
                 }
                 return false;
             }
-            else
-            {
-                // In an array context, comma is followed by another array element (string, number, bool, null, object, array)
-                if (IsJsonQuote(first))
-                {
-                    for (int i = postCommaIndex + 1; i < text.Length; i++)
-                    {
-                        if (IsJsonQuote(text[i]))
-                        {
-                            for (int j = i + 1; j < text.Length; j++)
-                            {
-                                char next = text[j];
-                                if (char.IsWhiteSpace(next))
-                                    continue;
-                                if (next == ',' || next == ']')
-                                    return true;
-                                break;
-                            }
-                        }
-                    }
-                }
-                if (char.IsDigit(first) || first == '-' || first == '{' || first == '[')
-                    return true;
 
-                string remaining = text.Substring(postCommaIndex);
-                if (remaining.StartsWith("true") || remaining.StartsWith("false") || remaining.StartsWith("null"))
-                    return true;
-            }
+            if (char.IsDigit(first) || first == '-' || first == '{' || first == '[')
+                return true;
+
+            string remaining = text.Substring(postCommaIndex);
+            if (remaining.StartsWith("true") || remaining.StartsWith("false") || remaining.StartsWith("null"))
+                return true;
 
             return false;
         }

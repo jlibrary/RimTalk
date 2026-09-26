@@ -178,7 +178,7 @@ public partial class Settings : Mod
 
         // Quick Setup button
         GUI.color = Color.white;
-        Rect toggleRect = new Rect(inRect.xMax - 123f, tabBaseRect.y - 30f, 125f, 30f);
+        Rect toggleRect = new Rect(inRect.xMax - 123f, tabBaseRect.y - 31f, 125f, 30f);
         if (UIUtil.ButtonText(toggleRect, "RimTalk.Settings.QuickSetupButton".Translate())) settings.ShowQuickSettings = true;
         TooltipHandler.TipRegion(toggleRect, "RimTalk.Settings.QuickSetupTooltip".Translate());
     }
