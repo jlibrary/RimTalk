@@ -301,8 +301,8 @@ Scribanマジック (動的コンテンツ)
 • トラウマ (最大3件)
 大切な人の死など強い衝撃を受けた際、立ち直るまで会話全体に影響を与えます。
 
-• 対人記憶 (上位2件)
-その相手と共有した最も印象深い、または直近の出来事2件を会話で思い起こします。
+• 対人記憶 (重大2件 + 直近2件、最大4件)
+その相手と共有した最も印象深い出来事2件と、最も直近に起きた出来事2件を会話で思い起こします。
 
 • マイルストーン (★)
 結婚や救助など永続的に残る特別な関係で、二人の会話に自然に反映されます。</RimTalk.Memory.HelpDesc>
@@ -329,15 +329,22 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Memory.KilledInBattle>戦闘で {0} を倒した</RimTalk.Memory.KilledInBattle>
     <RimTalk.Memory.MurderedFellowColonist>同胞の {0} を殺害した</RimTalk.Memory.MurderedFellowColonist>
     <RimTalk.Memory.BecameLovers>恋人になった</RimTalk.Memory.BecameLovers>
-    <RimTalk.Memory.DidSurgery>手術を成功させた</RimTalk.Memory.DidSurgery>
+    <RimTalk.Memory.DidSurgery>手術を受けた</RimTalk.Memory.DidSurgery>
     <RimTalk.Memory.CapturedMe>拘束され投獄された</RimTalk.Memory.CapturedMe>
     <RimTalk.Memory.ICaptured>捕らえて拘束した</RimTalk.Memory.ICaptured>
     <RimTalk.Memory.SocialFight>激しい殴り合いの喧嘩をした</RimTalk.Memory.SocialFight>
     <RimTalk.Memory.Marriage>祝福に包まれて結婚した</RimTalk.Memory.Marriage>
-    <RimTalk.Memory.TendedMe>丁寧に傷の手当てを受けた</RimTalk.Memory.TendedMe>
+    <RimTalk.Memory.TendedMe>傷の手当てを受けた</RimTalk.Memory.TendedMe>
     <RimTalk.Memory.TendedPatient>負傷の手当てをした</RimTalk.Memory.TendedPatient>
     <RimTalk.Memory.TraumaWithTarget>{0} による悲痛とトラウマ ({1})</RimTalk.Memory.TraumaWithTarget>
     <RimTalk.Memory.TraumaWithoutTarget>{0} による悲痛とトラウマ</RimTalk.Memory.TraumaWithoutTarget>
+    <RimTalk.Memory.GaveBirthWith>{0} と共に新しい命を授かった</RimTalk.Memory.GaveBirthWith>
+    <RimTalk.Memory.ChildBorn>我が子 {0} をこの世に迎えた</RimTalk.Memory.ChildBorn>
+    <RimTalk.Memory.BornToMother>母 {0} のもとに産声をあげた</RimTalk.Memory.BornToMother>
+    <RimTalk.Memory.BornToFather>父 {0} のもとに生まれた</RimTalk.Memory.BornToFather>
+    <RimTalk.Memory.Divorced>{0} と離婚した</RimTalk.Memory.Divorced>
+    <RimTalk.Memory.BrokeUpWith>{0} と別れた</RimTalk.Memory.BrokeUpWith>
+    <RimTalk.Memory.MurderedMyKin>大切な {0} を殺害した仇</RimTalk.Memory.MurderedMyKin>
 
     <!-- Settings_Api.cs -->
     <RimTalk.Settings.QuickSetupSubtitle>AI接続方式を選択すると、入植者の会話がすぐに有効になります。</RimTalk.Settings.QuickSetupSubtitle>

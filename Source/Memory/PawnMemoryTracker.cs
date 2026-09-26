@@ -12,11 +12,24 @@ public static class PawnMemoryTracker
 {
     public const int MaxMemoriesPerPawn = 25;
     public const int MaxCoreTraumasPerPawn = 3;
+    public const int MaxMilestonesPerTarget = 3;
     public const float MinSignificantWeight = 5f;
     public const float PurgeWeightThreshold = 1.5f;
     public const float DefaultHalfLifeDays = 4f;
     public const float TraumaHalfLifeDays = 7f;
     public const int DebounceTicks = 12000; // ~5 in-game hours debounce window
+
+    /// <summary>
+    /// Resolves the effective half-life in days for a memory entry.
+    /// If halfLifeDays parameter matches DefaultHalfLifeDays (the default fallback),
+    /// the entry's dynamic weight-calibrated half-life is used.
+    /// Otherwise, the explicitly requested halfLifeDays is honored.
+    /// </summary>
+    public static float ResolveHalfLifeDays(MemoryEntry entry, float halfLifeDays = DefaultHalfLifeDays)
+    {
+        if (entry == null) return halfLifeDays;
+        return Mathf.Abs(halfLifeDays - DefaultHalfLifeDays) < 0.001f ? entry.GetDynamicHalfLifeDays() : halfLifeDays;
+    }
 
     /// <summary>
     /// Adds a new memory or updates/debounces an existing memory with matching target and event key.
@@ -71,44 +84,101 @@ public static class PawnMemoryTracker
         bool isCoreTrauma,
         bool isMilestone)
     {
+        AddOrUpdateMemory(sourcePawnName, sourcePawnId, memories, targetPawnId, targetPawnName, eventKey, weight, note, currentTick, isDirective, isCoreTrauma, isMilestone, MemoryPerspective.None);
+    }
+
+    /// <summary>
+    /// Adds or updates a memory, core trauma, player directive, or permanent milestone with perspective tracking.
+    /// </summary>
+    public static void AddOrUpdateMemory(
+        string sourcePawnName,
+        int sourcePawnId,
+        List<MemoryEntry> memories,
+        int targetPawnId,
+        string targetPawnName,
+        string eventKey,
+        float weight,
+        string note,
+        int currentTick,
+        bool isDirective,
+        bool isCoreTrauma,
+        bool isMilestone,
+        MemoryPerspective perspective)
+    {
         if (memories == null || string.IsNullOrEmpty(eventKey) || Mathf.Abs(weight) < 1f)
             return;
 
         // Clean up completely faded memories inline without background tick overhead
         PurgeDecayedMemories(memories, currentTick, DefaultHalfLifeDays, sourcePawnName, sourcePawnId);
 
-        // Enforce 1 permanent milestone per target pawn rule
+        // Enforce milestone capacity per target pawn (allows up to MaxMilestonesPerTarget = 3)
         if (isMilestone && targetPawnId >= 0)
         {
-            for (int i = memories.Count - 1; i >= 0; i--)
+            bool sameEventExists = false;
+            int targetMilestoneCount = 0;
+            int lowestWeightIndex = -1;
+            float lowestAbsWeight = float.MaxValue;
+
+            for (int i = 0; i < memories.Count; i++)
             {
                 var m = memories[i];
                 if (m != null && m.IsMilestone && m.TargetPawnId == targetPawnId)
                 {
                     if (string.Equals(m.EventKey, eventKey, StringComparison.OrdinalIgnoreCase))
                     {
-                        // Same milestone event: will be updated below
+                        sameEventExists = true;
                         break;
                     }
-                    if (Mathf.Abs(weight) >= Mathf.Abs(m.BaseWeight))
+                    targetMilestoneCount++;
+                    float absWeight = Mathf.Abs(m.BaseWeight);
+                    if (absWeight < lowestAbsWeight)
                     {
-                        // New milestone has equal or higher significance: replace previous milestone
-                        memories.RemoveAt(i);
+                        lowestAbsWeight = absWeight;
+                        lowestWeightIndex = i;
                     }
-                    else
+                }
+            }
+
+            if (!sameEventExists && targetMilestoneCount >= MaxMilestonesPerTarget)
+            {
+                if (Mathf.Abs(weight) >= lowestAbsWeight && lowestWeightIndex >= 0)
+                {
+                    var evicted = memories[lowestWeightIndex];
+                    memories.RemoveAt(lowestWeightIndex);
+                    if (evicted != null)
                     {
-                        // Existing milestone is more prominent (e.g. LifeSaved vs minor): retain existing
-                        return;
+                        MemoryHistory.Add(new MemoryLogEntry
+                        {
+                            SourcePawnName = sourcePawnName ?? string.Empty,
+                            SourcePawnId = sourcePawnId,
+                            TargetPawnName = evicted.TargetPawnName,
+                            TargetPawnId = evicted.TargetPawnId,
+                            ChangeType = MemoryChangeType.Evicted,
+                            EventKey = evicted.EventKey,
+                            Note = evicted.Note,
+                            OldWeight = evicted.BaseWeight,
+                            NewWeight = 0f,
+                            Tick = currentTick,
+                            Details = $"Milestone evicted by more significant event '{eventKey}' ({Mathf.Abs(weight):F1} >= {lowestAbsWeight:F1})"
+                        });
                     }
+                }
+                else
+                {
+                    // Existing milestones are all more prominent: retain existing
+                    return;
                 }
             }
         }
 
-        // Search for existing entry with same target and event key
+        // Search for existing entry with same target, event key, and perspective
         MemoryEntry existing = null;
-        foreach (var m in memories)
+        for (int i = 0; i < memories.Count; i++)
         {
-            if (m != null && m.TargetPawnId == targetPawnId && string.Equals(m.EventKey, eventKey, StringComparison.OrdinalIgnoreCase))
+            var m = memories[i];
+            if (m != null && m.TargetPawnId == targetPawnId &&
+                string.Equals(m.EventKey, eventKey, StringComparison.OrdinalIgnoreCase) &&
+                m.Perspective == perspective)
             {
                 existing = m;
                 break;
@@ -117,6 +187,9 @@ public static class PawnMemoryTracker
 
         if (existing != null)
         {
+            existing.LastTick = currentTick;
+            existing.Count++;
+
             // Non-stacking single-instance events (e.g. HarmedMe, IHarmed, RescuedMe, SocialFight):
             // Keep base weight fixed according to vanilla mechanics. Only refresh timestamp and note.
             if (IsNonStackingEvent(eventKey))
@@ -166,7 +239,7 @@ public static class PawnMemoryTracker
             }
 
             // Older existing memory: update with blended weight
-            float halfLife = isCoreTrauma ? TraumaHalfLifeDays : DefaultHalfLifeDays;
+            float halfLife = existing.GetDynamicHalfLifeDays();
             float currentDecayed = isMilestone ? existing.BaseWeight : existing.GetDecayedWeight(currentTick, halfLife);
             float blendedWeight = Mathf.Clamp(currentDecayed + weight, -100f, 100f);
             existing.BaseWeight = blendedWeight;
@@ -199,7 +272,7 @@ public static class PawnMemoryTracker
         }
 
         // Add brand new entry
-        var newEntry = new MemoryEntry(targetPawnId, targetPawnName, eventKey, weight, currentTick, note, isDirective, isCoreTrauma, isMilestone);
+        var newEntry = new MemoryEntry(targetPawnId, targetPawnName, eventKey, weight, currentTick, note, isDirective, isCoreTrauma, isMilestone, perspective, 1, currentTick);
         memories.Add(newEntry);
 
         MemoryHistory.Add(new MemoryLogEntry
@@ -359,7 +432,7 @@ public static class PawnMemoryTracker
             if (entry == null || entry.TargetPawnId != -1 || entry.IsDirective || entry.IsCoreTrauma)
                 continue;
 
-            float score = entry.GetRecallScore(currentTick, halfLifeDays);
+            float score = entry.GetRecallScore(currentTick, ResolveHalfLifeDays(entry, halfLifeDays));
             if (Mathf.Abs(score) >= MinSignificantWeight)
             {
                 list.Add(entry);
@@ -368,8 +441,8 @@ public static class PawnMemoryTracker
 
         if (list.Count > 1)
         {
-            list.Sort((a, b) => Mathf.Abs(b.GetRecallScore(currentTick, halfLifeDays))
-                .CompareTo(Mathf.Abs(a.GetRecallScore(currentTick, halfLifeDays))));
+            list.Sort((a, b) => Mathf.Abs(b.GetRecallScore(currentTick, ResolveHalfLifeDays(b, halfLifeDays)))
+                .CompareTo(Mathf.Abs(a.GetRecallScore(currentTick, ResolveHalfLifeDays(a, halfLifeDays)))));
             if (list.Count > maxMemories)
                 list.RemoveRange(maxMemories, list.Count - maxMemories);
         }
@@ -397,7 +470,7 @@ public static class PawnMemoryTracker
             if (entry == null || entry.TargetPawnId != targetPawnId)
                 continue;
 
-            float score = entry.GetRecallScore(currentTick, halfLifeDays);
+            float score = entry.GetRecallScore(currentTick, ResolveHalfLifeDays(entry, halfLifeDays));
             if (Mathf.Abs(score) >= MinSignificantWeight)
             {
                 list.Add(entry);
@@ -406,8 +479,49 @@ public static class PawnMemoryTracker
 
         if (list.Count > 1)
         {
-            list.Sort((a, b) => Mathf.Abs(b.GetRecallScore(currentTick, halfLifeDays))
-                .CompareTo(Mathf.Abs(a.GetRecallScore(currentTick, halfLifeDays))));
+            list.Sort((a, b) => Mathf.Abs(b.GetRecallScore(currentTick, ResolveHalfLifeDays(b, halfLifeDays)))
+                .CompareTo(Mathf.Abs(a.GetRecallScore(currentTick, ResolveHalfLifeDays(a, halfLifeDays)))));
+            if (list.Count > maxMemories)
+                list.RemoveRange(maxMemories, list.Count - maxMemories);
+        }
+
+        return list;
+    }
+
+    /// <summary>
+    /// Selects the most recent episodic memories toward a target pawn, excluding already selected prominent memories.
+    /// Orders by descending CreatedTick (most recent first) and filters by MinSignificantWeight.
+    /// </summary>
+    public static List<MemoryEntry> SelectRecentMemories(
+        List<MemoryEntry> memories,
+        int targetPawnId,
+        int currentTick,
+        List<MemoryEntry> excludeMemories = null,
+        float halfLifeDays = DefaultHalfLifeDays,
+        int maxMemories = 2)
+    {
+        var list = new List<MemoryEntry>();
+        if (memories == null || memories.Count == 0 || targetPawnId < 0)
+            return list;
+
+        foreach (var entry in memories)
+        {
+            if (entry == null || entry.TargetPawnId != targetPawnId)
+                continue;
+
+            if (excludeMemories != null && excludeMemories.Contains(entry))
+                continue;
+
+            float score = entry.GetRecallScore(currentTick, ResolveHalfLifeDays(entry, halfLifeDays));
+            if (Mathf.Abs(score) >= MinSignificantWeight)
+            {
+                list.Add(entry);
+            }
+        }
+
+        if (list.Count > 1)
+        {
+            list.Sort((a, b) => b.CreatedTick.CompareTo(a.CreatedTick));
             if (list.Count > maxMemories)
                 list.RemoveRange(maxMemories, list.Count - maxMemories);
         }
@@ -439,7 +553,7 @@ public static class PawnMemoryTracker
             if (entry == null || entry.TargetPawnId != targetPawnId)
                 continue;
 
-            float score = entry.GetRecallScore(currentTick, halfLifeDays);
+            float score = entry.GetRecallScore(currentTick, ResolveHalfLifeDays(entry, halfLifeDays));
 
             if (score > maxPosScore)
             {
@@ -506,7 +620,8 @@ public static class PawnMemoryTracker
             }
 
             bool isIgnored = IsExcludedRoutineChat(m.EventKey);
-            bool isDecayed = !m.IsDirective && !m.IsMilestone && Mathf.Abs(m.GetDecayedWeight(currentTick, m.IsCoreTrauma ? TraumaHalfLifeDays : halfLifeDays)) < PurgeWeightThreshold;
+            float effectiveHalfLife = ResolveHalfLifeDays(m, halfLifeDays);
+            bool isDecayed = !m.IsDirective && !m.IsMilestone && Mathf.Abs(m.GetDecayedWeight(currentTick, effectiveHalfLife)) < PurgeWeightThreshold;
 
             if (isIgnored || isDecayed)
             {
@@ -558,7 +673,7 @@ public static class PawnMemoryTracker
                 if (m.IsDirective || m.IsCoreTrauma || m.IsMilestone)
                     continue;
 
-                float absWeight = Mathf.Abs(m.GetDecayedWeight(currentTick, DefaultHalfLifeDays));
+                float absWeight = Mathf.Abs(m.GetDecayedWeight(currentTick, m.GetDynamicHalfLifeDays()));
                 if (absWeight < minAbsWeight)
                 {
                     minAbsWeight = absWeight;
@@ -680,15 +795,26 @@ public static class PawnMemoryTracker
                eventKey.Equals("ICaptured", StringComparison.OrdinalIgnoreCase) ||
                eventKey.Equals("SocialFight", StringComparison.OrdinalIgnoreCase) ||
                eventKey.Equals("Marriage", StringComparison.OrdinalIgnoreCase) ||
+               eventKey.Equals("BecameLover", StringComparison.OrdinalIgnoreCase) ||
+               eventKey.Equals("SavedColonistLife", StringComparison.OrdinalIgnoreCase) ||
+               eventKey.Equals("SavedLife", StringComparison.OrdinalIgnoreCase) ||
+               eventKey.Equals("ExecutedPrisoner", StringComparison.OrdinalIgnoreCase) ||
+               eventKey.Equals("IExecuted", StringComparison.OrdinalIgnoreCase) ||
+               eventKey.Equals("IKilled", StringComparison.OrdinalIgnoreCase) ||
+               eventKey.Equals("KilledColonist", StringComparison.OrdinalIgnoreCase) ||
                eventKey.Equals("CrashedTogether", StringComparison.OrdinalIgnoreCase) ||
                eventKey.Equals("TendedMe", StringComparison.OrdinalIgnoreCase) ||
-               eventKey.Equals("TendedPatient", StringComparison.OrdinalIgnoreCase);
+               eventKey.Equals("TendedPatient", StringComparison.OrdinalIgnoreCase) ||
+               eventKey.Equals("GaveBirth", StringComparison.OrdinalIgnoreCase) ||
+               eventKey.Equals("GaveBirthWith", StringComparison.OrdinalIgnoreCase) ||
+               eventKey.Equals("Divorced", StringComparison.OrdinalIgnoreCase) ||
+               eventKey.Equals("MurderedKin", StringComparison.OrdinalIgnoreCase);
     }
 
     /// <summary>
     /// Selects the active permanent milestone held toward the target pawn, if any.
-    /// Returns null if suppressed by the in-game cooldown window (default 60,000 ticks = 1 in-game day)
-    /// to avoid repetitive recitation.
+    /// Rotates across multiple milestones (LRU / round-robin) while enforcing a 1-day cooldown
+    /// across all milestones toward the target to avoid repetitive recitation.
     /// </summary>
     public static MemoryEntry SelectMilestone(
         List<MemoryEntry> memories,
@@ -699,19 +825,52 @@ public static class PawnMemoryTracker
         if (memories == null || memories.Count == 0 || targetPawnId < 0)
             return null;
 
+        // 1. Enforce fatigue cooldown across all milestones for this target (max 1 milestone injected per day)
+        for (int i = 0; i < memories.Count; i++)
+        {
+            var m = memories[i];
+            if (m != null && m.IsMilestone && m.TargetPawnId == targetPawnId)
+            {
+                if (m.LastRecalledTick > 0)
+                {
+                    int elapsed = currentTick - m.LastRecalledTick;
+                    if (elapsed >= 0 && elapsed < cooldownTicks)
+                        return null;
+                }
+            }
+        }
+
+        // 2. Select eligible milestone with round-robin rotation (un-recalled first, then least recently recalled)
+        MemoryEntry best = null;
+        int oldestRecallTick = int.MaxValue;
+        int oldestCreatedTick = int.MaxValue;
+
         for (int i = 0; i < memories.Count; i++)
         {
             var m = memories[i];
             if (m == null || !m.IsMilestone || m.TargetPawnId != targetPawnId)
                 continue;
 
-            if (m.LastRecalledTick > 0 && (currentTick - m.LastRecalledTick) < cooldownTicks)
-                return null;
-
-            return m;
+            int recallTick = m.LastRecalledTick <= 0 ? -1 : m.LastRecalledTick;
+            if (recallTick == -1)
+            {
+                // Unrecalled: prioritize earliest created
+                if (best == null || oldestRecallTick > -1 || m.CreatedTick < oldestCreatedTick)
+                {
+                    best = m;
+                    oldestRecallTick = -1;
+                    oldestCreatedTick = m.CreatedTick;
+                }
+            }
+            else if (oldestRecallTick > -1 && recallTick < oldestRecallTick)
+            {
+                // Recalled: pick the one recalled longest ago
+                best = m;
+                oldestRecallTick = recallTick;
+            }
         }
 
-        return null;
+        return best;
     }
 
     /// <summary>

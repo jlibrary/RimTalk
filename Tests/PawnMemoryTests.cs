@@ -30,6 +30,36 @@ public class PawnMemoryTests
     }
 
     [Fact]
+    public void MemoryEntry_DynamicHalfLife_CalibratesByEmotionalSignificance()
+    {
+        int tick = 100000;
+
+        // Mild memory (15f): 4-day half-life
+        var mild = new MemoryEntry(1, "Bob", "Tended", 15f, tick, "tended wounds");
+        Assert.Equal(4f, mild.GetDynamicHalfLifeDays());
+        float mildAfter4Days = mild.GetDecayedWeight(tick + 4 * 60000);
+        Assert.Equal(7.5f, mildAfter4Days, precision: 1);
+
+        // Moderate memory (40f): 8-day half-life
+        var moderate = new MemoryEntry(1, "Bob", "SocialFight", -40f, tick, "brawl");
+        Assert.Equal(8f, moderate.GetDynamicHalfLifeDays());
+        float moderateAfter8Days = moderate.GetDecayedWeight(tick + 8 * 60000);
+        Assert.Equal(-20f, moderateAfter8Days, precision: 1);
+
+        // Major memory (80f): 14-day half-life
+        var major = new MemoryEntry(1, "Bob", "SavedLife", 80f, tick, "saved life");
+        Assert.Equal(14f, major.GetDynamicHalfLifeDays());
+        float majorAfter14Days = major.GetDecayedWeight(tick + 14 * 60000);
+        Assert.Equal(40f, majorAfter14Days, precision: 1);
+
+        // Core trauma (any weight): 7-day half-life
+        var trauma = new MemoryEntry(1, "Bob", "Trauma", -85f, tick, "grief", isDirective: false, isCoreTrauma: true);
+        Assert.Equal(7f, trauma.GetDynamicHalfLifeDays());
+        float traumaAfter7Days = trauma.GetDecayedWeight(tick + 7 * 60000);
+        Assert.Equal(-42.5f, traumaAfter7Days, precision: 1);
+    }
+
+    [Fact]
     public void MemoryEntry_RecencyFatigue_SuppressesRecentRecalls()
     {
         int currentTick = 200000;
@@ -360,25 +390,31 @@ public class PawnMemoryTests
     }
 
     [Fact]
-    public void Milestone_SingleSlotPerTarget_EnforcesProminentMilestone()
+    public void Milestone_MultiSlotCapacity_AllowsUpToThree_AndEvictsWeakest()
     {
         var list = new List<MemoryEntry>();
         int tick = 100000;
 
-        // First milestone: SavedLife (+90f)
-        PawnMemoryTracker.AddOrUpdateMemory("Alice", 1, list, 2, "Bob", "SavedLife", 90f, "saved life", tick, isDirective: false, isCoreTrauma: false, isMilestone: true);
+        // 1st milestone: BecameLover (+65f)
+        PawnMemoryTracker.AddOrUpdateMemory("Alice", 1, list, 2, "Bob", "BecameLover", 65f, "became lovers", tick, isDirective: false, isCoreTrauma: false, isMilestone: true);
         Assert.Single(list);
-        Assert.Equal("SavedLife", list[0].EventKey);
+        Assert.Equal("BecameLover", list[0].EventKey);
 
-        // Try adding a lower-significance milestone: BecameLover (+65f) -> should NOT replace higher milestone
-        PawnMemoryTracker.AddOrUpdateMemory("Alice", 1, list, 2, "Bob", "BecameLover", 65f, "became lovers", tick + 5000, isDirective: false, isCoreTrauma: false, isMilestone: true);
-        Assert.Single(list);
-        Assert.Equal("SavedLife", list[0].EventKey);
+        // 2nd milestone: Marriage (+80f) -> Both are preserved!
+        PawnMemoryTracker.AddOrUpdateMemory("Alice", 1, list, 2, "Bob", "Marriage", 80f, "married in joyous ceremony", tick + 5000, isDirective: false, isCoreTrauma: false, isMilestone: true);
+        Assert.Equal(2, list.Count);
 
-        // Add an equal or higher significance milestone: Marriage (+90f or higher) -> replaces previous milestone
-        PawnMemoryTracker.AddOrUpdateMemory("Alice", 1, list, 2, "Bob", "Marriage", 95f, "married in joyous ceremony", tick + 10000, isDirective: false, isCoreTrauma: false, isMilestone: true);
-        Assert.Single(list);
-        Assert.Equal("Marriage", list[0].EventKey);
+        // 3rd milestone: GaveBirthWith (+85f) -> All three are preserved!
+        PawnMemoryTracker.AddOrUpdateMemory("Alice", 1, list, 2, "Bob", "GaveBirthWith", 85f, "welcomed child into world with Bob", tick + 10000, isDirective: false, isCoreTrauma: false, isMilestone: true);
+        Assert.Equal(3, list.Count);
+
+        // 4th milestone: MurderedKin (-95f) -> Exceeds MaxMilestonesPerTarget (3), evicts the lowest significance (BecameLover 65f)
+        PawnMemoryTracker.AddOrUpdateMemory("Alice", 1, list, 2, "Bob", "MurderedKin", -95f, "murdered kin", tick + 15000, isDirective: false, isCoreTrauma: false, isMilestone: true);
+        Assert.Equal(3, list.Count);
+        Assert.DoesNotContain(list, m => m.EventKey == "BecameLover");
+        Assert.Contains(list, m => m.EventKey == "Marriage");
+        Assert.Contains(list, m => m.EventKey == "GaveBirthWith");
+        Assert.Contains(list, m => m.EventKey == "MurderedKin");
     }
 
     [Fact]
@@ -403,6 +439,39 @@ public class PawnMemoryTests
         // Next day (e.g. 65,000 ticks later): eligible again
         var eligibleAgain = PawnMemoryTracker.SelectMilestone(list, 2, tick + 65000, cooldownTicks: 60000);
         Assert.NotNull(eligibleAgain);
+    }
+
+    [Fact]
+    public void Milestone_SelectMilestone_RotatesRoundRobinAcrossDays()
+    {
+        var list = new List<MemoryEntry>();
+        int tick = 100000;
+        var m1 = new MemoryEntry(2, "Bob", "BecameLover", 65f, tick, "became lovers", false, false, true);
+        var m2 = new MemoryEntry(2, "Bob", "Marriage", 80f, tick + 1000, "married in ceremony", false, false, true);
+        list.Add(m1);
+        list.Add(m2);
+
+        // Day 1: m1 is selected first (earliest created among unrecalled)
+        var day1 = PawnMemoryTracker.SelectMilestone(list, 2, tick, cooldownTicks: 60000);
+        Assert.NotNull(day1);
+        Assert.Equal("BecameLover", day1.EventKey);
+        PawnMemoryTracker.MarkRecalled(day1, tick);
+
+        // Same day: suppressed
+        Assert.Null(PawnMemoryTracker.SelectMilestone(list, 2, tick + 5000, cooldownTicks: 60000));
+
+        // Day 2 (65,000 ticks later): rotates to m2 (next unrecalled)
+        int tickDay2 = tick + 65000;
+        var day2 = PawnMemoryTracker.SelectMilestone(list, 2, tickDay2, cooldownTicks: 60000);
+        Assert.NotNull(day2);
+        Assert.Equal("Marriage", day2.EventKey);
+        PawnMemoryTracker.MarkRecalled(day2, tickDay2);
+
+        // Day 3 (130,000 ticks later): all recalled, rotates back to m1 (recalled at tick vs tickDay2)
+        int tickDay3 = tick + 130000;
+        var day3 = PawnMemoryTracker.SelectMilestone(list, 2, tickDay3, cooldownTicks: 60000);
+        Assert.NotNull(day3);
+        Assert.Equal("BecameLover", day3.EventKey);
     }
 
     [Fact]
@@ -477,5 +546,89 @@ public class PawnMemoryTests
         var bobMemories = PawnMemoryTracker.SelectTopRecallMemories(list, 2, currentTick);
         Assert.Single(bobMemories);
         Assert.Equal("RescuedMe", bobMemories[0].EventKey);
+    }
+
+    [Fact]
+    public void PawnMemoryTracker_DualTrackInterpersonalMemories_SelectsProminentAndDistinctRecent()
+    {
+        var list = new List<MemoryEntry>();
+        int currentTick = 600000; // Day 10
+
+        // 1. Historical prominent event 10 days ago (tick 1000)
+        PawnMemoryTracker.AddOrUpdateMemory(list, 1, "Bob", "SavedLife", 80f, "saved their life when near death", 1000);
+
+        // 2. Historical prominent conflict 5 days ago (tick 300000)
+        PawnMemoryTracker.AddOrUpdateMemory(list, 1, "Bob", "SocialFight", -50f, "got into a violent fistfight", 300000);
+
+        // 3. Recent grievance 2 hours ago (tick 595000)
+        PawnMemoryTracker.AddOrUpdateMemory(list, 1, "Bob", "Insulted", -20f, "insulted by Bob", 595000);
+
+        // 4. Recent medical care 1 hour ago (tick 597500)
+        PawnMemoryTracker.AddOrUpdateMemory(list, 1, "Bob", "TendedMe", 25f, "treated their wounds", 597500);
+
+        // 1. Prominent memories (Top 2 by absolute score)
+        var prominent = PawnMemoryTracker.SelectTopRecallMemories(list, 1, currentTick, maxMemories: 2);
+        Assert.Equal(2, prominent.Count);
+        Assert.Contains(prominent, m => m.EventKey == "SocialFight");
+        Assert.Contains(prominent, m => m.EventKey == "SavedLife" || m.EventKey == "TendedMe");
+
+        // 2. Recent memories (Top 2 by CreatedTick, excluding prominent memories)
+        var recent = PawnMemoryTracker.SelectRecentMemories(list, 1, currentTick, excludeMemories: prominent, maxMemories: 2);
+        Assert.True(recent.Count <= 2);
+        Assert.DoesNotContain(recent, m => prominent.Contains(m));
+
+        // Format both lines
+        string prominentLine = MemoryFormatter.FormatMemories("Bob", prominent);
+        string recentLine = MemoryFormatter.FormatRecentMemories("Bob", recent);
+
+        Assert.StartsWith("Memory with Bob: ", prominentLine);
+        Assert.StartsWith("Recent with Bob: ", recentLine);
+
+        // 3. Deduplication check: When total memories are <= 2, recent should be empty
+        var smallList = new List<MemoryEntry>
+        {
+            new(1, "Bob", "RescuedMe", 30f, currentTick, "rescued by Bob")
+        };
+        var smallProminent = PawnMemoryTracker.SelectTopRecallMemories(smallList, 1, currentTick, maxMemories: 2);
+        var smallRecent = PawnMemoryTracker.SelectRecentMemories(smallList, 1, currentTick, excludeMemories: smallProminent, maxMemories: 2);
+
+        Assert.Single(smallProminent);
+        Assert.Empty(smallRecent);
+        Assert.Equal(string.Empty, MemoryFormatter.FormatRecentMemories("Bob", smallRecent));
+    }
+
+    [Fact]
+    public void PawnMemoryTracker_Perspective_DifferentiatesActorAndTarget()
+    {
+        var list = new List<MemoryEntry>();
+        int tick1 = 10000;
+        int tick2 = 20000;
+
+        // Actor records action toward Bob (id 1)
+        PawnMemoryTracker.AddOrUpdateMemory("Alice", 2, list, 1, "Bob", "Arrest", -30f, "I arrested Bob", tick1, false, false, false, MemoryPerspective.Actor);
+
+        // Same event key but Target perspective (e.g. mutual or separate projection)
+        PawnMemoryTracker.AddOrUpdateMemory("Alice", 2, list, 1, "Bob", "Arrest", -40f, "Arrested by Bob", tick1 + 1000, false, false, false, MemoryPerspective.Target);
+
+        // Should maintain 2 distinct entries because perspectives differ
+        Assert.Equal(2, list.Count);
+        var actorEntry = list.Find(m => m.Perspective == MemoryPerspective.Actor);
+        var targetEntry = list.Find(m => m.Perspective == MemoryPerspective.Target);
+
+        Assert.NotNull(actorEntry);
+        Assert.NotNull(targetEntry);
+        Assert.Equal(1, actorEntry.Count);
+        Assert.Equal(1, targetEntry.Count);
+
+        // Repeat actor action: should update actorEntry and increment Count
+        PawnMemoryTracker.AddOrUpdateMemory("Alice", 2, list, 1, "Bob", "Arrest", -30f, "I arrested Bob again", tick2, false, false, false, MemoryPerspective.Actor);
+
+        Assert.Equal(2, list.Count); // Count of memory items remains 2
+        Assert.Equal(2, actorEntry.Count);
+        Assert.Equal(tick2, actorEntry.LastTick);
+
+        // Format to verify repeat indicator (x2)
+        string formatted = MemoryFormatter.FormatMemories("Bob", new List<MemoryEntry> { actorEntry });
+        Assert.Contains("I arrested Bob again (x2)", formatted);
     }
 }

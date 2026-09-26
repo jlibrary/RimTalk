@@ -16,21 +16,6 @@ namespace RimTalk.Memory;
 /// </summary>
 public static class MemoryHookService
 {
-    private static readonly string[] KnownExternalMemoryModIds =
-    {
-        "cj.rimtalk.expandmemory"
-    };
-
-    /// <summary>
-    /// Checks if a known external memory addon mod is active (e.g. RimTalk - Expand Memory).
-    /// </summary>
-    public static bool IsExternalMemoryModActive => ModUtil.IsAnyModActive(KnownExternalMemoryModIds);
-
-    /// <summary>
-    /// Returns the display names of currently active external memory addon mods, fetched directly from their mod metadata.
-    /// </summary>
-    public static string GetActiveExternalMemoryModNames() => ModUtil.GetActiveModNames(KnownExternalMemoryModIds);
-
     /// <summary>
     /// Default enable memory toggle: false by default.
     /// </summary>
@@ -120,7 +105,7 @@ public static class MemoryHookService
         }
 
         var hediff = Hediff_Persona.GetOrAddNew(observer);
-        hediff?.RecordMemory(otherPawn.thingIDNumber, otherPawn.LabelShort, thought.def.defName, weight, note);
+        hediff?.RecordMemory(otherPawn.thingIDNumber, otherPawn.LabelShort, thoughtDefName, weight, note, MemoryPerspective.Target);
 
         // Record reciprocal action for otherPawn (the originator/actor) so they remember what they did
         RecordOriginatorMemory(otherPawn, observer, thoughtDefName);
@@ -148,27 +133,37 @@ public static class MemoryHookService
         if (thoughtDefName.Equals("HarmedMe", StringComparison.OrdinalIgnoreCase))
         {
             string note = "RimTalk.Memory.IHarmed".Translate(targetPawn.LabelShort);
-            actorHediff.RecordMemory(targetPawn.thingIDNumber, targetPawn.LabelShort, "IHarmed", -20f, note);
+            actorHediff.RecordMemory(targetPawn.thingIDNumber, targetPawn.LabelShort, "IHarmed", -20f, note, MemoryPerspective.Actor);
         }
         else if (thoughtDefName.Equals("RescuedMe", StringComparison.OrdinalIgnoreCase) || thoughtDefName.Equals("RescuedMeByOfferingHelp", StringComparison.OrdinalIgnoreCase))
         {
             string note = "RimTalk.Memory.IRescued".Translate(targetPawn.LabelShort);
-            actorHediff.RecordMemory(targetPawn.thingIDNumber, targetPawn.LabelShort, "IRescued", 25f, note);
+            actorHediff.RecordMemory(targetPawn.thingIDNumber, targetPawn.LabelShort, "IRescued", 25f, note, MemoryPerspective.Actor);
         }
         else if (thoughtDefName.Equals("BotchedMySurgery", StringComparison.OrdinalIgnoreCase))
         {
             string note = "RimTalk.Memory.IBotchedSurgery".Translate(targetPawn.LabelShort);
-            actorHediff.RecordMemory(targetPawn.thingIDNumber, targetPawn.LabelShort, "IBotchedSurgery", -20f, note);
+            actorHediff.RecordMemory(targetPawn.thingIDNumber, targetPawn.LabelShort, "IBotchedSurgery", -20f, note, MemoryPerspective.Actor);
         }
         else if (thoughtDefName.Equals("RecruitedMe", StringComparison.OrdinalIgnoreCase))
         {
             string note = "RimTalk.Memory.IRecruited".Translate(targetPawn.LabelShort);
-            actorHediff.RecordMemory(targetPawn.thingIDNumber, targetPawn.LabelShort, "IRecruited", 20f, note);
+            actorHediff.RecordMemory(targetPawn.thingIDNumber, targetPawn.LabelShort, "IRecruited", 20f, note, MemoryPerspective.Actor);
         }
         else if (thoughtDefName.Equals("Insulted", StringComparison.OrdinalIgnoreCase))
         {
             string note = "RimTalk.Memory.IInsulted".Translate(targetPawn.LabelShort);
-            actorHediff.RecordMemory(targetPawn.thingIDNumber, targetPawn.LabelShort, "IInsulted", -15f, note);
+            actorHediff.RecordMemory(targetPawn.thingIDNumber, targetPawn.LabelShort, "IInsulted", -15f, note, MemoryPerspective.Actor);
+        }
+        else if (thoughtDefName.Equals("TendedMe", StringComparison.OrdinalIgnoreCase))
+        {
+            string note = "RimTalk.Memory.TendedPatient".Translate(targetPawn.LabelShort);
+            actorHediff.RecordMemory(targetPawn.thingIDNumber, targetPawn.LabelShort, "TendedPatient", 15f, note, MemoryPerspective.Actor);
+        }
+        else if (thoughtDefName.Equals("CapturedMe", StringComparison.OrdinalIgnoreCase))
+        {
+            string note = "RimTalk.Memory.ICaptured".Translate(targetPawn.LabelShort);
+            actorHediff.RecordMemory(targetPawn.thingIDNumber, targetPawn.LabelShort, "ICaptured", 10f, note, MemoryPerspective.Actor);
         }
     }
 
@@ -203,8 +198,8 @@ public static class MemoryHookService
                 var hediffA = Hediff_Persona.GetOrAddNew(pawnA);
                 var hediffB = Hediff_Persona.GetOrAddNew(pawnB);
                 string note = "RimTalk.Memory.SocialFight".Translate();
-                hediffA?.RecordMemory(pawnB.thingIDNumber, pawnB.LabelShort, "SocialFight", -40f, note);
-                hediffB?.RecordMemory(pawnA.thingIDNumber, pawnA.LabelShort, "SocialFight", -40f, note);
+                hediffA?.RecordMemory(pawnB.thingIDNumber, pawnB.LabelShort, "SocialFight", -40f, note, MemoryPerspective.None);
+                hediffB?.RecordMemory(pawnA.thingIDNumber, pawnA.LabelShort, "SocialFight", -40f, note, MemoryPerspective.None);
                 return;
             }
             if (defName.Equals("Marriage", StringComparison.OrdinalIgnoreCase))
@@ -213,8 +208,8 @@ public static class MemoryHookService
                 var hediffA = Hediff_Persona.GetOrAddNew(pawnA);
                 var hediffB = Hediff_Persona.GetOrAddNew(pawnB);
                 string note = "RimTalk.Memory.Marriage".Translate();
-                hediffA?.RecordMilestone(pawnB.thingIDNumber, pawnB.LabelShort, "Marriage", 80f, note);
-                hediffB?.RecordMilestone(pawnA.thingIDNumber, pawnA.LabelShort, "Marriage", 80f, note);
+                hediffA?.RecordMilestone(pawnB.thingIDNumber, pawnB.LabelShort, "Marriage", 80f, note, MemoryPerspective.None);
+                hediffB?.RecordMilestone(pawnA.thingIDNumber, pawnA.LabelShort, "Marriage", 80f, note, MemoryPerspective.None);
                 return;
             }
             if (defName.Equals("BecameLover", StringComparison.OrdinalIgnoreCase))
@@ -223,32 +218,94 @@ public static class MemoryHookService
                 var hediffA = Hediff_Persona.GetOrAddNew(pawnA);
                 var hediffB = Hediff_Persona.GetOrAddNew(pawnB);
                 string note = "RimTalk.Memory.BecameLovers".Translate();
-                hediffA?.RecordMilestone(pawnB.thingIDNumber, pawnB.LabelShort, "BecameLover", 65f, note);
-                hediffB?.RecordMilestone(pawnA.thingIDNumber, pawnA.LabelShort, "BecameLover", 65f, note);
+                hediffA?.RecordMilestone(pawnB.thingIDNumber, pawnB.LabelShort, "BecameLover", 65f, note, MemoryPerspective.None);
+                hediffB?.RecordMilestone(pawnA.thingIDNumber, pawnA.LabelShort, "BecameLover", 65f, note, MemoryPerspective.None);
+                return;
+            }
+            if (defName.Equals("GaveBirth", StringComparison.OrdinalIgnoreCase))
+            {
+                // In vanilla RimWorld, GaveBirth Tale has firstPawn = Mother, secondPawn = Baby/Child.
+                // Mother (pawnA) gives birth to Child (pawnB).
+                var mother = pawnA;
+                var child = pawnB;
+
+                var motherHediff = Hediff_Persona.GetOrAddNew(mother);
+
+                // 1. Mother -> Child enduring life milestone (welcomed child into world)
+                string noteMotherToChild = "RimTalk.Memory.ChildBorn".Translate(child.LabelShort);
+                motherHediff?.RecordMilestone(child.thingIDNumber, child.LabelShort, "GaveBirth", 85f, noteMotherToChild, MemoryPerspective.None);
+
+                // 2. Identify Father (if known) and record co-parenting and fatherhood milestones
+                var father = child.GetFather();
+                if (father != null && father.RaceProps.Humanlike && father != mother)
+                {
+                    var fatherHediff = Hediff_Persona.GetOrAddNew(father);
+
+                    // Co-parenting milestone between Mother and Father
+                    string noteMotherWithFather = "RimTalk.Memory.GaveBirthWith".Translate(father.LabelShort);
+                    string noteFatherWithMother = "RimTalk.Memory.GaveBirthWith".Translate(mother.LabelShort);
+                    motherHediff?.RecordMilestone(father.thingIDNumber, father.LabelShort, "GaveBirthWith", 85f, noteMotherWithFather, MemoryPerspective.None);
+                    fatherHediff?.RecordMilestone(mother.thingIDNumber, mother.LabelShort, "GaveBirthWith", 85f, noteFatherWithMother, MemoryPerspective.None);
+
+                    // Father -> Child milestone (welcomed child into world)
+                    string noteFatherToChild = "RimTalk.Memory.ChildBorn".Translate(child.LabelShort);
+                    fatherHediff?.RecordMilestone(child.thingIDNumber, child.LabelShort, "GaveBirth", 85f, noteFatherToChild, MemoryPerspective.None);
+                }
+                return;
+            }
+            if (defName.Equals("Breakup", StringComparison.OrdinalIgnoreCase))
+            {
+                var hediffA = Hediff_Persona.GetOrAddNew(pawnA);
+                var hediffB = Hediff_Persona.GetOrAddNew(pawnB);
+
+                // Distinguish between legal Divorce (prior Marriage milestone or Spouse relation) vs ordinary romantic Breakup
+                bool hadMarriageMilestone = (hediffA?.Memories != null && HasMemoryWithKey(hediffA.Memories, pawnB.thingIDNumber, "Marriage")) ||
+                                            (hediffB?.Memories != null && HasMemoryWithKey(hediffB.Memories, pawnA.thingIDNumber, "Marriage"));
+
+                if (hadMarriageMilestone)
+                {
+                    // Full Divorce: Enduring negative milestone (-70f)
+                    string noteA = "RimTalk.Memory.Divorced".Translate(pawnB.LabelShort);
+                    string noteB = "RimTalk.Memory.Divorced".Translate(pawnA.LabelShort);
+                    hediffA?.RecordMilestone(pawnB.thingIDNumber, pawnB.LabelShort, "Divorced", -70f, noteA, MemoryPerspective.None);
+                    hediffB?.RecordMilestone(pawnA.thingIDNumber, pawnA.LabelShort, "Divorced", -70f, noteB, MemoryPerspective.None);
+                }
+                else
+                {
+                    // Casual Romantic Breakup: Decaying episodic memory (-55f, dynamic half-life 8-14 days)
+                    string noteA = "RimTalk.Memory.BrokeUpWith".Translate(pawnB.LabelShort);
+                    string noteB = "RimTalk.Memory.BrokeUpWith".Translate(pawnA.LabelShort);
+                    hediffA?.RecordMemory(pawnB.thingIDNumber, pawnB.LabelShort, "Breakup", -55f, noteA, MemoryPerspective.Target);
+                    hediffB?.RecordMemory(pawnA.thingIDNumber, pawnA.LabelShort, "Breakup", -55f, noteB, MemoryPerspective.Target);
+                }
+
+                // Invalidate obsolete romantic milestones (Marriage, BecameLover) between these two pawns upon breakup
+                RemoveMilestonesWithKeys(hediffA?.Memories, pawnB.thingIDNumber, pawnA.LabelShort, pawnA.thingIDNumber, "Marriage", "BecameLover");
+                RemoveMilestonesWithKeys(hediffB?.Memories, pawnA.thingIDNumber, pawnB.LabelShort, pawnB.thingIDNumber, "Marriage", "BecameLover");
                 return;
             }
             if (defName.Equals("SavedColonistLife", StringComparison.OrdinalIgnoreCase))
             {
-                // PawnA: Victim whose life was saved, PawnB: Rescuer/Savior
+                // PawnA: Victim whose life was saved, PawnB: Rescuer/Savior (episodic memory, not permanent milestone)
                 var hediffA = Hediff_Persona.GetOrAddNew(pawnA);
                 string noteA = "RimTalk.Memory.SavedLife".Translate(pawnB.LabelShort);
-                hediffA?.RecordMilestone(pawnB.thingIDNumber, pawnB.LabelShort, "SavedLife", 90f, noteA);
+                hediffA?.RecordMemory(pawnB.thingIDNumber, pawnB.LabelShort, "SavedLife", 90f, noteA, MemoryPerspective.Target);
                 return;
             }
             if (defName.Equals("DidSurgery", StringComparison.OrdinalIgnoreCase))
             {
                 // PawnA (Surgeon) performed surgery on PawnB (Patient)
                 var hediffB = Hediff_Persona.GetOrAddNew(pawnB);
-                hediffB?.RecordMemory(pawnA.thingIDNumber, pawnA.LabelShort, "DidSurgery", 25f, "RimTalk.Memory.DidSurgery".Translate());
+                hediffB?.RecordMemory(pawnA.thingIDNumber, pawnA.LabelShort, "DidSurgery", 25f, "RimTalk.Memory.DidSurgery".Translate(), MemoryPerspective.Target);
                 return;
             }
             if (defName.Equals("Captured", StringComparison.OrdinalIgnoreCase))
             {
                 // PawnA captured PawnB
                 var hediffB = Hediff_Persona.GetOrAddNew(pawnB);
-                hediffB?.RecordMemory(pawnA.thingIDNumber, pawnA.LabelShort, "CapturedMe", -30f, "RimTalk.Memory.CapturedMe".Translate());
+                hediffB?.RecordMemory(pawnA.thingIDNumber, pawnA.LabelShort, "CapturedMe", -30f, "RimTalk.Memory.CapturedMe".Translate(), MemoryPerspective.Target);
                 var hediffA = Hediff_Persona.GetOrAddNew(pawnA);
-                hediffA?.RecordMemory(pawnB.thingIDNumber, pawnB.LabelShort, "ICaptured", 10f, "RimTalk.Memory.ICaptured".Translate());
+                hediffA?.RecordMemory(pawnB.thingIDNumber, pawnB.LabelShort, "ICaptured", 10f, "RimTalk.Memory.ICaptured".Translate(), MemoryPerspective.Actor);
                 return;
             }
             if (defName.Equals("ExecutedPrisoner", StringComparison.OrdinalIgnoreCase))
@@ -256,7 +313,7 @@ public static class MemoryHookService
                 // PawnA: Prisoner, PawnB: Warden/Executioner
                 var hediffB = Hediff_Persona.GetOrAddNew(pawnB);
                 string note = "RimTalk.Memory.IExecuted".Translate(pawnA.LabelShort);
-                hediffB?.RecordMemory(pawnA.thingIDNumber, pawnA.LabelShort, "IExecuted", -20f, note);
+                hediffB?.RecordMemory(pawnA.thingIDNumber, pawnA.LabelShort, "IExecuted", -20f, note, MemoryPerspective.Actor);
                 return;
             }
             if (defName.Equals("Rescued", StringComparison.OrdinalIgnoreCase))
@@ -266,8 +323,8 @@ public static class MemoryHookService
                 var hediffB = Hediff_Persona.GetOrAddNew(pawnB);
                 string noteA = "RimTalk.Memory.RescuedBy".Translate(pawnB.LabelShort);
                 string noteB = "RimTalk.Memory.IRescued".Translate(pawnA.LabelShort);
-                hediffA?.RecordMemory(pawnB.thingIDNumber, pawnB.LabelShort, "RescuedMe", 30f, noteA);
-                hediffB?.RecordMemory(pawnA.thingIDNumber, pawnA.LabelShort, "IRescued", 20f, noteB);
+                hediffA?.RecordMemory(pawnB.thingIDNumber, pawnB.LabelShort, "RescuedMe", 30f, noteA, MemoryPerspective.Target);
+                hediffB?.RecordMemory(pawnA.thingIDNumber, pawnA.LabelShort, "IRescued", 20f, noteB, MemoryPerspective.Actor);
                 return;
             }
 
@@ -291,84 +348,102 @@ public static class MemoryHookService
         }
     }
 
+    private struct DoubleTaleConfig
+    {
+        public readonly float WeightActor;
+        public readonly float WeightTarget;
+
+        public DoubleTaleConfig(float weightActor, float weightTarget)
+        {
+            WeightActor = weightActor;
+            WeightTarget = weightTarget;
+        }
+    }
+
+    private static readonly Dictionary<string, DoubleTaleConfig> KnownDoubleTaleConfigs = new(StringComparer.OrdinalIgnoreCase)
+    {
+        { "KidnappedColonist", new DoubleTaleConfig(10f, -60f) },
+        { "SoldPrisoner", new DoubleTaleConfig(10f, -50f) },
+        { "DownedBy", new DoubleTaleConfig(15f, -40f) },
+        { "WoundedBy", new DoubleTaleConfig(15f, -30f) },
+        { "KilledBy", new DoubleTaleConfig(20f, -80f) }
+    };
+
+    private static readonly Dictionary<string, float> KnownSingleTaleWeights = new(StringComparer.OrdinalIgnoreCase)
+    {
+        { "Berserk", -30f },
+        { "GaveUp", -30f },
+        { "Exhausted", -25f },
+        { "Heatstroke", -30f },
+        { "Hypothermia", -30f },
+        { "Illness", -25f },
+        { "Toxicity", -30f },
+        { "WasOnFire", -35f },
+        { "Downed", -30f },
+        { "MasterSkill", 35f },
+        { "CraftedArt", 35f },
+        { "CaravanAssault", 35f },
+        { "CaravanAmbushDefeated", 35f },
+        { "FinishedResearch", 35f },
+        { "LandedInPod", 30f }
+    };
+
     private static void RecordGenericDoublePawnTale(Pawn pawnA, Pawn pawnB, Tale tale)
     {
         string defName = tale.def?.defName ?? string.Empty;
+        if (!KnownDoubleTaleConfigs.TryGetValue(defName, out var config))
+        {
+            if (Prefs.DevMode)
+            {
+                Log.Message($"[RimTalk] Dropped unmapped Tale_DoublePawn: {defName}");
+            }
+            return;
+        }
+
         string label = tale.def?.LabelCap.Resolve();
         if (string.IsNullOrEmpty(label))
             label = defName;
 
-        float weightA = 20f;
-        float weightB = 20f;
-
-        if (defName.IndexOf("Breakup", StringComparison.OrdinalIgnoreCase) >= 0)
+        bool isPawnAFirst = true;
+        if (string.Equals(tale.def.firstPawnSymbol, "VICTIM", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(tale.def.secondPawnSymbol, "ATTACKER", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(tale.def.secondPawnSymbol, "KILLER", StringComparison.OrdinalIgnoreCase))
         {
-            weightA = -40f;
-            weightB = -40f;
-        }
-        else if (defName.IndexOf("Kidnapp", StringComparison.OrdinalIgnoreCase) >= 0)
-        {
-            weightA = 10f;
-            weightB = -60f;
-        }
-        else if (defName.IndexOf("Sold", StringComparison.OrdinalIgnoreCase) >= 0)
-        {
-            weightA = 10f;
-            weightB = -50f;
-        }
-        else if (defName.IndexOf("GaveBirth", StringComparison.OrdinalIgnoreCase) >= 0)
-        {
-            weightA = 40f;
-            weightB = 40f;
-        }
-        else if (defName.IndexOf("Downed", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                 defName.IndexOf("Wounded", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                 defName.IndexOf("Killed", StringComparison.OrdinalIgnoreCase) >= 0)
-        {
-            weightA = 15f;
-            weightB = -40f;
+            isPawnAFirst = false;
         }
 
-        var hediffA = Hediff_Persona.GetOrAddNew(pawnA);
-        hediffA?.RecordMemory(pawnB.thingIDNumber, pawnB.LabelShort, defName, weightA, label);
+        Pawn actor = isPawnAFirst ? pawnA : pawnB;
+        Pawn target = isPawnAFirst ? pawnB : pawnA;
 
-        var hediffB = Hediff_Persona.GetOrAddNew(pawnB);
-        hediffB?.RecordMemory(pawnA.thingIDNumber, pawnA.LabelShort, defName, weightB, label);
+        var hediffActor = Hediff_Persona.GetOrAddNew(actor);
+        hediffActor?.RecordMemory(target.thingIDNumber, target.LabelShort, defName, config.WeightActor, label, MemoryPerspective.Actor);
+
+        var hediffTarget = Hediff_Persona.GetOrAddNew(target);
+        hediffTarget?.RecordMemory(actor.thingIDNumber, actor.LabelShort, defName, config.WeightTarget, label, MemoryPerspective.Target);
     }
 
     private static void RecordGenericSinglePawnTale(Pawn pawn, Tale tale)
     {
         string defName = tale.def?.defName ?? string.Empty;
+        if (!KnownSingleTaleWeights.TryGetValue(defName, out float weight))
+        {
+            if (tale.def == null || tale.def.baseInterest < 3.0f)
+            {
+                if (Prefs.DevMode)
+                {
+                    Log.Message($"[RimTalk] Dropped unmapped Tale_SinglePawn: {defName}");
+                }
+                return;
+            }
+            weight = 20f;
+        }
+
         string label = tale.def?.LabelCap.Resolve();
         if (string.IsNullOrEmpty(label))
             label = defName;
 
-        float weight = 25f;
-
-        if (defName.IndexOf("Berserk", StringComparison.OrdinalIgnoreCase) >= 0 ||
-            defName.IndexOf("GaveUp", StringComparison.OrdinalIgnoreCase) >= 0 ||
-            defName.IndexOf("Exhausted", StringComparison.OrdinalIgnoreCase) >= 0 ||
-            defName.IndexOf("Heatstroke", StringComparison.OrdinalIgnoreCase) >= 0 ||
-            defName.IndexOf("Hypothermia", StringComparison.OrdinalIgnoreCase) >= 0 ||
-            defName.IndexOf("Illness", StringComparison.OrdinalIgnoreCase) >= 0 ||
-            defName.IndexOf("Toxicity", StringComparison.OrdinalIgnoreCase) >= 0 ||
-            defName.IndexOf("WasOnFire", StringComparison.OrdinalIgnoreCase) >= 0 ||
-            defName.IndexOf("Downed", StringComparison.OrdinalIgnoreCase) >= 0)
-        {
-            weight = -30f;
-        }
-        else if (defName.IndexOf("MasterSkill", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                 defName.IndexOf("CraftedArt", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                 defName.IndexOf("CaravanAssault", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                 defName.IndexOf("CaravanAmbushDefeated", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                 defName.IndexOf("FinishedResearch", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                 defName.IndexOf("LandedInPod", StringComparison.OrdinalIgnoreCase) >= 0)
-        {
-            weight = 35f;
-        }
-
         var hediff = Hediff_Persona.GetOrAddNew(pawn);
-        hediff?.RecordMemory(-1, string.Empty, defName, weight, label);
+        hediff?.RecordMemory(-1, string.Empty, defName, weight, label, MemoryPerspective.None);
     }
 
     /// <summary>
@@ -400,7 +475,7 @@ public static class MemoryHookService
         if (isExecution)
         {
             string note = "RimTalk.Memory.IExecuted".Translate(victim.LabelShort);
-            killerHediff.RecordMemory(victim.thingIDNumber, victim.LabelShort, "IExecuted", isCallous ? 10f : -30f, note);
+            killerHediff.RecordMemory(victim.thingIDNumber, victim.LabelShort, "IExecuted", isCallous ? 10f : -30f, note, MemoryPerspective.Actor);
 
             if (killer.IsColonist)
             {
@@ -412,7 +487,7 @@ public static class MemoryHookService
         {
             // Killer killed a fellow colonist/faction member
             string note = "RimTalk.Memory.IKilled".Translate(victim.LabelShort);
-            killerHediff.RecordMemory(victim.thingIDNumber, victim.LabelShort, "IKilled", isCallous ? 20f : -80f, note);
+            killerHediff.RecordMemory(victim.thingIDNumber, victim.LabelShort, "IKilled", isCallous ? 20f : -80f, note, MemoryPerspective.Actor);
 
             if (killer.IsColonist)
             {
@@ -434,7 +509,15 @@ public static class MemoryHookService
                             continue;
 
                         var otherHediff = Hediff_Persona.GetOrAddNew(colonist);
-                        otherHediff?.RecordMemory(killer.thingIDNumber, killer.LabelShort, "MurderedColonist", -70f, witnessNote);
+                        if (IsBelovedKinOrPartner(colonist, victim))
+                        {
+                            string kinNote = "RimTalk.Memory.MurderedMyKin".Translate(victim.LabelShort);
+                            otherHediff?.RecordMilestone(killer.thingIDNumber, killer.LabelShort, "MurderedKin", -95f, kinNote, MemoryPerspective.Target);
+                        }
+                        else
+                        {
+                            otherHediff?.RecordMemory(killer.thingIDNumber, killer.LabelShort, "MurderedColonist", -70f, witnessNote, MemoryPerspective.Target);
+                        }
                     }
                 }
 
@@ -449,7 +532,7 @@ public static class MemoryHookService
         {
             // Combat kill of an enemy
             string note = "RimTalk.Memory.KilledInBattle".Translate(victim.LabelShort);
-            killerHediff.RecordMemory(victim.thingIDNumber, victim.LabelShort, "IKilledEnemy", 15f, note);
+            killerHediff.RecordMemory(victim.thingIDNumber, victim.LabelShort, "IKilledEnemy", 15f, note, MemoryPerspective.Actor);
         }
     }
 
@@ -466,11 +549,11 @@ public static class MemoryHookService
 
         // Patient remembers doctor treating their wounds
         var hediffPatient = Hediff_Persona.GetOrAddNew(patient);
-        hediffPatient?.RecordMemory(doctor.thingIDNumber, doctor.LabelShort, "TendedMe", 30f, "RimTalk.Memory.TendedMe".Translate());
+        hediffPatient?.RecordMemory(doctor.thingIDNumber, doctor.LabelShort, "TendedMe", 30f, "RimTalk.Memory.TendedMe".Translate(), MemoryPerspective.Target);
 
         // Doctor remembers caring for the patient
         var hediffDoctor = Hediff_Persona.GetOrAddNew(doctor);
-        hediffDoctor?.RecordMemory(patient.thingIDNumber, patient.LabelShort, "TendedPatient", 15f, "RimTalk.Memory.TendedPatient".Translate());
+        hediffDoctor?.RecordMemory(patient.thingIDNumber, patient.LabelShort, "TendedPatient", 15f, "RimTalk.Memory.TendedPatient".Translate(), MemoryPerspective.Actor);
     }
 
     /// <summary>
@@ -547,17 +630,51 @@ public static class MemoryHookService
 
                 if (string.Equals(m.EventKey, "Marriage", StringComparison.OrdinalIgnoreCase))
                 {
-                    if (observer.relations == null || !observer.relations.DirectRelationExists(PawnRelationDefOf.Spouse, targetPawn))
+                    bool isStillSpouse = observer.relations != null && observer.relations.DirectRelationExists(PawnRelationDefOf.Spouse, targetPawn);
+                    bool isDeceased = targetPawn.Dead;
+                    if (!isStillSpouse && !isDeceased)
                     {
                         existingMemories.RemoveAt(i);
+                        MemoryHistory.Add(new MemoryLogEntry
+                        {
+                            SourcePawnName = observer.LabelShort,
+                            SourcePawnId = observer.thingIDNumber,
+                            TargetPawnName = targetPawn.LabelShort,
+                            TargetPawnId = targetPawn.thingIDNumber,
+                            ChangeType = MemoryChangeType.Evicted,
+                            EventKey = m.EventKey,
+                            Note = m.Note,
+                            OldWeight = m.BaseWeight,
+                            NewWeight = 0f,
+                            Tick = Find.TickManager?.TicksGame ?? 0,
+                            Details = "Marriage milestone invalidated because spouse relation ceased"
+                        });
                     }
                 }
                 else if (string.Equals(m.EventKey, "BecameLover", StringComparison.OrdinalIgnoreCase))
                 {
-                    if (observer.relations == null || (!observer.relations.DirectRelationExists(PawnRelationDefOf.Lover, targetPawn) &&
-                                                       !observer.relations.DirectRelationExists(PawnRelationDefOf.Spouse, targetPawn)))
+                    bool isRomantic = observer.relations != null &&
+                                      (observer.relations.DirectRelationExists(PawnRelationDefOf.Lover, targetPawn) ||
+                                       observer.relations.DirectRelationExists(PawnRelationDefOf.Fiance, targetPawn) ||
+                                       observer.relations.DirectRelationExists(PawnRelationDefOf.Spouse, targetPawn));
+                    bool isDeceased = targetPawn.Dead;
+                    if (!isRomantic && !isDeceased)
                     {
                         existingMemories.RemoveAt(i);
+                        MemoryHistory.Add(new MemoryLogEntry
+                        {
+                            SourcePawnName = observer.LabelShort,
+                            SourcePawnId = observer.thingIDNumber,
+                            TargetPawnName = targetPawn.LabelShort,
+                            TargetPawnId = targetPawn.thingIDNumber,
+                            ChangeType = MemoryChangeType.Evicted,
+                            EventKey = m.EventKey,
+                            Note = m.Note,
+                            OldWeight = m.BaseWeight,
+                            NewWeight = 0f,
+                            Tick = Find.TickManager?.TicksGame ?? 0,
+                            Details = "BecameLover milestone invalidated because romantic relation ceased"
+                        });
                     }
                 }
             }
@@ -572,6 +689,8 @@ public static class MemoryHookService
         if (thoughtDefName.Equals("BotchedMySurgery", StringComparison.OrdinalIgnoreCase)) return "IBotchedSurgery";
         if (thoughtDefName.Equals("RecruitedMe", StringComparison.OrdinalIgnoreCase)) return "IRecruited";
         if (thoughtDefName.Equals("Insulted", StringComparison.OrdinalIgnoreCase)) return "IInsulted";
+        if (thoughtDefName.Equals("TendedMe", StringComparison.OrdinalIgnoreCase)) return "TendedPatient";
+        if (thoughtDefName.Equals("CapturedMe", StringComparison.OrdinalIgnoreCase)) return "ICaptured";
         return string.Empty;
     }
 
@@ -675,5 +794,49 @@ public static class MemoryHookService
         return thoughtDefName.Equals("HadSocialFight", StringComparison.OrdinalIgnoreCase) ||
                thoughtDefName.Equals("GotMarried", StringComparison.OrdinalIgnoreCase) ||
                thoughtDefName.Equals("HoneymoonPhase", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool IsBelovedKinOrPartner(Pawn observer, Pawn target)
+    {
+        if (observer?.relations == null || target == null) return false;
+        return observer.relations.DirectRelationExists(PawnRelationDefOf.Spouse, target) ||
+               observer.relations.DirectRelationExists(PawnRelationDefOf.Lover, target) ||
+               observer.relations.DirectRelationExists(PawnRelationDefOf.Fiance, target) ||
+               observer.relations.DirectRelationExists(PawnRelationDefOf.Child, target) ||
+               observer.relations.DirectRelationExists(PawnRelationDefOf.Parent, target) ||
+               observer.relations.DirectRelationExists(PawnRelationDefOf.Sibling, target);
+    }
+
+    private static void RemoveMilestonesWithKeys(List<MemoryEntry> memories, int targetPawnId, string sourcePawnName, int sourcePawnId, params string[] eventKeys)
+    {
+        if (memories == null || memories.Count == 0 || targetPawnId < 0 || eventKeys == null) return;
+        int currentTick = Find.TickManager?.TicksGame ?? 0;
+        for (int i = memories.Count - 1; i >= 0; i--)
+        {
+            var m = memories[i];
+            if (m == null || !m.IsMilestone || m.TargetPawnId != targetPawnId) continue;
+            for (int k = 0; k < eventKeys.Length; k++)
+            {
+                if (string.Equals(m.EventKey, eventKeys[k], StringComparison.OrdinalIgnoreCase))
+                {
+                    memories.RemoveAt(i);
+                    MemoryHistory.Add(new MemoryLogEntry
+                    {
+                        SourcePawnName = sourcePawnName ?? string.Empty,
+                        SourcePawnId = sourcePawnId,
+                        TargetPawnName = m.TargetPawnName,
+                        TargetPawnId = m.TargetPawnId,
+                        ChangeType = MemoryChangeType.Evicted,
+                        EventKey = m.EventKey,
+                        Note = m.Note,
+                        OldWeight = m.BaseWeight,
+                        NewWeight = 0f,
+                        Tick = currentTick,
+                        Details = $"Milestone removed due to relationship transition (breakup/divorce)"
+                    });
+                    break;
+                }
+            }
+        }
     }
 }

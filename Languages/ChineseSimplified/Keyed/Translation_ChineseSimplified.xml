@@ -298,8 +298,8 @@ Scriban 魔法 (动态内容)
 • 核心创伤（最多 3 条）
 如失去亲人等重大打击，在治愈前会影响所有对话情绪。
 
-• 人际记忆（前 2 条）
-回顾与该对象共同经历的最深刻或最近的 2 个事件。
+• 人际记忆（重大 2 条 + 最近 2 条，最多 4 条）
+回顾与该对象共同经历的最深刻的 2 个历史事件与最近发生的 2 个事件。
 
 • 里程碑（★）
 永久性关系事件（如结婚、救命），会自然地融入彼此的日常对话中。</RimTalk.Memory.HelpDesc>
@@ -326,15 +326,22 @@ Scriban 魔法 (动态内容)
     <RimTalk.Memory.KilledInBattle>在战斗中击杀了 {0}</RimTalk.Memory.KilledInBattle>
     <RimTalk.Memory.MurderedFellowColonist>谋杀了同伴 {0}</RimTalk.Memory.MurderedFellowColonist>
     <RimTalk.Memory.BecameLovers>结为恋人</RimTalk.Memory.BecameLovers>
-    <RimTalk.Memory.DidSurgery>成功为其进行了手术</RimTalk.Memory.DidSurgery>
+    <RimTalk.Memory.DidSurgery>接受了手术</RimTalk.Memory.DidSurgery>
     <RimTalk.Memory.CapturedMe>被俘虏并监禁</RimTalk.Memory.CapturedMe>
     <RimTalk.Memory.ICaptured>俘获并逮捕了对方</RimTalk.Memory.ICaptured>
     <RimTalk.Memory.SocialFight>发生了激烈肉搏互殴</RimTalk.Memory.SocialFight>
     <RimTalk.Memory.Marriage>在喜悦的仪式中喜结连理</RimTalk.Memory.Marriage>
-    <RimTalk.Memory.TendedMe>受到悉心的伤口包扎</RimTalk.Memory.TendedMe>
+    <RimTalk.Memory.TendedMe>接受了伤口包扎</RimTalk.Memory.TendedMe>
     <RimTalk.Memory.TendedPatient>为其包扎了伤口</RimTalk.Memory.TendedPatient>
     <RimTalk.Memory.TraumaWithTarget>来自 {0} 的悲痛与创伤（{1}）</RimTalk.Memory.TraumaWithTarget>
     <RimTalk.Memory.TraumaWithoutTarget>来自 {0} 的悲痛与创伤</RimTalk.Memory.TraumaWithoutTarget>
+    <RimTalk.Memory.GaveBirthWith>与 {0} 共同迎来了新生命</RimTalk.Memory.GaveBirthWith>
+    <RimTalk.Memory.ChildBorn>将孩子 {0} 迎入世间</RimTalk.Memory.ChildBorn>
+    <RimTalk.Memory.BornToMother>由母亲 {0} 诞下</RimTalk.Memory.BornToMother>
+    <RimTalk.Memory.BornToFather>由父亲 {0} 抚育降生</RimTalk.Memory.BornToFather>
+    <RimTalk.Memory.Divorced>与 {0} 劳燕分飞、解除婚约</RimTalk.Memory.Divorced>
+    <RimTalk.Memory.BrokeUpWith>与 {0} 分手</RimTalk.Memory.BrokeUpWith>
+    <RimTalk.Memory.MurderedMyKin>杀害了挚爱 {0} 的仇敌</RimTalk.Memory.MurderedMyKin>
 
     <!-- Settings_Api.cs -->
     <RimTalk.Settings.QuickSetupSubtitle>选择 AI 连接方式即可启用殖民者对话。</RimTalk.Settings.QuickSetupSubtitle>

@@ -32,6 +32,43 @@ public static class MemoryFormatter
             {
                 if (hasItem) sb.Append(", ");
                 sb.Append(note);
+                if (t != null && t.Count > 1)
+                {
+                    sb.Append(" (x").Append(t.Count).Append(")");
+                }
+                hasItem = true;
+            }
+        }
+
+        return hasItem ? sb.ToString() : string.Empty;
+    }
+
+    /// <summary>
+    /// Formats recent encounters/events with a target pawn into a token-minimal recent events line.
+    /// Format: Recent with {targetName}: {event1}, {event2}
+    /// </summary>
+    public static string FormatRecentMemories(string targetName, List<MemoryEntry> recentMemories)
+    {
+        if (recentMemories == null || recentMemories.Count == 0)
+            return string.Empty;
+
+        if (string.IsNullOrEmpty(targetName))
+            targetName = "them";
+
+        var sb = new StringBuilder(64);
+        sb.Append("Recent with ").Append(targetName).Append(": ");
+        bool hasItem = false;
+        foreach (var t in recentMemories)
+        {
+            var note = CleanNote(t?.Note);
+            if (!string.IsNullOrWhiteSpace(note))
+            {
+                if (hasItem) sb.Append(", ");
+                sb.Append(note);
+                if (t != null && t.Count > 1)
+                {
+                    sb.Append(" (x").Append(t.Count).Append(")");
+                }
                 hasItem = true;
             }
         }
@@ -58,6 +95,10 @@ public static class MemoryFormatter
             {
                 if (hasItem) sb.Append(", ");
                 sb.Append(note);
+                if (t != null && t.Count > 1)
+                {
+                    sb.Append(" (x").Append(t.Count).Append(")");
+                }
                 hasItem = true;
             }
         }

@@ -1,10 +1,12 @@
+using System;
 using System.Collections.Generic;
+using System.Text;
 using RimTalk.Memory;
 using RimTalk.Service;
 using RimTalk.Util;
 using RimWorld;
-using UnityEngine;
 using Verse;
+using Random = UnityEngine.Random;
 
 namespace RimTalk.Data;
 
@@ -125,12 +127,30 @@ public class Hediff_Persona : Hediff
     }
 
     /// <summary>
+    /// Records or updates an episodic memory toward another pawn with perspective tracking.
+    /// </summary>
+    public void RecordMemory(int targetPawnId, string targetPawnName, string eventKey, float weight, string note, MemoryPerspective perspective)
+    {
+        int currentTick = Find.TickManager?.TicksGame ?? 0;
+        PawnMemoryTracker.AddOrUpdateMemory(pawn?.LabelShort, pawn?.thingIDNumber ?? -1, Memories, targetPawnId, targetPawnName, eventKey, weight, note, currentTick, false, false, false, perspective);
+    }
+
+    /// <summary>
     /// Records or updates a permanent relationship milestone toward another pawn exempt from time decay.
     /// </summary>
     public void RecordMilestone(int targetPawnId, string targetPawnName, string eventKey, float weight, string note)
     {
         int currentTick = Find.TickManager?.TicksGame ?? 0;
         PawnMemoryTracker.AddOrUpdateMemory(pawn?.LabelShort, pawn?.thingIDNumber ?? -1, Memories, targetPawnId, targetPawnName, eventKey, weight, note, currentTick, isDirective: false, isCoreTrauma: false, isMilestone: true);
+    }
+
+    /// <summary>
+    /// Records or updates a permanent relationship milestone toward another pawn with perspective tracking.
+    /// </summary>
+    public void RecordMilestone(int targetPawnId, string targetPawnName, string eventKey, float weight, string note, MemoryPerspective perspective)
+    {
+        int currentTick = Find.TickManager?.TicksGame ?? 0;
+        PawnMemoryTracker.AddOrUpdateMemory(pawn?.LabelShort, pawn?.thingIDNumber ?? -1, Memories, targetPawnId, targetPawnName, eventKey, weight, note, currentTick, isDirective: false, isCoreTrauma: false, isMilestone: true, perspective: perspective);
     }
 
     /// <summary>
@@ -146,17 +166,17 @@ public class Hediff_Persona : Hediff
     /// Updates active player directives given to this pawn.
     /// Returns true if directives were modified (added, changed, or cleared); returns false if identical to existing directives.
     /// </summary>
-    public bool UpdateDirectives(System.Collections.Generic.List<string> directives)
+    public bool UpdateDirectives(List<string> directives)
     {
         int inputCount = directives?.Count ?? 0;
         int existingCount = 0;
         bool match = true;
 
-        for (int i = 0; i < Memories.Count; i++)
+        foreach (var t in Memories)
         {
-            if (Memories[i].IsDirective)
+            if (t.IsDirective)
             {
-                if (existingCount >= inputCount || !string.Equals(Memories[i].Note, directives![existingCount]?.Trim(), System.StringComparison.OrdinalIgnoreCase))
+                if (existingCount >= inputCount || !string.Equals(t.Note, directives![existingCount]?.Trim(), StringComparison.OrdinalIgnoreCase))
                 {
                     match = false;
                 }
@@ -173,7 +193,7 @@ public class Hediff_Persona : Hediff
         if (directives != null)
         {
             int currentTick = Find.TickManager?.TicksGame ?? 0;
-            int max = System.Math.Min(directives.Count, 5);
+            int max = Math.Min(directives.Count, 5);
             for (int i = 0; i < max; i++)
             {
                 var text = directives[i];
@@ -192,7 +212,7 @@ public class Hediff_Persona : Hediff
     /// Replaces active directives with the newly synthesized atomic rules.
     /// Preserved for strict ABI backward compatibility.
     /// </summary>
-    public void RecordDirectives(System.Collections.Generic.List<string> directives)
+    public void RecordDirectives(List<string> directives)
     {
         UpdateDirectives(directives);
     }
@@ -204,7 +224,7 @@ public class Hediff_Persona : Hediff
     public void RecordDirective(string directiveText)
     {
         if (string.IsNullOrWhiteSpace(directiveText)) return;
-        RecordDirectives(new System.Collections.Generic.List<string> { directiveText });
+        RecordDirectives(new List<string> { directiveText });
     }
 
     /// <summary>
@@ -246,7 +266,7 @@ public class Hediff_Persona : Hediff
         if (_memories == null || _memories.Count == 0)
             return string.Empty;
 
-        var sb = new System.Text.StringBuilder();
+        var sb = new StringBuilder();
 
         // 1. Active Player Directives (if any)
         var directives = PawnMemoryTracker.SelectActiveDirectives(_memories, currentTick);
@@ -266,9 +286,9 @@ public class Hediff_Persona : Hediff
         var personalMemories = PawnMemoryTracker.SelectPersonalMemories(_memories, currentTick);
         if (personalMemories.Count > 0)
         {
-            for (int i = 0; i < personalMemories.Count; i++)
+            foreach (var t in personalMemories)
             {
-                PawnMemoryTracker.MarkRecalled(personalMemories[i], currentTick);
+                PawnMemoryTracker.MarkRecalled(t, currentTick);
             }
             string personalText = MemoryFormatter.FormatPersonalMemories(personalMemories);
             if (!string.IsNullOrEmpty(personalText))
@@ -284,8 +304,8 @@ public class Hediff_Persona : Hediff
             if (pawn?.records != null && targetPawn.records != null)
             {
                 int sharedYears = PawnMemoryTracker.CalculateSharedYears(
-                    pawn.records.GetValue(RimWorld.RecordDefOf.TimeAsColonistOrColonyAnimal),
-                    targetPawn.records.GetValue(RimWorld.RecordDefOf.TimeAsColonistOrColonyAnimal));
+                    pawn.records.GetValue(RecordDefOf.TimeAsColonistOrColonyAnimal),
+                    targetPawn.records.GetValue(RecordDefOf.TimeAsColonistOrColonyAnimal));
                 if (sharedYears >= 1)
                 {
                     int opinion = pawn.relations?.OpinionOf(targetPawn) ?? 0;
@@ -305,7 +325,7 @@ public class Hediff_Persona : Hediff
                 }
             }
 
-            // 3c. Recent episodic memories
+            // 3c. Prominent episodic memories
             var topMemories = PawnMemoryTracker.SelectTopRecallMemories(_memories, targetPawn.thingIDNumber, currentTick, maxMemories: 2);
             for (int i = 0; i < topMemories.Count; i++)
             {
@@ -316,6 +336,19 @@ public class Hediff_Persona : Hediff
             if (!string.IsNullOrEmpty(impression))
             {
                 sb.AppendLine(impression);
+            }
+
+            // 3d. Recent episodic memories (distinct from prominent memories)
+            var recentMemories = PawnMemoryTracker.SelectRecentMemories(_memories, targetPawn.thingIDNumber, currentTick, excludeMemories: topMemories, maxMemories: 2);
+            foreach (var t in recentMemories)
+            {
+                PawnMemoryTracker.MarkRecalled(t, currentTick);
+            }
+
+            var recentImpression = MemoryFormatter.FormatRecentMemories(targetPawn.LabelShort, recentMemories);
+            if (!string.IsNullOrEmpty(recentImpression))
+            {
+                sb.AppendLine(recentImpression);
             }
         }
 
@@ -336,7 +369,7 @@ public class Hediff_Persona : Hediff
 
         MemoryHookService.SyncActiveSocialThoughts(pawn, targetPawn);
         int currentTick = Find.TickManager?.TicksGame ?? 0;
-        var sb = new System.Text.StringBuilder();
+        var sb = new StringBuilder();
 
         var milestone = PawnMemoryTracker.SelectMilestone(_memories, targetPawn.thingIDNumber, currentTick);
         if (milestone != null)
@@ -359,6 +392,18 @@ public class Hediff_Persona : Hediff
         if (!string.IsNullOrEmpty(impression))
         {
             sb.AppendLine(impression);
+        }
+
+        var recentMemories = PawnMemoryTracker.SelectRecentMemories(_memories, targetPawn.thingIDNumber, currentTick, excludeMemories: topMemories, maxMemories: 2);
+        foreach (var t in recentMemories)
+        {
+            PawnMemoryTracker.MarkRecalled(t, currentTick);
+        }
+
+        var recentImpression = MemoryFormatter.FormatRecentMemories(targetPawn.LabelShort, recentMemories);
+        if (!string.IsNullOrEmpty(recentImpression))
+        {
+            sb.AppendLine(recentImpression);
         }
 
         return sb.ToString().TrimEnd();

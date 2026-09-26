@@ -317,7 +317,7 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.Memory.TargetSelfAll>자신</RimTalk.Memory.TargetSelfAll>
     <RimTalk.Memory.ColonySeniority>정착지 거주: {0}년</RimTalk.Memory.ColonySeniority>
     <RimTalk.Memory.HelpTitle>기억 및 지침</RimTalk.Memory.HelpTitle>
-    <RimTalk.Memory.HelpDesc>실험적 기능으로 피드백을 바탕으로 개선할 예정입니다.\n\n• 플레이어 지침 (최대 5개)\n- 등록: 폰에게 대화로 명령이나 역할을 내리면 AI가 요약하여 모든 대화의 핵심 지침으로 등록합니다.\n- 수정/삭제: 대화를 통해 새로운 명령으로 갱신/철회하거나, 이 창에서 [×] 버튼을 눌러 즉시 삭제할 수 있습니다.\n(AI 모델 성능에 따라 복잡하거나 부정형 명령은 온전히 따르지 못할 수 있습니다)\n\n• 심리적 트라우마 (최대 3개)\n사별 등 극심한 충격을 겪었을 때, 시간이 지나 진정될 때까지 모든 대화에 영향을 줍니다.\n\n• 대인 기억 (상위 2개)\n해당 상대와 겪은 사건 중 가장 인상 깊거나 최근 일어난 2가지를 대화에 떠올립니다.\n\n• 특별한 사건 (★)\n결혼, 구조 등 영구 보존되는 특별한 관계로, 대화 중에 자연스럽게 녹아듭니다.</RimTalk.Memory.HelpDesc>
+    <RimTalk.Memory.HelpDesc>실험적 기능으로 피드백을 바탕으로 개선할 예정입니다.\n\n• 플레이어 지침 (최대 5개)\n- 등록: 폰에게 대화로 명령이나 역할을 내리면 AI가 요약하여 모든 대화의 핵심 지침으로 등록합니다.\n- 수정/삭제: 대화를 통해 새로운 명령으로 갱신/철회하거나, 이 창에서 [×] 버튼을 눌러 즉시 삭제할 수 있습니다.\n(AI 모델 성능에 따라 복잡하거나 부정형 명령은 온전히 따르지 못할 수 있습니다)\n\n• 심리적 트라우마 (최대 3개)\n사별 등 극심한 충격을 겪었을 때, 시간이 지나 진정될 때까지 모든 대화에 영향을 줍니다.\n\n• 대인 기억 (중대 사건 2개 + 최근 사건 2개, 최대 4개)\n해당 상대와 겪은 사건 중 가장 강렬한 기억 2개와 가장 최근에 일어난 사건 2개를 대화에 함께 떠올립니다.\n\n• 특별한 사건 (★)\n결혼, 구조 등 영구 보존되는 특별한 관계로, 대화 중에 자연스럽게 녹아듭니다.</RimTalk.Memory.HelpDesc>
     <RimTalk.Memory.DisabledWarning>현재 설정에서 폰 기억 기능이 비활성화되어 있습니다.\n모드 설정 > 컨텍스트 필터에서 켤 수 있습니다.</RimTalk.Memory.DisabledWarning>
 
     <!-- Episodic Memory Notes -->
@@ -341,15 +341,22 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.Memory.KilledInBattle>{0}를 처치함</RimTalk.Memory.KilledInBattle>
     <RimTalk.Memory.MurderedFellowColonist>동료 {0}을(를) 살해함</RimTalk.Memory.MurderedFellowColonist>
     <RimTalk.Memory.BecameLovers>연인이 됨</RimTalk.Memory.BecameLovers>
-    <RimTalk.Memory.DidSurgery>성공적으로 수술을 집도함</RimTalk.Memory.DidSurgery>
+    <RimTalk.Memory.DidSurgery>수술을 받음</RimTalk.Memory.DidSurgery>
     <RimTalk.Memory.CapturedMe>체포되어 감금당함</RimTalk.Memory.CapturedMe>
     <RimTalk.Memory.ICaptured>체포하여 감금함</RimTalk.Memory.ICaptured>
     <RimTalk.Memory.SocialFight>주먹다짐을 벌임</RimTalk.Memory.SocialFight>
     <RimTalk.Memory.Marriage>축복 속에 결혼식을 올림</RimTalk.Memory.Marriage>
-    <RimTalk.Memory.TendedMe>정성스럽게 치료받음</RimTalk.Memory.TendedMe>
+    <RimTalk.Memory.TendedMe>상처를 치료받음</RimTalk.Memory.TendedMe>
     <RimTalk.Memory.TendedPatient>상처를 치료해줌</RimTalk.Memory.TendedPatient>
     <RimTalk.Memory.TraumaWithTarget>{0}에 의한 충격과 슬픔 ({1})</RimTalk.Memory.TraumaWithTarget>
     <RimTalk.Memory.TraumaWithoutTarget>{0}에 의한 충격과 슬픔</RimTalk.Memory.TraumaWithoutTarget>
+    <RimTalk.Memory.GaveBirthWith>{0}과(와) 함께 아이를 낳음</RimTalk.Memory.GaveBirthWith>
+    <RimTalk.Memory.ChildBorn>아이 {0}을(를) 품에 안음</RimTalk.Memory.ChildBorn>
+    <RimTalk.Memory.BornToMother>어머니 {0}에게서 태어남</RimTalk.Memory.BornToMother>
+    <RimTalk.Memory.BornToFather>아버지 {0}에게서 태어남</RimTalk.Memory.BornToFather>
+    <RimTalk.Memory.Divorced>{0}과(와) 이혼함</RimTalk.Memory.Divorced>
+    <RimTalk.Memory.BrokeUpWith>{0}과(와) 헤어짐</RimTalk.Memory.BrokeUpWith>
+    <RimTalk.Memory.MurderedMyKin>소중한 {0}을(를) 살해한 원수</RimTalk.Memory.MurderedMyKin>
 
     <!-- Settings_Api.cs -->
     <RimTalk.Settings.QuickSetupSubtitle>AI 연결 방식을 선택하면 대화가 바로 활성화됩니다.</RimTalk.Settings.QuickSetupSubtitle>

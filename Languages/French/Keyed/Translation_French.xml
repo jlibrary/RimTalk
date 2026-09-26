@@ -302,8 +302,8 @@ Conseils Cruciaux :
 • Traumatismes psychologiques (Jusqu'à 3)
 Les chocs graves comme la perte d'un être cher teintent toutes les conversations jusqu'à guérison.
 
-• Souvenirs interpersonnels (Les 2 meilleurs)
-Rappelle les 2 événements les plus marquants ou récents vécus avec cette personne.
+• Souvenirs interpersonnels (Jusqu'à 4 : 2 marquants + 2 récents)
+Rappelle jusqu'à 2 événements historiques les plus marquants et 2 événements les plus récents vécus avec cette personne.
 
 • Jalons (★)
 Événements relationnels permanents (ex: mariage, sauvetage) qui enrichissent naturellement leurs conversations.</RimTalk.Memory.HelpDesc>
@@ -330,15 +330,22 @@ Rappelle les 2 événements les plus marquants ou récents vécus avec cette per
     <RimTalk.Memory.KilledInBattle>a tué {0} au combat</RimTalk.Memory.KilledInBattle>
     <RimTalk.Memory.MurderedFellowColonist>a assassiné son camarade colon {0}</RimTalk.Memory.MurderedFellowColonist>
     <RimTalk.Memory.BecameLovers>sont devenus amants</RimTalk.Memory.BecameLovers>
-    <RimTalk.Memory.DidSurgery>l'a opéré(e) avec succès</RimTalk.Memory.DidSurgery>
+    <RimTalk.Memory.DidSurgery>a été opéré(e) par lui/elle</RimTalk.Memory.DidSurgery>
     <RimTalk.Memory.CapturedMe>capturé(e) et emprisonné(e)</RimTalk.Memory.CapturedMe>
     <RimTalk.Memory.ICaptured>l'a capturé(e) et arrêté(e)</RimTalk.Memory.ICaptured>
     <RimTalk.Memory.SocialFight>a eu une violente bagarre à mains nues</RimTalk.Memory.SocialFight>
     <RimTalk.Memory.Marriage>mariés lors d'une cérémonie joyeuse</RimTalk.Memory.Marriage>
-    <RimTalk.Memory.TendedMe>a soigné ses blessures avec tendresse</RimTalk.Memory.TendedMe>
+    <RimTalk.Memory.TendedMe>a soigné ses blessures</RimTalk.Memory.TendedMe>
     <RimTalk.Memory.TendedPatient>a soigné ses blessures</RimTalk.Memory.TendedPatient>
     <RimTalk.Memory.TraumaWithTarget>chagrin et traumatisme causés par {0} ({1})</RimTalk.Memory.TraumaWithTarget>
     <RimTalk.Memory.TraumaWithoutTarget>chagrin et traumatisme causés par {0}</RimTalk.Memory.TraumaWithoutTarget>
+    <RimTalk.Memory.GaveBirthWith>a accueilli un enfant au monde avec {0}</RimTalk.Memory.GaveBirthWith>
+    <RimTalk.Memory.ChildBorn>a accueilli son enfant {0} au monde</RimTalk.Memory.ChildBorn>
+    <RimTalk.Memory.BornToMother>mis(e) au monde par sa mère {0}</RimTalk.Memory.BornToMother>
+    <RimTalk.Memory.BornToFather>mis(e) au monde par son père {0}</RimTalk.Memory.BornToFather>
+    <RimTalk.Memory.Divorced>a divorcé de {0}</RimTalk.Memory.Divorced>
+    <RimTalk.Memory.BrokeUpWith>a rompu avec {0}</RimTalk.Memory.BrokeUpWith>
+    <RimTalk.Memory.MurderedMyKin>a assassiné son être cher {0}</RimTalk.Memory.MurderedMyKin>
 
     <!-- Settings_Api.cs -->
     <RimTalk.Settings.QuickSetupSubtitle>Choisissez un mode de connexion IA pour activer les dialogues.</RimTalk.Settings.QuickSetupSubtitle>

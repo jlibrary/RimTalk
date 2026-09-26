@@ -318,7 +318,7 @@ Crucial Tips:
     <RimTalk.Memory.TargetSelfAll>Self</RimTalk.Memory.TargetSelfAll>
     <RimTalk.Memory.ColonySeniority>Colony Seniority: {0}y</RimTalk.Memory.ColonySeniority>
     <RimTalk.Memory.HelpTitle>Memories &amp; Directives</RimTalk.Memory.HelpTitle>
-    <RimTalk.Memory.HelpDesc>This is an experimental feature and will be refined based on feedback.\n\n• Player Directives (Up to 5)\n- Setting: Giving orders or assigning roles during dialogue prompts the AI to summarize them into key directives across all conversations.\n- Editing/Removing: Update or retract directives through new dialogue, or delete them directly in this window with the [×] button.\n(Adherence to complex or negative instructions depends on AI model capability)\n\n• Psychological Trauma (Up to 3)\nSevere shocks like the loss of a loved one color all conversations until healed.\n\n• Interpersonal Memories (Top 2)\nRecalls the 2 most impactful or recent events shared with that specific person.\n\n• Milestones (★)\nPermanent relationship bonds (e.g. marriage, rescue) that naturally enrich their conversations.</RimTalk.Memory.HelpDesc>
+    <RimTalk.Memory.HelpDesc>This is an experimental feature and will be refined based on feedback.\n\n• Player Directives (Up to 5)\n- Setting: Giving orders or assigning roles during dialogue prompts the AI to summarize them into key directives across all conversations.\n- Editing/Removing: Update or retract directives through new dialogue, or delete them directly in this window with the [×] button.\n(Adherence to complex or negative instructions depends on AI model capability)\n\n• Psychological Trauma (Up to 3)\nSevere shocks like the loss of a loved one color all conversations until healed.\n\n• Interpersonal Memories (Up to 4: Top 2 Prominent + Top 2 Recent)\nRecalls up to 2 most impactful historical events and up to 2 most recent encounters with that specific person.\n\n• Milestones (★)\nPermanent relationship bonds (e.g. marriage, rescue) that naturally enrich their conversations.</RimTalk.Memory.HelpDesc>
     <RimTalk.Memory.DisabledWarning>Pawn memory is currently disabled in settings.\nYou can enable it in Mod Settings > Context Filters.</RimTalk.Memory.DisabledWarning>
 
     <!-- Episodic Memory Notes -->
@@ -342,15 +342,22 @@ Crucial Tips:
     <RimTalk.Memory.KilledInBattle>killed {0} in battle</RimTalk.Memory.KilledInBattle>
     <RimTalk.Memory.MurderedFellowColonist>murdered fellow colonist {0}</RimTalk.Memory.MurderedFellowColonist>
     <RimTalk.Memory.BecameLovers>became lovers</RimTalk.Memory.BecameLovers>
-    <RimTalk.Memory.DidSurgery>successfully operated on them</RimTalk.Memory.DidSurgery>
+    <RimTalk.Memory.DidSurgery>operated on by them</RimTalk.Memory.DidSurgery>
     <RimTalk.Memory.CapturedMe>captured and imprisoned them</RimTalk.Memory.CapturedMe>
     <RimTalk.Memory.ICaptured>captured and arrested them</RimTalk.Memory.ICaptured>
     <RimTalk.Memory.SocialFight>got into a violent fistfight</RimTalk.Memory.SocialFight>
     <RimTalk.Memory.Marriage>married in joyous ceremony</RimTalk.Memory.Marriage>
-    <RimTalk.Memory.TendedMe>tenderly treated their wounds</RimTalk.Memory.TendedMe>
+    <RimTalk.Memory.TendedMe>treated their wounds</RimTalk.Memory.TendedMe>
     <RimTalk.Memory.TendedPatient>tended to their injuries</RimTalk.Memory.TendedPatient>
     <RimTalk.Memory.TraumaWithTarget>grief and trauma from {0} ({1})</RimTalk.Memory.TraumaWithTarget>
     <RimTalk.Memory.TraumaWithoutTarget>grief and trauma from {0}</RimTalk.Memory.TraumaWithoutTarget>
+    <RimTalk.Memory.GaveBirthWith>welcomed child into the world together with {0}</RimTalk.Memory.GaveBirthWith>
+    <RimTalk.Memory.ChildBorn>welcomed child {0} into the world</RimTalk.Memory.ChildBorn>
+    <RimTalk.Memory.BornToMother>born to mother {0}</RimTalk.Memory.BornToMother>
+    <RimTalk.Memory.BornToFather>born to father {0}</RimTalk.Memory.BornToFather>
+    <RimTalk.Memory.Divorced>separated and divorced from {0}</RimTalk.Memory.Divorced>
+    <RimTalk.Memory.BrokeUpWith>broke up with {0}</RimTalk.Memory.BrokeUpWith>
+    <RimTalk.Memory.MurderedMyKin>murdered their beloved {0}</RimTalk.Memory.MurderedMyKin>
 
     <!-- Settings_Api.cs -->
     <RimTalk.Settings.QuickSetupSubtitle>Choose an AI connection to enable colonist dialogue.</RimTalk.Settings.QuickSetupSubtitle>
