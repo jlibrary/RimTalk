@@ -303,13 +303,15 @@ public static class TalkService
         var uniquePawns = talkRequest.Participants ?? [talkRequest.Initiator];
 
         bool isUserSpeech = talkRequest.TalkType.IsFromUser() || talkRequest.IsAnnouncement;
+        bool useCompact = Settings.Get()?.Context?.UseCompactHistory ?? true;
         string historyPrompt = !string.IsNullOrWhiteSpace(talkRequest.CausalPrompt)
             ? talkRequest.CausalPrompt
-            : (isUserSpeech ? (talkRequest.RawPrompt ?? prompt) : null);
+            : isUserSpeech
+                ? talkRequest.RawPrompt ?? prompt
+                : !useCompact ? talkRequest.RawPrompt ?? talkRequest.TalkType.ToString() : null;
 
-        for (int i = 0; i < uniquePawns.Count; i++)
+        foreach (var pawn in uniquePawns)
         {
-            var pawn = uniquePawns[i];
             if (pawn != null)
             {
                 TalkHistory.AddMessageHistory(pawn, historyPrompt, serializedResponses);
@@ -349,7 +351,7 @@ public static class TalkService
             // Skip this talk if the pawn is currently unable to speak.
             if (!pawnState.CanDisplayTalk())
             {
-                pawnState.IgnoreTalkResponse();
+                pawnState.IgnoreAllTalkResponses();
                 continue;
             }
 
@@ -363,7 +365,7 @@ public static class TalkService
                 }
                 else
                 {
-                    pawnState.IgnoreTalkResponse();
+                    pawnState.IgnoreAllTalkResponses();
                     continue;
                 }
             }

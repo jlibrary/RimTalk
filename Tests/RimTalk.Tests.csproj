@@ -51,6 +51,7 @@
         <Compile Include="../Source/Prompt/Data/SessionVariableStore.cs" Link="Linked/SessionVariableStore.cs" />
         <Compile Include="../Source/Prompt/Data/PromptMessageRoleMerger.cs" Link="Linked/PromptMessageRoleMerger.cs" />
         <Compile Include="../Source/Prompt/Data/PromptPresetAssembler.cs" Link="Linked/PromptPresetAssembler.cs" />
+        <Compile Include="../Source/Prompt/Data/LegacyMultiTurnPromptBuilder.cs" Link="Linked/LegacyMultiTurnPromptBuilder.cs" />
         <Compile Include="../Source/Prompt/Data/PresetDto.cs" Link="Linked/PresetDto.cs" />
         <Compile Include="../Source/Prompt/PresetSerializer.cs" Link="Linked/PresetSerializer.cs" />
         <Compile Include="../Source/Util/ErrorUtil.cs" Link="Linked/ErrorUtil.cs" />

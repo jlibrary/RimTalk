@@ -53,19 +53,30 @@ public partial class Settings
         }
 
         var aiInstructionPrompt = "RimTalk.Settings.AIInstructionPrompt".Translate();
+        float textHeight = Text.CalcHeight(aiInstructionPrompt, listingStandard.ColumnWidth);
+        Rect headerRect = listingStandard.GetRect(textHeight);
+        Widgets.Label(headerRect, aiInstructionPrompt);
 
-        const float rightMargin = 16f;
+        listingStandard.Gap(6f);
+
+        // Context information tip
+        Text.Font = GameFont.Tiny;
+        GUI.color = SoftGreen;
+        Rect contextTipRect = listingStandard.GetRect(Text.LineHeight);
+        Widgets.Label(contextTipRect, "RimTalk.Settings.AutoIncludedTip".Translate());
+        GUI.color = Color.white;
+        Text.Font = GameFont.Small;
+        listingStandard.Gap(6f);
+
+        // Warning about rate limits & switch to advanced settings directly above the text box
         const float buttonWidth = 170f;
-        float textHeight = Text.CalcHeight(aiInstructionPrompt,
-            listingStandard.ColumnWidth - (showAdvancedSwitch ? buttonWidth + rightMargin + 10f : 0f));
-        float buttonTopPadding = 6f;
-        float headerHeight = Mathf.Max(textHeight, 26f) + buttonTopPadding;
-
-        Rect headerRect = listingStandard.GetRect(headerHeight);
+        const float textBorderMargin = 16f;
+        float warningRowHeight = showAdvancedSwitch ? 26f : Text.LineHeight;
+        Rect warningRowRect = listingStandard.GetRect(warningRowHeight);
 
         if (showAdvancedSwitch)
         {
-            Rect buttonRect = new Rect(headerRect.xMax - rightMargin - buttonWidth, headerRect.y + buttonTopPadding, buttonWidth, 26f);
+            Rect buttonRect = new Rect(warningRowRect.xMax - textBorderMargin - buttonWidth, warningRowRect.y, buttonWidth, 26f);
 
             if (UIUtil.ButtonText(buttonRect, "RimTalk.Settings.SwitchToAdvancedSettings".Translate()))
             {
@@ -79,38 +90,24 @@ public partial class Settings
                     }));
             }
 
-            Rect labelRect = new Rect(headerRect.x, headerRect.y + buttonTopPadding, buttonRect.x - headerRect.x - 10f,
-                headerHeight - buttonTopPadding);
-
+            Rect warningLabelRect = new Rect(warningRowRect.x, warningRowRect.y, buttonRect.x - warningRowRect.x - 10f, warningRowHeight);
+            Text.Font = GameFont.Tiny;
+            GUI.color = SoftYellow;
             Text.Anchor = TextAnchor.MiddleLeft;
-            Widgets.Label(labelRect, aiInstructionPrompt);
+            Widgets.Label(warningLabelRect, "RimTalk.Settings.RateLimitWarning".Translate());
             Text.Anchor = TextAnchor.UpperLeft;
+            GUI.color = Color.white;
+            Text.Font = GameFont.Small;
         }
         else
         {
-            Rect labelRect = new Rect(headerRect.x, headerRect.y + buttonTopPadding, headerRect.width,
-                headerHeight - buttonTopPadding);
-            Widgets.Label(labelRect, aiInstructionPrompt);
+            Text.Font = GameFont.Tiny;
+            GUI.color = SoftYellow;
+            Widgets.Label(warningRowRect, "RimTalk.Settings.RateLimitWarning".Translate());
+            GUI.color = Color.white;
+            Text.Font = GameFont.Small;
         }
 
-        listingStandard.Gap(6f);
-
-        // Context information tip
-        Text.Font = GameFont.Tiny;
-        GUI.color = SoftGreen;
-        Rect contextTipRect = listingStandard.GetRect(Text.LineHeight);
-        Widgets.Label(contextTipRect, "RimTalk.Settings.AutoIncludedTip".Translate());
-        GUI.color = Color.white;
-        Text.Font = GameFont.Small;
-        listingStandard.Gap(6f);
-
-        // Warning about rate limits
-        Text.Font = GameFont.Tiny;
-        GUI.color = SoftYellow;
-        Rect rateLimitRect = listingStandard.GetRect(Text.LineHeight);
-        Widgets.Label(rateLimitRect, "RimTalk.Settings.RateLimitWarning".Translate());
-        GUI.color = Color.white;
-        Text.Font = GameFont.Small;
         listingStandard.Gap(6f);
 
         const float countHeight = 20f;

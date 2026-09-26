@@ -393,33 +393,22 @@ public partial class Settings
 
         float y = rect.y + 6f;
 
-        // --- Layout Constants ---
-        float labelX = rect.x + 10f;
-        float inputX = rect.x + 130f;
-        float inputWidth = 200f;
-        float contentRightEdge = rect.xMax - 20f;
-        float topButtonWidth = 200f;
-        float topButtonX = contentRightEdge - topButtonWidth;
-        float dropdownWidth = 120f;
-
-        // -- Row 1: Preset Name & Simple Mode --
-        Widgets.Label(new Rect(labelX, y, inputX - 10, 24f), "RimTalk.Settings.PromptPreset.PresetName".Translate());
-        p.Name = Widgets.TextField(new Rect(inputX, y, inputWidth, 24f), p.Name);
-
-        if (UIUtil.ButtonText(new Rect(topButtonX, y, topButtonWidth, 24f),
-                "RimTalk.Settings.SwitchToSimpleSettings".Translate()))
-        {
-            settings.UseAdvancedPromptMode = false;
-            _textAreaInitialized = false;
-            _aiInstructionPresetId = "";
-        }
-
-        y += 28f;
-
-
         var e = p.Entries.FirstOrDefault(x => x.Id == _selectedEntryId);
         if (e == null)
         {
+            float emptySwitchBtnX = rect.xMax - 16f - 150f;
+            Rect emptySwitchRect = new Rect(emptySwitchBtnX, y, 150f, 24f);
+            if (UIUtil.ButtonText(emptySwitchRect, "RimTalk.Settings.SwitchToSimpleSettings".Translate()))
+            {
+                settings.UseAdvancedPromptMode = false;
+                _textAreaInitialized = false;
+                _aiInstructionPresetId = "";
+            }
+
+            float labelX = rect.x + 10f;
+            Widgets.Label(new Rect(labelX, y, 80f, 24f), "RimTalk.Settings.PromptPreset.PresetName".Translate());
+            p.Name = Widgets.TextField(new Rect(labelX + 85f, y, 180f, 24f), p.Name);
+
             Text.Anchor = TextAnchor.MiddleCenter;
             GUI.color = Color.gray;
             Widgets.Label(new Rect(rect.x, y + 28f, rect.width, rect.height - (y + 28f)),
@@ -429,27 +418,65 @@ public partial class Settings
             return;
         }
 
-        // -- Row 2 (Left Side): Entry Name --
         bool isHistoryMarker = e.IsMainChatHistory;
         bool isModEntry = !string.IsNullOrEmpty(e.SourceModId);
 
-        Widgets.Label(new Rect(labelX, y, inputX - 10, 24f), "RimTalk.Settings.PromptPreset.EntryName".Translate());
+        const float scrollbarMargin = 16f;
+        float rightEdge = rect.xMax - scrollbarMargin;
+
+        float tabWidth = 70f;
+        float tabGap = 5f;
+        float tabsTotalWidth = tabWidth * 3 + tabGap * 2; // 220f
+
+        // Row 1 Right: Switch to Simple Mode (aligned block with 3 tabs below)
+        float switchBtnWidth = tabsTotalWidth;
+        float switchBtnX = rightEdge - switchBtnWidth;
+        Rect switchBtnRect = new Rect(switchBtnX, y, switchBtnWidth, 24f);
+
+        if (UIUtil.ButtonText(switchBtnRect, "RimTalk.Settings.SwitchToSimpleSettings".Translate()))
+        {
+            settings.UseAdvancedPromptMode = false;
+            _textAreaInitialized = false;
+            _aiInstructionPresetId = "";
+        }
+
+        // -- Grid Columns Setup --
+        float col1LabelX = rect.x + 10f;
+        float col1LabelW = 80f;
+        float col1InputX = col1LabelX + col1LabelW + 6f;
+        float col1InputW = 140f;
+
+        float col2LabelX = col1InputX + col1InputW + 18f;
+        float col2LabelW = 70f;
+        float col2InputX = col2LabelX + col2LabelW + 6f;
+        float col2InputW = 140f;
+
+        // -- Row 1 Left: Col 1 Preset Name & Col 2 Entry Name with Mod Badge --
+        Text.Anchor = TextAnchor.MiddleLeft;
+        Widgets.Label(new Rect(col1LabelX, y, col1LabelW, 24f), "RimTalk.Settings.PromptPreset.PresetName".Translate());
+        Text.Anchor = TextAnchor.UpperLeft;
+        p.Name = Widgets.TextField(new Rect(col1InputX, y, col1InputW, 24f), p.Name);
+
+        Text.Anchor = TextAnchor.MiddleLeft;
+        Widgets.Label(new Rect(col2LabelX, y, col2LabelW, 24f), "RimTalk.Settings.PromptPreset.EntryName".Translate());
+        Text.Anchor = TextAnchor.UpperLeft;
+
         if (isHistoryMarker || isModEntry)
         {
             GUI.enabled = false;
-            Widgets.TextField(new Rect(inputX, y, inputWidth, 24f), e.Name);
+            Widgets.TextField(new Rect(col2InputX, y, col2InputW, 24f), e.Name);
             GUI.enabled = true;
         }
         else
         {
-            e.Name = Widgets.TextField(new Rect(inputX, y, inputWidth, 24f), e.Name);
+            e.Name = Widgets.TextField(new Rect(col2InputX, y, col2InputW, 24f), e.Name);
         }
 
-        if (!string.IsNullOrEmpty(e.SourceModId))
+        if (isModEntry)
         {
-            float tagX = inputX + inputWidth + 10f;
-            float availableTagWidth = topButtonX - tagX - 10f;
-            if (availableTagWidth > 30f)
+            float tagX = col2InputX + col2InputW + 10f;
+            float availableTagWidth = switchBtnX - 10f - tagX;
+            if (availableTagWidth > 20f)
             {
                 string modName = ModLister.GetActiveModWithIdentifier(e.SourceModId)?.Name ?? e.SourceModId;
                 string tagText = "RimTalk.Settings.PromptPreset.SourceMod".Translate(modName);
@@ -465,90 +492,12 @@ public partial class Settings
             }
         }
 
-        y += 28f;
+        y += 32f;
 
-        // -- Row 3: Role --
-        Widgets.Label(new Rect(labelX, y, inputX - 10, 24f), "RimTalk.Settings.PromptPreset.Role".Translate());
-        bool hasCustomRole = !string.IsNullOrWhiteSpace(e.CustomRole);
-        if (hasCustomRole && e.Role != PromptRole.User) e.Role = PromptRole.User;
-
-        if (isHistoryMarker)
-        {
-            Widgets.Label(new Rect(inputX, y, dropdownWidth, 24f), e.Role.ToString());
-        }
-        else if (hasCustomRole)
-        {
-            Widgets.Label(new Rect(inputX, y, dropdownWidth, 24f), PromptRole.User.ToString());
-        }
-        else if (Widgets.ButtonText(new Rect(inputX, y, dropdownWidth, 24f), e.Role.ToString()))
-        {
-            var opts = new List<FloatMenuOption>
-            {
-                new("System", () => e.Role = PromptRole.System),
-                new("User", () => e.Role = PromptRole.User),
-                new("Assistant", () => e.Role = PromptRole.Assistant)
-            };
-            Find.WindowStack.Add(new FloatMenu(opts));
-        }
-
-        y += 28f;
-
-        // -- Row 4: Custom Role --
-        Widgets.Label(new Rect(labelX, y, inputX - 10, 24f), "RimTalk.Settings.PromptPreset.CustomRole".Translate());
-        if (isHistoryMarker)
-        {
-            Widgets.Label(new Rect(inputX, y, inputWidth, 24f), e.CustomRole ?? "");
-        }
-        else
-        {
-            string customRole = Widgets.TextField(new Rect(inputX, y, inputWidth, 24f), e.CustomRole ?? "");
-            if (customRole != e.CustomRole) e.CustomRole = customRole;
-        }
-
-        y += 28f;
-
-        // -- Row 5: Position --
-        float tabRowY = y;
-        Widgets.Label(new Rect(labelX, tabRowY, inputX - 10, 24f), "RimTalk.Settings.PromptPreset.Position".Translate());
-
-        if (isHistoryMarker)
-        {
-            Widgets.Label(new Rect(inputX, tabRowY, dropdownWidth, 24f), e.Position.ToString());
-        }
-        else if (Widgets.ButtonText(new Rect(inputX, tabRowY, dropdownWidth, 24f), e.Position.ToString()))
-        {
-            var options = new List<FloatMenuOption>
-            {
-                new("RimTalk.Settings.PromptPreset.PositionRelative".Translate(),
-                    () => e.Position = PromptPosition.Relative),
-                new("RimTalk.Settings.PromptPreset.PositionInChat".Translate(),
-                    () => e.Position = PromptPosition.InChat)
-            };
-            Find.WindowStack.Add(new FloatMenu(options));
-        }
-
-        if (e.Position == PromptPosition.InChat)
-        {
-            float depthLabelX = inputX + dropdownWidth + 10f;
-            Widgets.Label(new Rect(depthLabelX, tabRowY, 50f, 24f), "RimTalk.Settings.PromptPreset.Depth".Translate());
-            
-            if (_depthBufferEntryId != e.Id)
-            {
-                _depthBuffer = e.InChatDepth.ToString();
-                _depthBufferEntryId = e.Id;
-            }
-
-            _depthBuffer = Widgets.TextField(new Rect(depthLabelX + 55f, tabRowY, 60f, 24f), _depthBuffer);
-            if (int.TryParse(_depthBuffer, out int res)) e.InChatDepth = res;
-        }
-
-        // -- TABS (Toggles) --
-        float tabWidth = 70f;
-        float rightEdge = rect.xMax - 20f;
-
+        // -- Row 2 Right: Toggle Tabs (Preview, Variables, Help) --
         void DrawToggleTab(string label, ref bool isOpen, int indexFromRight, bool isRadio = false, int radioMode = 0)
         {
-            Rect tabRect = new Rect(rightEdge - (tabWidth * (indexFromRight + 1)) - (5f * indexFromRight), tabRowY,
+            Rect tabRect = new Rect(rightEdge - (tabWidth * (indexFromRight + 1)) - (tabGap * indexFromRight), y,
                 tabWidth, 24f);
 
             bool active = isRadio
@@ -588,12 +537,135 @@ public partial class Settings
         // Preview (Bottom Panel)
         DrawToggleTab("RimTalk.Settings.PromptPreset.ModePreview".Translate(), ref _showPreview, 2);
 
-        y += 28f;
+        // -- Row 2 Left: Col 1 Position & Col 2 Role (+ Custom Role if User) --
+
+        // Col 1: Position (+ Depth if InChat)
+        Text.Anchor = TextAnchor.MiddleLeft;
+        Widgets.Label(new Rect(col1LabelX, y, col1LabelW, 24f), "RimTalk.Settings.PromptPreset.Position".Translate());
+        Text.Anchor = TextAnchor.UpperLeft;
+
+        if (e.Position == PromptPosition.InChat)
+        {
+            float posSubW = 75f;
+            if (isHistoryMarker)
+            {
+                Text.Anchor = TextAnchor.MiddleLeft;
+                Widgets.Label(new Rect(col1InputX, y, posSubW, 24f), e.Position.ToString());
+                Text.Anchor = TextAnchor.UpperLeft;
+            }
+            else if (Widgets.ButtonText(new Rect(col1InputX, y, posSubW, 24f), e.Position.ToString()))
+            {
+                var options = new List<FloatMenuOption>
+                {
+                    new("RimTalk.Settings.PromptPreset.PositionRelative".Translate(),
+                        () => e.Position = PromptPosition.Relative),
+                    new("RimTalk.Settings.PromptPreset.PositionInChat".Translate(),
+                        () => e.Position = PromptPosition.InChat)
+                };
+                Find.WindowStack.Add(new FloatMenu(options));
+            }
+
+            float depthLabelX = col1InputX + posSubW + 5f;
+            Text.Anchor = TextAnchor.MiddleLeft;
+            Widgets.Label(new Rect(depthLabelX, y, 28f, 24f), "RimTalk.Settings.PromptPreset.Depth".Translate());
+            Text.Anchor = TextAnchor.UpperLeft;
+
+            if (_depthBufferEntryId != e.Id)
+            {
+                _depthBuffer = e.InChatDepth.ToString();
+                _depthBufferEntryId = e.Id;
+            }
+
+            float depthInputX = depthLabelX + 30f;
+            _depthBuffer = Widgets.TextField(new Rect(depthInputX, y, 30f, 24f), _depthBuffer);
+            if (int.TryParse(_depthBuffer, out int res)) e.InChatDepth = res;
+        }
+        else
+        {
+            if (isHistoryMarker)
+            {
+                Text.Anchor = TextAnchor.MiddleLeft;
+                Widgets.Label(new Rect(col1InputX, y, col1InputW, 24f), e.Position.ToString());
+                Text.Anchor = TextAnchor.UpperLeft;
+            }
+            else if (Widgets.ButtonText(new Rect(col1InputX, y, col1InputW, 24f), e.Position.ToString()))
+            {
+                var options = new List<FloatMenuOption>
+                {
+                    new("RimTalk.Settings.PromptPreset.PositionRelative".Translate(),
+                        () => e.Position = PromptPosition.Relative),
+                    new("RimTalk.Settings.PromptPreset.PositionInChat".Translate(),
+                        () => e.Position = PromptPosition.InChat)
+                };
+                Find.WindowStack.Add(new FloatMenu(options));
+            }
+        }
+
+        // Col 2: Role (+ Custom Role if User)
+        Text.Anchor = TextAnchor.MiddleLeft;
+        Widgets.Label(new Rect(col2LabelX, y, col2LabelW, 24f), "RimTalk.Settings.PromptPreset.Role".Translate());
+        Text.Anchor = TextAnchor.UpperLeft;
+
+        bool hasCustomRole = !string.IsNullOrWhiteSpace(e.CustomRole);
+        if (hasCustomRole && e.Role != PromptRole.User) e.Role = PromptRole.User;
+
+        bool isUserRole = e.Role == PromptRole.User || hasCustomRole;
+        float roleDropdownW = col2InputW;
+
+        if (isHistoryMarker)
+        {
+            Text.Anchor = TextAnchor.MiddleLeft;
+            Widgets.Label(new Rect(col2InputX, y, roleDropdownW, 24f), e.Role.ToString());
+            Text.Anchor = TextAnchor.UpperLeft;
+        }
+        else if (Widgets.ButtonText(new Rect(col2InputX, y, roleDropdownW, 24f), e.Role.ToString()))
+        {
+            var opts = new List<FloatMenuOption>
+            {
+                new("System", () => { e.Role = PromptRole.System; e.CustomRole = ""; }),
+                new("User", () => e.Role = PromptRole.User),
+                new("Assistant", () => { e.Role = PromptRole.Assistant; e.CustomRole = ""; })
+            };
+            Find.WindowStack.Add(new FloatMenu(opts));
+        }
+
+        if (isUserRole)
+        {
+            float customInputX = col2InputX + roleDropdownW + 10f;
+            float maxCustomW = (switchBtnX - 10f) - customInputX;
+            float customInputW = Mathf.Clamp(maxCustomW, 110f, 150f);
+            Rect customRoleRect = new Rect(customInputX, y, customInputW, 24f);
+
+            if (isHistoryMarker)
+            {
+                Text.Anchor = TextAnchor.MiddleLeft;
+                Widgets.Label(customRoleRect, e.CustomRole ?? "");
+                Text.Anchor = TextAnchor.UpperLeft;
+            }
+            else
+            {
+                string customRole = Widgets.TextField(customRoleRect, e.CustomRole ?? "");
+                if (customRole != e.CustomRole) e.CustomRole = customRole;
+
+                if (string.IsNullOrEmpty(customRole))
+                {
+                    GUI.color = new Color(0.6f, 0.6f, 0.6f, 0.6f);
+                    Text.Anchor = TextAnchor.MiddleLeft;
+                    Rect hintRect = new Rect(customRoleRect.x + 5f, customRoleRect.y, customRoleRect.width - 10f, customRoleRect.height);
+                    Widgets.Label(hintRect, "RimTalk.Settings.PromptPreset.CustomRole".Translate().ToString().TrimEnd(':', '：', ' '));
+                    Text.Anchor = TextAnchor.UpperLeft;
+                    GUI.color = Color.white;
+                }
+
+                TooltipHandler.TipRegion(customRoleRect, "RimTalk.Settings.PromptPreset.CustomRole".Translate());
+            }
+        }
+
+        y += 32f;
 
         // -- MAIN AREA (Layout Split Logic) --
-        Rect bottomArea = new Rect(rect.x + 10f, y, rect.xMax - (rect.x + 10f), rect.yMax - y - 5f);
-
-        // 1. Calculate Horizontal Split (Main vs Side Panel)
+        float mainAreaY = y;
+        Rect bottomArea = new Rect(rect.x + 10f, mainAreaY, rect.xMax - (rect.x + 10f), rect.yMax - mainAreaY - 5f);
         Rect mainWorkRect = bottomArea;
         Rect sidePanelRect = Rect.zero;
         Rect splitHorizRect = Rect.zero;
@@ -642,7 +714,7 @@ public partial class Settings
         // --- DRAWING ---
 
         // A. Draw Editor
-        float editorInnerWidth = editorRect.width - 20f;
+        float editorInnerWidth = editorRect.width - scrollbarMargin;
         float editorContentHeight = Mathf.Ceil(Mathf.Max(editorRect.height, Text.CalcHeight(e.Content, editorInnerWidth) + 25f));
         Rect editorViewRect = new Rect(0f, 0f, editorInnerWidth, editorContentHeight);
 

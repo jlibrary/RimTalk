@@ -281,7 +281,7 @@ internal static class PromptPresetAssembler
             simplePreset.Entries.Insert(insertIndex, new PromptEntry
             {
                 Name = "Recent Events",
-                Role = PromptRole.User,
+                Role = PromptRole.System,
                 Position = PromptPosition.Relative,
                 Content = DefaultRecentEventsInstruction
             });

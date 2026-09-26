@@ -85,11 +85,13 @@ public static class ScribanParser
             json.Add("anchor", Constant.GetJsonAnchor(Settings.Get().ApplyMoodAndSocialEffects, isUser, enableDirectives));
             scriptObject.Add("json", json);
 
+            bool useCompact = Settings.Get()?.Context?.UseCompactHistory ?? true;
             var chat = new ScriptObject();
-            string historyText = GetChatHistoryText(context, simplified: true);
-            chat.Add("history", historyText);
-            chat.Add("history_simplified", historyText);
-            chat.Add("history_raw", GetChatHistoryText(context, simplified: false));
+            string simplifiedText = GetChatHistoryText(context, simplified: true);
+            string rawText = GetChatHistoryText(context, simplified: false);
+            chat.Add("history", useCompact ? simplifiedText : rawText);
+            chat.Add("history_simplified", simplifiedText);
+            chat.Add("history_raw", rawText);
             scriptObject.Add("chat", chat);
             
             // 4. SHORTHANDS
@@ -428,7 +430,7 @@ public static class ScribanParser
             "user_prompt" or "userprompt" => context.UserPrompt ?? "",
             "is_monologue" or "ismonologue" => context.IsMonologue,
             "talk_type" or "talktype" => context.TalkType,
-            "history" or "chat_history" or "chathistory" => GetChatHistoryText(context, simplified: true),
+            "history" or "chat_history" or "chathistory" => GetChatHistoryText(context, simplified: Settings.Get()?.Context?.UseCompactHistory ?? true),
             "history_simplified" or "chat_history_simplified" or "chathistorysimplified" => GetChatHistoryText(context, simplified: true),
             "history_raw" or "chat_history_raw" or "chathistoryraw" => GetChatHistoryText(context, simplified: false),
             "pawn_count" or "pawncount" => context.AllPawns?.Count ?? 0,
