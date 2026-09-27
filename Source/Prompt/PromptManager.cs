@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using RimTalk.API;
+using RimTalk.Compatibility;
 using RimTalk.Data;
 using RimTalk.Service;
 using Verse;
@@ -38,6 +40,9 @@ public class PromptManager : IExposable
     
     /// <summary>Global variable store (for setvar/getvar)</summary>
     public VariableStore VariableStore = new();
+
+    public bool IsStartupFinished => true;
+    public const string DefaultPresetName = "RimTalk Default";
 
     /// <summary>Gets the currently active preset</summary>
     public PromptPreset GetActivePreset()
@@ -97,6 +102,13 @@ public class PromptManager : IExposable
         if (source == null) return null;
 
         var clone = source.Clone();
+        clone.SourceModId = null;
+        foreach (var entry in clone.Entries)
+        {
+            entry.SourceModId = null;
+            if (!entry.IsBuiltIn)
+                entry.Id = Guid.NewGuid().ToString();
+        }
         
         string baseName = source.Name;
         // Check if name ends with (n) and extract base name if so
@@ -220,7 +232,7 @@ public class PromptManager : IExposable
     {
         return new PromptPreset
         {
-            Name = "RimTalk Default",
+            Name = DefaultPresetName,
             Description = "RimTalk default prompt preset",
             IsActive = true,
             Entries = new List<PromptEntry>
@@ -228,58 +240,175 @@ public class PromptManager : IExposable
                 // 1. System Section
                 new()
                 {
-                    Name = "Base Instruction",
+                    Id = BuiltInPromptIds.BaseInstruction,
+                    Name = BuiltInPromptNames.BaseInstruction,
                     Role = PromptRole.System,
                     Position = PromptPosition.Relative,
                     Content = Constant.DefaultInstruction
                 },
                 new()
                 {
-                    Name = "JSON Format",
+                    Id = BuiltInPromptIds.JsonFormat,
+                    Name = BuiltInPromptNames.JsonFormat,
                     Role = PromptRole.System,
                     Position = PromptPosition.Relative,
-                    Content = Constant.JsonInstruction + "\n{{ if settings.ApplyMoodAndSocialEffects }}\n" + Constant.SocialInstruction + "\n{{ end }}"
+                    Content = Constant.DefaultJsonFormatInstruction
                 },
                 new()
                 {
-                    Name = "Context",
+                    Id = BuiltInPromptIds.Context,
+                    Name = BuiltInPromptNames.Context,
                     Role = PromptRole.System,
                     Position = PromptPosition.Relative,
-                    Content = "{{context}}"
+                    Content = BuiltInPromptTokens.Context
                 },
-                // 2. History Section
+                // 2. Events & History Section
                 new()
                 {
-                    Name = "Chat History",
-                    Role = PromptRole.User, // Visual placeholder
+                    Id = BuiltInPromptIds.RecentEvents,
+                    Name = BuiltInPromptNames.RecentEvents,
+                    Role = PromptRole.System,
                     Position = PromptPosition.Relative,
-                    IsMainChatHistory = true,
-                    Content = "{{chat.history}}"  // Special marker - history will be inserted here
+                    Content = Constant.DefaultRecentEventsInstruction
                 },
-                // 3. Prompt Section
                 new()
                 {
-                    Name = "Dialogue Prompt",
+                    Id = BuiltInPromptIds.ChatHistory,
+                    Name = BuiltInPromptNames.ChatHistory,
                     Role = PromptRole.User,
                     Position = PromptPosition.Relative,
-                    Content = "{{prompt}}"
+                    IsMainChatHistory = true,
+                    Content = BuiltInPromptTokens.ChatHistory
+                },
+                // 3. Prompt Section (Immediate intent & situation)
+                new()
+                {
+                    Id = BuiltInPromptIds.DialoguePrompt,
+                    Name = BuiltInPromptNames.DialoguePrompt,
+                    Role = PromptRole.User,
+                    Position = PromptPosition.Relative,
+                    Content = BuiltInPromptTokens.Prompt
                 }
             }
         };
     }
 
-    /// <summary>Resets to default settings</summary>
+    /// <summary>Resets to default settings, keeping active mod defaults</summary>
     public void ResetToDefaults()
     {
-        Presets.Clear();
-        VariableStore.Clear();
-        InitializeDefaults();
-        
-        // Clear blacklist so mod entries can be re-added on next startup
-        foreach (var preset in Presets)
+        ResetToModDefaults();
+    }
+
+    /// <summary>
+    /// Identifies whether a preset was created/duplicated by the user (as opposed to the system default or a mod-provided preset).
+    /// </summary>
+    public bool IsUserCreatedPreset(PromptPreset preset)
+    {
+        if (preset == null) return false;
+
+        // Mod-provided presets belong to mods
+        if (!string.IsNullOrEmpty(preset.SourceModId))
+            return false;
+
+        // "RimTalk Default" is always the system default
+        if (string.Equals(preset.Name, DefaultPresetName, StringComparison.OrdinalIgnoreCase))
+            return false;
+
+        // If this is the only preset and has no mod ID, treat it as the default preset
+        if (Presets.Count > 0 && Presets[0] == preset && !Presets.Any(p => string.Equals(p.Name, DefaultPresetName, StringComparison.OrdinalIgnoreCase)))
+            return false;
+
+        return true;
+    }
+
+    /// <summary>Resets to default settings, restoring active mod defaults while preserving user custom presets</summary>
+    public void ResetToModDefaults()
+    {
+        var userPresets = Presets.Where(IsUserCreatedPreset).Select(p => p.Clone()).ToList();
+        var defaultPreset = CreateDefaultPreset();
+
+        // Replay active mod entries onto the fresh default preset
+        RimTalkPromptAPI.ApplyRegisteredModDefaults(defaultPreset);
+
+        var modPresets = Presets.Where(p => !string.IsNullOrEmpty(p.SourceModId)).Select(p => p.Clone()).ToList();
+
+        var newPresets = new List<PromptPreset> { defaultPreset };
+        foreach (var mp in modPresets)
         {
-            preset.ClearBlacklist();
+            if (!newPresets.Any(p => p.Id == mp.Id))
+                newPresets.Add(mp);
         }
+        foreach (var up in userPresets)
+        {
+            if (!newPresets.Any(p => p.Id == up.Id))
+                newPresets.Add(up);
+        }
+
+        Presets = newPresets;
+        VariableStore.Clear();
+
+        foreach (var preset in Presets)
+            preset.ClearBlacklist();
+
+        if (!Presets.Any(p => p.IsActive) && Presets.Count > 0)
+            Presets[0].IsActive = true;
+    }
+
+    /// <summary>Resets to pure vanilla RimTalk defaults while preserving user custom presets</summary>
+    public void ResetToVanillaDefaults()
+    {
+        var userPresets = Presets.Where(IsUserCreatedPreset).Select(p => p.Clone()).ToList();
+        var defaultPreset = CreateDefaultPreset();
+
+        var newPresets = new List<PromptPreset> { defaultPreset };
+        foreach (var up in userPresets)
+        {
+            if (!newPresets.Any(p => p.Id == up.Id))
+                newPresets.Add(up);
+        }
+
+        Presets = newPresets;
+        VariableStore.Clear();
+
+        foreach (var preset in Presets)
+            preset.ClearBlacklist();
+
+        if (!Presets.Any(p => p.IsActive) && Presets.Count > 0)
+            Presets[0].IsActive = true;
+    }
+
+    /// <summary>
+    /// Checks whether active addons provide any default presets, entries, or variables.
+    /// </summary>
+    public bool HasAddonInjectedDefaults()
+    {
+        if (RimTalkPromptAPI.HasRegisteredModDefaults())
+            return true;
+
+        if (Presets != null)
+        {
+            if (Presets.Any(p => !string.IsNullOrEmpty(p.SourceModId)))
+                return true;
+
+            foreach (var preset in Presets)
+            {
+                if (preset?.Entries == null) continue;
+                if (preset.Entries.Any(e => !string.IsNullOrEmpty(e.SourceModId) || !e.IsBuiltIn))
+                    return true;
+                if (preset.Entries.Any(e => e.IsBuiltIn && !e.Enabled))
+                    return true;
+            }
+        }
+
+        return RimTalkPromptAPI.GetRegisteredCustomVariables().Any();
+    }
+
+    /// <summary>
+    /// Compatibility hook maintained for external addons.
+    /// </summary>
+    public void OnStartupFinished()
+    {
+        CleanOrphanedModEntries();
     }
 
     public void ExposeData()
@@ -287,34 +416,31 @@ public class PromptManager : IExposable
         Scribe_Collections.Look(ref Presets, "presets", LookMode.Deep);
         Scribe_Deep.Look(ref VariableStore, "variableStore");
 
-        // Ensure collections are not null
         Presets ??= new List<PromptPreset>();
         VariableStore ??= new VariableStore();
 
-        // Migration: Fix legacy chat history markers and clean up orphaned mod entries
         if (Scribe.mode == LoadSaveMode.PostLoadInit || Scribe.mode == LoadSaveMode.LoadingVars)
         {
             CleanOrphanedModEntries();
+            PresetMigrator.Migrate(Presets);
+            CaptureExistingModRegistrations();
+        }
+    }
 
-            foreach (var preset in Presets)
+    private void CaptureExistingModRegistrations()
+    {
+        if (Presets == null) return;
+        foreach (var preset in Presets)
+        {
+            if (preset?.Entries == null) continue;
+            foreach (var entry in preset.Entries)
             {
-                // If no entry is marked as history, but we have one with the legacy content tag
-                if (!preset.Entries.Any(e => e.IsMainChatHistory))
+                if (!string.IsNullOrEmpty(entry.SourceModId))
                 {
-                    var legacyEntry = preset.Entries.FirstOrDefault(e => e.Content.Trim() == "{{chat.history}}");
-                    if (legacyEntry != null)
-                    {
-                        legacyEntry.IsMainChatHistory = true;
-                    }
+                    RimTalkPromptAPI.RegisterModDefaultEntry(entry);
                 }
-
-                preset.Entries.RemoveAll(e =>
-                    string.Equals(e.Name, "Legacy Custom Instruction", StringComparison.OrdinalIgnoreCase));
             }
         }
-        
-        // Don't initialize defaults here - game systems may not be ready
-        // Defaults will be initialized lazily when needed
     }
 
     /// <summary>
@@ -324,7 +450,6 @@ public class PromptManager : IExposable
     {
         if (Presets == null || Presets.Count == 0) return;
 
-        // Remove presets whose source mod is no longer active
         Presets.RemoveAll(p => !string.IsNullOrEmpty(p.SourceModId) && !IsModActive(p.SourceModId));
 
         foreach (var preset in Presets)
@@ -367,9 +492,12 @@ public class PromptManager : IExposable
             talkRequest.Participants = pawns;
         }
         
+        if (talkRequest == null) return [];
+        
         // 1. Prepare shared context data
         var (dialogueType, intent, topic) = PromptContextProvider.GetDialogueTypeData(talkRequest, pawns);
         talkRequest.Context = PromptService.BuildContext(pawns, talkRequest.IsAnnouncement);
+        talkRequest.CausalPrompt = TalkHistory.BuildCausalSummary(talkRequest, intent, topic);
         PromptService.DecoratePrompt(talkRequest, pawns, status);
 
         // 2. Build Context Object
@@ -393,7 +521,7 @@ public class PromptManager : IExposable
                 preset,
                 settings.SimpleModeInstruction,
                 Constant.DefaultInstruction,
-                Constant.JsonInstruction + "\n{{ if settings.ApplyMoodAndSocialEffects }}\n" + Constant.SocialInstruction + "\n{{ end }}");
+                Constant.DefaultJsonFormatInstruction);
         }
         else
         {
@@ -415,14 +543,31 @@ public class PromptManager : IExposable
         PromptContext context,
         List<PromptMessageSegment> segments)
     {
+        bool useCompact = Settings.Get()?.Context?.UseCompactHistory ?? true;
+        if (!useCompact)
+        {
+            var legacyMarker = preset.Entries.FirstOrDefault(e => e.Enabled && e.Position == PromptPosition.Relative && e.IsMainChatHistory);
+            List<(Role role, string message)> legacyHistory = null;
+            if (legacyMarker != null)
+            {
+                var marker = legacyMarker.Content?.Trim().ToLowerInvariant() ?? "";
+                legacyHistory = marker.Contains("history_simplified")
+                    ? context.GetChatHistory(simplified: true)
+                    : context.GetChatHistory(simplified: false);
+            }
+
+            return LegacyMultiTurnPromptBuilder.AssembleMessages(
+                preset,
+                content => ScribanParser.Render(content, context),
+                legacyHistory,
+                segments);
+        }
+
         var markerEntry = preset.Entries.FirstOrDefault(e => e.Enabled && e.Position == PromptPosition.Relative && e.IsMainChatHistory);
         List<(Role role, string message)> history = null;
         if (markerEntry != null)
         {
-            var marker = markerEntry.Content.Trim().ToLowerInvariant();
-            history = marker.Contains("history_simplified")
-                ? context.GetChatHistory(simplified: true)
-                : context.ChatHistory;
+            history = context.GetChatHistory(simplified: true);
         }
 
         return PromptPresetAssembler.AssembleMessages(

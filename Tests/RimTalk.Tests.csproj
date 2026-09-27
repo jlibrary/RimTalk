@@ -40,6 +40,7 @@
         <Compile Include="../Source/Data/TalkType.cs" Link="Linked/TalkType.cs" />
         <Compile Include="../Source/Data/Role.cs" Link="Linked/Role.cs" />
         <Compile Include="../Source/Prompt/Data/PromptRole.cs" Link="Linked/PromptRole.cs" />
+        <Compile Include="../Source/Prompt/Data/BuiltInPrompt.cs" Link="Linked/BuiltInPrompt.cs" />
         <Compile Include="../Source/Prompt/Data/PromptEntry.cs" Link="Linked/PromptEntry.cs" />
         <Compile Include="../Source/Prompt/Data/PromptPreset.cs" Link="Linked/PromptPreset.cs" />
         <Compile Include="../Source/Data/PromptMessageSegment.cs" Link="Linked/PromptMessageSegment.cs" />
@@ -51,11 +52,20 @@
         <Compile Include="../Source/Prompt/Data/SessionVariableStore.cs" Link="Linked/SessionVariableStore.cs" />
         <Compile Include="../Source/Prompt/Data/PromptMessageRoleMerger.cs" Link="Linked/PromptMessageRoleMerger.cs" />
         <Compile Include="../Source/Prompt/Data/PromptPresetAssembler.cs" Link="Linked/PromptPresetAssembler.cs" />
+        <Compile Include="../Source/Prompt/Data/LegacyMultiTurnPromptBuilder.cs" Link="Linked/LegacyMultiTurnPromptBuilder.cs" />
         <Compile Include="../Source/Prompt/Data/PresetDto.cs" Link="Linked/PresetDto.cs" />
         <Compile Include="../Source/Prompt/PresetSerializer.cs" Link="Linked/PresetSerializer.cs" />
         <Compile Include="../Source/Util/ErrorUtil.cs" Link="Linked/ErrorUtil.cs" />
         <Compile Include="../Source/Client/OpenAI/OpenAIDto.cs" Link="Linked/OpenAIDto.cs" />
         <Compile Include="../Source/Data/TopicKeywordPool.cs" Link="Linked/TopicKeywordPool.cs" />
+        <Compile Include="../Source/Memory/MemoryPerspective.cs" Link="Linked/MemoryPerspective.cs" />
+        <Compile Include="../Source/Memory/MemoryEntry.cs" Link="Linked/MemoryEntry.cs" />
+        <Compile Include="../Source/Memory/MemoryChangeType.cs" Link="Linked/MemoryChangeType.cs" />
+        <Compile Include="../Source/Memory/MemoryLogEntry.cs" Link="Linked/MemoryLogEntry.cs" />
+        <Compile Include="../Source/Memory/MemoryHistory.cs" Link="Linked/MemoryHistory.cs" />
+        <Compile Include="../Source/Memory/PawnMemoryTracker.cs" Link="Linked/PawnMemoryTracker.cs" />
+        <Compile Include="../Source/Memory/MemoryFormatter.cs" Link="Linked/MemoryFormatter.cs" />
+        <Compile Include="../Source/Compatibility/PresetMigrator.cs" Link="Linked/PresetMigrator.cs" />
     </ItemGroup>
 
 </Project>

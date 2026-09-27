@@ -10,6 +10,7 @@ public class TestDialogueItem
     public string? name { get; set; }
     public string? text { get; set; }
     public string? interaction { get; set; }
+    public List<string>? directives { get; set; }
 }
 
 public class JsonStreamParserTests
@@ -179,4 +180,37 @@ public class JsonStreamParserTests
 
         Assert.Equal(input, result);
     }
+
+    [Fact]
+    public void JsonUtil_Sanitize_PreservesStringArrayElementsWithoutEscapingQuotes()
+    {
+        string rawJson = "{\"name\":\"Constructoid\",\"text\":\"Yes sir\",\"directives\":[\"'formal' tone\", \"greet with hello\"]}";
+        var result = JsonUtil.DeserializeFromJson<TestDialogueItem>(rawJson);
+
+        Assert.NotNull(result);
+        Assert.Equal("Constructoid", result.name);
+        Assert.Equal("Yes sir", result.text);
+        Assert.NotNull(result.directives);
+        Assert.Equal(2, result.directives.Count);
+        Assert.Equal("'formal' tone", result.directives[0]);
+        Assert.Equal("greet with hello", result.directives[1]);
+    }
+
+    [Fact]
+    public void JsonStreamParser_ParsesObjectWithStringArrayCorrectly()
+    {
+        var parser = new JsonStreamParser<TestDialogueItem>();
+        var chunk1 = "{\"name\":\"Constructoid\",\"text\":\"Understood.\",\"directives\":[\"rule 1\",";
+        var chunk2 = " \"rule 2\"]}";
+
+        var res1 = parser.Parse(chunk1);
+        Assert.Empty(res1);
+
+        var res2 = parser.Parse(chunk2);
+        Assert.Single(res2);
+        Assert.Equal(2, res2[0].directives?.Count);
+        Assert.Equal("rule 1", res2[0].directives![0]);
+        Assert.Equal("rule 2", res2[0].directives![1]);
+    }
 }
+

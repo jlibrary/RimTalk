@@ -1,7 +1,7 @@
 using System;
-using System.Linq;
 using RimTalk.Data;
 using RimTalk.Prompt;
+using RimTalk.UI;
 using RimTalk.Util;
 using UnityEngine;
 using Verse;
@@ -10,7 +10,10 @@ namespace RimTalk;
 
 public partial class Settings
 {
-    private void DrawAIInstructionSettings(Listing_Standard listingStandard, bool showAdvancedSwitch = false)
+    private static readonly Color SoftGreen = new(0.6f, 0.9f, 0.6f);
+    private static readonly Color SoftYellow = new(1f, 0.85f, 0.5f);
+
+    private void DrawAIInstructionSettings(Listing_Standard listingStandard, bool showAdvancedSwitch = false, Rect containerRect = default)
     {
         RimTalkSettings settings = Get();
 
@@ -49,21 +52,33 @@ public partial class Settings
             _textAreaInitialized = true;
         }
 
-        var modelName = settings.GetCurrentModel();
-        var aiInstructionPrompt = "RimTalk.Settings.AIInstructionPrompt".Translate(modelName);
+        var aiInstructionPrompt = "RimTalk.Settings.AIInstructionPrompt".Translate();
+        float textHeight = Text.CalcHeight(aiInstructionPrompt, listingStandard.ColumnWidth);
+        Rect headerRect = listingStandard.GetRect(textHeight);
+        Widgets.Label(headerRect, aiInstructionPrompt);
 
-        float textHeight = Text.CalcHeight(aiInstructionPrompt,
-            listingStandard.ColumnWidth - (showAdvancedSwitch ? 180f : 0f));
-        float headerHeight = Mathf.Max(textHeight, 30f);
+        listingStandard.Gap(6f);
 
-        Rect headerRect = listingStandard.GetRect(headerHeight);
+        // Context information tip
+        Text.Font = GameFont.Tiny;
+        GUI.color = SoftGreen;
+        Rect contextTipRect = listingStandard.GetRect(Text.LineHeight);
+        Widgets.Label(contextTipRect, "RimTalk.Settings.AutoIncludedTip".Translate());
+        GUI.color = Color.white;
+        Text.Font = GameFont.Small;
+        listingStandard.Gap(6f);
+
+        // Warning about rate limits & switch to advanced settings directly above the text box
+        const float buttonWidth = 190f;
+        const float textBorderMargin = 16f;
+        float warningRowHeight = showAdvancedSwitch ? 26f : Text.LineHeight;
+        Rect warningRowRect = listingStandard.GetRect(warningRowHeight);
 
         if (showAdvancedSwitch)
         {
-            float buttonWidth = 170f;
-            Rect buttonRect = new Rect(headerRect.xMax - buttonWidth, headerRect.y, buttonWidth, 28f);
+            Rect buttonRect = new Rect(warningRowRect.xMax - textBorderMargin - buttonWidth, warningRowRect.y, buttonWidth, 26f);
 
-            if (Widgets.ButtonText(buttonRect, "RimTalk.Settings.SwitchToAdvancedSettings".Translate()))
+            if (UIUtil.ButtonText(buttonRect, "RimTalk.Settings.SwitchToAdvancedSettings".Translate()))
             {
                 Find.WindowStack.Add(Dialog_MessageBox.CreateConfirmation(
                     "RimTalk.Settings.AdvancedModeWarning".Translate(),
@@ -75,53 +90,31 @@ public partial class Settings
                     }));
             }
 
-            Rect labelRect = new Rect(headerRect.x, headerRect.y, headerRect.width - buttonWidth - 10f,
-                headerRect.height);
-
+            Rect warningLabelRect = new Rect(warningRowRect.x, warningRowRect.y, buttonRect.x - warningRowRect.x - 10f, warningRowHeight);
+            Text.Font = GameFont.Tiny;
+            GUI.color = SoftYellow;
             Text.Anchor = TextAnchor.MiddleLeft;
-            Widgets.Label(labelRect, aiInstructionPrompt);
+            Widgets.Label(warningLabelRect, "RimTalk.Settings.RateLimitWarning".Translate());
             Text.Anchor = TextAnchor.UpperLeft;
+            GUI.color = Color.white;
+            Text.Font = GameFont.Small;
         }
         else
         {
-            Widgets.Label(headerRect, aiInstructionPrompt);
+            Text.Font = GameFont.Tiny;
+            GUI.color = SoftYellow;
+            Widgets.Label(warningRowRect, "RimTalk.Settings.RateLimitWarning".Translate());
+            GUI.color = Color.white;
+            Text.Font = GameFont.Small;
         }
 
         listingStandard.Gap(6f);
 
-        // Context information tip
-        Text.Font = GameFont.Tiny;
-        GUI.color = Color.green;
-        Rect contextTipRect = listingStandard.GetRect(Text.LineHeight);
-        Widgets.Label(contextTipRect, "RimTalk.Settings.AutoIncludedTip".Translate());
-        GUI.color = Color.white;
-        Text.Font = GameFont.Small;
-        listingStandard.Gap(6f);
-
-        // Warning about rate limits
-        Text.Font = GameFont.Tiny;
-        GUI.color = Color.yellow;
-        Rect rateLimitRect = listingStandard.GetRect(Text.LineHeight);
-        Widgets.Label(rateLimitRect, "RimTalk.Settings.RateLimitWarning".Translate());
-        GUI.color = Color.white;
-        Text.Font = GameFont.Small;
-        listingStandard.Gap(6f);
-
-        // Token info display
-        int currentTokens = CommonUtil.EstimateTokenCount(_textAreaBuffer);
-        int maxAllowedTokens = CommonUtil.GetMaxAllowedTokens(settings.TalkInterval);
-        string tokenInfo = "RimTalk.Settings.TokenInfo".Translate(currentTokens, maxAllowedTokens);
-
-        GUI.color = currentTokens > maxAllowedTokens ? Color.red : Color.green;
-
-        Text.Font = GameFont.Tiny;
-        Rect tokenInfoRect = listingStandard.GetRect(Text.LineHeight);
-        Widgets.Label(tokenInfoRect, tokenInfo);
-        GUI.color = Color.white;
-        Text.Font = GameFont.Small;
-        listingStandard.Gap(6f);
-
-        float textAreaHeight = 350f;
+        const float countHeight = 20f;
+        float remainingHeight = containerRect.height > 0f
+            ? containerRect.height - listingStandard.CurHeight - countHeight - 15f
+            : 350f;
+        float textAreaHeight = Mathf.Max(200f, remainingHeight);
         Rect textAreaRect = listingStandard.GetRect(textAreaHeight);
 
         float innerWidth = textAreaRect.width - 16f;
@@ -150,6 +143,19 @@ public partial class Settings
 
         Widgets.EndScrollView();
 
+        // Token count display
+        listingStandard.Gap(2f);
+        Rect countRect = listingStandard.GetRect(18f);
+        countRect.width = innerWidth;
+        Text.Font = GameFont.Tiny;
+        GUI.color = Color.gray;
+        Text.Anchor = TextAnchor.MiddleRight;
+        int currentTokens = CommonUtil.EstimateTokenCount(_textAreaBuffer);
+        Widgets.Label(countRect, "RimTalk.Settings.TokenInfo".Translate(currentTokens));
+        Text.Anchor = TextAnchor.UpperLeft;
+        GUI.color = Color.white;
+        Text.Font = GameFont.Small;
+
         if (newInstruction != _textAreaBuffer)
         {
             _textAreaBuffer = newInstruction;
@@ -164,33 +170,13 @@ public partial class Settings
                 baseEntry.Content = newInstruction;
             }
         }
-
-        listingStandard.Gap(6f);
-
-        Rect resetButtonRect = listingStandard.GetRect(30f);
-        if (Widgets.ButtonText(resetButtonRect, "RimTalk.Settings.ResetToDefault".Translate()))
-        {
-            _textAreaBuffer = Constant.DefaultInstruction;
-
-            if (isSimpleMode)
-            {
-                settings.SimpleModeInstruction = Constant.DefaultInstruction;
-            }
-            else if (baseEntry != null)
-            {
-                baseEntry.Content = Constant.DefaultInstruction;
-            }
-
-            listingStandard.Gap(10f);
-        }
     }
 
     private static PromptEntry GetOrCreateBaseInstructionEntry(PromptPreset preset)
     {
         if (preset == null) return null;
 
-        var entry = preset.Entries.FirstOrDefault(e =>
-            string.Equals(e.Name, "Base Instruction", StringComparison.OrdinalIgnoreCase));
+        var entry = preset.Entries.FirstOrDefault(e => e.IsBaseInstruction);
         if (entry != null) return entry;
 
         entry = preset.Entries.FirstOrDefault(e =>
@@ -199,7 +185,8 @@ public partial class Settings
 
         entry = new PromptEntry
         {
-            Name = "Base Instruction",
+            Id = BuiltInPromptIds.BaseInstruction,
+            Name = BuiltInPromptNames.BaseInstruction,
             Role = PromptRole.System,
             Position = PromptPosition.Relative,
             Content = Constant.DefaultInstruction

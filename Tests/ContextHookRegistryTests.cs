@@ -4,6 +4,8 @@ using RimTalk.API;
 using Verse;
 using Xunit;
 
+[assembly: CollectionBehavior(DisableTestParallelization = true)]
+
 namespace RimTalk.Tests;
 
 public class ContextHookRegistryTests : IDisposable
@@ -105,5 +107,41 @@ public class ContextHookRegistryTests : IDisposable
 
         Assert.Equal("Job: Keep", result);
         Assert.DoesNotContain("Remove", result);
+    }
+
+    [Fact]
+    public void ApplyPawnHooks_RoleAndPersonality_RegisteredHooksInvoked()
+    {
+        var pawn = new Pawn { Name = "TestColonist" };
+
+        ContextHookRegistry.RegisterPawnHook(ContextCategories.Pawn.Role, ContextHookRegistry.HookOperation.Append,
+            "RoleMod", (p, text) => text + " (Commander)", priority: 50);
+        ContextHookRegistry.RegisterPawnHook(ContextCategories.Pawn.Personality, ContextHookRegistry.HookOperation.Override,
+            "PersonalityMod", (p, text) => "Calculative and cold", priority: 50);
+
+        string roleResult = ContextHookRegistry.ApplyPawnHooks(ContextCategories.Pawn.Role, pawn, "Role: Colonist");
+        string personalityResult = ContextHookRegistry.ApplyPawnHooks(ContextCategories.Pawn.Personality, pawn, "Personality: Kind");
+
+        Assert.Equal("Role: Colonist (Commander)", roleResult);
+        Assert.Equal("Calculative and cold", personalityResult);
+    }
+
+    [Fact]
+    public void GetInjectedSectionsAt_AnchorLocation_OrderedAndNonAllocating()
+    {
+        var anchor = ContextCategories.Pawn.Location;
+
+        ContextHookRegistry.InjectPawnSection("PreLoc", "ModA", anchor, ContextHookRegistry.InjectPosition.Before,
+            p => "SubLocation: Greenhouse", priority: 10);
+        ContextHookRegistry.InjectPawnSection("PostLoc", "ModB", anchor, ContextHookRegistry.InjectPosition.After,
+            p => "DangerZone: Mild", priority: 10);
+
+        var sections = ContextHookRegistry.GetInjectedSectionsAt(anchor).ToList();
+
+        Assert.Equal(2, sections.Count);
+        Assert.Equal(ContextHookRegistry.InjectPosition.Before, sections[0].Position);
+        Assert.Equal("PreLoc", sections[0].Name);
+        Assert.Equal(ContextHookRegistry.InjectPosition.After, sections[1].Position);
+        Assert.Equal("PostLoc", sections[1].Name);
     }
 }

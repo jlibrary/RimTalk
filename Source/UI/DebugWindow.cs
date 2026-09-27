@@ -5,6 +5,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using RimTalk.Data;
+using RimTalk.Memory;
+using RimTalk.Prompt;
 using RimTalk.Service;
 using RimTalk.Source.Data;
 using RimTalk.Util;
@@ -25,7 +27,8 @@ public class DebugWindow : Window
     {
         MainTable,
         GroupedByPawn,
-        ActiveRequests
+        ActiveRequests,
+        MemoryLog
     }
 
     // Layout Constants
@@ -50,6 +53,14 @@ public class DebugWindow : Window
     private const float ARElapsedWidth = 60f;
     private const float ARStatusWidth = 60f;
 
+    // Memory Log Column Widths
+    private const float MLTimeWidth = 60f;
+    private const float MLTickWidth = 60f;
+    private const float MLPawnWidth = 75f;
+    private const float MLTargetWidth = 75f;
+    private const float MLTypeWidth = 85f;
+    private const float MLWeightWidth = 55f;
+
     // Grouping Column Widths
     private const float GroupedPawnNameWidth = 80f;
     private const float GroupedRequestsWidth = 60f;
@@ -63,6 +74,7 @@ public class DebugWindow : Window
     // State Variables
     private Vector2 _tableScrollPosition;
     private Vector2 _activeRequestsScrollPosition;
+    private Vector2 _memoryLogsScrollPosition;
     private Vector2 _detailsScrollPosition;
     private bool _stickToBottom = true;
 
@@ -78,6 +90,7 @@ public class DebugWindow : Window
     private List<PawnState> _pawnStates;
     private List<ApiLog> _requests;
     private List<TalkRequest> _cachedActiveViewList = [];
+    private List<MemoryLogEntry> _cachedMemoryLogs = [];
     private readonly Dictionary<string, List<ApiLog>> _talkLogsByPawn = new();
 
     // Controls
@@ -86,7 +99,9 @@ public class DebugWindow : Window
     private string _textSearch;
     private State _stateFilter;
     private RequestStatus? _activeRequestStatusFilter;
+    private MemoryChangeType? _memoryTypeFilter;
     private ApiLog _selectedLog;
+    private MemoryLogEntry _selectedMemoryLog;
 
     // Temporary Editable State
     private Guid _selectedRequestIdForTemp = Guid.Empty;
@@ -291,6 +306,38 @@ public class DebugWindow : Window
 
         _cachedActiveViewList = q.ToList();
         _cachedActiveViewList.Sort((a, b) => a.CreatedTime.CompareTo(b.CreatedTime));
+
+        IEnumerable<MemoryLogEntry> memQuery = MemoryHistory.GetAll();
+        if (!string.IsNullOrWhiteSpace(_pawnFilter))
+        {
+            var needle = _pawnFilter.Trim();
+            memQuery = memQuery.Where(m =>
+                (m.SourcePawnName ?? "").IndexOf(needle, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                (m.TargetPawnName ?? "").IndexOf(needle, StringComparison.OrdinalIgnoreCase) >= 0
+            );
+        }
+
+        if (!string.IsNullOrWhiteSpace(_textSearch))
+        {
+            var needle = _textSearch.Trim();
+            memQuery = memQuery.Where(m =>
+                (m.EventKey ?? "").IndexOf(needle, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                (m.Note ?? "").IndexOf(needle, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                (m.Details ?? "").IndexOf(needle, StringComparison.OrdinalIgnoreCase) >= 0
+            );
+        }
+
+        if (_memoryTypeFilter.HasValue)
+        {
+            memQuery = memQuery.Where(m => m.ChangeType == _memoryTypeFilter.Value);
+        }
+
+        _cachedMemoryLogs = memQuery.ToList();
+
+        if (_selectedMemoryLog != null && _cachedMemoryLogs.All(m => m.Id != _selectedMemoryLog.Id))
+        {
+            _selectedMemoryLog = null;
+        }
     }
 
     private void DrawLeftPane(Rect rect)
@@ -310,6 +357,9 @@ public class DebugWindow : Window
             case DebugViewMode.GroupedByPawn:
                 DrawGroupedPawnTable(tableRect);
                 break;
+            case DebugViewMode.MemoryLog:
+                DrawMemoryLogTable(tableRect);
+                break;
             case DebugViewMode.MainTable:
             default:
                 DrawConsoleTable(tableRect);
@@ -323,7 +373,7 @@ public class DebugWindow : Window
         float height = 24f;
         float gap = 5f;
         float startX = rect.x;
-        float viewDropdownWidth = 90f;
+        float viewDropdownWidth = 100f;
         float statusWidth = 100f;
         float limitWidth = 90f;
         float totalFixedSpace = viewDropdownWidth + statusWidth + limitWidth + (4 * gap);
@@ -341,6 +391,7 @@ public class DebugWindow : Window
             DebugViewMode.MainTable => "RimTalk.DebugWindow.ViewByTime".Translate(),
             DebugViewMode.GroupedByPawn => "RimTalk.DebugWindow.ViewByPawn".Translate(),
             DebugViewMode.ActiveRequests => "RimTalk.DebugWindow.ViewTalkRequests".Translate(),
+            DebugViewMode.MemoryLog => "RimTalk.DebugWindow.ViewMemoryLog".Translate(),
             _ => _viewMode.ToString()
         };
 
@@ -350,7 +401,8 @@ public class DebugWindow : Window
             {
                 new("RimTalk.DebugWindow.ViewByTime".Translate(), () => _viewMode = DebugViewMode.MainTable),
                 new("RimTalk.DebugWindow.ViewByPawn".Translate(), () => _viewMode = DebugViewMode.GroupedByPawn),
-                new("RimTalk.DebugWindow.ViewTalkRequests".Translate(), () => _viewMode = DebugViewMode.ActiveRequests)
+                new("RimTalk.DebugWindow.ViewTalkRequests".Translate(), () => _viewMode = DebugViewMode.ActiveRequests),
+                new("RimTalk.DebugWindow.ViewMemoryLog".Translate(), () => _viewMode = DebugViewMode.MemoryLog)
             };
             Find.WindowStack.Add(new FloatMenu(options));
         }
@@ -385,6 +437,25 @@ public class DebugWindow : Window
                     .Cast<RequestStatus>()
                     .Select(s => new FloatMenuOption($"RimTalk.DebugWindow.State{s}".Translate(),
                         () => _activeRequestStatusFilter = s)));
+                Find.WindowStack.Add(new FloatMenu(options));
+            }
+        }
+        else if (_viewMode == DebugViewMode.MemoryLog)
+        {
+            string label = _memoryTypeFilter.HasValue
+                ? $"RimTalk.DebugWindow.MemoryType{_memoryTypeFilter.Value}".Translate()
+                : "RimTalk.DebugWindow.StateAll".Translate();
+
+            if (Widgets.ButtonText(stateBtnRect, label))
+            {
+                var options = new List<FloatMenuOption>
+                {
+                    new("RimTalk.DebugWindow.StateAll".Translate(), () => _memoryTypeFilter = null)
+                };
+                options.AddRange(Enum.GetValues(typeof(MemoryChangeType))
+                    .Cast<MemoryChangeType>()
+                    .Select(t => new FloatMenuOption($"RimTalk.DebugWindow.MemoryType{t}".Translate(),
+                        () => _memoryTypeFilter = t)));
                 Find.WindowStack.Add(new FloatMenu(options));
             }
         }
@@ -424,6 +495,7 @@ public class DebugWindow : Window
         _maxRows = count;
         ApiHistory.MaxHistoryCount = count;
         ApiHistory.TrimHistory();
+        MemoryHistory.MaxCount = count;
     }
 
     private void DrawActiveRequestsTable(Rect rect)
@@ -549,6 +621,178 @@ public class DebugWindow : Window
         string translationKey = $"RimTalk.DebugWindow.State{req.Status}";
         Widgets.Label(new Rect(currentX, rowY, ARStatusWidth, RowHeight), translationKey.Translate());
         GUI.color = c;
+    }
+
+    private void DrawMemoryLogTable(Rect rect)
+    {
+        float fixedWidth = MLTimeWidth + MLTickWidth + MLPawnWidth + MLTargetWidth + MLTypeWidth + MLWeightWidth + (ColumnPadding * 6);
+        float noteWidth = Mathf.Max(50f, rect.width - fixedWidth - 16f);
+
+        DrawMemoryLogHeader(new Rect(rect.x, rect.y, rect.width, HeaderHeight), noteWidth);
+
+        var scrollRect = new Rect(rect.x, rect.y + HeaderHeight, rect.width, rect.height - HeaderHeight);
+        float viewWidth = scrollRect.width - 16f;
+        float viewHeight = _cachedMemoryLogs.Count * RowHeight;
+        var viewRect = new Rect(0, 0, viewWidth, viewHeight);
+
+        float maxScroll = Mathf.Max(0f, viewHeight - scrollRect.height);
+        if (_stickToBottom)
+            _memoryLogsScrollPosition.y = maxScroll;
+
+        Widgets.BeginScrollView(scrollRect, ref _memoryLogsScrollPosition, viewRect);
+
+        if (_stickToBottom && _memoryLogsScrollPosition.y < maxScroll - 1f)
+            _stickToBottom = false;
+
+        float visibleTop = _memoryLogsScrollPosition.y;
+        float visibleBottom = _memoryLogsScrollPosition.y + scrollRect.height;
+        int firstIndex = Mathf.Clamp((int)(visibleTop / RowHeight), 0, _cachedMemoryLogs.Count);
+        int lastIndex = Mathf.Clamp((int)(visibleBottom / RowHeight) + 1, 0, _cachedMemoryLogs.Count);
+
+        for (int i = firstIndex; i < lastIndex; i++)
+        {
+            DrawMemoryLogRow(_cachedMemoryLogs[i], i, i * RowHeight, viewWidth, noteWidth);
+        }
+
+        Widgets.EndScrollView();
+
+        DrawStickToBottomOverlay(scrollRect, maxScroll, ref _memoryLogsScrollPosition);
+    }
+
+    private void DrawMemoryLogHeader(Rect rect, float noteWidth)
+    {
+        Widgets.DrawBoxSolid(rect, new Color(0.2f, 0.2f, 0.25f, 0.9f));
+        Text.Font = GameFont.Tiny;
+        float currentX = rect.x + 5f;
+
+        Widgets.Label(new Rect(currentX, rect.y, MLTimeWidth, rect.height),
+            "RimTalk.DebugWindow.HeaderTimestamp".Translate());
+        currentX += MLTimeWidth + ColumnPadding;
+
+        Widgets.Label(new Rect(currentX, rect.y, MLTickWidth, rect.height),
+            "RimTalk.DebugWindow.HeaderTick".Translate());
+        currentX += MLTickWidth + ColumnPadding;
+
+        Widgets.Label(new Rect(currentX, rect.y, MLPawnWidth, rect.height),
+            "RimTalk.DebugWindow.HeaderPawn".Translate());
+        currentX += MLPawnWidth + ColumnPadding;
+
+        Widgets.Label(new Rect(currentX, rect.y, MLTargetWidth, rect.height),
+            "RimTalk.DebugWindow.HeaderTarget".Translate());
+        currentX += MLTargetWidth + ColumnPadding;
+
+        Widgets.Label(new Rect(currentX, rect.y, MLTypeWidth, rect.height),
+            "RimTalk.DebugWindow.HeaderChangeType".Translate());
+        currentX += MLTypeWidth + ColumnPadding;
+
+        Widgets.Label(new Rect(currentX, rect.y, MLWeightWidth, rect.height),
+            "RimTalk.DebugWindow.HeaderWeight".Translate());
+        currentX += MLWeightWidth + ColumnPadding;
+
+        Widgets.Label(new Rect(currentX, rect.y, noteWidth, rect.height),
+            "RimTalk.DebugWindow.HeaderEventNote".Translate());
+    }
+
+    private void DrawMemoryLogRow(MemoryLogEntry entry, int index, float rowY, float width, float noteWidth)
+    {
+        var rowRect = new Rect(0, rowY, width, RowHeight);
+        if (index % 2 == 0) Widgets.DrawBoxSolid(rowRect, new Color(0.15f, 0.15f, 0.15f, 0.4f));
+
+        bool isSelected = _selectedMemoryLog != null && _selectedMemoryLog.Id == entry.Id;
+        if (isSelected)
+            Widgets.DrawBoxSolid(rowRect, new Color(0.2f, 0.25f, 0.35f, 0.45f));
+
+        float currentX = 5f;
+
+        // 1. Time
+        Widgets.Label(new Rect(currentX, rowY, MLTimeWidth, RowHeight), entry.Timestamp.ToString("HH:mm:ss"));
+        currentX += MLTimeWidth + ColumnPadding;
+
+        // 2. Tick
+        Widgets.Label(new Rect(currentX, rowY, MLTickWidth, RowHeight), entry.Tick.ToString());
+        currentX += MLTickWidth + ColumnPadding;
+
+        // 3. Source Pawn
+        var srcRect = new Rect(currentX, rowY, MLPawnWidth, RowHeight);
+        string srcName = string.IsNullOrEmpty(entry.SourcePawnName) ? "-" : entry.SourcePawnName;
+        var srcPawn = ResolvePawn(srcName, entry.SourcePawnId);
+        UIUtil.DrawClickablePawnName(srcRect, srcName, srcPawn);
+        currentX += MLPawnWidth + ColumnPadding;
+
+        // 4. Target Pawn
+        var tgtRect = new Rect(currentX, rowY, MLTargetWidth, RowHeight);
+        string tgtName = string.IsNullOrEmpty(entry.TargetPawnName) ? "-" : entry.TargetPawnName;
+        var tgtPawn = ResolvePawn(tgtName, entry.TargetPawnId);
+        UIUtil.DrawClickablePawnName(tgtRect, tgtName, tgtPawn);
+        currentX += MLTargetWidth + ColumnPadding;
+
+        // 5. Change Type
+        Color typeColor = entry.ChangeType switch
+        {
+            MemoryChangeType.Added => new Color(0.4f, 0.9f, 0.4f),
+            MemoryChangeType.Updated => new Color(0.4f, 0.8f, 1f),
+            MemoryChangeType.DirectiveSet => Color.cyan,
+            MemoryChangeType.DirectiveRemoved => new Color(1f, 0.7f, 0.3f),
+            MemoryChangeType.CoreTraumaAdded => new Color(1f, 0.4f, 0.4f),
+            MemoryChangeType.PurgedDecay => Color.gray,
+            MemoryChangeType.Evicted => new Color(0.8f, 0.5f, 0.3f),
+            MemoryChangeType.Consolidated => new Color(0.7f, 0.7f, 1f),
+            MemoryChangeType.Cleared => new Color(1f, 0.3f, 0.3f),
+            MemoryChangeType.MilestoneRecorded => new Color(1f, 0.85f, 0.2f),
+            _ => Color.white
+        };
+        var prevColor = GUI.color;
+        GUI.color = typeColor;
+        Widgets.Label(new Rect(currentX, rowY, MLTypeWidth, RowHeight), $"RimTalk.DebugWindow.MemoryType{entry.ChangeType}".Translate());
+        GUI.color = prevColor;
+        currentX += MLTypeWidth + ColumnPadding;
+
+        // 6. Weight
+        string weightStr = entry.ChangeType == MemoryChangeType.Updated
+            ? $"{entry.OldWeight:0}->{entry.NewWeight:0}"
+            : $"{entry.NewWeight:0}";
+        Widgets.Label(new Rect(currentX, rowY, MLWeightWidth, RowHeight), weightStr);
+        currentX += MLWeightWidth + ColumnPadding;
+
+        // 7. Event / Note
+        string cleanNote = PawnMemoryTracker.StripBoilerplate(entry.Note);
+        string text = !string.IsNullOrEmpty(cleanNote)
+            ? $"[{entry.EventKey}] {cleanNote}"
+            : (string.IsNullOrEmpty(entry.EventKey) ? entry.Details : entry.EventKey);
+        Widgets.Label(new Rect(currentX, rowY, noteWidth, RowHeight), text);
+
+        if (Widgets.ButtonInvisible(rowRect))
+        {
+            _selectedMemoryLog = entry;
+            SoundDefOf.Click.PlayOneShotOnCamera();
+        }
+    }
+
+    private static Pawn ResolvePawn(string name, int id)
+    {
+        if (string.IsNullOrEmpty(name) && id < 0) return null;
+        var p = Cache.GetByName(name)?.Pawn;
+        if (p != null) return p;
+        if (id >= 0 && Current.ProgramState == ProgramState.Playing)
+        {
+            var maps = Find.Maps;
+            if (maps != null)
+            {
+                for (int m = 0; m < maps.Count; m++)
+                {
+                    var pawns = maps[m].mapPawns?.AllPawns;
+                    if (pawns != null)
+                    {
+                        for (int i = 0; i < pawns.Count; i++)
+                        {
+                            if (pawns[i].thingIDNumber == id)
+                                return pawns[i];
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     private void DrawConsoleTable(Rect rect)
@@ -687,6 +931,12 @@ public class DebugWindow : Window
 
     private void DrawDetailsPanel(Rect rect)
     {
+        if (_viewMode == DebugViewMode.MemoryLog)
+        {
+            DrawMemoryLogDetails(rect);
+            return;
+        }
+
         Widgets.DrawBoxSolid(rect, new Color(0.08f, 0.08f, 0.1f, 0.8f));
         InitializeContextStyle();
 
@@ -751,7 +1001,7 @@ public class DebugWindow : Window
         float btnX = 0f;
 
         // Copy All Button
-        if (Widgets.ButtonText(new Rect(btnX, y, btnW, buttonsRowH), "RimTalk.DebugWindow.CopyAll".Translate()))
+        if (UIUtil.ButtonText(new Rect(btnX, y, btnW, buttonsRowH), "RimTalk.DebugWindow.CopyAll".Translate()))
         {
             GUIUtility.systemCopyBuffer = _selectedLog.ToString();
             Messages.Message("RimTalk.DebugWindow.Copied".Translate(), MessageTypeDefOf.TaskCompletion, false);
@@ -763,7 +1013,7 @@ public class DebugWindow : Window
             btnX += btnW + 6f;
             Rect reportRect = new Rect(btnX, y, btnW, buttonsRowH);
             GUI.enabled = payload != null;
-            if (Widgets.ButtonText(reportRect, "RimTalk.DebugWindow.ApiLog".Translate()))
+            if (UIUtil.ButtonText(reportRect, "RimTalk.DebugWindow.ApiLog".Translate()))
             {
                 if (payload != null)
                 {
@@ -779,9 +1029,8 @@ public class DebugWindow : Window
         var prevResendColor = GUI.color;
         GUI.color = new Color(0.6f, 0.9f, 0.6f);
         Rect resendRect = new Rect(btnX, y, btnW, buttonsRowH);
-        if (Widgets.ButtonText(resendRect, "RimTalk.DebugWindow.Resend".Translate()))
+        if (UIUtil.ButtonText(resendRect, "RimTalk.DebugWindow.Resend".Translate()))
         {
-            SoundDefOf.Click.PlayOneShotOnCamera();
             Resend();
         }
 
@@ -963,6 +1212,129 @@ public class DebugWindow : Window
         TooltipHandler.TipRegion(boxRect, "RimTalk.DebugWindow.ClickToExpandImage".Translate());
 
         y += imgHeight + 8f;
+    }
+
+    private void DrawMemoryLogDetails(Rect rect)
+    {
+        Widgets.DrawBoxSolid(rect, new Color(0.08f, 0.08f, 0.1f, 0.8f));
+        InitializeContextStyle();
+
+        var inner = rect.ContractedBy(8f);
+        GUI.BeginGroup(inner);
+
+        if (_selectedMemoryLog == null)
+        {
+            Text.Font = GameFont.Tiny;
+            GUI.color = Color.gray;
+            Widgets.Label(new Rect(0f, 0f, inner.width, 50f), "RimTalk.DebugWindow.SelectRowHint".Translate());
+            GUI.color = Color.white;
+            GUI.EndGroup();
+            return;
+        }
+
+        float y = 0f;
+        var header = new StringBuilder();
+        header.Append(_selectedMemoryLog.Timestamp.ToString("yyyy-MM-dd HH:mm:ss"));
+        header.Append($"  |  Tick: {_selectedMemoryLog.Tick}");
+        header.Append($"  |  {_selectedMemoryLog.SourcePawnName}");
+        if (!string.IsNullOrEmpty(_selectedMemoryLog.TargetPawnName))
+        {
+            header.Append($" -> {_selectedMemoryLog.TargetPawnName}");
+        }
+
+        Text.Font = GameFont.Tiny;
+        GUI.color = Color.gray;
+        Widgets.Label(new Rect(0f, y, inner.width, 24f), header.ToString());
+        GUI.color = Color.white;
+        y += 26f;
+
+        // Copy button
+        float buttonsRowH = 24f;
+        float btnW = 88f;
+        if (Widgets.ButtonText(new Rect(0f, y, btnW, buttonsRowH), "RimTalk.DebugWindow.CopyAll".Translate()))
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine($"Time: {_selectedMemoryLog.Timestamp:yyyy-MM-dd HH:mm:ss} (Tick: {_selectedMemoryLog.Tick})");
+            sb.AppendLine($"Pawn: {_selectedMemoryLog.SourcePawnName} (ID: {_selectedMemoryLog.SourcePawnId})");
+            sb.AppendLine($"Target: {_selectedMemoryLog.TargetPawnName} (ID: {_selectedMemoryLog.TargetPawnId})");
+            sb.AppendLine($"Change: {_selectedMemoryLog.ChangeType}");
+            sb.AppendLine($"EventKey: {_selectedMemoryLog.EventKey}");
+            sb.AppendLine($"Weight: {_selectedMemoryLog.OldWeight:F1} -> {_selectedMemoryLog.NewWeight:F1}");
+            sb.AppendLine($"Directive: {_selectedMemoryLog.IsDirective}, CoreTrauma: {_selectedMemoryLog.IsCoreTrauma}");
+            sb.AppendLine($"Note: {PawnMemoryTracker.StripBoilerplate(_selectedMemoryLog.Note)}");
+            sb.AppendLine($"Details: {_selectedMemoryLog.Details}");
+            GUIUtility.systemCopyBuffer = sb.ToString();
+            Messages.Message("RimTalk.DebugWindow.Copied".Translate(), MessageTypeDefOf.TaskCompletion, false);
+        }
+        y += buttonsRowH + 8f;
+
+        // Meta Box
+        float metaBoxH = 68f;
+        var metaRect = new Rect(0f, y, inner.width, metaBoxH);
+        Widgets.DrawMenuSection(metaRect);
+        var metaInner = metaRect.ContractedBy(6f);
+
+        // Change Type & Weight
+        float curMetaY = metaInner.y;
+        Widgets.Label(new Rect(metaInner.x, curMetaY, 80f, 18f), "RimTalk.DebugWindow.HeaderChangeType".Translate() + ":");
+        Color typeColor = _selectedMemoryLog.ChangeType switch
+        {
+            MemoryChangeType.Added => new Color(0.4f, 0.9f, 0.4f),
+            MemoryChangeType.Updated => new Color(0.4f, 0.8f, 1f),
+            MemoryChangeType.DirectiveSet => Color.cyan,
+            MemoryChangeType.DirectiveRemoved => new Color(1f, 0.7f, 0.3f),
+            MemoryChangeType.CoreTraumaAdded => new Color(1f, 0.4f, 0.4f),
+            MemoryChangeType.PurgedDecay => Color.gray,
+            MemoryChangeType.Evicted => new Color(0.8f, 0.5f, 0.3f),
+            MemoryChangeType.Consolidated => new Color(0.7f, 0.7f, 1f),
+            MemoryChangeType.Cleared => new Color(1f, 0.3f, 0.3f),
+            MemoryChangeType.MilestoneRecorded => new Color(1f, 0.85f, 0.2f),
+            _ => Color.white
+        };
+        GUI.color = typeColor;
+        Widgets.Label(new Rect(metaInner.x + 80f, curMetaY, 130f, 18f), $"RimTalk.DebugWindow.MemoryType{_selectedMemoryLog.ChangeType}".Translate());
+        GUI.color = Color.white;
+
+        Widgets.Label(new Rect(metaInner.x + 220f, curMetaY, 60f, 18f), "RimTalk.DebugWindow.HeaderWeight".Translate() + ":");
+        string weightStr = _selectedMemoryLog.ChangeType == MemoryChangeType.Updated
+            ? $"{_selectedMemoryLog.OldWeight:F1} -> {_selectedMemoryLog.NewWeight:F1}"
+            : $"{_selectedMemoryLog.NewWeight:F1}";
+        Widgets.Label(new Rect(metaInner.x + 280f, curMetaY, 120f, 18f), weightStr);
+
+        curMetaY += 20f;
+        // Event Key
+        Widgets.Label(new Rect(metaInner.x, curMetaY, 80f, 18f), "RimTalk.DebugWindow.HeaderEventKey".Translate() + ":");
+        Widgets.Label(new Rect(metaInner.x + 80f, curMetaY, metaInner.width - 80f, 18f), string.IsNullOrEmpty(_selectedMemoryLog.EventKey) ? "-" : _selectedMemoryLog.EventKey);
+
+        curMetaY += 20f;
+        // Flags
+        string flags = $"Directive: {(_selectedMemoryLog.IsDirective ? "Yes" : "No")} | Trauma: {(_selectedMemoryLog.IsCoreTrauma ? "Yes" : "No")}";
+        Widgets.Label(new Rect(metaInner.x, curMetaY, metaInner.width, 18f), flags.Colorize(new Color(0.7f, 0.7f, 0.7f)));
+
+        y += metaBoxH + 10f;
+
+        // Note Section
+        Widgets.Label(new Rect(0f, y, inner.width, 18f), "RimTalk.DebugWindow.HeaderNoteContent".Translate() + ":");
+        y += 20f;
+
+        float noteBoxH = 120f;
+        var noteRect = new Rect(0f, y, inner.width, noteBoxH);
+        Widgets.DrawBoxSolid(noteRect, new Color(0.05f, 0.05f, 0.05f, 0.55f));
+        string noteDisplay = string.IsNullOrEmpty(_selectedMemoryLog.Note) ? "-" : PawnMemoryTracker.StripBoilerplate(_selectedMemoryLog.Note);
+        GUI.TextArea(noteRect.ContractedBy(4f), noteDisplay, _monoTinyStyle);
+        y += noteBoxH + 10f;
+
+        // Details / Reason Section
+        Widgets.Label(new Rect(0f, y, inner.width, 18f), "RimTalk.DebugWindow.HeaderReasonContext".Translate() + ":");
+        y += 20f;
+
+        float detailsBoxH = Mathf.Max(50f, inner.height - y - 6f);
+        var detRect = new Rect(0f, y, inner.width, detailsBoxH);
+        Widgets.DrawBoxSolid(detRect, new Color(0.05f, 0.05f, 0.05f, 0.55f));
+        string detDisplay = string.IsNullOrEmpty(_selectedMemoryLog.Details) ? "-" : _selectedMemoryLog.Details;
+        GUI.TextArea(detRect.ContractedBy(4f), detDisplay, _monoTinyStyle);
+
+        GUI.EndGroup();
     }
 
     private void DrawSelectableBlock(ref float y, float width, string title, ref string content, float contentHeight,
@@ -1419,32 +1791,27 @@ public class DebugWindow : Window
 
         long maxVal = Math.Max(1, series.Where(s => s.data != null && s.data.Any()).SelectMany(s => s.data).Max());
 
-        Text.Font = GameFont.Tiny;
-        GUI.color = Color.gray;
-        Widgets.Label(new Rect(rect.x + 5, rect.y + rect.height - 14f, 60, 14f),
-            "RimTalk.DebugWindow.SixtySecondsAgo".Translate());
-        Widgets.Label(new Rect(rect.xMax - 35, rect.y + rect.height - 14f, 35, 14f),
-            "RimTalk.DebugWindow.Now".Translate());
-        GUI.color = Color.white;
+
 
         Rect graphArea = rect.ContractedBy(2f);
 
         foreach (var (data, color, _) in series)
         {
             if (data == null || data.Count < 2) continue;
-            const float verticalPadding = 10f;
-            float graphHeight = graphArea.height - (2 * verticalPadding);
+            const float topPadding = 10f;
+            const float bottomPadding = 0f;
+            float graphHeight = graphArea.height - topPadding - bottomPadding;
             if (graphHeight <= 0) continue;
 
             var points = new List<Vector2>(data.Count);
             for (int i = 0; i < data.Count; i++)
             {
                 float x = graphArea.x + (float)i / (data.Count - 1) * graphArea.width;
-                float y = (graphArea.y + graphArea.height - verticalPadding) - ((float)data[i] / maxVal * graphHeight);
+                float y = (graphArea.y + graphArea.height - bottomPadding) - ((float)data[i] / maxVal * graphHeight);
                 points.Add(new Vector2(x, y));
             }
 
-            for (int i = 0; i < points.Count - 1; i++) Widgets.DrawLine(points[i], points[i + 1], color, 2f);
+            for (int i = 0; i < points.Count - 1; i++) Widgets.DrawLine(points[i], points[i + 1], color, 1f);
 
             // Show token count at the end of each spike (where line drops to 0)
             GUI.color = color;
@@ -1456,20 +1823,21 @@ public class DebugWindow : Window
                     bool isEnd = (i == data.Count - 1) || data[i + 1] <= 0;
                     if (isEnd && i < points.Count)
                     {
-                        Widgets.Label(new Rect(points[i].x - 15, points[i].y - 13f, 50, 14f), Stats.TokenLabels[i].ToString());
+                        float labelY = Mathf.Max(rect.y, points[i].y - 13f);
+                        Widgets.Label(new Rect(points[i].x - 20, labelY, 60, 14f), Stats.TokenLabels[i].ToString());
                     }
                 }
             }
             GUI.color = Color.white;
         }
 
-        var legendRect = new Rect(rect.xMax - 95, rect.y + 3, 90, 18);
+        var legendRect = new Rect(rect.xMax - 110, rect.y + 3, 105, 18);
         Widgets.DrawBoxSolid(legendRect, new Color(0, 0, 0, 0.4f));
         foreach (var (data, color, label) in series)
         {
             Widgets.DrawBoxSolid(new Rect(legendRect.x + 6, legendRect.y + 4, 10, 10), color);
             Text.Font = GameFont.Tiny;
-            Widgets.Label(new Rect(legendRect.x + 20, legendRect.y, 68, 16), label);
+            Widgets.Label(new Rect(legendRect.x + 20, legendRect.y, 80, 16), label);
         }
     }
 
@@ -1535,7 +1903,7 @@ public class DebugWindow : Window
 
         // Row 1: Mod Settings (Button) & Toggle RimTalk (Button)
         var modSettingsRect = new Rect(col1X, y1, colWidth, btnHeight);
-        if (Widgets.ButtonText(modSettingsRect, "RimTalk.DebugWindow.ModSettings".Translate()))
+        if (UIUtil.ButtonText(modSettingsRect, "RimTalk.DebugWindow.ModSettings".Translate()))
             Find.WindowStack.Add(new Dialog_ModSettings(LoadedModManager.GetMod<Settings>()));
 
         var settings = Settings.Get();
@@ -1544,7 +1912,7 @@ public class DebugWindow : Window
         var toggleRect = new Rect(col2X, y1, colWidth, btnHeight);
         var prevColor = GUI.color;
         GUI.color = modEnabled ? new Color(0.6f, 1f, 0.6f) : new Color(0.9f, 0.5f, 0.5f);
-        if (Widgets.ButtonText(toggleRect, toggleLabel))
+        if (UIUtil.ButtonText(toggleRect, toggleLabel))
         {
             settings.IsEnabled = !modEnabled;
         }
@@ -1553,13 +1921,13 @@ public class DebugWindow : Window
 
         // Row 2: Export (Button) & Reset Logs (Button)
         var exportRect = new Rect(col1X, y2, colWidth, btnHeight);
-        if (Widgets.ButtonText(exportRect, "RimTalk.DebugWindow.Export".Translate()))
+        if (UIUtil.ButtonText(exportRect, "RimTalk.DebugWindow.Export".Translate()))
             UIUtil.ExportLogs(_requests);
         TooltipHandler.TipRegion(exportRect, "RimTalk.DebugWindow.ExportTooltip".Translate());
 
         var resetRect = new Rect(col2X, y2, colWidth, btnHeight);
         GUI.color = new Color(1f, 0.4f, 0.4f);
-        if (Widgets.ButtonText(resetRect, "RimTalk.DebugWindow.ResetLogs".Translate()))
+        if (UIUtil.ButtonText(resetRect, "RimTalk.DebugWindow.ResetLogs".Translate()))
             Reset();
         GUI.color = prevColor;
     }
@@ -1716,7 +2084,7 @@ public class DebugWindow : Window
         return "";
     }
 
-    private static List<PromptMessageSegment> ResolvePromptSegments(ApiLog log)
+    internal static List<PromptMessageSegment> ResolvePromptSegments(ApiLog log)
     {
         var targetLog = log;
         if (targetLog != null && targetLog.TalkRequest?.PromptMessageSegments == null &&
@@ -1781,7 +2149,31 @@ public class DebugWindow : Window
             return segments;
         }
 
-        return new List<PromptMessageSegment>();
+        var fallbackSegments = new List<PromptMessageSegment>();
+        var history = UIUtil.ExtractHistory(request);
+        if (!string.IsNullOrEmpty(history))
+        {
+            fallbackSegments.Add(new PromptMessageSegment(BuiltInPromptIds.ChatHistory, BuiltInPromptNames.ChatHistory, Role.User, history) { IsHistory = true });
+        }
+        if (!string.IsNullOrEmpty(request?.Context))
+        {
+            fallbackSegments.Add(new PromptMessageSegment(BuiltInPromptIds.Context, BuiltInPromptNames.Context, Role.System, request.Context));
+        }
+        if (!string.IsNullOrEmpty(request?.Prompt))
+        {
+            fallbackSegments.Add(new PromptMessageSegment(BuiltInPromptIds.DialoguePrompt, BuiltInPromptNames.DialoguePrompt, Role.User, request.Prompt));
+        }
+
+        if (!string.IsNullOrEmpty(imageBase64))
+        {
+            fallbackSegments.Add(new PromptMessageSegment(
+                "attached-image-base64",
+                "RimTalk.DebugWindow.AttachedImageBase64".Translate(),
+                Role.User,
+                $"data:image/jpeg;base64,{imageBase64}"));
+        }
+
+        return fallbackSegments;
     }
 
     private float CalculatePromptSegmentsHeight(List<PromptMessageSegment> segments, float width)
@@ -1813,12 +2205,12 @@ public class DebugWindow : Window
         if (string.IsNullOrWhiteSpace(content))
             return "(empty)";
 
-        var firstLine = content.Replace("\r", "").Split('\n')[0].Trim();
+        var firstLine = content.Trim().Replace("\r", "").Split('\n')[0].Trim();
         firstLine = Regex.Replace(firstLine, @"\s+", " ");
         if (firstLine.Length > 90)
             firstLine = firstLine.Substring(0, 87) + "...";
 
-        return firstLine;
+        return string.IsNullOrEmpty(firstLine) ? "(empty)" : firstLine;
     }
 
     private static string GetRoleLabel(Role role)
@@ -1877,9 +2269,9 @@ public class DebugWindow : Window
         TalkRequest debugRequest = _selectedLog.TalkRequest.Clone();
         
         // If we have modified segments in the UI, apply them to the resent request
-        if (_tempPromptSegments != null && _tempPromptSegments.Count > 0)
+        if (_tempPromptSegments is { Count: > 0 })
         {
-            debugRequest.PromptMessageSegments = _tempPromptSegments.Select(s => new PromptMessageSegment(s.EntryId, s.EntryName, s.Role, s.Content)).ToList();
+            debugRequest.PromptMessageSegments = _tempPromptSegments.Select(s => new PromptMessageSegment(s.EntryId, s.EntryName, s.Role, s.Content) { IsHistory = s.IsHistory }).ToList();
             debugRequest.PromptMessages = debugRequest.PromptMessageSegments.Select(s => (s.Role, s.Content)).ToList();
         }
 
@@ -1922,6 +2314,7 @@ public class DebugWindow : Window
         TalkRequestPool.ClearHistory();
         Stats.Reset();
         ApiHistory.Clear();
+        MemoryHistory.Clear();
         UpdateData();
         Messages.Message("RimTalk.DebugWindow.HistoryCleared".Translate(), MessageTypeDefOf.TaskCompletion, false);
     }

@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using RimTalk.UI;
 using RimWorld;
 using UnityEngine;
 using Verse;
+using Verse.Sound;
 using Logger = RimTalk.Util.Logger;
 
 namespace RimTalk;
@@ -19,7 +21,17 @@ public partial class Settings
     private const string Core = "Core";
     private const string VerseMessage = "Verse.Message";
 
-    private void ScanForArchivableTypes()
+    public static void OpenEventFilterDialog()
+    {
+        var mod = LoadedModManager.GetMod<Settings>();
+        if (mod != null)
+        {
+            mod.ScanForArchivableTypes();
+            Find.WindowStack.Add(new Dialog_EventFilterSettings(mod));
+        }
+    }
+
+    public void ScanForArchivableTypes()
     {
         if (_archivableTypesScanned) return;
 
@@ -140,18 +152,19 @@ public partial class Settings
 
             if (string.IsNullOrEmpty(parentType)) continue;
 
+            string childKey = VerseMessage + ":" + def.defName;
             archivableTypes.Add(parentType);
-            archivableTypes.Add(def.defName);
+            archivableTypes.Add(childKey);
 
             if (!_typeHierarchy.ContainsKey(parentType))
                 _typeHierarchy[parentType] = new List<string>();
 
-            if (!_typeHierarchy[parentType].Contains(def.defName))
-                _typeHierarchy[parentType].Add(def.defName);
+            if (!_typeHierarchy[parentType].Contains(childKey))
+                _typeHierarchy[parentType].Add(childKey);
 
             // Store Source
             string defSource = def.modContentPack?.Name ?? Core;
-            _sourceMap[def.defName] = defSource;
+            _sourceMap[childKey] = defSource;
 
             // Ensure parent has a source
             if (!_sourceMap.ContainsKey(parentType))
@@ -164,19 +177,6 @@ public partial class Settings
                      !_sourceMap.ContainsKey(type) && likelyCoreTypes.Contains(type)))
         {
             _sourceMap[type] = Core;
-        }
-
-        // Deduplicate: If a type appears in Verse.Message, remove it from other parents (e.g. StandardLetter)
-        // This prevents double entries for things like "NegativeEvent" which exist as both LetterDef and MessageTypeDef
-        if (_typeHierarchy.TryGetValue(VerseMessage, out var msgChildren))
-        {
-            var messageKeys = new HashSet<string>(msgChildren);
-            foreach (List<string> children in from parent in _typeHierarchy.Keys.ToList()
-                     where parent != VerseMessage
-                     select _typeHierarchy[parent])
-            {
-                children.RemoveAll(child => messageKeys.Contains(child));
-            }
         }
 
         _discoveredArchivableTypes = archivableTypes.OrderBy(x => x).ToList();
@@ -208,17 +208,19 @@ public partial class Settings
             }
         }
 
+        MigrateArchivableSettings();
+
         Logger.Message(
             $"Discovered {_discoveredArchivableTypes.Count} archivable types across {_typeHierarchy.Count} parent categories.");
     }
 
-    private void DrawEventFilterSettings(Listing_Standard listingStandard)
+    public void DrawEventFilterSettings(Listing_Standard listingStandard)
     {
         RimTalkSettings settings = Get();
 
         // Instructions
         Text.Font = GameFont.Tiny;
-        GUI.color = Color.cyan;
+        GUI.color = SoftCyan;
         var eventFilterTip = "RimTalk.Settings.EventFilterTip".Translate();
         var eventFilterTipRect = listingStandard.GetRect(Text.CalcHeight(eventFilterTip, listingStandard.ColumnWidth));
         Widgets.Label(eventFilterTipRect, eventFilterTip);
@@ -243,15 +245,17 @@ public partial class Settings
 
                 // --- Parent Row ---
                 Rect parentRect = listingStandard.GetRect(24f);
+                Widgets.DrawHighlightIfMouseover(parentRect);
                 float xOffset = 0f;
 
                 // 1. Expander Button
                 if (showExpander)
                 {
-                    Rect expanderRect = new Rect(parentRect.x, parentRect.y, 24f, 24f);
-                    string label = isExpanded ? "[-]" : "[+]";
-                    if (Widgets.ButtonText(expanderRect, label, drawBackground: false))
+                    Rect expanderRect = new Rect(parentRect.x + 3f, parentRect.y + (parentRect.height - 18f) / 2f, 18f, 18f);
+                    Texture2D expanderIcon = isExpanded ? TexButton.Collapse : TexButton.Reveal;
+                    if (Widgets.ButtonImage(expanderRect, expanderIcon))
                     {
+                        SoundDefOf.Click.PlayOneShotOnCamera(null);
                         if (isExpanded) _expandedParents.Remove(parentKey);
                         else _expandedParents.Add(parentKey);
                     }
@@ -264,7 +268,16 @@ public partial class Settings
                 bool newParentEnabled = isParentEnabled;
 
                 Rect checkboxRect = new Rect(parentRect.x + xOffset, parentRect.y, parentRect.width - xOffset, 24f);
-                Widgets.CheckboxLabeled(checkboxRect, parentKey, ref newParentEnabled);
+                if (UIUtil.CheckboxLabeledLeft(checkboxRect, parentKey, ref newParentEnabled))
+                {
+                    settings.EnabledArchivableTypes[parentKey] = newParentEnabled;
+                    // Auto-toggle children
+                    if (hasChildren)
+                    {
+                        foreach (var child in children)
+                            settings.EnabledArchivableTypes[child] = newParentEnabled;
+                    }
+                }
 
                 // Draw Source (Mod Name)
                 if (_sourceMap.TryGetValue(parentKey, out var pSource) &&
@@ -274,21 +287,10 @@ public partial class Settings
                     float nameWidth = Text.CalcSize(parentKey).x;
                     Text.Font = GameFont.Tiny;
                     GUI.color = Color.gray;
-                    Rect sourceRect = new Rect(checkboxRect.x + nameWidth + 10f, checkboxRect.y + 2f, 300f, 24f);
+                    Rect sourceRect = new Rect(checkboxRect.x + 24f + 6f + nameWidth + 10f, checkboxRect.y + 2f, 300f, 24f);
                     Widgets.Label(sourceRect, $"({pSource})");
                     GUI.color = Color.white;
                     Text.Font = GameFont.Small;
-                }
-
-                if (newParentEnabled != isParentEnabled)
-                {
-                    settings.EnabledArchivableTypes[parentKey] = newParentEnabled;
-                    // Auto-toggle children
-                    if (hasChildren)
-                    {
-                        foreach (var child in children)
-                            settings.EnabledArchivableTypes[child] = newParentEnabled;
-                    }
                 }
 
                 // --- Children Rows ---
@@ -302,23 +304,11 @@ public partial class Settings
                     bool isChildEnabled = settings.EnabledArchivableTypes.TryGetValue(childKey, out var cVal) && cVal;
                     bool newChildEnabled = isChildEnabled;
 
-                    Widgets.CheckboxLabeled(childRect, childKey, ref newChildEnabled);
+                    string displayLabel = childKey.StartsWith(VerseMessage + ":")
+                        ? childKey.Substring((VerseMessage + ":").Length)
+                        : childKey;
 
-                    // Draw Source (Mod Name)
-                    if (_sourceMap.TryGetValue(childKey, out var cSource) &&
-                        !string.IsNullOrEmpty(cSource) &&
-                        cSource != Core)
-                    {
-                        float nameWidth = Text.CalcSize(childKey).x;
-                        Text.Font = GameFont.Tiny;
-                        GUI.color = Color.gray;
-                        Rect sourceRect = new Rect(childRect.x + nameWidth + 10f, childRect.y + 2f, 300f, 24f);
-                        Widgets.Label(sourceRect, $"({cSource})");
-                        GUI.color = Color.white;
-                        Text.Font = GameFont.Small;
-                    }
-
-                    if (newChildEnabled != isChildEnabled)
+                    if (UIUtil.CheckboxLabeledLeft(childRect, displayLabel, ref newChildEnabled))
                     {
                         settings.EnabledArchivableTypes[childKey] = newChildEnabled;
                         // If child enabled -> Force Parent Enabled
@@ -326,6 +316,20 @@ public partial class Settings
                         {
                             settings.EnabledArchivableTypes[parentKey] = true;
                         }
+                    }
+
+                    // Draw Source (Mod Name)
+                    if (_sourceMap.TryGetValue(childKey, out var cSource) &&
+                        !string.IsNullOrEmpty(cSource) &&
+                        cSource != Core)
+                    {
+                        float nameWidth = Text.CalcSize(displayLabel).x;
+                        Text.Font = GameFont.Tiny;
+                        GUI.color = Color.gray;
+                        Rect sourceRect = new Rect(childRect.x + 24f + 6f + nameWidth + 10f, childRect.y + 2f, 300f, 24f);
+                        Widgets.Label(sourceRect, $"({cSource})");
+                        GUI.color = Color.white;
+                        Text.Font = GameFont.Small;
                     }
                 }
             }
@@ -342,24 +346,53 @@ public partial class Settings
             Text.Font = GameFont.Small;
         }
 
-        listingStandard.Gap(6f);
+    }
 
-        // Reset to defaults button
-        Rect resetButtonRect = listingStandard.GetRect(30f);
-        if (Widgets.ButtonText(resetButtonRect, "RimTalk.Settings.ResetToDefault".Translate()))
+    public void ResetEventFilterToDefault()
+    {
+        RimTalkSettings settings = Get();
+        var messageTypes = new HashSet<string> { VerseMessage };
+        if (_typeHierarchy.TryGetValue(VerseMessage, out var messageChildren))
         {
-            // Identify all Message-related types (Parent + Children) to disable them by default
-            var messageTypes = new HashSet<string> { VerseMessage };
-            if (_typeHierarchy.TryGetValue(VerseMessage, out var messageChildren))
-            {
-                foreach (var child in messageChildren) messageTypes.Add(child);
-            }
+            foreach (var child in messageChildren) messageTypes.Add(child);
+        }
 
-            foreach (var typeName in _discoveredArchivableTypes)
+        foreach (var typeName in _discoveredArchivableTypes)
+        {
+            bool defaultEnabled = !messageTypes.Contains(typeName);
+            settings.EnabledArchivableTypes[typeName] = defaultEnabled;
+        }
+    }
+
+    public static void MigrateArchivableSettings()
+    {
+        var settings = Get();
+        if (settings?.EnabledArchivableTypes == null) return;
+
+        bool modified = false;
+        foreach (var def in DefDatabase<MessageTypeDef>.AllDefs)
+        {
+            string oldKey = def.defName;
+            string newKey = VerseMessage + ":" + def.defName;
+            if (settings.EnabledArchivableTypes.TryGetValue(oldKey, out var oldVal))
             {
-                bool defaultEnabled = !messageTypes.Contains(typeName);
-                settings.EnabledArchivableTypes[typeName] = defaultEnabled;
+                if (!settings.EnabledArchivableTypes.ContainsKey(newKey))
+                {
+                    settings.EnabledArchivableTypes[newKey] = oldVal;
+                    modified = true;
+                }
+
+                if (DefDatabase<LetterDef>.GetNamedSilentFail(oldKey) != null && !oldVal)
+                {
+                    settings.EnabledArchivableTypes[oldKey] = true;
+                    modified = true;
+                }
             }
+        }
+
+        if (modified)
+        {
+            settings.Write();
         }
     }
 }

@@ -65,6 +65,7 @@
     <RimTalk.Persona.Animal>Animal: Simple, émotif et guidé par l'instinct. Phrases courtes et sensorielles.</RimTalk.Persona.Animal>
     <RimTalk.Persona.Mech>Robot: Diagnostic concis, réponse efficace. Ton calme et axé sur les données.</RimTalk.Persona.Mech>
     <RimTalk.Persona.NonHuman>Non-humain: Cryptique, métaphorique et déformant la réalité. S'exprime par visions, échos et images étranges.</RimTalk.Persona.NonHuman>
+    <RimTalk.Persona.Baby>Bébé: Simple, émotif et sensoriel. Gazouille, rit et pleure ; réagit à la faim, au réconfort et aux visages familiers.</RimTalk.Persona.Baby>
 
     <!-- RimTalk_Toggle.cs -->
     <RimTalk.Toggle.Tooltip>Basculer la fenêtre de superposition\n\nMaj+clic pour les paramètres du mod\nCtrl+clic pour la fenêtre de débogage</RimTalk.Toggle.Tooltip>
@@ -74,6 +75,9 @@
     <RimTalk.Settings.PromptSetting>Paramètre du prompt</RimTalk.Settings.PromptSetting>
     <RimTalk.Settings.ShowVariables>Référence</RimTalk.Settings.ShowVariables>
     <RimTalk.Settings.ResetConfirm>Êtes-vous sûr de vouloir réinitialiser tous les préréglages de prompt et les données de référence par défaut ? Cela ne peut pas être annulé.</RimTalk.Settings.ResetConfirm>
+    <RimTalk.Settings.PromptPreset.ResetConfirmWithMods>Êtes-vous sûr de vouloir réinitialiser les préréglages de prompt par défaut ? Vous pouvez également réinitialiser avec les valeurs par défaut des mods actifs incluses.</RimTalk.Settings.PromptPreset.ResetConfirmWithMods>
+    <RimTalk.Settings.PromptPreset.ResetWithMods>Réinitialiser avec les mods</RimTalk.Settings.PromptPreset.ResetWithMods>
+    <RimTalk.Settings.PromptPreset.ResetVanillaDefault>Défaut RimTalk</RimTalk.Settings.PromptPreset.ResetVanillaDefault>
     
     <!-- Settings_PromptPreset.cs -->
     <RimTalk.Settings.PromptPreset.SearchPlaceholder>Rechercher des objets, propriétés, fonctions...</RimTalk.Settings.PromptPreset.SearchPlaceholder>
@@ -98,6 +102,7 @@
     <RimTalk.Settings.PromptPreset.Depth>Profondeur :</RimTalk.Settings.PromptPreset.Depth>
     <RimTalk.Settings.PromptPreset.ModVariables>Variables Mod</RimTalk.Settings.PromptPreset.ModVariables>
     <RimTalk.Settings.PromptPreset.VariablePreviewHint>Affiche tous les objets, propriétés et fonctions disponibles. Valeurs en jeu affichées si disponibles.</RimTalk.Settings.PromptPreset.VariablePreviewHint>
+    <RimTalk.Settings.PromptPreset.HistoryDisabledWarning>L'historique des dialogues (Chat History) est désactivé. Les colons ne se souviendront pas des échanges récents à moins qu'un autre addon ne fournisse l'historique.</RimTalk.Settings.PromptPreset.HistoryDisabledWarning>
     
     <!-- Import/Export -->
     <RimTalk.Settings.PromptPreset.Export>Exporter</RimTalk.Settings.PromptPreset.Export>
@@ -244,20 +249,20 @@ Conseils Cruciaux :
     <RimTalk.Settings.BubbleModeTooltip>Sélectionnez comment les bulles de dialogue sont affichées au-dessus des colons.</RimTalk.Settings.BubbleModeTooltip>
     <RimTalk.Settings.BubbleDuration>Durée d'affichage des bulles</RimTalk.Settings.BubbleDuration>
 
-    <RimTalk.Settings.AIInstructionPrompt>Prompt d'instruction de l'IA (Modèle : {0})</RimTalk.Settings.AIInstructionPrompt>
+    <RimTalk.Settings.AIInstructionPrompt>Prompt d'instruction de l'IA</RimTalk.Settings.AIInstructionPrompt>
     <RimTalk.Settings.AutoIncludedTip>Astuce : Les détails du pion (traits, relations, race, âge, etc.) sont inclus automatiquement. Rédigez des instructions génériques qui fonctionnent pour tous les personnages et colonies.</RimTalk.Settings.AutoIncludedTip>
     <RimTalk.Settings.RateLimitWarning>Avertissement : Des prompts plus longs consommeront plus de jetons et atteindront plus rapidement les limites de taux.</RimTalk.Settings.RateLimitWarning>
-    <RimTalk.Settings.TokenInfo>Actuel : ~{0} jetons | Limite recommandée : {1} jetons</RimTalk.Settings.TokenInfo>
+    <RimTalk.Settings.TokenInfo>Jetons : {0}</RimTalk.Settings.TokenInfo>
     <RimTalk.Settings.ResetToDefault>Réinitialiser par défaut</RimTalk.Settings.ResetToDefault>
     <RimTalk.Settings.EventFilterTip>Astuce : Seuls les types d'événements cochés seront traités par l'IA. Décochez les types auxquels vous ne voulez pas que l'IA réponde.</RimTalk.Settings.EventFilterTip>
     <RimTalk.Settings.NoArchivableTypes>Aucun type archivable trouvé. Essayez de commencer une partie puis de rescanner.</RimTalk.Settings.NoArchivableTypes>
 
     <!-- Dialog_PersonaEditor.cs -->
-    <RimTalk.PersonaEditor.Title>Style de conversation de {0}</RimTalk.PersonaEditor.Title>
-    <RimTalk.PersonaEditor.Instruct>Décrivez comment ce colon parle et se comporte. Soyez bref (moins de 300 caractères) pour de meilleurs résultats.</RimTalk.PersonaEditor.Instruct>
+    <RimTalk.PersonaEditor.Title>Persona de {0}</RimTalk.PersonaEditor.Title>
+    <RimTalk.PersonaEditor.Instruct>Décrivez comment ce colon parle et se comporte. Soyez bref pour de meilleurs résultats.</RimTalk.PersonaEditor.Instruct>
     <RimTalk.PersonaEditor.Characters>Caractères : {0}</RimTalk.PersonaEditor.Characters>
     <RimTalk.PersonaEditor.Save>Enregistrer</RimTalk.PersonaEditor.Save>
-    <RimTalk.PersonaEditor.Updated>Style de conversation mis à jour pour {0}</RimTalk.PersonaEditor.Updated>
+    <RimTalk.PersonaEditor.Updated>Persona mis à jour pour {0}</RimTalk.PersonaEditor.Updated>
     <RimTalk.PersonaEditor.TalkFrequencyDesc>Contrôle la fréquence à laquelle ce colon initie des conversations. Même au réglage le plus bas, il répondra toujours lorsque les autres lui parleront. Cela n'affecte que la fréquence d'initiation de la conversation.</RimTalk.PersonaEditor.TalkFrequencyDesc>
     <RimTalk.PersonaEditor.Chattiness>Fréquence des dialogues</RimTalk.PersonaEditor.Chattiness>
     <RimTalk.PersonaEditor.Quiet>Silencieux</RimTalk.PersonaEditor.Quiet>
@@ -266,15 +271,94 @@ Conseils Cruciaux :
     <RimTalk.PersonaEditor.SmartGen>Génération Intelligente</RimTalk.PersonaEditor.SmartGen>
     <RimTalk.PersonaEditor.RollGen>Génération Aléatoire</RimTalk.PersonaEditor.RollGen>
     <RimTalk.PersonaEditor.Clear>Effacer</RimTalk.PersonaEditor.Clear>
+    <RimTalk.PersonaEditor.TabPersonality>Personnalité</RimTalk.PersonaEditor.TabPersonality>
+    <RimTalk.PersonaEditor.TabMemories>Souvenirs</RimTalk.PersonaEditor.TabMemories>
+    <RimTalk.Memory.ConsolidateNow>Élaguer les souvenirs estompés</RimTalk.Memory.ConsolidateNow>
+    <RimTalk.Memory.ClearAll>Tout effacer</RimTalk.Memory.ClearAll>
+    <RimTalk.Memory.ClearAllConfirm>Êtes-vous sûr de vouloir effacer tous les souvenirs de {0} ?</RimTalk.Memory.ClearAllConfirm>
+    <RimTalk.Memory.ConsolidationStarted>Souvenirs estompés élagués pour {0}.</RimTalk.Memory.ConsolidationStarted>
+    <RimTalk.Memory.Cleared>Tous les souvenirs de {0} ont été effacés.</RimTalk.Memory.Cleared>
+    <RimTalk.Memory.ActiveOrdersNone>[Ordres actifs] : Aucun (Aucune directive de joueur active)</RimTalk.Memory.ActiveOrdersNone>
+    <RimTalk.Memory.ActiveOrdersHeader>ORDRES DU JOUEUR ACTIFS :</RimTalk.Memory.ActiveOrdersHeader>
+    <RimTalk.Memory.CoreTraumaPrefix>[Traumatisme central] : </RimTalk.Memory.CoreTraumaPrefix>
+    <RimTalk.Memory.CoreTraumaNone>[Traumatisme central] : Aucun (Mentalement stable)</RimTalk.Memory.CoreTraumaNone>
+    <RimTalk.Memory.TableTarget>Cible</RimTalk.Memory.TableTarget>
+    <RimTalk.Memory.TableEvent>Événement</RimTalk.Memory.TableEvent>
+    <RimTalk.Memory.TableTime>Moment</RimTalk.Memory.TableTime>
+    <RimTalk.Memory.TableWeight>Poids</RimTalk.Memory.TableWeight>
+    <RimTalk.Memory.WeightTip>Poids actuel : {0} (Base : {1})</RimTalk.Memory.WeightTip>
+    <RimTalk.Memory.WeightMilestoneTip>Jalon permanent (Poids : {0})</RimTalk.Memory.WeightMilestoneTip>
+    <RimTalk.Memory.TimeTip>Survenu : {0} (il y a {1})</RimTalk.Memory.TimeTip>
+    <RimTalk.Memory.TimeJustNow>À l'instant</RimTalk.Memory.TimeJustNow>
+    <RimTalk.Memory.TableNote>Description</RimTalk.Memory.TableNote>
+    <RimTalk.Memory.NoMemories>Aucun souvenir enregistré pour le moment.</RimTalk.Memory.NoMemories>
+    <RimTalk.Memory.TargetPlayer>Joueur</RimTalk.Memory.TargetPlayer>
+    <RimTalk.Memory.TargetSelfAll>Soi-même</RimTalk.Memory.TargetSelfAll>
+    <RimTalk.Memory.ColonySeniority>Ancienneté dans la colonie : {0} an(s)</RimTalk.Memory.ColonySeniority>
+    <RimTalk.Memory.HelpTitle>Souvenirs et directives</RimTalk.Memory.HelpTitle>
+    <RimTalk.Memory.HelpDesc>Il s'agit d'une fonctionnalité expérimentale qui sera améliorée grâce à vos retours.
+
+• Directives du joueur (Jusqu'à 5)
+- Enregistrement : Donner des ordres ou attribuer des rôles en dialogue incite l'IA à les résumer en directives clés pour toutes les conversations.
+- Modification/Suppression : Mettez-les à jour ou retirez-les par le dialogue, ou supprimez-les directement dans cette fenêtre avec le bouton [×].
+(Le respect d'instructions complexes ou négatives dépend des capacités du modèle d'IA)
+
+• Traumatismes psychologiques (Jusqu'à 3)
+Les chocs graves comme la perte d'un être cher teintent toutes les conversations jusqu'à guérison.
+
+• Souvenirs interpersonnels (Jusqu'à 4 : 2 marquants + 2 récents)
+Rappelle jusqu'à 2 événements historiques les plus marquants et 2 événements les plus récents vécus avec cette personne.
+
+• Jalons (★)
+Événements relationnels permanents (ex: mariage, sauvetage) qui enrichissent naturellement leurs conversations.</RimTalk.Memory.HelpDesc>
+    <RimTalk.Memory.DisabledWarning>La mémoire des colons est actuellement désactivée dans les paramètres.\nVous pouvez l'activer dans Paramètres du mod > Filtres de contexte.</RimTalk.Memory.DisabledWarning>
+
+    <!-- Episodic Memory Notes -->
+    <RimTalk.Memory.AttackedBy>attaqué(e) par {0}</RimTalk.Memory.AttackedBy>
+    <RimTalk.Memory.InsultedBy>insulté(e) par {0}</RimTalk.Memory.InsultedBy>
+    <RimTalk.Memory.SlightedBy>snobé(e) par {0}</RimTalk.Memory.SlightedBy>
+    <RimTalk.Memory.IHarmed>a attaqué {0}</RimTalk.Memory.IHarmed>
+    <RimTalk.Memory.IRescued>a secouru {0}</RimTalk.Memory.IRescued>
+    <RimTalk.Memory.IBotchedSurgery>a raté l'opération sur {0}</RimTalk.Memory.IBotchedSurgery>
+    <RimTalk.Memory.IRecruited>a recruté {0}</RimTalk.Memory.IRecruited>
+    <RimTalk.Memory.IInsulted>a insulté {0}</RimTalk.Memory.IInsulted>
+    <RimTalk.Memory.SavedLife>{0} a sauvé sa vie alors qu'il/elle était aux portes de la mort</RimTalk.Memory.SavedLife>
+    <RimTalk.Memory.RescuedBy>secouru(e) par {0}</RimTalk.Memory.RescuedBy>
+    <RimTalk.Memory.IExecuted>a exécuté {0}</RimTalk.Memory.IExecuted>
+    <RimTalk.Memory.ExecutedPrisoner>a exécuté le prisonnier {0}</RimTalk.Memory.ExecutedPrisoner>
+    <RimTalk.Memory.IKilled>a tué {0}</RimTalk.Memory.IKilled>
+    <RimTalk.Memory.KilledColonistWithoutRemorse>a tué son camarade colon {0} sans remords</RimTalk.Memory.KilledColonistWithoutRemorse>
+    <RimTalk.Memory.KilledColonistGuilt>culpabilité obsédante d'avoir tué son camarade colon {0}</RimTalk.Memory.KilledColonistGuilt>
+    <RimTalk.Memory.WitnessMurderCallous>{0} a froidement achevé son camarade colon {1}</RimTalk.Memory.WitnessMurderCallous>
+    <RimTalk.Memory.WitnessMurderHorrified>{0} est horrifié(e) après avoir tué son camarade colon {1}</RimTalk.Memory.WitnessMurderHorrified>
+    <RimTalk.Memory.KilledInBattle>a tué {0} au combat</RimTalk.Memory.KilledInBattle>
+    <RimTalk.Memory.MurderedFellowColonist>a assassiné son camarade colon {0}</RimTalk.Memory.MurderedFellowColonist>
+    <RimTalk.Memory.BecameLovers>sont devenus amants</RimTalk.Memory.BecameLovers>
+    <RimTalk.Memory.DidSurgery>a été opéré(e) par lui/elle</RimTalk.Memory.DidSurgery>
+    <RimTalk.Memory.CapturedMe>capturé(e) et emprisonné(e)</RimTalk.Memory.CapturedMe>
+    <RimTalk.Memory.ICaptured>l'a capturé(e) et arrêté(e)</RimTalk.Memory.ICaptured>
+    <RimTalk.Memory.SocialFight>a eu une violente bagarre à mains nues</RimTalk.Memory.SocialFight>
+    <RimTalk.Memory.Marriage>mariés lors d'une cérémonie joyeuse</RimTalk.Memory.Marriage>
+    <RimTalk.Memory.TendedMe>a soigné ses blessures</RimTalk.Memory.TendedMe>
+    <RimTalk.Memory.TendedPatient>a soigné ses blessures</RimTalk.Memory.TendedPatient>
+    <RimTalk.Memory.TraumaWithTarget>chagrin et traumatisme causés par {0} ({1})</RimTalk.Memory.TraumaWithTarget>
+    <RimTalk.Memory.TraumaWithoutTarget>chagrin et traumatisme causés par {0}</RimTalk.Memory.TraumaWithoutTarget>
+    <RimTalk.Memory.GaveBirthWith>a accueilli un enfant au monde avec {0}</RimTalk.Memory.GaveBirthWith>
+    <RimTalk.Memory.ChildBorn>a accueilli son enfant {0} au monde</RimTalk.Memory.ChildBorn>
+    <RimTalk.Memory.BornToMother>mis(e) au monde par sa mère {0}</RimTalk.Memory.BornToMother>
+    <RimTalk.Memory.BornToFather>mis(e) au monde par son père {0}</RimTalk.Memory.BornToFather>
+    <RimTalk.Memory.Divorced>a divorcé de {0}</RimTalk.Memory.Divorced>
+    <RimTalk.Memory.BrokeUpWith>a rompu avec {0}</RimTalk.Memory.BrokeUpWith>
+    <RimTalk.Memory.MurderedMyKin>a assassiné son être cher {0}</RimTalk.Memory.MurderedMyKin>
 
     <!-- Settings_Api.cs -->
     <RimTalk.Settings.QuickSetupSubtitle>Choisissez un mode de connexion IA pour activer les dialogues.</RimTalk.Settings.QuickSetupSubtitle>
-    <RimTalk.Settings.QuickSetupButton>Paramètres rapides</RimTalk.Settings.QuickSetupButton>
-    <RimTalk.Settings.QuickSetupTooltip>Revenir à la vue des paramètres rapides simplifiée.</RimTalk.Settings.QuickSetupTooltip>
-    <RimTalk.Settings.AllSettingsButton>Tous les paramètres</RimTalk.Settings.AllSettingsButton>
+    <RimTalk.Settings.QuickSetupButton>Paramètres simples</RimTalk.Settings.QuickSetupButton>
+    <RimTalk.Settings.QuickSetupTooltip>Revenir à la vue simplifiée des paramètres.</RimTalk.Settings.QuickSetupTooltip>
+    <RimTalk.Settings.AllSettingsButton>Paramètres détaillés</RimTalk.Settings.AllSettingsButton>
     <RimTalk.Settings.AllSettingsTooltip>Afficher tous les onglets de configuration (gameplay, préréglages de prompt, filtres de contexte, etc.).</RimTalk.Settings.AllSettingsTooltip>
     <RimTalk.Settings.CustomConfigActiveNotice>* La configuration d'API personnalisée est actuellement active.</RimTalk.Settings.CustomConfigActiveNotice>
-    <RimTalk.Settings.ModeSelectorHeader>Choisir le mode de connexion IA (un seul choix) :</RimTalk.Settings.ModeSelectorHeader>
+    <RimTalk.Settings.ModeSelectorHeader>Choisir le mode de connexion IA :</RimTalk.Settings.ModeSelectorHeader>
     <RimTalk.Settings.ModeGoogleTitle>Google Gemini</RimTalk.Settings.ModeGoogleTitle>
     <RimTalk.Settings.ModeGoogleDesc>Clé API Web gratuite</RimTalk.Settings.ModeGoogleDesc>
     <RimTalk.Settings.ModePlayer2Title>Player2</RimTalk.Settings.ModePlayer2Title>
@@ -297,7 +381,7 @@ Conseils Cruciaux :
     <RimTalk.Settings.Player2AuthReopen>Rouvrir la page d'approbation</RimTalk.Settings.Player2AuthReopen>
     <RimTalk.Settings.Player2AuthCancel>Annuler l'autorisation</RimTalk.Settings.Player2AuthCancel>
     <RimTalk.Settings.GoogleApiKeyLabel>Clé API Google AI :</RimTalk.Settings.GoogleApiKeyLabel>
-    <RimTalk.Settings.GoogleApiKeyDesc>Utilise le modèle gratuit gemma-4-26b-a4b. Pour d'autres modèles ou fournisseurs, utilisez les Paramètres Avancés.</RimTalk.Settings.GoogleApiKeyDesc>
+    <RimTalk.Settings.GoogleApiKeyDesc>Utilise le modèle gratuit {0}. Pour d'autres modèles ou fournisseurs, utilisez les Paramètres Avancés.</RimTalk.Settings.GoogleApiKeyDesc>
     <RimTalk.Settings.GetFreeApiKeyButton>Obtenir une clé API gratuite</RimTalk.Settings.GetFreeApiKeyButton>
     <RimTalk.Settings.SwitchToAdvancedSettings>Passer aux paramètres avancés</RimTalk.Settings.SwitchToAdvancedSettings>
     <RimTalk.Settings.SwitchToSimpleSettings>Passer aux paramètres simples</RimTalk.Settings.SwitchToSimpleSettings>
@@ -379,17 +463,20 @@ Conseils Cruciaux :
     <RimTalk.Settings.Preset.Custom.Desc>Configuration définie par l’utilisateur</RimTalk.Settings.Preset.Custom.Desc>
 
     <RimTalk.Settings.ContextOptions>Options de contexte</RimTalk.Settings.ContextOptions>
-    <RimTalk.Settings.EnableContextOptimization>Activer l’optimisation du contexte</RimTalk.Settings.EnableContextOptimization>
-    <RimTalk.Settings.EnableContextOptimization.Tooltip>Optimise le contexte afin de réduire l’utilisation des tokens tout en conservant les informations essentielles.\nNote : cela peut réduire la qualité du dialogue généré.</RimTalk.Settings.EnableContextOptimization.Tooltip>
+    <RimTalk.Settings.EnableContextOptimization>Compression du contexte</RimTalk.Settings.EnableContextOptimization>
+    <RimTalk.Settings.EnableContextOptimization.Tooltip>Utile lorsque la génération de dialogue est trop lente sur des modèles locaux.\nOmet ou simplifie certaines informations de contexte pour accélérer les réponses, mais peut réduire la qualité du dialogue.</RimTalk.Settings.EnableContextOptimization.Tooltip>
     <RimTalk.Settings.ConversationHistoryCount>Nombre de sessions de conversation à inclure</RimTalk.Settings.ConversationHistoryCount>
     <RimTalk.Settings.ConversationHistoryCount.Tooltip>Chaque session contient plusieurs échanges, ce qui peut augmenter considérablement le nombre de tokens</RimTalk.Settings.ConversationHistoryCount.Tooltip>
+    <RimTalk.Settings.UseCompactHistory>Utiliser l'historique condensé</RimTalk.Settings.UseCompactHistory>
+    <RimTalk.Settings.UseCompactHistory.Tooltip>Transmet l'historique sous forme de bloc unique. Préserve mieux le contexte et économise des tokens, mais les modèles légers peuvent répéter des répliques. Désactivez pour revenir au mode multi-tours classique.</RimTalk.Settings.UseCompactHistory.Tooltip>
     <RimTalk.Settings.MaxPawnContextCount>Nombre maximum de colons à inclure</RimTalk.Settings.MaxPawnContextCount>
     <RimTalk.Settings.MaxPawnContextCount.Tooltip>Définit le nombre maximum de colons pouvant participer à une conversation</RimTalk.Settings.MaxPawnContextCount.Tooltip>
     <RimTalk.Settings.MaxEventsCount>Nombre maximum d'événements à inclure</RimTalk.Settings.MaxEventsCount>
     <RimTalk.Settings.MaxEventsCount.Tooltip>Contrôle le nombre maximal d'événements actifs et de lettres de notification à inclure dans le contexte</RimTalk.Settings.MaxEventsCount.Tooltip>
-    <RimTalk.Settings.IncludeEvents>Activer les événements de la colonie</RimTalk.Settings.IncludeEvents>
+    <RimTalk.Settings.IncludeEvents>Événements de la colonie</RimTalk.Settings.IncludeEvents>
     <RimTalk.Settings.IncludeEvents.Tooltip>Contrôle si les événements actifs et les lettres de notification sont inclus dans le contexte, et définit le nombre maximal</RimTalk.Settings.IncludeEvents.Tooltip>
-    <RimTalk.Settings.ExternalEventModDetected>Mod d'extension d'événements externe détecté (RimTalk Event+). Les événements intégrés sont désactivés par défaut pour éviter le contexte en double. Cochez cette case pour les activer si vous souhaitez utiliser les deux.</RimTalk.Settings.ExternalEventModDetected>
+    <RimTalk.Settings.ExternalEventModDetected>{0} détecté (le contenu peut être dupliqué si les deux sont activés)</RimTalk.Settings.ExternalEventModDetected>
+    <RimTalk.Settings.ExternalMemoryModDetected>{0} détecté (le contenu peut être dupliqué si les deux sont activés)</RimTalk.Settings.ExternalMemoryModDetected>
 
     <RimTalk.Settings.PawnInfo>Infos sur le pion</RimTalk.Settings.PawnInfo>
     <RimTalk.Settings.IncludeRace>La race</RimTalk.Settings.IncludeRace>
@@ -404,6 +491,7 @@ Conseils Cruciaux :
     <RimTalk.Settings.IncludePrisonerSlaveStatus>La résistance et la volonté des prisonniers/esclaves</RimTalk.Settings.IncludePrisonerSlaveStatus>
     <RimTalk.Settings.IncludeRelations>Les relations</RimTalk.Settings.IncludeRelations>
     <RimTalk.Settings.IncludeEquipment>L'équipement</RimTalk.Settings.IncludeEquipment>
+    <RimTalk.Settings.MindAndSocial>Psychologie et relations</RimTalk.Settings.MindAndSocial>
     <RimTalk.Settings.Environment>Environnement</RimTalk.Settings.Environment>
     <RimTalk.Settings.IncludeTime>L'heure</RimTalk.Settings.IncludeTime>
     <RimTalk.Settings.IncludeDate>La date</RimTalk.Settings.IncludeDate>
@@ -416,12 +504,15 @@ Conseils Cruciaux :
     <RimTalk.Settings.IncludeSurroundings>Les objets à proximité</RimTalk.Settings.IncludeSurroundings>
     <RimTalk.Settings.IncludeWealth>La richesse de la colonie</RimTalk.Settings.IncludeWealth>
     <RimTalk.Settings.IncludeTopicKeywords>Générer de nouveaux sujets de conversation</RimTalk.Settings.IncludeTopicKeywords>
-    <RimTalk.Settings.IncludeTopicKeywords.Tooltip>Lorsque les colons n'ont pas d'événements ou de contexte spécifique à aborder, génère aléatoirement un nouveau sujet de conversation avec 50 % de chances.</RimTalk.Settings.IncludeTopicKeywords.Tooltip>
+    <RimTalk.Settings.IncludeTopicKeywords.Tooltip>Lorsque les colons n'ont pas d'événements ou de contexte spécifique à aborder, peut générer aléatoirement un nouveau sujet de conversation.</RimTalk.Settings.IncludeTopicKeywords.Tooltip>
+    <RimTalk.Settings.EnableMemory>Souvenirs et directives</RimTalk.Settings.EnableMemory>
+    <RimTalk.Settings.EnableMemory.Tooltip>Mémorise les événements interpersonnels clés tels que les sauvetages, conflits et pertes, ainsi que les ordres directs du joueur pour façonner l'attitude des colons dans les dialogues. Fonctionne à partir des données du jeu sans coût d'API supplémentaire ni impact sur les performances. Les souvenirs s'estompent progressivement avec le temps.</RimTalk.Settings.EnableMemory.Tooltip>
 
     <!-- DebugWindow.cs -->
     <RimTalk.DebugWindow.ViewByTime>Par temps</RimTalk.DebugWindow.ViewByTime>
     <RimTalk.DebugWindow.ViewByPawn>Par personnage</RimTalk.DebugWindow.ViewByPawn>
     <RimTalk.DebugWindow.ViewTalkRequests>Demandes</RimTalk.DebugWindow.ViewTalkRequests>
+    <RimTalk.DebugWindow.ViewMemoryLog>Souvenirs et directives</RimTalk.DebugWindow.ViewMemoryLog>
     <RimTalk.DebugWindow.FilterPawn>Nom</RimTalk.DebugWindow.FilterPawn>
     <RimTalk.DebugWindow.Search>Recherche</RimTalk.DebugWindow.Search>
     <RimTalk.DebugWindow.State>État</RimTalk.DebugWindow.State>
@@ -502,6 +593,24 @@ Conseils Cruciaux :
     <RimTalk.DebugWindow.HeaderElapsed>Écoulé</RimTalk.DebugWindow.HeaderElapsed>
     <RimTalk.DebugWindow.HeaderInitiator>Émetteur</RimTalk.DebugWindow.HeaderInitiator>
     <RimTalk.DebugWindow.HeaderRecipient>Destinataire</RimTalk.DebugWindow.HeaderRecipient>
+    <RimTalk.DebugWindow.HeaderTick>Tick</RimTalk.DebugWindow.HeaderTick>
+    <RimTalk.DebugWindow.HeaderTarget>Cible</RimTalk.DebugWindow.HeaderTarget>
+    <RimTalk.DebugWindow.HeaderChangeType>Changement</RimTalk.DebugWindow.HeaderChangeType>
+    <RimTalk.DebugWindow.HeaderWeight>Poids</RimTalk.DebugWindow.HeaderWeight>
+    <RimTalk.DebugWindow.HeaderEventNote>Événement et contenu</RimTalk.DebugWindow.HeaderEventNote>
+    <RimTalk.DebugWindow.HeaderEventKey>Clé d'événement</RimTalk.DebugWindow.HeaderEventKey>
+    <RimTalk.DebugWindow.HeaderNoteContent>Contenu souvenir / directive</RimTalk.DebugWindow.HeaderNoteContent>
+    <RimTalk.DebugWindow.HeaderReasonContext>Raison du déclencheur / Contexte</RimTalk.DebugWindow.HeaderReasonContext>
+    <RimTalk.DebugWindow.MemoryTypeAdded>Ajouté</RimTalk.DebugWindow.MemoryTypeAdded>
+    <RimTalk.DebugWindow.MemoryTypeUpdated>Mis à jour</RimTalk.DebugWindow.MemoryTypeUpdated>
+    <RimTalk.DebugWindow.MemoryTypeDirectiveSet>Directive définie</RimTalk.DebugWindow.MemoryTypeDirectiveSet>
+    <RimTalk.DebugWindow.MemoryTypeDirectiveRemoved>Directive supprimée</RimTalk.DebugWindow.MemoryTypeDirectiveRemoved>
+    <RimTalk.DebugWindow.MemoryTypeCoreTraumaAdded>Traumatisme</RimTalk.DebugWindow.MemoryTypeCoreTraumaAdded>
+    <RimTalk.DebugWindow.MemoryTypePurgedDecay>Purgé (estompé)</RimTalk.DebugWindow.MemoryTypePurgedDecay>
+    <RimTalk.DebugWindow.MemoryTypeEvicted>Évincé (limite)</RimTalk.DebugWindow.MemoryTypeEvicted>
+    <RimTalk.DebugWindow.MemoryTypeConsolidated>Élagué</RimTalk.DebugWindow.MemoryTypeConsolidated>
+    <RimTalk.DebugWindow.MemoryTypeCleared>Effacé</RimTalk.DebugWindow.MemoryTypeCleared>
+    <RimTalk.DebugWindow.MemoryTypeMilestoneRecorded>Jalon</RimTalk.DebugWindow.MemoryTypeMilestoneRecorded>
     <RimTalk.DebugWindow.HistoryCleared>Historique des conversations effacé.</RimTalk.DebugWindow.HistoryCleared>
     <RimTalk.DebugWindow.FormatEntry>Entrée</RimTalk.DebugWindow.FormatEntry>
     <RimTalk.DebugWindow.FormatRole>Rôle</RimTalk.DebugWindow.FormatRole>
@@ -593,15 +702,16 @@ Conseils Cruciaux :
     <RimTalk.PlayerSettings.NewPresetName>Nouveau préréglage</RimTalk.PlayerSettings.NewPresetName>
     <RimTalk.PlayerSettings.PresetTitleHeader>Titre / Nom du menu</RimTalk.PlayerSettings.PresetTitleHeader>
     <RimTalk.PlayerSettings.PresetTitlePlaceholder>Titre du préréglage...</RimTalk.PlayerSettings.PresetTitlePlaceholder>
+    <RimTalk.PlayerSettings.PresetPromptPlaceholder>Contenu du dialogue / Invite...</RimTalk.PlayerSettings.PresetPromptPlaceholder>
 
     <!-- VersionSwitcher.cs -->
     <RimTalk.VersionSwitcher.RollbackLabel>Rétablir une version précédente</RimTalk.VersionSwitcher.RollbackLabel>
-    <RimTalk.VersionSwitcher.SwitchToPrevious>Copier la version précédente (Mod local)</RimTalk.VersionSwitcher.SwitchToPrevious>
-    <RimTalk.VersionSwitcher.SwitchToSpecificVer>Copier {0} (Mod local)</RimTalk.VersionSwitcher.SwitchToSpecificVer>
+    <RimTalk.VersionSwitcher.SwitchToPrevious>Installer la version précédente (Mod local)</RimTalk.VersionSwitcher.SwitchToPrevious>
+    <RimTalk.VersionSwitcher.SwitchToSpecificVer>Installer {0} (Mod local)</RimTalk.VersionSwitcher.SwitchToSpecificVer>
     <RimTalk.VersionSwitcher.NoPreviousDllFound>Fichiers de la version précédente introuvables (LastVersion/).</RimTalk.VersionSwitcher.NoPreviousDllFound>
     <RimTalk.VersionSwitcher.ConfirmRollbackTitle>Rétablir la version {0}</RimTalk.VersionSwitcher.ConfirmRollbackTitle>
-    <RimTalk.VersionSwitcher.ConfirmRollbackPrompt>Copier RimTalk ({0}) dans le dossier local 'RimWorld/Mods/RimTalk' ?</RimTalk.VersionSwitcher.ConfirmRollbackPrompt>
-    <RimTalk.VersionSwitcher.ProceedRollback>Copier</RimTalk.VersionSwitcher.ProceedRollback>
+    <RimTalk.VersionSwitcher.ConfirmRollbackPrompt>Copier dans le dossier local 'RimWorld/Mods/RimTalk' ?\n\nCela crée une copie locale qui ne sera pas écrasée par les mises à jour Steam.</RimTalk.VersionSwitcher.ConfirmRollbackPrompt>
+    <RimTalk.VersionSwitcher.ProceedRollback>Confirmer</RimTalk.VersionSwitcher.ProceedRollback>
     <RimTalk.VersionSwitcher.RestartRequiredTitle>Copié</RimTalk.VersionSwitcher.RestartRequiredTitle>
     <RimTalk.VersionSwitcher.LocalModCreatedPrompt>Copié dans 'RimWorld/Mods/RimTalk'.\n\nDésactivez la version Steam, activez le mod local et redémarrez RimWorld.</RimTalk.VersionSwitcher.LocalModCreatedPrompt>
 
@@ -636,4 +746,7 @@ Conseils Cruciaux :
     <RimTalk.BubbleSettings.BorderNormal>Normale</RimTalk.BubbleSettings.BorderNormal>
     <RimTalk.BubbleSettings.BorderThick>Épaisse</RimTalk.BubbleSettings.BorderThick>
     <RimTalk.BubbleSettings.OpenWindow>Ouvrir les paramètres...</RimTalk.BubbleSettings.OpenWindow>
+
+    <!-- Context / Pawn Status -->
+    <RimTalk.PawnUtil.Self>soi-même</RimTalk.PawnUtil.Self>
 </LanguageData>

@@ -11,6 +11,7 @@ using RimTalk.Util;
 using RimWorld;
 using UnityEngine;
 using Verse;
+using Logger = RimTalk.Util.Logger;
 
 namespace RimTalk.Service;
 
@@ -18,6 +19,9 @@ public static class ContextBuilder
 {
     private static readonly MethodInfo VisibleHediffsMethod =
         AccessTools.Method(typeof(HealthCardUtility), "VisibleHediffs");
+
+    private static readonly Func<Pawn, bool, IEnumerable<Hediff>> VisibleHediffsFunc =
+        VisibleHediffsMethod != null ? AccessTools.MethodDelegate<Func<Pawn, bool, IEnumerable<Hediff>>>(VisibleHediffsMethod) : null;
 
     public static string GetRaceContext(Pawn pawn, PromptService.InfoLevel infoLevel)
     {
@@ -34,23 +38,18 @@ public static class ContextBuilder
             pawn.genes?.GenesListForReading == null)
             return null;
 
-        var notableGenes = pawn.genes.GenesListForReading
-            .Where(g => g.def.biostatMet != 0 || g.def.biostatCpx != 0)
-            .Select(g => g.def.LabelCap);
+        var matchingGenes = pawn.genes.GenesListForReading
+            .Where(g => g.def.biostatMet != 0 || g.def.biostatCpx != 0);
 
-        // For Short level, limit to top 3 most impactful genes
-        if (infoLevel == PromptService.InfoLevel.Short)
-        {
-            notableGenes = pawn.genes.GenesListForReading
-                .Where(g => g.def.biostatMet != 0 || g.def.biostatCpx != 0)
+        IEnumerable<TaggedString> notableGenes = infoLevel == PromptService.InfoLevel.Short
+            ? matchingGenes
                 .OrderByDescending(g => Mathf.Abs(g.def.biostatMet) + g.def.biostatCpx)
                 .Take(3)
-                .Select(g => g.def.LabelCap);
-        }
+                .Select(g => g.def.LabelCap)
+            : matchingGenes.Select(g => g.def.LabelCap);
 
-        if (notableGenes.Any())
-            return $"Notable Genes: {string.Join(", ", notableGenes)}";
-        return null;
+        var list = notableGenes.ToList();
+        return list.Count > 0 ? $"Notable Genes: {string.Join(", ", list)}" : null;
     }
 
     public static string GetAllGenesContext(Pawn pawn, PromptService.InfoLevel infoLevel)
@@ -116,11 +115,12 @@ public static class ContextBuilder
 
         var sb = new StringBuilder();
 
-        // For Short level, only include childhood title
+        // For Short level, include most defining backstory title (adulthood preferred, childhood fallback)
         if (infoLevel == PromptService.InfoLevel.Short)
         {
-            if (pawn.story?.Adulthood != null)
-                return $"Background: {pawn.story.Adulthood.TitleCapFor(pawn.gender)}";
+            var backstory = pawn.story?.Adulthood ?? pawn.story?.Childhood;
+            if (backstory != null)
+                return $"Background: {backstory.TitleCapFor(pawn.gender)}";
         }
         else
         {
@@ -212,7 +212,9 @@ public static class ContextBuilder
         if (!contextSettings.IncludeHealth)
             return null;
 
-        var hediffs = (IEnumerable<Hediff>)VisibleHediffsMethod.Invoke(null, [pawn, false]);
+        var hediffs = VisibleHediffsFunc != null
+            ? VisibleHediffsFunc(pawn, false)
+            : (IEnumerable<Hediff>)VisibleHediffsMethod?.Invoke(null, [pawn, false]);
         if (hediffs == null) return null;
 
         // For Short level, only show top 3 most recent/severe hediffs
@@ -281,7 +283,7 @@ public static class ContextBuilder
         var m = pawn.needs?.mood;
         if (m?.MoodString != null)
         {
-            string mood = pawn.Downed && !pawn.IsBaby()
+            string mood = pawn.IsDownedInPain()
                 ? "Critical: Downed (in pain/distress)"
                 : pawn.InMentalState
                     ? $"Mood: {pawn.MentalState?.InspectLine} (in mental break)"
@@ -418,7 +420,8 @@ public static class ContextBuilder
         {
             var speaker = talkRequest.Recipient ?? (pawns.Count > 1 ? pawns[1] : null);
             var speaker1Name = speaker != null ? PromptService.GetUniqueName(speaker, pawns) : "Someone";
-            var speakerRole = speaker != null ? $"({speaker.GetRole()})" : "";
+            var role = speaker?.GetRole();
+            var speakerRole = !string.IsNullOrEmpty(role) ? $"({role})" : "";
             topicSb.Append($"{speaker1Name}{speakerRole} said to {shortName}: '{talkRequest.Prompt}'. ");
 
             var mode = Settings.Get().PlayerDialogueMode;
@@ -439,12 +442,17 @@ public static class ContextBuilder
                     intentSb.Append($"Generate dialogue starting after this. Do not generate any further lines for {speaker1Name}");
             }
 
+            if (Settings.Get()?.Context?.EnableMemory ?? false)
+                intentSb.Append($". If an order or rule was given, update \"directives\" for {shortName} only; otherwise omit \"directives\"");
+
             sb.Append(topicSb).Append(intentSb);
         }
         else
         {
             bool inCombat = mainPawn.IsInCombat() || mainPawn.GetMapRole() == MapRole.Invading;
             bool hasActiveHostiles = inCombat && mainPawn.HasActiveHostiles();
+            Pawn partner = pawns.Count > 1 ? (pawns[0] == mainPawn ? pawns[1] : pawns[0]) : null;
+            bool isStrangerEncounter = partner != null && IsStrangerEncounter(mainPawn, partner, pawns);
 
             if (inCombat)
             {
@@ -456,6 +464,11 @@ public static class ContextBuilder
                 if (mainPawn.CurJobDef == JobDefOf.Flee || mainPawn.CurJobDef == JobDefOf.FleeAndCower)
                 {
                     intentSb.Append($"{shortName} dialogue short, panicked/retreating tone (fleeing)");
+                }
+                else if (mainPawn.IsBrawlingWithAlly(out var brawlTarget))
+                {
+                    string targetName = brawlTarget?.LabelShortCap ?? "opponent";
+                    intentSb.Append($"{shortName} dialogue short, angry/heated tone (brawling with {targetName})");
                 }
                 else if (!hasActiveHostiles)
                 {
@@ -472,35 +485,123 @@ public static class ContextBuilder
             {
                 intentSb.Append(talkRequest.Prompt != null
                     ? $"{shortName} start monologue (only {shortName} speaks)"
-                    : $"{shortName} continue monologue (only {shortName} speaks)");
+                    : $"{shortName} monologue (only {shortName} speaks)");
             }
             else
             {
-                intentSb.Append(talkRequest.Prompt != null
+                intentSb.Append(talkRequest.Prompt != null || isStrangerEncounter
                     ? $"{shortName} start conversation, taking turns"
-                    : $"{shortName} continue, taking turns");
+                    : $"{shortName} continue conversation, taking turns");
             }
 
-            if (mainPawn.InMentalState)
-                topicSb.Append("be distressed (mental break)");
-            else if (mainPawn.Downed && !mainPawn.IsBaby())
-                topicSb.Append("(downed in pain. Short, strained dialogue)");
-            else if (talkRequest.Prompt != null)
-                topicSb.Append(talkRequest.Prompt);
-            else if (talkRequest.TalkType != TalkType.Urgent && Settings.Get().Context.IncludeTopicKeywords)
+            if (!inCombat && mainPawn.IsCaringOrCustodialJob(out var careTarget) && mainPawn.HasRelationalFriction(careTarget))
             {
-                string topicKeywords = TopicService.TryGetTopic(mainPawn);
+                string targetName = PromptService.GetUniqueName(careTarget, pawns);
+                intentSb.Append($"\nTone toward {targetName}: Stern, reluctant, or coldly professional. Performing care/duty out of colony necessity or survival—NOT out of affection, forgiveness, or tearful worry.");
+            }
+            else if (!inCombat && partner != null)
+            {
+                if (mainPawn.HasRelationalFriction(partner, out bool isSevere))
+                {
+                    string partnerName = PromptService.GetUniqueName(partner, pawns);
+                    if (isSevere)
+                    {
+                        intentSb.Append($"\nTone toward {partnerName}: Bitter, resentful, or coldly hostile. Harboring intense grief or bitter grudges—do NOT act warm, friendly, or comforting.");
+                    }
+                    else
+                    {
+                        intentSb.Append($"\nTone toward {partnerName}: Curt, guarded, or distant. Annoyed or reluctant—do NOT act warm, playful, or affectionate.");
+                    }
+                }
+                else if (isStrangerEncounter)
+                {
+                    string partnerName = PromptService.GetUniqueName(partner, pawns);
+                    intentSb.Append($"\nTone toward {partnerName}: First encounter—brief greeting, introduction, or cautious inquiry; reserved, not familiar.");
+                }
+            }
+
+            string mentalBreakDirective = null;
+            if (mainPawn.InMentalState)
+            {
+                string mentalLabel = mainPawn.MentalStateDef?.LabelCap ?? "distressed";
+                string baseDirective = $"in mental break ({mentalLabel}): express raw distress or unstable emotions, vary emotional focus, avoid repeating exact phrases";
+                
+                string topicKeywords = TopicService.ResolveMentalBreakTopicForRequest(talkRequest, mainPawn);
                 if (topicKeywords != null)
-                    topicSb.Append($"Topic keywords: {topicKeywords}.");
+                {
+                    topicSb.Append($"in mental break ({mentalLabel})\nObsessive thought / delusion: {topicKeywords}.");
+                    mentalBreakDirective = $"{baseDirective}\nObsessive thought / delusion: {topicKeywords} (weave chaotically with mental break).";
+                }
+                else
+                {
+                    topicSb.Append($"in mental break ({mentalLabel})");
+                    mentalBreakDirective = baseDirective;
+                }
+            }
+            else if (mainPawn.IsDownedInPain())
+            {
+                topicSb.Append("(downed in pain. Short, strained dialogue)");
+            }
+            else if (talkRequest != null && talkRequest.Prompt != null)
+            {
+                topicSb.Append(talkRequest.Prompt);
+            }
+
+            bool isMonologue = pawns.Count <= 1 || (talkRequest != null && talkRequest.IsMonologue);
+            string promptTopicDirective = null;
+            string generalTopicKeywords = TopicService.ResolveTopicForRequest(talkRequest, mainPawn, isStrangerEncounter, isMonologue);
+
+            if (generalTopicKeywords != null)
+            {
+                if (topicSb.Length > 0)
+                    topicSb.Append("\n");
+                topicSb.Append($"Topic: {generalTopicKeywords}");
+                promptTopicDirective = $"(Topic angle: {generalTopicKeywords} — explore naturally, never force verbatim)";
+            }
+
+            if (promptTopicDirective != null)
+            {
+                sb.Append(promptTopicDirective).Append("\n");
             }
 
             sb.Append(intentSb);
-            if (topicSb.Length > 0)
+            if (mentalBreakDirective != null)
+            {
+                sb.Append("\n").Append(mentalBreakDirective);
+            }
+            else if (talkRequest.Prompt != null)
+            {
+                sb.Append("\n").Append(talkRequest.Prompt);
+            }
+            else if (topicSb.Length > 0 && promptTopicDirective == null)
+            {
                 sb.Append("\n").Append(topicSb);
+            }
         }
 
         intent = intentSb.ToString();
         topic = topicSb.ToString();
+    }
+
+    private static void AppendInjectedPawnSections(StringBuilder sb, Pawn pawn, ContextCategory category, ContextHookRegistry.InjectPosition position)
+    {
+        if (!ContextHookRegistry.HasAnyInjections) return;
+        foreach (var (name, pos, _, provider) in ContextHookRegistry.GetInjectedSectionsAt(category))
+        {
+            if (pos == position && provider is Func<Pawn, string> p)
+            {
+                try
+                {
+                    var text = p(pawn);
+                    if (!string.IsNullOrEmpty(text))
+                        sb.Append("\n").Append(text);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Warning($"Error in injected pawn section '{name}' for category '{category}': {ex.Message}");
+                }
+            }
+        }
     }
 
     public static void BuildLocationContext(StringBuilder sb, ContextSettings contextSettings, Pawn mainPawn)
@@ -518,10 +619,12 @@ public static class ContextBuilder
             ? $"{locationStatus};{temperature}C"
             : $"{locationStatus};{temperature}C;{roomRole}";
         
+        AppendInjectedPawnSections(sb, mainPawn, ContextCategories.Pawn.Location, ContextHookRegistry.InjectPosition.Before);
         // Apply pawn hooks (location is now a pawn property)
         locationInfo = ContextHookRegistry.ApplyPawnHooks(
             ContextCategories.Pawn.Location, mainPawn, locationInfo);
         sb.Append($"\nLocation: {locationInfo}");
+        AppendInjectedPawnSections(sb, mainPawn, ContextCategories.Pawn.Location, ContextHookRegistry.InjectPosition.After);
     }
 
     public static void BuildEnvironmentContext(StringBuilder sb, ContextSettings contextSettings, Pawn mainPawn)
@@ -531,9 +634,11 @@ public static class ContextBuilder
             var terrain = mainPawn.Position.GetTerrain(mainPawn.Map);
             if (terrain != null)
             {
+                AppendInjectedPawnSections(sb, mainPawn, ContextCategories.Pawn.Terrain, ContextHookRegistry.InjectPosition.Before);
                 var value = ContextHookRegistry.ApplyPawnHooks(
                     ContextCategories.Pawn.Terrain, mainPawn, terrain.LabelCap);
                 sb.Append($"\nTerrain: {value}");
+                AppendInjectedPawnSections(sb, mainPawn, ContextCategories.Pawn.Terrain, ContextHookRegistry.InjectPosition.After);
             }
         }
 
@@ -542,19 +647,23 @@ public static class ContextBuilder
             var beautyLabel = Describer.Beauty(mainPawn);
             if (!string.IsNullOrEmpty(beautyLabel))
             {
+                AppendInjectedPawnSections(sb, mainPawn, ContextCategories.Pawn.Beauty, ContextHookRegistry.InjectPosition.Before);
                 var value = ContextHookRegistry.ApplyPawnHooks(
                     ContextCategories.Pawn.Beauty, mainPawn, beautyLabel);
                 sb.Append($"\nSurroundings beauty: {value}");
+                AppendInjectedPawnSections(sb, mainPawn, ContextCategories.Pawn.Beauty, ContextHookRegistry.InjectPosition.After);
             }
         }
 
         var pawnRoom = mainPawn.GetRoom();
         if (contextSettings.IncludeCleanliness && pawnRoom is { PsychologicallyOutdoors: false })
         {
+            AppendInjectedPawnSections(sb, mainPawn, ContextCategories.Pawn.Cleanliness, ContextHookRegistry.InjectPosition.Before);
             var value = ContextHookRegistry.ApplyPawnHooks(
                 ContextCategories.Pawn.Cleanliness, mainPawn,
                 Describer.Cleanliness(pawnRoom.GetStat(RoomStatDefOf.Cleanliness)));
             sb.Append($"\nCleanliness: {value}");
+            AppendInjectedPawnSections(sb, mainPawn, ContextCategories.Pawn.Cleanliness, ContextHookRegistry.InjectPosition.After);
         }
 
         if (contextSettings.IncludeSurroundings)
@@ -562,10 +671,12 @@ public static class ContextBuilder
             var surroundingsText = ContextHelper.CollectNearbyContextText(mainPawn, 3);
             if (!string.IsNullOrEmpty(surroundingsText))
             {
+                AppendInjectedPawnSections(sb, mainPawn, ContextCategories.Pawn.Surroundings, ContextHookRegistry.InjectPosition.Before);
                 var value = ContextHookRegistry.ApplyPawnHooks(
                     ContextCategories.Pawn.Surroundings, mainPawn, surroundingsText);
                 sb.Append("\nSurroundings:\n");
                 sb.Append(value);
+                AppendInjectedPawnSections(sb, mainPawn, ContextCategories.Pawn.Surroundings, ContextHookRegistry.InjectPosition.After);
             }
         }
     }
@@ -579,5 +690,26 @@ public static class ContextBuilder
     public static string Sanitize(string text, Pawn pawn = null)
     {
         return CommonUtil.Sanitize(text, pawn);
+    }
+
+    private static bool IsStrangerEncounter(Pawn mainPawn, Pawn partner, List<Pawn> pawns)
+    {
+        if (mainPawn == null || partner == null) return false;
+        try
+        {
+            if (!RelationsService.IsOutsiderOrStranger(mainPawn, partner)) return false;
+            if (mainPawn.GetMostImportantRelation(partner) != null) return false;
+            if (mainPawn.relations != null && mainPawn.relations.OpinionOf(partner) >= 20f) return false;
+            if (TalkHistory.GetHistoryCount(mainPawn) > 0 && TalkHistory.GetHistoryCount(partner) > 0)
+            {
+                var history = TalkHistory.GetMessageHistory(pawns, simplified: true);
+                if (history != null && history.Count > 0) return false;
+            }
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
     }
 }

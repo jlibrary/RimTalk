@@ -14,6 +14,7 @@
         <OutputPath>$(GameVersion)/Assemblies</OutputPath>
         <ModFolderName>RimTalk</ModFolderName>
         <LangVersion>default</LangVersion>
+        <DefaultItemExcludes>$(DefaultItemExcludes);Tests/**</DefaultItemExcludes>
     </PropertyGroup>
 
     <!-- Define version constants based on GameVersion -->

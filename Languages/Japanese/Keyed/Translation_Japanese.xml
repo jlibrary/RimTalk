@@ -64,6 +64,7 @@
     <RimTalk.Persona.Animal>動物: 単純で感情的、本能優先。短く感覚的な文を使用。</RimTalk.Persona.Animal>
     <RimTalk.Persona.Mech>ロボット: 簡潔な診断、効率的な応答。冷静でデータ重視の口調。</RimTalk.Persona.Mech>
     <RimTalk.Persona.NonHuman>非人間: 神秘的で比喩的、現実を歪める。幻視、木霊、奇怪なイメージで語る。</RimTalk.Persona.NonHuman>
+    <RimTalk.Persona.Baby>赤ちゃん: 単純で感覚優先。喃語、笑い声、泣き声で反応し、空腹や心地よさ、見慣れた顔に反応する。</RimTalk.Persona.Baby>
 
     <!-- RimTalk_Toggle.cs -->
     <RimTalk.Toggle.Tooltip>オーバーレイウィンドウの切り替え\n\nShift+クリックでMod設定\nCtrl+クリックでデバッグウィンドウ</RimTalk.Toggle.Tooltip>
@@ -73,6 +74,9 @@
     <RimTalk.Settings.PromptSetting>プロンプト設定</RimTalk.Settings.PromptSetting>
     <RimTalk.Settings.ShowVariables>リファレンス</RimTalk.Settings.ShowVariables>
     <RimTalk.Settings.ResetConfirm>すべてのプロンプトプリセットとリファレンスデータをデフォルトにリセットしてもよろしいですか？この操作は取り消せません。</RimTalk.Settings.ResetConfirm>
+    <RimTalk.Settings.PromptPreset.ResetConfirmWithMods>プロンプトプリセットを初期値にリセットしてもよろしいですか？有効なMODの初期設定を含めてリセットすることもできます。</RimTalk.Settings.PromptPreset.ResetConfirmWithMods>
+    <RimTalk.Settings.PromptPreset.ResetWithMods>MODを含む初期値</RimTalk.Settings.PromptPreset.ResetWithMods>
+    <RimTalk.Settings.PromptPreset.ResetVanillaDefault>RimTalkデフォルト</RimTalk.Settings.PromptPreset.ResetVanillaDefault>
     
     <!-- Settings_PromptPreset.cs -->
     <RimTalk.Settings.PromptPreset.SearchPlaceholder>オブジェクト、プロパティ、関数を検索...</RimTalk.Settings.PromptPreset.SearchPlaceholder>
@@ -97,6 +101,7 @@
     <RimTalk.Settings.PromptPreset.Depth>深度：</RimTalk.Settings.PromptPreset.Depth>
     <RimTalk.Settings.PromptPreset.ModVariables>Mod変数</RimTalk.Settings.PromptPreset.ModVariables>
     <RimTalk.Settings.PromptPreset.VariablePreviewHint>利用可能なすべてのオブジェクト、プロパティ、関数を表示します。利用可能な場合はゲーム内の値が表示されます。</RimTalk.Settings.PromptPreset.VariablePreviewHint>
+    <RimTalk.Settings.PromptPreset.HistoryDisabledWarning>会話履歴（Chat History）が無効になっています。履歴を提供する別のアドオンを使用していない限り、入植者は直前の会話を記憶しません。</RimTalk.Settings.PromptPreset.HistoryDisabledWarning>
     
     <!-- Import/Export -->
     <RimTalk.Settings.PromptPreset.Export>エクスポート</RimTalk.Settings.PromptPreset.Export>
@@ -243,20 +248,20 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Settings.BubbleModeTooltip>ポーンの頭上に会話の吹き出しを表示する方法を選択します。</RimTalk.Settings.BubbleModeTooltip>
     <RimTalk.Settings.BubbleDuration>吹き出しの表示時間</RimTalk.Settings.BubbleDuration>
 
-    <RimTalk.Settings.AIInstructionPrompt>AIへの指示プロンプト（モデル：{0}）</RimTalk.Settings.AIInstructionPrompt>
+    <RimTalk.Settings.AIInstructionPrompt>AIへの指示プロンプト</RimTalk.Settings.AIInstructionPrompt>
     <RimTalk.Settings.AutoIncludedTip>ヒント：ポーンの詳細（特性、関係、種族、年齢など）は自動的に含まれます。すべてのキャラクターやコロニーで機能する一般的な指示を作成してください。</RimTalk.Settings.AutoIncludedTip>
     <RimTalk.Settings.RateLimitWarning>警告：プロンプトが長いほど、より多くのトークンを消費し、レート制限に早く達します。</RimTalk.Settings.RateLimitWarning>
-    <RimTalk.Settings.TokenInfo>現在：約{0}トークン | 推奨上限：{1}トークン</RimTalk.Settings.TokenInfo>
+    <RimTalk.Settings.TokenInfo>トークン数: {0}</RimTalk.Settings.TokenInfo>
     <RimTalk.Settings.ResetToDefault>デフォルトにリセット</RimTalk.Settings.ResetToDefault>
     <RimTalk.Settings.EventFilterTip>ヒント：チェックされたイベントタイプのみがAIによって処理されます。AIに応答させたくないタイプはチェックを外してください。</RimTalk.Settings.EventFilterTip>
     <RimTalk.Settings.NoArchivableTypes>アーカイブ可能なタイプが見つかりません。ゲームを開始してから再スキャンしてみてください。</RimTalk.Settings.NoArchivableTypes>
 
     <!-- Dialog_PersonaEditor.cs -->
-    <RimTalk.PersonaEditor.Title>{0}の会話スタイル</RimTalk.PersonaEditor.Title>
-    <RimTalk.PersonaEditor.Instruct>この入植者がどのように話し、行動するかを記述してください。最良の結果を得るために、簡潔に（300文字未満で）記述してください。</RimTalk.PersonaEditor.Instruct>
-    <RimTalk.PersonaEditor.Characters>文字数：{0}</RimTalk.PersonaEditor.Characters>
+    <RimTalk.PersonaEditor.Title>{0}のペルソナ</RimTalk.PersonaEditor.Title>
+    <RimTalk.PersonaEditor.Instruct>この入植者がどのように話し、行動するかを記述してください。最良の結果を得るには簡潔にしてください。</RimTalk.PersonaEditor.Instruct>
+    <RimTalk.PersonaEditor.Characters>文字数: {0}</RimTalk.PersonaEditor.Characters>
     <RimTalk.PersonaEditor.Save>保存</RimTalk.PersonaEditor.Save>
-    <RimTalk.PersonaEditor.Updated>{0}の会話スタイルを更新しました</RimTalk.PersonaEditor.Updated>
+    <RimTalk.PersonaEditor.Updated>{0}のペルソナが更新されました。</RimTalk.PersonaEditor.Updated>
     <RimTalk.PersonaEditor.TalkFrequencyDesc>この入植者が会話を始める頻度を制御します。最も低い設定でも、他の人から話しかけられた場合は返事をします。これは会話の開始頻度にのみ影響します。</RimTalk.PersonaEditor.TalkFrequencyDesc>
     <RimTalk.PersonaEditor.Chattiness>会話頻度</RimTalk.PersonaEditor.Chattiness>
     <RimTalk.PersonaEditor.Quiet>無口</RimTalk.PersonaEditor.Quiet>
@@ -265,15 +270,94 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.PersonaEditor.SmartGen>スマート生成</RimTalk.PersonaEditor.SmartGen>
     <RimTalk.PersonaEditor.RollGen>ランダム生成</RimTalk.PersonaEditor.RollGen>
     <RimTalk.PersonaEditor.Clear>クリア</RimTalk.PersonaEditor.Clear>
+    <RimTalk.PersonaEditor.TabPersonality>性格</RimTalk.PersonaEditor.TabPersonality>
+    <RimTalk.PersonaEditor.TabMemories>記憶と指針</RimTalk.PersonaEditor.TabMemories>
+    <RimTalk.Memory.ConsolidateNow>薄れた記憶の整理</RimTalk.Memory.ConsolidateNow>
+    <RimTalk.Memory.ClearAll>全て消去</RimTalk.Memory.ClearAll>
+    <RimTalk.Memory.ClearAllConfirm>{0} の記憶をすべて消去してもよろしいですか？</RimTalk.Memory.ClearAllConfirm>
+    <RimTalk.Memory.ConsolidationStarted>{0} の薄れた記憶を整理しました。</RimTalk.Memory.ConsolidationStarted>
+    <RimTalk.Memory.Cleared>{0} のすべての記憶を消去しました。</RimTalk.Memory.Cleared>
+    <RimTalk.Memory.ActiveOrdersNone>[有効な指針]: なし (プレイヤーの指示なし)</RimTalk.Memory.ActiveOrdersNone>
+    <RimTalk.Memory.ActiveOrdersHeader>有効なプレイヤー指針:</RimTalk.Memory.ActiveOrdersHeader>
+    <RimTalk.Memory.CoreTraumaPrefix>[トラウマ]: </RimTalk.Memory.CoreTraumaPrefix>
+    <RimTalk.Memory.CoreTraumaNone>[トラウマ]: なし (精神的に安定)</RimTalk.Memory.CoreTraumaNone>
+    <RimTalk.Memory.TableTarget>対象</RimTalk.Memory.TableTarget>
+    <RimTalk.Memory.TableEvent>イベント</RimTalk.Memory.TableEvent>
+    <RimTalk.Memory.TableTime>発生</RimTalk.Memory.TableTime>
+    <RimTalk.Memory.TableWeight>重み</RimTalk.Memory.TableWeight>
+    <RimTalk.Memory.WeightTip>現在の重み: {0} (基本値: {1})</RimTalk.Memory.WeightTip>
+    <RimTalk.Memory.WeightMilestoneTip>恒久マイルストーン (重み: {0})</RimTalk.Memory.WeightMilestoneTip>
+    <RimTalk.Memory.TimeTip>発生: {0} ({1}前)</RimTalk.Memory.TimeTip>
+    <RimTalk.Memory.TimeJustNow>たった今</RimTalk.Memory.TimeJustNow>
+    <RimTalk.Memory.TableNote>内容</RimTalk.Memory.TableNote>
+    <RimTalk.Memory.NoMemories>記録された記憶はまだありません。</RimTalk.Memory.NoMemories>
+    <RimTalk.Memory.TargetPlayer>プレイヤー</RimTalk.Memory.TargetPlayer>
+    <RimTalk.Memory.TargetSelfAll>自身</RimTalk.Memory.TargetSelfAll>
+    <RimTalk.Memory.ColonySeniority>居住年数: {0}年</RimTalk.Memory.ColonySeniority>
+    <RimTalk.Memory.HelpTitle>記憶と指針</RimTalk.Memory.HelpTitle>
+    <RimTalk.Memory.HelpDesc>実験的な機能であり、フィードバックに基づいて改善される予定です。
+
+• プレイヤー指針 (最大5件)
+- 登録: 会話中に命令や役割を与えると、AIが要約しすべての会話における行動指針として登録します。
+- 変更/削除: 新たな会話で更新・撤回するか、この画面の [×] ボタンで即座に削除できます。
+(複雑な指示や否定的な指示の遵守率は、AIモデルの性能に依存します)
+
+• トラウマ (最大3件)
+大切な人の死など強い衝撃を受けた際、立ち直るまで会話全体に影響を与えます。
+
+• 対人記憶 (重大2件 + 直近2件、最大4件)
+その相手と共有した最も印象深い出来事2件と、最も直近に起きた出来事2件を会話で思い起こします。
+
+• マイルストーン (★)
+結婚や救助など永続的に残る特別な関係で、二人の会話に自然に反映されます。</RimTalk.Memory.HelpDesc>
+    <RimTalk.Memory.DisabledWarning>現在、ポーンの記憶機能は設定で無効になっています。\nMod設定 > コンテキストフィルターで有効にできます。</RimTalk.Memory.DisabledWarning>
+
+    <!-- Episodic Memory Notes -->
+    <RimTalk.Memory.AttackedBy>{0} に攻撃された</RimTalk.Memory.AttackedBy>
+    <RimTalk.Memory.InsultedBy>{0} に侮辱された</RimTalk.Memory.InsultedBy>
+    <RimTalk.Memory.SlightedBy>{0} に軽視された</RimTalk.Memory.SlightedBy>
+    <RimTalk.Memory.IHarmed>{0} を攻撃した</RimTalk.Memory.IHarmed>
+    <RimTalk.Memory.IRescued>{0} を救助した</RimTalk.Memory.IRescued>
+    <RimTalk.Memory.IBotchedSurgery>{0} の手術を失敗した</RimTalk.Memory.IBotchedSurgery>
+    <RimTalk.Memory.IRecruited>{0} を勧誘した</RimTalk.Memory.IRecruited>
+    <RimTalk.Memory.IInsulted>{0} を侮辱した</RimTalk.Memory.IInsulted>
+    <RimTalk.Memory.SavedLife>{0} に瀕死のところを命を救われた</RimTalk.Memory.SavedLife>
+    <RimTalk.Memory.RescuedBy>{0} に救助された</RimTalk.Memory.RescuedBy>
+    <RimTalk.Memory.IExecuted>{0} を処刑した</RimTalk.Memory.IExecuted>
+    <RimTalk.Memory.ExecutedPrisoner>囚人 {0} を処刑した</RimTalk.Memory.ExecutedPrisoner>
+    <RimTalk.Memory.IKilled>{0} を殺害した</RimTalk.Memory.IKilled>
+    <RimTalk.Memory.KilledColonistWithoutRemorse>罪悪感なく同胞の {0} を殺害した</RimTalk.Memory.KilledColonistWithoutRemorse>
+    <RimTalk.Memory.KilledColonistGuilt>同胞の {0} を殺害した罪悪感に苛まれている</RimTalk.Memory.KilledColonistGuilt>
+    <RimTalk.Memory.WitnessMurderCallous>{0} は同胞の {1} を冷酷にとどめを刺した</RimTalk.Memory.WitnessMurderCallous>
+    <RimTalk.Memory.WitnessMurderHorrified>{0} は同胞の {1} を殺害して激しい衝撃と罪悪感に苛まれている</RimTalk.Memory.WitnessMurderHorrified>
+    <RimTalk.Memory.KilledInBattle>戦闘で {0} を倒した</RimTalk.Memory.KilledInBattle>
+    <RimTalk.Memory.MurderedFellowColonist>同胞の {0} を殺害した</RimTalk.Memory.MurderedFellowColonist>
+    <RimTalk.Memory.BecameLovers>恋人になった</RimTalk.Memory.BecameLovers>
+    <RimTalk.Memory.DidSurgery>手術を受けた</RimTalk.Memory.DidSurgery>
+    <RimTalk.Memory.CapturedMe>拘束され投獄された</RimTalk.Memory.CapturedMe>
+    <RimTalk.Memory.ICaptured>捕らえて拘束した</RimTalk.Memory.ICaptured>
+    <RimTalk.Memory.SocialFight>激しい殴り合いの喧嘩をした</RimTalk.Memory.SocialFight>
+    <RimTalk.Memory.Marriage>祝福に包まれて結婚した</RimTalk.Memory.Marriage>
+    <RimTalk.Memory.TendedMe>傷の手当てを受けた</RimTalk.Memory.TendedMe>
+    <RimTalk.Memory.TendedPatient>負傷の手当てをした</RimTalk.Memory.TendedPatient>
+    <RimTalk.Memory.TraumaWithTarget>{0} による悲痛とトラウマ ({1})</RimTalk.Memory.TraumaWithTarget>
+    <RimTalk.Memory.TraumaWithoutTarget>{0} による悲痛とトラウマ</RimTalk.Memory.TraumaWithoutTarget>
+    <RimTalk.Memory.GaveBirthWith>{0} と共に新しい命を授かった</RimTalk.Memory.GaveBirthWith>
+    <RimTalk.Memory.ChildBorn>我が子 {0} をこの世に迎えた</RimTalk.Memory.ChildBorn>
+    <RimTalk.Memory.BornToMother>母 {0} のもとに産声をあげた</RimTalk.Memory.BornToMother>
+    <RimTalk.Memory.BornToFather>父 {0} のもとに生まれた</RimTalk.Memory.BornToFather>
+    <RimTalk.Memory.Divorced>{0} と離婚した</RimTalk.Memory.Divorced>
+    <RimTalk.Memory.BrokeUpWith>{0} と別れた</RimTalk.Memory.BrokeUpWith>
+    <RimTalk.Memory.MurderedMyKin>大切な {0} を殺害した仇</RimTalk.Memory.MurderedMyKin>
 
     <!-- Settings_Api.cs -->
     <RimTalk.Settings.QuickSetupSubtitle>AI接続方式を選択すると、入植者の会話がすぐに有効になります。</RimTalk.Settings.QuickSetupSubtitle>
-    <RimTalk.Settings.QuickSetupButton>クイック設定</RimTalk.Settings.QuickSetupButton>
-    <RimTalk.Settings.QuickSetupTooltip>シンプルなクイック設定画面に戻ります。</RimTalk.Settings.QuickSetupTooltip>
-    <RimTalk.Settings.AllSettingsButton>全体設定</RimTalk.Settings.AllSettingsButton>
+    <RimTalk.Settings.QuickSetupButton>簡易設定</RimTalk.Settings.QuickSetupButton>
+    <RimTalk.Settings.QuickSetupTooltip>シンプルな簡易設定画面に戻ります。</RimTalk.Settings.QuickSetupTooltip>
+    <RimTalk.Settings.AllSettingsButton>詳細設定</RimTalk.Settings.AllSettingsButton>
     <RimTalk.Settings.AllSettingsTooltip>ゲームプレイ設定、プロンプトプリセット、コンテキストフィルターなどすべての設定タブを表示します。</RimTalk.Settings.AllSettingsTooltip>
     <RimTalk.Settings.CustomConfigActiveNotice>※ 現在カスタムAPIを使用中です。</RimTalk.Settings.CustomConfigActiveNotice>
-    <RimTalk.Settings.ModeSelectorHeader>AI接続方式の選択（1つのみ選択）：</RimTalk.Settings.ModeSelectorHeader>
+    <RimTalk.Settings.ModeSelectorHeader>AI接続方式の選択：</RimTalk.Settings.ModeSelectorHeader>
     <RimTalk.Settings.ModeGoogleTitle>Google Gemini</RimTalk.Settings.ModeGoogleTitle>
     <RimTalk.Settings.ModeGoogleDesc>無料のWeb APIキー</RimTalk.Settings.ModeGoogleDesc>
     <RimTalk.Settings.ModePlayer2Title>Player2</RimTalk.Settings.ModePlayer2Title>
@@ -296,7 +380,7 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Settings.Player2AuthReopen>承認ページを再度開く</RimTalk.Settings.Player2AuthReopen>
     <RimTalk.Settings.Player2AuthCancel>認証をキャンセル</RimTalk.Settings.Player2AuthCancel>
     <RimTalk.Settings.GoogleApiKeyLabel>Google AI APIキー：</RimTalk.Settings.GoogleApiKeyLabel>
-    <RimTalk.Settings.GoogleApiKeyDesc>無料のgemma-4-26b-a4bモデルを使用します。他のモデルやプロバイダーを使用する場合は、詳細設定を使用してください。</RimTalk.Settings.GoogleApiKeyDesc>
+    <RimTalk.Settings.GoogleApiKeyDesc>無料の{0}モデルを使用します。他のモデルやプロバイダーを使用する場合は、詳細設定を使用してください。</RimTalk.Settings.GoogleApiKeyDesc>
     <RimTalk.Settings.GetFreeApiKeyButton>無料APIキーを取得</RimTalk.Settings.GetFreeApiKeyButton>
     <RimTalk.Settings.SwitchToAdvancedSettings>詳細設定に切り替え</RimTalk.Settings.SwitchToAdvancedSettings>
     <RimTalk.Settings.SwitchToSimpleSettings>簡易設定に切り替え</RimTalk.Settings.SwitchToSimpleSettings>
@@ -378,17 +462,20 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Settings.Preset.Custom.Desc>ユーザー定義の設定</RimTalk.Settings.Preset.Custom.Desc>
 
     <RimTalk.Settings.ContextOptions>コンテキスト設定</RimTalk.Settings.ContextOptions>
-    <RimTalk.Settings.EnableContextOptimization>コンテキスト最適化を有効化</RimTalk.Settings.EnableContextOptimization>
-    <RimTalk.Settings.EnableContextOptimization.Tooltip>重要な情報を保持しつつ、トークン使用量を減らすためにコンテキストを最適化します。\n注意：生成される会話の品質が低下する場合があります。</RimTalk.Settings.EnableContextOptimization.Tooltip>
+    <RimTalk.Settings.EnableContextOptimization>コンテキスト圧縮</RimTalk.Settings.EnableContextOptimization>
+    <RimTalk.Settings.EnableContextOptimization.Tooltip>ローカルモデルで会話の生成に時間がかかりすぎる場合に役立つオプションです。\n一部のコンテキスト情報を省略または簡略化して速度を上げますが、会話の品質が低下する可能性があります。</RimTalk.Settings.EnableContextOptimization.Tooltip>
     <RimTalk.Settings.ConversationHistoryCount>含める会話履歴セッション数</RimTalk.Settings.ConversationHistoryCount>
     <RimTalk.Settings.ConversationHistoryCount.Tooltip>各セッションには複数の対話ターンが含まれ、トークン数が大幅に増える可能性があります</RimTalk.Settings.ConversationHistoryCount.Tooltip>
+    <RimTalk.Settings.UseCompactHistory>要約型会話履歴を使用</RimTalk.Settings.UseCompactHistory>
+    <RimTalk.Settings.UseCompactHistory.Tooltip>会話履歴を単一ブロックとして送信します。文脈を保ちやすくトークンを節約できますが、軽量モデルではセリフの繰り返しが発生することがあります。無効にすると以前のマルチターン方式に戻ります。</RimTalk.Settings.UseCompactHistory.Tooltip>
     <RimTalk.Settings.MaxPawnContextCount>含める最大ポーン数</RimTalk.Settings.MaxPawnContextCount>
     <RimTalk.Settings.MaxPawnContextCount.Tooltip>会話に参加できるポーンの最大数を制御します</RimTalk.Settings.MaxPawnContextCount.Tooltip>
     <RimTalk.Settings.MaxEventsCount>含める最大イベント数</RimTalk.Settings.MaxEventsCount>
     <RimTalk.Settings.MaxEventsCount.Tooltip>コンテキストに含める最新のアクティブイベントおよび通知手紙の最大数を制御します</RimTalk.Settings.MaxEventsCount.Tooltip>
-    <RimTalk.Settings.IncludeEvents>コロニーイベントを有効化</RimTalk.Settings.IncludeEvents>
+    <RimTalk.Settings.IncludeEvents>コロニーイベント</RimTalk.Settings.IncludeEvents>
     <RimTalk.Settings.IncludeEvents.Tooltip>コンテキストに最新のアクティブイベントおよび通知手紙を含めるかどうかを制御し、最大数を指定します</RimTalk.Settings.IncludeEvents.Tooltip>
-    <RimTalk.Settings.ExternalEventModDetected>外部イベント拡張MOD (RimTalk Event+) が検出されました。プロンプトの重複を防ぐため、組み込みイベントはデフォルトで無効になっています。両方を使用する場合はチェックを入れて有効にしてください。</RimTalk.Settings.ExternalEventModDetected>
+    <RimTalk.Settings.ExternalEventModDetected>{0} 検出 (同時有効化時にプロンプト内で重複する可能性があります)</RimTalk.Settings.ExternalEventModDetected>
+    <RimTalk.Settings.ExternalMemoryModDetected>{0} 検出 (同時有効化時にプロンプト内で重複する可能性があります)</RimTalk.Settings.ExternalMemoryModDetected>
 
     <RimTalk.Settings.PawnInfo>ポーン情報</RimTalk.Settings.PawnInfo>
     <RimTalk.Settings.IncludeRace>種族</RimTalk.Settings.IncludeRace>
@@ -403,6 +490,7 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Settings.IncludePrisonerSlaveStatus>囚人/奴隷の抵抗と意志</RimTalk.Settings.IncludePrisonerSlaveStatus>
     <RimTalk.Settings.IncludeRelations>関係</RimTalk.Settings.IncludeRelations>
     <RimTalk.Settings.IncludeEquipment>装備</RimTalk.Settings.IncludeEquipment>
+    <RimTalk.Settings.MindAndSocial>心理と関係</RimTalk.Settings.MindAndSocial>
     <RimTalk.Settings.Environment>環境</RimTalk.Settings.Environment>
     <RimTalk.Settings.IncludeTime>時間</RimTalk.Settings.IncludeTime>
     <RimTalk.Settings.IncludeDate>日付</RimTalk.Settings.IncludeDate>
@@ -415,12 +503,15 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Settings.IncludeSurroundings>近くのアイテム</RimTalk.Settings.IncludeSurroundings>
     <RimTalk.Settings.IncludeWealth>コロニーの富</RimTalk.Settings.IncludeWealth>
     <RimTalk.Settings.IncludeTopicKeywords>新しい会話トピックの生成</RimTalk.Settings.IncludeTopicKeywords>
-    <RimTalk.Settings.IncludeTopicKeywords.Tooltip>ポーンの周囲に特定の話題や状況がない場合、50%の確率で新しい会話トピックをランダムに生成します。</RimTalk.Settings.IncludeTopicKeywords.Tooltip>
+    <RimTalk.Settings.IncludeTopicKeywords.Tooltip>ポーンの周囲に特定の話題や状況がない場合、確率的に新しい会話トピックをランダムに生成します。</RimTalk.Settings.IncludeTopicKeywords.Tooltip>
+    <RimTalk.Settings.EnableMemory>記憶と指針</RimTalk.Settings.EnableMemory>
+    <RimTalk.Settings.EnableMemory.Tooltip>救助、衝突、死別などポーン間の重要な出来事や、プレイヤーが対話で下した指示を記憶し、会話の態度に反映します。追加のAI呼び出しやパフォーマンス低下なしにバニラデータに基づいて動作し、出来事の記憶は時間の経過とともに徐々に薄れていきます。</RimTalk.Settings.EnableMemory.Tooltip>
 
     <!-- DebugWindow.cs -->
     <RimTalk.DebugWindow.ViewByTime>時間順</RimTalk.DebugWindow.ViewByTime>
     <RimTalk.DebugWindow.ViewByPawn>キャラクター別</RimTalk.DebugWindow.ViewByPawn>
     <RimTalk.DebugWindow.ViewTalkRequests>会話リクエスト</RimTalk.DebugWindow.ViewTalkRequests>
+    <RimTalk.DebugWindow.ViewMemoryLog>記憶と指針</RimTalk.DebugWindow.ViewMemoryLog>
     <RimTalk.DebugWindow.FilterPawn>名前</RimTalk.DebugWindow.FilterPawn>
     <RimTalk.DebugWindow.Search>検索</RimTalk.DebugWindow.Search>
     <RimTalk.DebugWindow.State>状態</RimTalk.DebugWindow.State>
@@ -501,6 +592,24 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.DebugWindow.HeaderElapsed>経過</RimTalk.DebugWindow.HeaderElapsed>
     <RimTalk.DebugWindow.HeaderInitiator>送信者</RimTalk.DebugWindow.HeaderInitiator>
     <RimTalk.DebugWindow.HeaderRecipient>受信者</RimTalk.DebugWindow.HeaderRecipient>
+    <RimTalk.DebugWindow.HeaderTick>Tick</RimTalk.DebugWindow.HeaderTick>
+    <RimTalk.DebugWindow.HeaderTarget>対象</RimTalk.DebugWindow.HeaderTarget>
+    <RimTalk.DebugWindow.HeaderChangeType>変更種別</RimTalk.DebugWindow.HeaderChangeType>
+    <RimTalk.DebugWindow.HeaderWeight>重み</RimTalk.DebugWindow.HeaderWeight>
+    <RimTalk.DebugWindow.HeaderEventNote>イベントと内容</RimTalk.DebugWindow.HeaderEventNote>
+    <RimTalk.DebugWindow.HeaderEventKey>イベントキー</RimTalk.DebugWindow.HeaderEventKey>
+    <RimTalk.DebugWindow.HeaderNoteContent>記憶/指針の内容</RimTalk.DebugWindow.HeaderNoteContent>
+    <RimTalk.DebugWindow.HeaderReasonContext>発生要因 / コンテキスト</RimTalk.DebugWindow.HeaderReasonContext>
+    <RimTalk.DebugWindow.MemoryTypeAdded>記憶追加</RimTalk.DebugWindow.MemoryTypeAdded>
+    <RimTalk.DebugWindow.MemoryTypeUpdated>記憶更新</RimTalk.DebugWindow.MemoryTypeUpdated>
+    <RimTalk.DebugWindow.MemoryTypeDirectiveSet>指針設定</RimTalk.DebugWindow.MemoryTypeDirectiveSet>
+    <RimTalk.DebugWindow.MemoryTypeDirectiveRemoved>指針削除</RimTalk.DebugWindow.MemoryTypeDirectiveRemoved>
+    <RimTalk.DebugWindow.MemoryTypeCoreTraumaAdded>トラウマ</RimTalk.DebugWindow.MemoryTypeCoreTraumaAdded>
+    <RimTalk.DebugWindow.MemoryTypePurgedDecay>忘却整理</RimTalk.DebugWindow.MemoryTypePurgedDecay>
+    <RimTalk.DebugWindow.MemoryTypeEvicted>容量超過</RimTalk.DebugWindow.MemoryTypeEvicted>
+    <RimTalk.DebugWindow.MemoryTypeConsolidated>記憶整理</RimTalk.DebugWindow.MemoryTypeConsolidated>
+    <RimTalk.DebugWindow.MemoryTypeCleared>記憶消去</RimTalk.DebugWindow.MemoryTypeCleared>
+    <RimTalk.DebugWindow.MemoryTypeMilestoneRecorded>マイルストーン</RimTalk.DebugWindow.MemoryTypeMilestoneRecorded>
     <RimTalk.DebugWindow.HistoryCleared>会話履歴がクリアされました。</RimTalk.DebugWindow.HistoryCleared>
     <RimTalk.DebugWindow.FormatEntry>エントリ</RimTalk.DebugWindow.FormatEntry>
     <RimTalk.DebugWindow.FormatRole>ロール</RimTalk.DebugWindow.FormatRole>
@@ -592,15 +701,16 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.PlayerSettings.NewPresetName>新しい対話プリセット</RimTalk.PlayerSettings.NewPresetName>
     <RimTalk.PlayerSettings.PresetTitleHeader>タイトル / メニュー名</RimTalk.PlayerSettings.PresetTitleHeader>
     <RimTalk.PlayerSettings.PresetTitlePlaceholder>対話プリセットのタイトル...</RimTalk.PlayerSettings.PresetTitlePlaceholder>
+    <RimTalk.PlayerSettings.PresetPromptPlaceholder>対話内容 / プロンプト...</RimTalk.PlayerSettings.PresetPromptPlaceholder>
 
     <!-- VersionSwitcher.cs -->
     <RimTalk.VersionSwitcher.RollbackLabel>旧バージョンへのロールバック</RimTalk.VersionSwitcher.RollbackLabel>
-    <RimTalk.VersionSwitcher.SwitchToPrevious>旧バージョンをコピー（ローカルMod）</RimTalk.VersionSwitcher.SwitchToPrevious>
-    <RimTalk.VersionSwitcher.SwitchToSpecificVer>{0} をコピー（ローカルMod）</RimTalk.VersionSwitcher.SwitchToSpecificVer>
+    <RimTalk.VersionSwitcher.SwitchToPrevious>旧バージョンをインストール（ローカルMod）</RimTalk.VersionSwitcher.SwitchToPrevious>
+    <RimTalk.VersionSwitcher.SwitchToSpecificVer>{0} をインストール（ローカルMod）</RimTalk.VersionSwitcher.SwitchToSpecificVer>
     <RimTalk.VersionSwitcher.NoPreviousDllFound>Modフォルダ内に旧バージョンファイル（LastVersion/）が見つかりません。</RimTalk.VersionSwitcher.NoPreviousDllFound>
-    <RimTalk.VersionSwitcher.ConfirmRollbackTitle>バージョン（{0}）へロールバック</RimTalk.VersionSwitcher.ConfirmRollbackTitle>
-    <RimTalk.VersionSwitcher.ConfirmRollbackPrompt>RimTalk（{0}）をローカルの「RimWorld/Mods/RimTalk」フォルダにコピーしますか？</RimTalk.VersionSwitcher.ConfirmRollbackPrompt>
-    <RimTalk.VersionSwitcher.ProceedRollback>コピー</RimTalk.VersionSwitcher.ProceedRollback>
+    <RimTalk.VersionSwitcher.ConfirmRollbackTitle>{0} へロールバック</RimTalk.VersionSwitcher.ConfirmRollbackTitle>
+    <RimTalk.VersionSwitcher.ConfirmRollbackPrompt>ローカルの「RimWorld/Mods/RimTalk」フォルダにコピーしますか？\n\nコピー後、Steam版を無効化してローカルModを有効化すると、自動更新されることなくこのバージョンを維持できます。</RimTalk.VersionSwitcher.ConfirmRollbackPrompt>
+    <RimTalk.VersionSwitcher.ProceedRollback>確認</RimTalk.VersionSwitcher.ProceedRollback>
     <RimTalk.VersionSwitcher.RestartRequiredTitle>コピー完了</RimTalk.VersionSwitcher.RestartRequiredTitle>
     <RimTalk.VersionSwitcher.LocalModCreatedPrompt>「RimWorld/Mods/RimTalk」にコピーされました。\n\nSteam版を無効化し、ローカルModを有効化してRimWorldを再起動してください。</RimTalk.VersionSwitcher.LocalModCreatedPrompt>
 
@@ -635,4 +745,7 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.BubbleSettings.BorderNormal>標準</RimTalk.BubbleSettings.BorderNormal>
     <RimTalk.BubbleSettings.BorderThick>太い</RimTalk.BubbleSettings.BorderThick>
     <RimTalk.BubbleSettings.OpenWindow>設定を開く...</RimTalk.BubbleSettings.OpenWindow>
+
+    <!-- Context / Pawn Status -->
+    <RimTalk.PawnUtil.Self>自身</RimTalk.PawnUtil.Self>
 </LanguageData>

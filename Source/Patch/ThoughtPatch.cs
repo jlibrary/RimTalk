@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using RimTalk.Data;
+using RimTalk.Memory;
 using RimTalk.Source.Data;
 using RimTalk.Util;
 using RimWorld;
@@ -87,6 +88,9 @@ public static class PatchMemoryThoughtHandlerTryGainMemory
 
         if (newThought?.pawn == null)
             return;
+
+        // Record episodic memory toward other pawns
+        MemoryHookService.TryRecordThought(newThought, otherPawn);
 
         // Skip all social thoughts (chitchat, insults, compliments, etc.)
         if (newThought is Thought_MemorySocial)

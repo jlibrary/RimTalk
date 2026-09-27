@@ -22,6 +22,8 @@ public static class AIService
     private static bool _firstInstruction = true;
     private static System.Threading.CancellationTokenSource _currentCts;
     private static TalkRequest _currentRequest;
+    private static long _executionCounter;
+    private static long _activeExecutionId;
     public static TalkRequest CurrentRequest => _currentRequest;
 
     /// <summary>
@@ -109,6 +111,8 @@ public static class AIService
 
     private static async Task<Payload> ExecuteWithRetry(ApiLog apiLog, Func<IAIClient, Task<Payload>> action, bool skipTokenIncrement = false)
     {
+        long myId = System.Threading.Interlocked.Increment(ref _executionCounter);
+        _activeExecutionId = myId;
         _busy = true;
         _busySince = DateTime.Now;
         _currentCts = new System.Threading.CancellationTokenSource();
@@ -154,11 +158,14 @@ public static class AIService
         }
         finally
         {
-            _busy = false;
-            _busySince = null;
-            _currentRequest = null;
-            _currentCts?.Dispose();
-            _currentCts = null;
+            if (_activeExecutionId == myId)
+            {
+                _busy = false;
+                _busySince = null;
+                _currentRequest = null;
+                _currentCts?.Dispose();
+                _currentCts = null;
+            }
         }
     }
 
@@ -217,8 +224,10 @@ public static class AIService
         Logger.Warning($"The AI slot has been held for over {BusyGate.StuckAfterSeconds}s. " +
                        "Releasing it - no request can legitimately take that long, and while it " +
                        "is held nobody in the colony can speak.");
+        CancelCurrent();
         _busy = false;
         _busySince = null;
+        _currentRequest = null;
         return false;
     }
     public static void Clear()

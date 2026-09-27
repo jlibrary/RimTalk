@@ -65,6 +65,7 @@
     <RimTalk.Persona.Animal>動物: 單純且情緒化，本能優先。使用簡短直觀的感官語句。</RimTalk.Persona.Animal>
     <RimTalk.Persona.Mech>機器人: 診斷精簡，響應高效。沉穩且注重數據的語調。</RimTalk.Persona.Mech>
     <RimTalk.Persona.NonHuman>非人類: 神秘隱晦且扭曲現實。使用幻象、回聲與怪誕意象說話。</RimTalk.Persona.NonHuman>
+    <RimTalk.Persona.Baby>嬰兒: 單純且感知優先。透過咿呀學語、笑鬧與哭泣反應，關注飢餓、舒適與熟悉面孔。</RimTalk.Persona.Baby>
 
     <!-- RimTalk_Toggle.cs -->
     <RimTalk.Toggle.Tooltip>切換懸浮窗\n\nShift+點擊打開模組設定\nCtrl+點擊打開除錯視窗</RimTalk.Toggle.Tooltip>
@@ -74,6 +75,9 @@
     <RimTalk.Settings.PromptSetting>提示詞設定</RimTalk.Settings.PromptSetting>
     <RimTalk.Settings.ShowVariables>變數參考</RimTalk.Settings.ShowVariables>
     <RimTalk.Settings.ResetConfirm>確定要將所有提示詞預設和參考數據重置為默認值嗎？此操作無法撤銷。</RimTalk.Settings.ResetConfirm>
+    <RimTalk.Settings.PromptPreset.ResetConfirmWithMods>確定要將提示詞預設重置為默認值嗎？您也可以選擇包含已啟用MOD的默認設置進行重置。</RimTalk.Settings.PromptPreset.ResetConfirmWithMods>
+    <RimTalk.Settings.PromptPreset.ResetWithMods>含MOD默認值</RimTalk.Settings.PromptPreset.ResetWithMods>
+    <RimTalk.Settings.PromptPreset.ResetVanillaDefault>RimTalk默認值</RimTalk.Settings.PromptPreset.ResetVanillaDefault>
     
     <!-- Settings_PromptPreset.cs -->
     <RimTalk.Settings.PromptPreset.SearchPlaceholder>搜索對象、屬性、函數...</RimTalk.Settings.PromptPreset.SearchPlaceholder>
@@ -98,6 +102,7 @@
     <RimTalk.Settings.PromptPreset.Depth>深度：</RimTalk.Settings.PromptPreset.Depth>
     <RimTalk.Settings.PromptPreset.ModVariables>Mod 變數</RimTalk.Settings.PromptPreset.ModVariables>
     <RimTalk.Settings.PromptPreset.VariablePreviewHint>顯示所有可用的對象、屬性和函數。遊戲內可用時顯示實際值。</RimTalk.Settings.PromptPreset.VariablePreviewHint>
+    <RimTalk.Settings.PromptPreset.HistoryDisabledWarning>對話歷史（Chat History）已被停用。除非有其他 Mod 提供歷史，否則殖民者將不會記住最近的對話。</RimTalk.Settings.PromptPreset.HistoryDisabledWarning>
     
     <!-- Import/Export -->
     <RimTalk.Settings.PromptPreset.Export>導出</RimTalk.Settings.PromptPreset.Export>
@@ -244,20 +249,20 @@ Scriban 魔法 (動態內容)
     <RimTalk.Settings.BubbleModeTooltip>選擇在角色頭頂顯示對話氣泡的方式。</RimTalk.Settings.BubbleModeTooltip>
     <RimTalk.Settings.BubbleDuration>氣泡顯示時間</RimTalk.Settings.BubbleDuration>
     
-    <RimTalk.Settings.AIInstructionPrompt>AI 指令提示詞（模型：{0}）</RimTalk.Settings.AIInstructionPrompt>
+    <RimTalk.Settings.AIInstructionPrompt>AI 指令提示詞</RimTalk.Settings.AIInstructionPrompt>
     <RimTalk.Settings.AutoIncludedTip>提示：Pawn 的詳細資訊（特性、關係、種族、年齡等）已自動包含。請編寫適用於所有角色和殖民地的通用指令。</RimTalk.Settings.AutoIncludedTip>
     <RimTalk.Settings.RateLimitWarning>警告：提示詞越長，消耗的 Token 越多，觸發速率限制的速度就越快。</RimTalk.Settings.RateLimitWarning>
-    <RimTalk.Settings.TokenInfo>當前：~{0} Token | 建議限制：{1} Token</RimTalk.Settings.TokenInfo>
+    <RimTalk.Settings.TokenInfo>Token 數：{0}</RimTalk.Settings.TokenInfo>
     <RimTalk.Settings.ResetToDefault>恢復預設值</RimTalk.Settings.ResetToDefault>
     <RimTalk.Settings.EventFilterTip>提示：只有勾選的事件類型才會由 AI 處理。取消勾選您不希望 AI 回應的類型。</RimTalk.Settings.EventFilterTip>
     <RimTalk.Settings.NoArchivableTypes>未找到可存檔類型。請嘗試開始一個遊戲然後重新掃描。</RimTalk.Settings.NoArchivableTypes>
 
     <!-- Dialog_PersonaEditor.cs -->
-    <RimTalk.PersonaEditor.Title>{0} 的對話風格</RimTalk.PersonaEditor.Title>
-    <RimTalk.PersonaEditor.Instruct>描述這位殖民者如何說話和行為。為獲得最佳效果，請保持簡短（300 個字元以內）。</RimTalk.PersonaEditor.Instruct>
+    <RimTalk.PersonaEditor.Title>{0} 的人格</RimTalk.PersonaEditor.Title>
+    <RimTalk.PersonaEditor.Instruct>描述這位殖民者如何說話和行為。為獲得最佳效果，請保持簡短。</RimTalk.PersonaEditor.Instruct>
     <RimTalk.PersonaEditor.Characters>字元數：{0}</RimTalk.PersonaEditor.Characters>
     <RimTalk.PersonaEditor.Save>儲存</RimTalk.PersonaEditor.Save>
-    <RimTalk.PersonaEditor.Updated>已更新 {0} 的對話風格</RimTalk.PersonaEditor.Updated>
+    <RimTalk.PersonaEditor.Updated>已更新 {0} 的人格</RimTalk.PersonaEditor.Updated>
     <RimTalk.PersonaEditor.TalkFrequencyDesc>控制這位殖民者發起談話的頻率。即使在最低設定下，他們仍會在他人與他們交談時作出回應。這僅影響發起對話的頻率。</RimTalk.PersonaEditor.TalkFrequencyDesc>
     <RimTalk.PersonaEditor.Chattiness>對話頻率</RimTalk.PersonaEditor.Chattiness>
     <RimTalk.PersonaEditor.Quiet>安靜</RimTalk.PersonaEditor.Quiet>
@@ -266,15 +271,94 @@ Scriban 魔法 (動態內容)
     <RimTalk.PersonaEditor.SmartGen>智慧生成</RimTalk.PersonaEditor.SmartGen>
     <RimTalk.PersonaEditor.RollGen>隨機生成</RimTalk.PersonaEditor.RollGen>
     <RimTalk.PersonaEditor.Clear>清除</RimTalk.PersonaEditor.Clear>
+    <RimTalk.PersonaEditor.TabPersonality>人格</RimTalk.PersonaEditor.TabPersonality>
+    <RimTalk.PersonaEditor.TabMemories>記憶與指令</RimTalk.PersonaEditor.TabMemories>
+    <RimTalk.Memory.ConsolidateNow>清理淡忘記憶</RimTalk.Memory.ConsolidateNow>
+    <RimTalk.Memory.ClearAll>清空全部</RimTalk.Memory.ClearAll>
+    <RimTalk.Memory.ClearAllConfirm>確定要清空 {0} 的所有記憶嗎？</RimTalk.Memory.ClearAllConfirm>
+    <RimTalk.Memory.ConsolidationStarted>已清理 {0} 的淡忘記憶。</RimTalk.Memory.ConsolidationStarted>
+    <RimTalk.Memory.Cleared>已清空 {0} 的所有記憶。</RimTalk.Memory.Cleared>
+    <RimTalk.Memory.ActiveOrdersNone>[當前指令]：無（暫無玩家指令）</RimTalk.Memory.ActiveOrdersNone>
+    <RimTalk.Memory.ActiveOrdersHeader>當前玩家指令：</RimTalk.Memory.ActiveOrdersHeader>
+    <RimTalk.Memory.CoreTraumaPrefix>[核心創傷]：</RimTalk.Memory.CoreTraumaPrefix>
+    <RimTalk.Memory.CoreTraumaNone>[核心創傷]：無（心理狀態穩定）</RimTalk.Memory.CoreTraumaNone>
+    <RimTalk.Memory.TableTarget>目標</RimTalk.Memory.TableTarget>
+    <RimTalk.Memory.TableEvent>事件</RimTalk.Memory.TableEvent>
+    <RimTalk.Memory.TableTime>時間</RimTalk.Memory.TableTime>
+    <RimTalk.Memory.TableWeight>權重</RimTalk.Memory.TableWeight>
+    <RimTalk.Memory.WeightTip>當前權重：{0}（基礎值：{1}）</RimTalk.Memory.WeightTip>
+    <RimTalk.Memory.WeightMilestoneTip>永久里程碑（權重：{0}）</RimTalk.Memory.WeightMilestoneTip>
+    <RimTalk.Memory.TimeTip>發生時間：{0}（{1} 前）</RimTalk.Memory.TimeTip>
+    <RimTalk.Memory.TimeJustNow>剛剛</RimTalk.Memory.TimeJustNow>
+    <RimTalk.Memory.TableNote>描述</RimTalk.Memory.TableNote>
+    <RimTalk.Memory.NoMemories>暫未記錄任何記憶。</RimTalk.Memory.NoMemories>
+    <RimTalk.Memory.TargetPlayer>玩家</RimTalk.Memory.TargetPlayer>
+    <RimTalk.Memory.TargetSelfAll>自身</RimTalk.Memory.TargetSelfAll>
+    <RimTalk.Memory.ColonySeniority>居住年限：{0}年</RimTalk.Memory.ColonySeniority>
+    <RimTalk.Memory.HelpTitle>記憶與指令</RimTalk.Memory.HelpTitle>
+    <RimTalk.Memory.HelpDesc>這是一項實驗性功能，將根據玩家反饋持續優化。
+
+• 玩家指令（最多 5 條）
+- 設定：在對話中下達指令或分配角色，AI 會將其總結為適用於所有對話的核心指令。
+- 修改/刪除：可透過新的對話進行更新或撤銷，也可在本視窗中點擊 [×] 按鈕直接刪除。
+（對複雜或否定句式指令的遵循程度取決於 AI 模型的理解能力）
+
+• 核心創傷（最多 3 條）
+如失去親人等重大打擊，在治癒前會影響所有對話情緒。
+
+• 人際記憶（重大 2 條 + 最近 2 條，最多 4 條）
+回顧與該對象共同經歷的最深刻的 2 個歷史事件與最近發生的 2 個事件。
+
+• 里程碑（★）
+永久性關係事件（如結婚、救命），會自然地融入彼此的日常對話中。</RimTalk.Memory.HelpDesc>
+    <RimTalk.Memory.DisabledWarning>當前設定中已停用殖民者記憶功能。\n可在模組設定 > 上下文過濾器中啟用。</RimTalk.Memory.DisabledWarning>
+
+    <!-- Episodic Memory Notes -->
+    <RimTalk.Memory.AttackedBy>被 {0} 襲擊</RimTalk.Memory.AttackedBy>
+    <RimTalk.Memory.InsultedBy>被 {0} 侮辱</RimTalk.Memory.InsultedBy>
+    <RimTalk.Memory.SlightedBy>被 {0} 怠慢</RimTalk.Memory.SlightedBy>
+    <RimTalk.Memory.IHarmed>襲擊了 {0}</RimTalk.Memory.IHarmed>
+    <RimTalk.Memory.IRescued>營救了 {0}</RimTalk.Memory.IRescued>
+    <RimTalk.Memory.IBotchedSurgery>給 {0} 動手術出現失誤</RimTalk.Memory.IBotchedSurgery>
+    <RimTalk.Memory.IRecruited>招募了 {0}</RimTalk.Memory.IRecruited>
+    <RimTalk.Memory.IInsulted>侮辱了 {0}</RimTalk.Memory.IInsulted>
+    <RimTalk.Memory.SavedLife>{0} 在瀕死時救了自己一命</RimTalk.Memory.SavedLife>
+    <RimTalk.Memory.RescuedBy>被 {0} 營救</RimTalk.Memory.RescuedBy>
+    <RimTalk.Memory.IExecuted>處決了 {0}</RimTalk.Memory.IExecuted>
+    <RimTalk.Memory.ExecutedPrisoner>處決了囚犯 {0}</RimTalk.Memory.ExecutedPrisoner>
+    <RimTalk.Memory.IKilled>殺死了 {0}</RimTalk.Memory.IKilled>
+    <RimTalk.Memory.KilledColonistWithoutRemorse>毫無悔意地殺死了同伴 {0}</RimTalk.Memory.KilledColonistWithoutRemorse>
+    <RimTalk.Memory.KilledColonistGuilt>因殺死同伴 {0} 而深陷內疚</RimTalk.Memory.KilledColonistGuilt>
+    <RimTalk.Memory.WitnessMurderCallous>{0} 冷酷地處決了同伴 {1}</RimTalk.Memory.WitnessMurderCallous>
+    <RimTalk.Memory.WitnessMurderHorrified>{0} 殺死同伴 {1} 後驚駭自責</RimTalk.Memory.WitnessMurderHorrified>
+    <RimTalk.Memory.KilledInBattle>在戰鬥中擊殺了 {0}</RimTalk.Memory.KilledInBattle>
+    <RimTalk.Memory.MurderedFellowColonist>謀殺了同伴 {0}</RimTalk.Memory.MurderedFellowColonist>
+    <RimTalk.Memory.BecameLovers>結為戀人</RimTalk.Memory.BecameLovers>
+    <RimTalk.Memory.DidSurgery>接受了手術</RimTalk.Memory.DidSurgery>
+    <RimTalk.Memory.CapturedMe>被俘虜並監禁</RimTalk.Memory.CapturedMe>
+    <RimTalk.Memory.ICaptured>俘獲並逮捕了對方</RimTalk.Memory.ICaptured>
+    <RimTalk.Memory.SocialFight>發生了激烈肉搏互毆</RimTalk.Memory.SocialFight>
+    <RimTalk.Memory.Marriage>在喜悅的儀式中喜結連理</RimTalk.Memory.Marriage>
+    <RimTalk.Memory.TendedMe>接受了傷口包紮</RimTalk.Memory.TendedMe>
+    <RimTalk.Memory.TendedPatient>為其包紮了傷口</RimTalk.Memory.TendedPatient>
+    <RimTalk.Memory.TraumaWithTarget>來自 {0} 的悲痛與創傷（{1}）</RimTalk.Memory.TraumaWithTarget>
+    <RimTalk.Memory.TraumaWithoutTarget>來自 {0} 的悲痛與創傷</RimTalk.Memory.TraumaWithoutTarget>
+    <RimTalk.Memory.GaveBirthWith>與 {0} 共同迎來了新生命</RimTalk.Memory.GaveBirthWith>
+    <RimTalk.Memory.ChildBorn>將孩子 {0} 迎入世間</RimTalk.Memory.ChildBorn>
+    <RimTalk.Memory.BornToMother>由母親 {0} 誕下</RimTalk.Memory.BornToMother>
+    <RimTalk.Memory.BornToFather>由父親 {0} 撫育降生</RimTalk.Memory.BornToFather>
+    <RimTalk.Memory.Divorced>與 {0} 勞燕分飛、解除婚約</RimTalk.Memory.Divorced>
+    <RimTalk.Memory.BrokeUpWith>與 {0} 分手</RimTalk.Memory.BrokeUpWith>
+    <RimTalk.Memory.MurderedMyKin>殺害了摯愛 {0} 的仇敵</RimTalk.Memory.MurderedMyKin>
 
     <!-- Settings_Api.cs -->
     <RimTalk.Settings.QuickSetupSubtitle>選擇 AI 連接方式即可啟用殖民者對話。</RimTalk.Settings.QuickSetupSubtitle>
-    <RimTalk.Settings.QuickSetupButton>快速設定</RimTalk.Settings.QuickSetupButton>
-    <RimTalk.Settings.QuickSetupTooltip>返回簡化的快速設定介面。</RimTalk.Settings.QuickSetupTooltip>
-    <RimTalk.Settings.AllSettingsButton>完整設定</RimTalk.Settings.AllSettingsButton>
+    <RimTalk.Settings.QuickSetupButton>簡易設定</RimTalk.Settings.QuickSetupButton>
+    <RimTalk.Settings.QuickSetupTooltip>返回簡化的簡易設定介面。</RimTalk.Settings.QuickSetupTooltip>
+    <RimTalk.Settings.AllSettingsButton>詳細設定</RimTalk.Settings.AllSettingsButton>
     <RimTalk.Settings.AllSettingsTooltip>顯示包括遊戲玩法、提示詞預設、上下文過濾器等所有配置標籤頁。</RimTalk.Settings.AllSettingsTooltip>
     <RimTalk.Settings.CustomConfigActiveNotice>※ 目前正在使用自訂 API。</RimTalk.Settings.CustomConfigActiveNotice>
-    <RimTalk.Settings.ModeSelectorHeader>選擇 AI 連接方式（僅選一項）：</RimTalk.Settings.ModeSelectorHeader>
+    <RimTalk.Settings.ModeSelectorHeader>選擇 AI 連接方式：</RimTalk.Settings.ModeSelectorHeader>
     <RimTalk.Settings.ModeGoogleTitle>Google Gemini</RimTalk.Settings.ModeGoogleTitle>
     <RimTalk.Settings.ModeGoogleDesc>免費網頁 API 金鑰</RimTalk.Settings.ModeGoogleDesc>
     <RimTalk.Settings.ModePlayer2Title>Player2</RimTalk.Settings.ModePlayer2Title>
@@ -297,7 +381,7 @@ Scriban 魔法 (動態內容)
     <RimTalk.Settings.Player2AuthReopen>重新開啟授權頁面</RimTalk.Settings.Player2AuthReopen>
     <RimTalk.Settings.Player2AuthCancel>取消授權</RimTalk.Settings.Player2AuthCancel>
     <RimTalk.Settings.GoogleApiKeyLabel>Google AI API 金鑰：</RimTalk.Settings.GoogleApiKeyLabel>
-    <RimTalk.Settings.GoogleApiKeyDesc>使用免費的 gemma-4-26b-a4b 模型。如需其他模型或提供商，請使用進階設定。</RimTalk.Settings.GoogleApiKeyDesc>
+    <RimTalk.Settings.GoogleApiKeyDesc>使用免費的 {0} 模型。如需其他模型或提供商，請使用進階設定。</RimTalk.Settings.GoogleApiKeyDesc>
     <RimTalk.Settings.GetFreeApiKeyButton>獲取免費 API 金鑰</RimTalk.Settings.GetFreeApiKeyButton>
     <RimTalk.Settings.SwitchToAdvancedSettings>切換到進階設定</RimTalk.Settings.SwitchToAdvancedSettings>
     <RimTalk.Settings.SwitchToSimpleSettings>切換到簡易設定</RimTalk.Settings.SwitchToSimpleSettings>
@@ -379,17 +463,20 @@ Scriban 魔法 (動態內容)
     <RimTalk.Settings.Preset.Custom.Desc>使用者自訂配置</RimTalk.Settings.Preset.Custom.Desc>
 
     <RimTalk.Settings.ContextOptions>上下文選項</RimTalk.Settings.ContextOptions>
-    <RimTalk.Settings.EnableContextOptimization>啟用上下文最佳化</RimTalk.Settings.EnableContextOptimization>
-    <RimTalk.Settings.EnableContextOptimization.Tooltip>最佳化上下文以減少 Token 使用，同時保留重要資訊。\n注意：這可能會降低生成對話的品質。</RimTalk.Settings.EnableContextOptimization.Tooltip>
+    <RimTalk.Settings.EnableContextOptimization>上下文壓縮</RimTalk.Settings.EnableContextOptimization>
+    <RimTalk.Settings.EnableContextOptimization.Tooltip>當本機模型生成對話過慢時可嘗試開啟。\n透過省略或簡化部分上下文資訊來提高速度，但可能會降低對話品質。</RimTalk.Settings.EnableContextOptimization.Tooltip>
     <RimTalk.Settings.ConversationHistoryCount>包含的歷史對話會話數量</RimTalk.Settings.ConversationHistoryCount>
     <RimTalk.Settings.ConversationHistoryCount.Tooltip>每個會話包含多輪對話，可能會顯著增加 Token 數量</RimTalk.Settings.ConversationHistoryCount.Tooltip>
+    <RimTalk.Settings.UseCompactHistory>使用精簡對話歷史</RimTalk.Settings.UseCompactHistory>
+    <RimTalk.Settings.UseCompactHistory.Tooltip>將對話歷史整合為單一文字區塊。能更好地保持上下文因果關係並節省 Token，但輕量級模型可能會出現重複問題。關閉此項可恢復為先前的多輪格式。</RimTalk.Settings.UseCompactHistory.Tooltip>
     <RimTalk.Settings.MaxPawnContextCount>包含的最大殖民者數量</RimTalk.Settings.MaxPawnContextCount>
     <RimTalk.Settings.MaxPawnContextCount.Tooltip>控制可參與對話的殖民者最大數量</RimTalk.Settings.MaxPawnContextCount.Tooltip>
     <RimTalk.Settings.MaxEventsCount>包含的最大事件數量</RimTalk.Settings.MaxEventsCount>
     <RimTalk.Settings.MaxEventsCount.Tooltip>控制上下文中包含的最新活躍殖民地事件和通知信件的最大數量</RimTalk.Settings.MaxEventsCount.Tooltip>
-    <RimTalk.Settings.IncludeEvents>啟用殖民地事件</RimTalk.Settings.IncludeEvents>
+    <RimTalk.Settings.IncludeEvents>殖民地事件</RimTalk.Settings.IncludeEvents>
     <RimTalk.Settings.IncludeEvents.Tooltip>控制上下文中是否包含最新活躍殖民地事件和通知信件，並指定最大包含數量</RimTalk.Settings.IncludeEvents.Tooltip>
-    <RimTalk.Settings.ExternalEventModDetected>檢測到外部事件擴充模組 (RimTalk Event+)。為防止提示詞重複，內置殖民地事件預設已停用。如果您希望同時使用，請勾選此項。</RimTalk.Settings.ExternalEventModDetected>
+    <RimTalk.Settings.ExternalEventModDetected>已檢測到 {0} (同時啟用時提示詞中可能出現重複內容)</RimTalk.Settings.ExternalEventModDetected>
+    <RimTalk.Settings.ExternalMemoryModDetected>已檢測到 {0} (同時啟用時提示詞中可能出現重複內容)</RimTalk.Settings.ExternalMemoryModDetected>
 
     <RimTalk.Settings.PawnInfo>殖民者資訊</RimTalk.Settings.PawnInfo>
     <RimTalk.Settings.IncludeRace>種族</RimTalk.Settings.IncludeRace>
@@ -404,6 +491,7 @@ Scriban 魔法 (動態內容)
     <RimTalk.Settings.IncludePrisonerSlaveStatus>囚犯/奴隸的抵抗和意志</RimTalk.Settings.IncludePrisonerSlaveStatus>
     <RimTalk.Settings.IncludeRelations>人際關係</RimTalk.Settings.IncludeRelations>
     <RimTalk.Settings.IncludeEquipment>裝備</RimTalk.Settings.IncludeEquipment>
+    <RimTalk.Settings.MindAndSocial>心理與社交</RimTalk.Settings.MindAndSocial>
     <RimTalk.Settings.Environment>環境</RimTalk.Settings.Environment>
     <RimTalk.Settings.IncludeTime>時間</RimTalk.Settings.IncludeTime>
     <RimTalk.Settings.IncludeDate>日期</RimTalk.Settings.IncludeDate>
@@ -416,12 +504,15 @@ Scriban 魔法 (動態內容)
     <RimTalk.Settings.IncludeSurroundings>附近的物品</RimTalk.Settings.IncludeSurroundings>
     <RimTalk.Settings.IncludeWealth>殖民地財富</RimTalk.Settings.IncludeWealth>
     <RimTalk.Settings.IncludeTopicKeywords>生成新的對話話題</RimTalk.Settings.IncludeTopicKeywords>
-    <RimTalk.Settings.IncludeTopicKeywords.Tooltip>當殖民者周圍沒有具體事件或上下文可供討論時，有50%的機率隨機生成一個新的對話話題。</RimTalk.Settings.IncludeTopicKeywords.Tooltip>
+    <RimTalk.Settings.IncludeTopicKeywords.Tooltip>當殖民者周圍沒有具體事件或上下文可供討論時，有一定機率隨機生成一個新的對話話題。</RimTalk.Settings.IncludeTopicKeywords.Tooltip>
+    <RimTalk.Settings.EnableMemory>記憶與指令</RimTalk.Settings.EnableMemory>
+    <RimTalk.Settings.EnableMemory.Tooltip>記錄救援、衝突、死別等殖民者之間的重大事件以及玩家下達的對話指令，用於影響殖民者的對話態度。基於遊戲原生數據運行，不會產生額外的 API 消耗或效能影響。事件記憶會隨時間逐漸淡忘。</RimTalk.Settings.EnableMemory.Tooltip>
 
     <!-- DebugWindow.cs -->
     <RimTalk.DebugWindow.ViewByTime>依時間</RimTalk.DebugWindow.ViewByTime>
     <RimTalk.DebugWindow.ViewByPawn>依角色</RimTalk.DebugWindow.ViewByPawn>
     <RimTalk.DebugWindow.ViewTalkRequests>對話請求</RimTalk.DebugWindow.ViewTalkRequests>
+    <RimTalk.DebugWindow.ViewMemoryLog>記憶與指令</RimTalk.DebugWindow.ViewMemoryLog>
     <RimTalk.DebugWindow.FilterPawn>名稱</RimTalk.DebugWindow.FilterPawn>
     <RimTalk.DebugWindow.Search>搜尋</RimTalk.DebugWindow.Search>
     <RimTalk.DebugWindow.State>狀態</RimTalk.DebugWindow.State>
@@ -502,6 +593,24 @@ Scriban 魔法 (動態內容)
     <RimTalk.DebugWindow.HeaderElapsed>已過時間</RimTalk.DebugWindow.HeaderElapsed>
     <RimTalk.DebugWindow.HeaderInitiator>發起者</RimTalk.DebugWindow.HeaderInitiator>
     <RimTalk.DebugWindow.HeaderRecipient>接收者</RimTalk.DebugWindow.HeaderRecipient>
+    <RimTalk.DebugWindow.HeaderTick>Tick</RimTalk.DebugWindow.HeaderTick>
+    <RimTalk.DebugWindow.HeaderTarget>目標</RimTalk.DebugWindow.HeaderTarget>
+    <RimTalk.DebugWindow.HeaderChangeType>變更類型</RimTalk.DebugWindow.HeaderChangeType>
+    <RimTalk.DebugWindow.HeaderWeight>權重</RimTalk.DebugWindow.HeaderWeight>
+    <RimTalk.DebugWindow.HeaderEventNote>事件與內容</RimTalk.DebugWindow.HeaderEventNote>
+    <RimTalk.DebugWindow.HeaderEventKey>事件鍵</RimTalk.DebugWindow.HeaderEventKey>
+    <RimTalk.DebugWindow.HeaderNoteContent>記憶/指令內容</RimTalk.DebugWindow.HeaderNoteContent>
+    <RimTalk.DebugWindow.HeaderReasonContext>觸發原因 / 上下文</RimTalk.DebugWindow.HeaderReasonContext>
+    <RimTalk.DebugWindow.MemoryTypeAdded>新增記憶</RimTalk.DebugWindow.MemoryTypeAdded>
+    <RimTalk.DebugWindow.MemoryTypeUpdated>記憶更新</RimTalk.DebugWindow.MemoryTypeUpdated>
+    <RimTalk.DebugWindow.MemoryTypeDirectiveSet>確立指令</RimTalk.DebugWindow.MemoryTypeDirectiveSet>
+    <RimTalk.DebugWindow.MemoryTypeDirectiveRemoved>移除指令</RimTalk.DebugWindow.MemoryTypeDirectiveRemoved>
+    <RimTalk.DebugWindow.MemoryTypeCoreTraumaAdded>核心創傷</RimTalk.DebugWindow.MemoryTypeCoreTraumaAdded>
+    <RimTalk.DebugWindow.MemoryTypePurgedDecay>遺忘清理</RimTalk.DebugWindow.MemoryTypePurgedDecay>
+    <RimTalk.DebugWindow.MemoryTypeEvicted>容量淘汰</RimTalk.DebugWindow.MemoryTypeEvicted>
+    <RimTalk.DebugWindow.MemoryTypeConsolidated>記憶精簡</RimTalk.DebugWindow.MemoryTypeConsolidated>
+    <RimTalk.DebugWindow.MemoryTypeCleared>記憶清空</RimTalk.DebugWindow.MemoryTypeCleared>
+    <RimTalk.DebugWindow.MemoryTypeMilestoneRecorded>里程碑</RimTalk.DebugWindow.MemoryTypeMilestoneRecorded>
     <RimTalk.DebugWindow.HistoryCleared>對話歷史已清除。</RimTalk.DebugWindow.HistoryCleared>
     <RimTalk.DebugWindow.FormatEntry>條目</RimTalk.DebugWindow.FormatEntry>
     <RimTalk.DebugWindow.FormatRole>角色</RimTalk.DebugWindow.FormatRole>
@@ -594,15 +703,16 @@ Scriban 魔法 (動態內容)
     <RimTalk.PlayerSettings.NewPresetName>新對話預設</RimTalk.PlayerSettings.NewPresetName>
     <RimTalk.PlayerSettings.PresetTitleHeader>標題 / 選單名</RimTalk.PlayerSettings.PresetTitleHeader>
     <RimTalk.PlayerSettings.PresetTitlePlaceholder>對話預設標題...</RimTalk.PlayerSettings.PresetTitlePlaceholder>
+    <RimTalk.PlayerSettings.PresetPromptPlaceholder>對話內容 / 提示詞...</RimTalk.PlayerSettings.PresetPromptPlaceholder>
 
     <!-- VersionSwitcher.cs -->
     <RimTalk.VersionSwitcher.RollbackLabel>回滾舊版本</RimTalk.VersionSwitcher.RollbackLabel>
-    <RimTalk.VersionSwitcher.SwitchToPrevious>複製舊版本（本地模組）</RimTalk.VersionSwitcher.SwitchToPrevious>
-    <RimTalk.VersionSwitcher.SwitchToSpecificVer>複製 {0}（本地模組）</RimTalk.VersionSwitcher.SwitchToSpecificVer>
+    <RimTalk.VersionSwitcher.SwitchToPrevious>安裝舊版本（本地模組）</RimTalk.VersionSwitcher.SwitchToPrevious>
+    <RimTalk.VersionSwitcher.SwitchToSpecificVer>安裝 {0}（本地模組）</RimTalk.VersionSwitcher.SwitchToSpecificVer>
     <RimTalk.VersionSwitcher.NoPreviousDllFound>在模組目錄中未找到舊版本檔案 (LastVersion/)。</RimTalk.VersionSwitcher.NoPreviousDllFound>
-    <RimTalk.VersionSwitcher.ConfirmRollbackTitle>回滾至版本 ({0})</RimTalk.VersionSwitcher.ConfirmRollbackTitle>
-    <RimTalk.VersionSwitcher.ConfirmRollbackPrompt>將 RimTalk ({0}) 複製到本地 'RimWorld/Mods/RimTalk' 目錄？</RimTalk.VersionSwitcher.ConfirmRollbackPrompt>
-    <RimTalk.VersionSwitcher.ProceedRollback>複製</RimTalk.VersionSwitcher.ProceedRollback>
+    <RimTalk.VersionSwitcher.ConfirmRollbackTitle>回滾至 {0}</RimTalk.VersionSwitcher.ConfirmRollbackTitle>
+    <RimTalk.VersionSwitcher.ConfirmRollbackPrompt>是否複製到本地 'RimWorld/Mods/RimTalk' 目錄？\n\n複製後停用工作坊版本並啟用本地模組，即可保持此版本不受自動更新影響。</RimTalk.VersionSwitcher.ConfirmRollbackPrompt>
+    <RimTalk.VersionSwitcher.ProceedRollback>確認</RimTalk.VersionSwitcher.ProceedRollback>
     <RimTalk.VersionSwitcher.RestartRequiredTitle>複製完成</RimTalk.VersionSwitcher.RestartRequiredTitle>
     <RimTalk.VersionSwitcher.LocalModCreatedPrompt>已複製到 'RimWorld/Mods/RimTalk'。\n\n請在模組選單中停用 Steam 版本，啟用本地模組後重新啟動 RimWorld。</RimTalk.VersionSwitcher.LocalModCreatedPrompt>
 
@@ -637,4 +747,7 @@ Scriban 魔法 (動態內容)
     <RimTalk.BubbleSettings.BorderNormal>一般</RimTalk.BubbleSettings.BorderNormal>
     <RimTalk.BubbleSettings.BorderThick>粗</RimTalk.BubbleSettings.BorderThick>
     <RimTalk.BubbleSettings.OpenWindow>開啟設定...</RimTalk.BubbleSettings.OpenWindow>
+
+    <!-- Context / Pawn Status -->
+    <RimTalk.PawnUtil.Self>自己</RimTalk.PawnUtil.Self>
 </LanguageData>

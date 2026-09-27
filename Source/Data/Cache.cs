@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -132,8 +133,8 @@ public static class Cache
     /// <returns>A single pawn, or null if the list is empty or no pawn has a weight > 0.</returns>
     public static Pawn GetRandomWeightedPawn(IEnumerable<Pawn> pawns)
     {
-        var pawnList = pawns.ToList();
-        if (pawnList.NullOrEmpty())
+        var pawnList = pawns as IList<Pawn> ?? pawns.ToList();
+        if (pawnList == null || pawnList.Count == 0)
         {
             return null;
         }
@@ -145,8 +146,9 @@ public static class Cache
         double totalSlaveWeight = 0.0;
         double totalPrisonerWeight = 0.0;
 
-        foreach (var p in pawnList)
+        for (int i = 0; i < pawnList.Count; i++)
         {
+            var p = pawnList[i];
             var weight = Get(p)?.TalkInitiationWeight ?? 0.0;
             if (p.IsFreeNonSlaveColonist || p.HasVocalLink()) totalColonistWeight += weight;
             else if (p.IsSlave) totalSlaveWeight += weight;
@@ -163,13 +165,8 @@ public static class Cache
         }
         else
         {
-            baselineWeight = new[]
-            {
-                totalVisitorWeight,
-                totalEnemyWeight,
-                totalSlaveWeight,
-                totalPrisonerWeight
-            }.Max();
+            baselineWeight = Math.Max(totalVisitorWeight,
+                Math.Max(totalEnemyWeight, Math.Max(totalSlaveWeight, totalPrisonerWeight)));
         }
 
         if (baselineWeight <= 0) return null;
@@ -203,8 +200,9 @@ public static class Cache
         var randomWeight = Random.NextDouble() * effectiveTotalWeight;
         var cumulativeWeight = 0.0;
 
-        foreach (var pawn in pawnList)
+        for (int i = 0; i < pawnList.Count; i++)
         {
+            var pawn = pawnList[i];
             var currentPawnWeight = Get(pawn)?.TalkInitiationWeight ?? 0.0;
             double currentEffectiveWeight = 0.0;
 
@@ -222,7 +220,13 @@ public static class Cache
             }
         }
 
-        return pawnList.LastOrDefault(p => (Get(p)?.TalkInitiationWeight ?? 0.0) > 0);
+        for (int i = pawnList.Count - 1; i >= 0; i--)
+        {
+            var p = pawnList[i];
+            if ((Get(p)?.TalkInitiationWeight ?? 0.0) > 0)
+                return p;
+        }
+        return null;
     }
 
     public static void InitializePlayerPawn()

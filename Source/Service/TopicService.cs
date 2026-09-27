@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using RimTalk.Data;
+using RimTalk.Source.Data;
 using Verse;
 
 namespace RimTalk.Service;
@@ -28,31 +29,135 @@ public static class TopicService
     }
 
     /// <summary>
-    /// Returns a topic string with probability roll, or guaranteed topic if it's the pawn's first talk.
+    /// Checks whether general conversation topic keywords are permitted for the given request and pawn.
+    /// Excludes mental breaks, stranger encounters, non-humanlikes, and non-social talk types.
+    /// </summary>
+    public static bool IsTopicAllowed(TalkRequest talkRequest, Pawn pawn, bool isStrangerEncounter = false)
+    {
+        if (pawn == null || !pawn.RaceProps.Humanlike || pawn.IsMutant || pawn.InMentalState || isStrangerEncounter)
+            return false;
+
+        var settings = Settings.Get()?.Context;
+        if (settings == null || !settings.IncludeTopicKeywords)
+            return false;
+
+        if (talkRequest == null)
+            return true;
+
+        return talkRequest.TalkType is TalkType.Chitchat or TalkType.Interaction or TalkType.Other;
+    }
+
+    /// <summary>
+    /// Checks whether mental break delusion topic keywords are permitted for the given request and pawn.
+    /// </summary>
+    public static bool IsMentalBreakTopicAllowed(TalkRequest talkRequest, Pawn pawn)
+    {
+        if (pawn == null || !pawn.RaceProps.Humanlike || pawn.IsMutant || !pawn.InMentalState)
+            return false;
+
+        var settings = Settings.Get()?.Context;
+        if (settings == null || !settings.IncludeTopicKeywords)
+            return false;
+
+        return talkRequest?.TalkType != TalkType.Urgent;
+    }
+
+    /// <summary>
+    /// Evaluates and returns a cached topic for general dialogue requests, ensuring prompt and history remain synchronized.
+    /// </summary>
+    public static string ResolveTopicForRequest(TalkRequest talkRequest, Pawn pawn, bool isStrangerEncounter = false, bool isMonologue = false)
+    {
+        if (pawn == null || pawn.InMentalState)
+            return null;
+
+        if (talkRequest == null)
+            return IsTopicAllowed(null, pawn, isStrangerEncounter) ? TryGetTopic(pawn, isMonologue) : null;
+
+        if (talkRequest.TopicEvaluated)
+            return talkRequest.Topic;
+
+        talkRequest.TopicEvaluated = true;
+
+        if (!IsTopicAllowed(talkRequest, pawn, isStrangerEncounter))
+        {
+            talkRequest.Topic = null;
+            return null;
+        }
+
+        talkRequest.Topic = TryGetTopic(pawn, isMonologue);
+        return talkRequest.Topic;
+    }
+
+    /// <summary>
+    /// Evaluates and returns a cached topic for mental break requests.
+    /// </summary>
+    public static string ResolveMentalBreakTopicForRequest(TalkRequest talkRequest, Pawn pawn)
+    {
+        if (pawn == null || !pawn.InMentalState)
+            return null;
+
+        if (talkRequest == null)
+            return IsMentalBreakTopicAllowed(null, pawn) ? TryGetTopic(pawn, isMonologue: true) : null;
+
+        if (talkRequest.TopicEvaluated)
+            return talkRequest.Topic;
+
+        talkRequest.TopicEvaluated = true;
+
+        if (!IsMentalBreakTopicAllowed(talkRequest, pawn))
+        {
+            talkRequest.Topic = null;
+            return null;
+        }
+
+        talkRequest.Topic = TryGetTopic(pawn, isMonologue: true);
+        return talkRequest.Topic;
+    }
+
+    /// <summary>
+    /// Returns a topic string based on conversation state triggers, or guaranteed topic if it's the pawn's first talk.
     /// Non-humanlikes (animals, mechanoids, entities) and mutants never receive human narrative topics.
     /// </summary>
     public static string TryGetTopic(Pawn pawn = null)
+    {
+        return TryGetTopic(pawn, isMonologue: false);
+    }
+
+    /// <summary>
+    /// Returns a topic string based on conversation state triggers, taking monologue status into account.
+    /// </summary>
+    public static string TryGetTopic(Pawn pawn, bool isMonologue)
     {
         if (pawn != null && (!pawn.RaceProps.Humanlike || pawn.IsMutant))
             return null;
 
         lock (Lock)
         {
-            bool isFirstTalk = pawn != null && Cache.Get(pawn)?.LastTalkTick == 0;
-            if (!isFirstTalk && Rng.NextDouble() >= 0.50) return null;
+            if (!ShouldTriggerTopic(pawn, isMonologue)) return null;
             EnsureDecks();
             return TopicCore();
         }
     }
 
-    private static string TopicCore()
+    private static bool ShouldTriggerTopic(Pawn pawn, bool isMonologue = false)
     {
-        string approach = PeekDeck(_approachDeck) ?? "casual remark";
-        string subject  = PeekDeck(_subjectDeck)  ?? "daily life";
-        return $"[{approach}, {subject}]";
+        if (pawn == null) return Rng.NextDouble() < 0.50;
+        if (pawn.InMentalState) return true;
+
+        bool isFirstTalk = Cache.Get(pawn)?.LastTalkTick == 0;
+        if (isFirstTalk) return true;
+
+        return Rng.NextDouble() < 0.50;
     }
 
-    private static string PeekDeck(Queue<string> deck)
+    private static string TopicCore()
+    {
+        string approach = DrawFromDeck(_approachDeck) ?? "casual remark";
+        string subject  = DrawFromDeck(_subjectDeck)  ?? "daily life";
+        return $"{approach}, {subject}";
+    }
+
+    private static string DrawFromDeck(Queue<string> deck)
     {
         if (deck.Count == 0) return null;
         return deck.Dequeue();

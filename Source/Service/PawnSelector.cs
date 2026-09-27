@@ -23,6 +23,8 @@ public class PawnSelector
     private static List<Pawn> GetNearbyPawnsInternal(Pawn pawn1, Pawn pawn2 = null,
         DetectionType detectionType = DetectionType.Hearing, bool onlyTalkable = false, bool isAnnouncement = false)
     {
+        if (pawn1 == null || !pawn1.Spawned) return [];
+
         int configuredCount = Settings.Get()?.Context?.MaxPawnContextCount ?? 3;
         // Keep candidate pool generous (floor of 10) so downstream callers have enough candidates before final Take(MaxPawnContextCount)
         int effectiveMaxResults = Math.Max(10, configuredCount);
@@ -34,30 +36,36 @@ public class PawnSelector
             ? PawnCapacityDefOf.Hearing
             : PawnCapacityDefOf.Sight;
 
+        var room1 = pawn1.GetRoom();
+        var room2 = pawn2?.GetRoom();
+        var pos1 = pawn1.Position;
+        var pos2 = pawn2?.Position ?? IntVec3.Invalid;
+        bool hasPawn2 = pawn2 != null;
+
         return Cache.Keys
             .Where(p => p != pawn1 && p != pawn2)
-            .Where(p => !onlyTalkable || Cache.Get(p).CanGenerateTalk())
-            .Where(p => p.health.capacities.GetLevel(capacityDef) > 0.0)
+            .Where(p => !onlyTalkable || Cache.Get(p)?.CanGenerateTalk() == true)
             .Where(p =>
             {
-                var room = p.GetRoom();
-                var capacityLevel = p.health.capacities.GetLevel(capacityDef);
+                var capacityLevel = p.health?.capacities?.GetLevel(capacityDef) ?? 0f;
+                if (capacityLevel <= 0.0f) return false;
+
                 var detectionDistance = baseRange * capacityLevel;
+                var room = p.GetRoom();
 
-                bool nearPawn1 = room == pawn1.GetRoom() &&
-                                 p.Position.InHorDistOf(pawn1.Position, detectionDistance);
+                bool nearPawn1 = room == room1 &&
+                                 p.Position.InHorDistOf(pos1, detectionDistance);
 
-                if (pawn2 == null) return nearPawn1;
+                if (!hasPawn2) return nearPawn1;
 
-                bool nearPawn2 = room == pawn2.GetRoom() &&
-                                 p.Position.InHorDistOf(pawn2.Position, detectionDistance);
+                bool nearPawn2 = room == room2 &&
+                                 p.Position.InHorDistOf(pos2, detectionDistance);
 
                 return nearPawn1 || nearPawn2;
             })
-            .OrderBy(p => pawn2 == null
-                ? pawn1.Position.DistanceTo(p.Position)
-                : Math.Min(pawn1.Position.DistanceTo(p.Position),
-                    pawn2.Position.DistanceTo(p.Position)))
+            .OrderBy(p => !hasPawn2
+                ? pos1.DistanceToSquared(p.Position)
+                : Math.Min(pos1.DistanceToSquared(p.Position), pos2.DistanceToSquared(p.Position)))
             .Take(effectiveMaxResults)
             .ToList();
     }

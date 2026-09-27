@@ -11,6 +11,17 @@ namespace RimTalk.Prompt;
 /// </summary>
 internal static class PromptPresetAssembler
 {
+    public const string ChatHistoryHeader = "[Chat History]\n(Past dialogue. Advance the scene naturally without echoing earlier lines):";
+    public const string CurrentTaskHeader = "[Situation]";
+    public const string SituationHeader = CurrentTaskHeader;
+    public const string DefaultRecentEventsInstruction = """
+                                                          {{- if events && events != "" -}}
+                                                          [Recent Events]
+                                                          (Recent colony incidents; let them naturally shape mood, tone, or thoughts if still relevant, never force):
+                                                          {{ events }}
+                                                          {{- end -}}
+                                                          """;
+
     internal static PromptRole GetEffectiveRole(PromptEntry entry)
     {
         return string.IsNullOrWhiteSpace(entry.CustomRole) ? entry.Role : PromptRole.User;
@@ -38,13 +49,37 @@ internal static class PromptPresetAssembler
         {
             if (entry.IsMainChatHistory)
             {
-                if (chatHistory != null)
+                if (chatHistory != null && chatHistory.Count > 0)
                 {
-                    foreach (var (role, message) in chatHistory)
+                    // Default to single-block history with inline causal triggers (Approach B') to minimize
+                    // token overhead while preventing repetitive degenerations. Approach A (multi-turn) is opted via 'history_raw'.
+                    // See: Docs/dialogue-history-architecture.md
+                    bool isRaw = entry.Content?.IndexOf("history_raw", StringComparison.OrdinalIgnoreCase) >= 0;
+                    if (isRaw)
                     {
-                        var pRole = (PromptRole)role;
-                        result.Add((pRole, message));
-                        segments?.Add(new PromptMessageSegment(entry.Id, entry.Name ?? "History", role, message));
+                        foreach (var (role, message) in chatHistory)
+                        {
+                            if (string.IsNullOrWhiteSpace(message)) continue;
+                            var pRole = (PromptRole)role;
+                            result.Add((pRole, message));
+                            segments?.Add(new PromptMessageSegment(entry.Id, entry.Name ?? "History", role, message) { IsHistory = true });
+                        }
+                    }
+                    else
+                    {
+                        var lines = new List<string>();
+                        foreach (var (_, message) in chatHistory)
+                        {
+                            if (string.IsNullOrWhiteSpace(message)) continue;
+                            lines.Add(message.Trim());
+                        }
+
+                        if (lines.Count > 0)
+                        {
+                            string historyContent = $"{ChatHistoryHeader}\n{string.Join("\n", lines)}";
+                            result.Add((PromptRole.User, historyContent));
+                            segments?.Add(new PromptMessageSegment(entry.Id, entry.Name ?? "History", Role.User, historyContent) { IsHistory = true });
+                        }
                     }
                 }
 
@@ -54,6 +89,7 @@ internal static class PromptPresetAssembler
             }
 
             var content = renderFunc != null ? renderFunc(entry.Content) : entry.Content;
+            content = content?.Trim();
             if (!string.IsNullOrWhiteSpace(content))
             {
                 var role = GetEffectiveRole(entry);
@@ -70,12 +106,32 @@ internal static class PromptPresetAssembler
             }
         }
 
+        // Trailing format anchor: reinforces JSON format at the very end of user input without polluting dialogue history
+        var activeJsonEntry = preset.Entries.FirstOrDefault(e => e.Enabled && e.IsJsonFormat);
+        if (activeJsonEntry != null)
+        {
+            var rawContent = activeJsonEntry.Content;
+            if (rawContent != null && string.Equals(rawContent.Trim().Replace(" ", ""), "{{json.format}}", StringComparison.OrdinalIgnoreCase))
+            {
+                rawContent = BuiltInPromptTokens.JsonAnchor;
+            }
+
+            var content = renderFunc != null ? renderFunc(rawContent) : rawContent;
+            content = content?.Trim();
+            if (!string.IsNullOrWhiteSpace(content))
+            {
+                result.Add((PromptRole.User, content));
+                segments?.Add(new PromptMessageSegment(BuiltInPromptIds.FormatReminder, BuiltInPromptNames.JsonFormatReminder, Role.User, content));
+            }
+        }
+
         if (!boundarySet) systemBoundary = result.Count;
 
         // 2. Process InChat entries (Anchored to History)
         foreach (var entry in preset.GetInChatEntries())
         {
             var content = renderFunc != null ? renderFunc(entry.Content) : entry.Content;
+            content = content?.Trim();
             if (!string.IsNullOrWhiteSpace(content))
             {
                 var role = GetEffectiveRole(entry);
@@ -113,6 +169,7 @@ internal static class PromptPresetAssembler
         bool hasJsonFormat = false;
         bool hasContext = false;
         bool hasChatHistory = false;
+        bool hasRecentEvents = false;
         bool hasDialoguePrompt = false;
 
         string effectiveInstruction = !string.IsNullOrWhiteSpace(simpleInstruction)
@@ -123,17 +180,17 @@ internal static class PromptPresetAssembler
         {
             foreach (var entry in activePreset.Entries)
             {
-                if (IsBuiltInEntry(entry))
+                if (entry.IsBuiltIn)
                 {
                     var clone = ShallowCopyEntry(entry);
                     clone.Enabled = true;
-                    if (string.Equals(clone.Name, "Base Instruction", StringComparison.OrdinalIgnoreCase))
+                    if (clone.IsBaseInstruction)
                     {
                         clone.Content = effectiveInstruction;
                         hasBaseInstruction = true;
                     }
 
-                    if (string.Equals(clone.Name, "JSON Format", StringComparison.OrdinalIgnoreCase))
+                    if (clone.IsJsonFormat)
                     {
                         hasJsonFormat = true;
                     }
@@ -143,13 +200,17 @@ internal static class PromptPresetAssembler
                         hasChatHistory = true;
                     }
 
-                    if (string.Equals(clone.Name, "Context", StringComparison.OrdinalIgnoreCase)
-                        || string.Equals(clone.Name, "Pawn Profiles", StringComparison.OrdinalIgnoreCase))
+                    if (clone.IsContext)
                     {
                         hasContext = true;
                     }
 
-                    if (string.Equals(clone.Name, "Dialogue Prompt", StringComparison.OrdinalIgnoreCase))
+                    if (clone.IsRecentEvents)
+                    {
+                        hasRecentEvents = true;
+                    }
+
+                    if (clone.IsDialoguePrompt)
                     {
                         hasDialoguePrompt = true;
                     }
@@ -169,7 +230,8 @@ internal static class PromptPresetAssembler
         {
             simplePreset.Entries.Insert(0, new PromptEntry
             {
-                Name = "Base Instruction",
+                Id = BuiltInPromptIds.BaseInstruction,
+                Name = BuiltInPromptNames.BaseInstruction,
                 Role = PromptRole.System,
                 Position = PromptPosition.Relative,
                 Content = effectiveInstruction
@@ -178,47 +240,64 @@ internal static class PromptPresetAssembler
 
         if (!hasJsonFormat)
         {
-            int jsonIndex = simplePreset.Entries.FindIndex(e =>
-                string.Equals(e.Name, "Base Instruction", StringComparison.OrdinalIgnoreCase)) + 1;
-            simplePreset.Entries.Insert(Math.Max(0, jsonIndex), new PromptEntry
+            int baseIndex = simplePreset.Entries.FindIndex(e => e.IsBaseInstruction);
+            int insertIndex = baseIndex >= 0 ? baseIndex + 1 : 0;
+
+            simplePreset.Entries.Insert(insertIndex, new PromptEntry
             {
-                Name = "JSON Format",
+                Id = BuiltInPromptIds.JsonFormat,
+                Name = BuiltInPromptNames.JsonFormat,
                 Role = PromptRole.System,
                 Position = PromptPosition.Relative,
                 Content = !string.IsNullOrEmpty(fallbackJsonInstruction)
                     ? fallbackJsonInstruction
-                    : "Output JSONL.\nRequired keys: \"name\", \"text\"."
+                    : BuiltInPromptTokens.JsonFormat
             });
         }
 
         if (!hasContext)
         {
-            int insertIndex = simplePreset.Entries.FindLastIndex(e =>
-                string.Equals(e.Name, "JSON Format", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(e.Name, "Base Instruction", StringComparison.OrdinalIgnoreCase)) + 1;
+            int insertIndex = simplePreset.Entries.FindLastIndex(e => e.IsJsonFormat || e.IsBaseInstruction) + 1;
 
             simplePreset.Entries.Insert(Math.Max(0, insertIndex), new PromptEntry
             {
-                Name = "Context",
+                Id = BuiltInPromptIds.Context,
+                Name = BuiltInPromptNames.Context,
                 Role = PromptRole.System,
                 Position = PromptPosition.Relative,
-                Content = "{{context}}"
+                Content = BuiltInPromptTokens.Context
+            });
+        }
+
+        if (!hasRecentEvents)
+        {
+            int histIndex = simplePreset.Entries.FindIndex(e => e.IsMainChatHistory);
+            int dpIndex = simplePreset.Entries.FindIndex(e => e.IsDialoguePrompt);
+            int insertIndex = histIndex >= 0 ? histIndex : (dpIndex >= 0 ? dpIndex : simplePreset.Entries.Count);
+
+            simplePreset.Entries.Insert(insertIndex, new PromptEntry
+            {
+                Id = BuiltInPromptIds.RecentEvents,
+                Name = BuiltInPromptNames.RecentEvents,
+                Role = PromptRole.System,
+                Position = PromptPosition.Relative,
+                Content = DefaultRecentEventsInstruction
             });
         }
 
         if (!hasChatHistory)
         {
-            int histIndex = simplePreset.Entries.FindIndex(e =>
-                string.Equals(e.Name, "Dialogue Prompt", StringComparison.OrdinalIgnoreCase));
-            if (histIndex < 0) histIndex = simplePreset.Entries.Count;
+            int dpIndex = simplePreset.Entries.FindIndex(e => e.IsDialoguePrompt);
+            int histIndex = dpIndex >= 0 ? dpIndex : simplePreset.Entries.Count;
 
             simplePreset.Entries.Insert(histIndex, new PromptEntry
             {
-                Name = "Chat History",
+                Id = BuiltInPromptIds.ChatHistory,
+                Name = BuiltInPromptNames.ChatHistory,
                 Role = PromptRole.User,
                 Position = PromptPosition.Relative,
                 IsMainChatHistory = true,
-                Content = "{{chat.history}}"
+                Content = BuiltInPromptTokens.ChatHistory
             });
         }
 
@@ -226,10 +305,11 @@ internal static class PromptPresetAssembler
         {
             simplePreset.Entries.Add(new PromptEntry
             {
-                Name = "Dialogue Prompt",
+                Id = BuiltInPromptIds.DialoguePrompt,
+                Name = BuiltInPromptNames.DialoguePrompt,
                 Role = PromptRole.User,
                 Position = PromptPosition.Relative,
-                Content = "{{prompt}}"
+                Content = BuiltInPromptTokens.Prompt
             });
         }
 
@@ -253,14 +333,28 @@ internal static class PromptPresetAssembler
         };
     }
 
-    internal static bool IsBuiltInEntry(PromptEntry entry)
+    public static bool ShouldShowHistoryWarning(PromptPreset preset)
     {
-        if (entry == null) return false;
-        if (entry.IsMainChatHistory) return true;
-        return string.Equals(entry.Name, "Base Instruction", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(entry.Name, "JSON Format", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(entry.Name, "Context", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(entry.Name, "Pawn Profiles", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(entry.Name, "Dialogue Prompt", StringComparison.OrdinalIgnoreCase);
+        if (preset?.Entries == null) return false;
+
+        bool hasExternalModEntry = false;
+        for (int i = 0; i < preset.Entries.Count; i++)
+        {
+            var e = preset.Entries[i];
+            if (!e.Enabled) continue;
+
+            if (e.IsMainChatHistory || (!string.IsNullOrEmpty(e.Content) &&
+                (e.Content.IndexOf("chat.history", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                 e.Content.IndexOf("ctx.history", StringComparison.OrdinalIgnoreCase) >= 0)))
+            {
+                return false;
+            }
+
+            if (!string.IsNullOrEmpty(e.SourceModId))
+                hasExternalModEntry = true;
+        }
+
+        return !hasExternalModEntry;
     }
 }
+

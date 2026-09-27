@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using RimTalk.Data;
 using RimTalk.Source.Data;
@@ -134,6 +135,7 @@ public static class CustomDialogueService
         if (initiator.IsPlayer())
         {
             apiLog.SpokenTick = GenTicks.TicksGame;
+            apiLog.SpokenTime = DateTime.Now;
             Overlay.NotifyLogUpdated();
         }
         else

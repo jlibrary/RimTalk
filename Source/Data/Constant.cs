@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using RimTalk.Prompt;
 using Verse;
 
@@ -31,6 +32,10 @@ public static class Constant
          Monologue = 1 turn. Conversation = 4-8 short turns
          """;
 
+    public const string ChatHistoryHeader = PromptPresetAssembler.ChatHistoryHeader;
+    public const string CurrentTaskHeader = PromptPresetAssembler.CurrentTaskHeader;
+    public const string SituationHeader = PromptPresetAssembler.SituationHeader;
+
     public const string JsonInstruction = """
                                            Output JSONL.
                                            Required keys: "name", "text".
@@ -41,6 +46,15 @@ public static class Constant
                                            "act": Insult, Slight, Chat, Kind
                                            "target": targetName
                                            """;
+
+    public const string UserDirectiveInstruction = """
+                                                   Optional keys (Include only if rules or orders changed):
+                                                   "directives": [ "active rules, max 5" ]. Include player commands or roles given to this character (~5-10 words). Overwrite conflicting rules; output [] if cleared.
+                                                   """;
+
+    public const string DefaultRecentEventsInstruction = PromptPresetAssembler.DefaultRecentEventsInstruction;
+    public const string DefaultJsonFormatInstruction = BuiltInPromptTokens.JsonFormat;
+    public const string DefaultJsonAnchorInstruction = BuiltInPromptTokens.JsonAnchor;
 
     // Get the current instruction from settings or fallback to default, always append JSON instruction
     // NOTE: This is now primarily used as a fallback. The new PromptManager system is preferred.
@@ -60,8 +74,7 @@ public static class Constant
         var preset = PromptManager.Instance?.GetActivePreset();
         if (preset == null) return DefaultInstruction;
 
-        var entry = preset.Entries.FirstOrDefault(e =>
-            string.Equals(e.Name, "Base Instruction", StringComparison.OrdinalIgnoreCase))
+        var entry = preset.Entries.FirstOrDefault(e => e.IsBaseInstruction)
                     ?? preset.Entries.FirstOrDefault(e =>
                         e.Role == PromptRole.System && e.Position == PromptPosition.Relative);
 
@@ -72,6 +85,47 @@ public static class Constant
     public static string GetJsonInstruction(bool includeSocialEffects)
     {
         return JsonInstruction + (includeSocialEffects ? "\n" + SocialInstruction : "");
+    }
+
+    public static string GetJsonInstruction(bool includeSocialEffects, bool isFromUser)
+    {
+        return GetJsonInstruction(includeSocialEffects, isFromUser, true);
+    }
+
+    public static string GetJsonInstruction(bool includeSocialEffects, bool isFromUser, bool enableDirectives)
+    {
+        string instruction = JsonInstruction + (includeSocialEffects ? "\n" + SocialInstruction : "");
+        if (isFromUser && enableDirectives)
+            instruction += "\n" + UserDirectiveInstruction;
+        return instruction;
+    }
+
+    // Concise trailing format anchor for reinforcement at the end of prompt context
+    public static string GetJsonAnchor(bool includeSocialEffects)
+    {
+        return GetJsonAnchor(includeSocialEffects, false, false);
+    }
+
+    public static string GetJsonAnchor(bool includeSocialEffects, bool isFromUser)
+    {
+        return GetJsonAnchor(includeSocialEffects, isFromUser, true);
+    }
+
+    public static string GetJsonAnchor(bool includeSocialEffects, bool isFromUser, bool enableDirectives)
+    {
+        var keys = new List<string>(4) { "\"name\"", "\"text\"" };
+        if (includeSocialEffects)
+        {
+            keys.Add("\"act\"");
+            keys.Add("\"target\"");
+        }
+
+        string anchor = $"Output JSONL (keys: {string.Join(", ", keys)}).";
+        if (isFromUser && enableDirectives)
+        {
+            anchor += "\nOptional: include \"directives\" on addressed character if player gave an order (or [] if cleared).";
+        }
+        return anchor;
     }
 
     public static string PersonaGenInstruction =>
@@ -144,4 +198,7 @@ public static class Constant
 
     private static PersonalityData _personaNonHuman;
     public static PersonalityData PersonaNonHuman => _personaNonHuman ??= new("RimTalk.Persona.NonHuman".Translate(), 0.2f);
+
+    private static PersonalityData _personaBaby;
+    public static PersonalityData PersonaBaby => _personaBaby ??= new("RimTalk.Persona.Baby".Translate(), 0.15f);
 }

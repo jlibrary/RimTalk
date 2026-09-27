@@ -16,4 +16,6 @@ Directory.Build.props
 *.py
 
 Release_Mod/*
+Docs/*
 AGENTS.md
+CLAUDE.md

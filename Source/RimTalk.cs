@@ -2,6 +2,7 @@ using System.Linq;
 using RimTalk.Client;
 using RimTalk.Data;
 using RimTalk.Error;
+using RimTalk.Memory;
 using RimTalk.Patch;
 using RimTalk.Service;
 using RimTalk.UI;
@@ -63,6 +64,7 @@ public class RimTalk : GameComponent
             Stats.Reset();
             TalkRequestPool.Clear();
             ApiHistory.Clear();
+            MemoryHistory.Clear();
         }
 
         Cache.InitializePlayerPawn();

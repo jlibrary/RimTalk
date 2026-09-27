@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using RimTalk.Util;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -111,7 +110,7 @@ public class Dialog_CustomizeRequestHelp : Window
 
         // Close Button
         Rect closeBtnRect = new Rect(inRect.width - 100f, inRect.height - buttonBarHeight, 100f, buttonBarHeight);
-        if (Widgets.ButtonText(closeBtnRect, "RimTalk.Settings.CustomJsonCancel".Translate()))
+        if (UIUtil.ButtonText(closeBtnRect, "RimTalk.Settings.CustomJsonCancel".Translate()))
         {
             Close();
         }
@@ -235,7 +234,7 @@ public class Dialog_CustomizeRequestHelp : Window
         {
             // Replace Button
             const float replaceW = 120f;
-            if (Widgets.ButtonText(new Rect(curBtnX, y, replaceW, btnH), "RimTalk.Settings.SampleUseTemplate".Translate()))
+            if (UIUtil.ButtonText(new Rect(curBtnX, y, replaceW, btnH), "RimTalk.Settings.SampleUseTemplate".Translate()))
             {
                 _onApplySample(sample.Json, false);
                 Close();
@@ -244,7 +243,7 @@ public class Dialog_CustomizeRequestHelp : Window
 
             // Merge Button
             const float mergeW = 140f;
-            if (Widgets.ButtonText(new Rect(curBtnX, y, mergeW, btnH), "RimTalk.Settings.SampleMergeTemplate".Translate()))
+            if (UIUtil.ButtonText(new Rect(curBtnX, y, mergeW, btnH), "RimTalk.Settings.SampleMergeTemplate".Translate()))
             {
                 _onApplySample(sample.Json, true);
                 Close();
@@ -254,7 +253,7 @@ public class Dialog_CustomizeRequestHelp : Window
 
         // Copy Button
         const float copyW = 80f;
-        if (Widgets.ButtonText(new Rect(curBtnX, y, copyW, btnH), "RimTalk.Settings.SampleCopy".Translate()))
+        if (UIUtil.ButtonText(new Rect(curBtnX, y, copyW, btnH), "RimTalk.Settings.SampleCopy".Translate()))
         {
             GUIUtility.systemCopyBuffer = sample.Json;
             Messages.Message("RimTalk.Settings.SampleCopied".Translate(), MessageTypeDefOf.TaskCompletion, false);

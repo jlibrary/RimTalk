@@ -37,7 +37,7 @@ public static class BioTabPersonalityPatch
             width = totalLabelWidth,
             drawer = rect =>
             {
-                Widgets.DrawOptionBackground(rect, false);
+                Widgets.DrawHighlight(rect);
                 Widgets.DrawHighlightIfMouseover(rect);
 
                 string persona = PersonaService.GetPersonality(pawn);

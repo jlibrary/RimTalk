@@ -49,6 +49,7 @@ public static class VariableDefinitions
         RootTypeMap["temperature"] = typeof(string);
         RootTypeMap["wealth"] = typeof(string);
         RootTypeMap["events"] = typeof(string);
+        RootTypeMap["memory"] = typeof(string);
 
         // 4. Auto-populate from PromptContext (imported properties)
         foreach (var prop in typeof(PromptContext).GetProperties(BindingFlags.Public | BindingFlags.Instance))
@@ -134,9 +135,12 @@ public static class VariableDefinitions
         dict["RimTalk.ScribanVar.Category.System".Translate()] = new()
         {
             ("lang", "Active native language name"),
+            ("is_user", "True if dialogue is from or to user"),
             ("json.format", "JSON output instructions"),
-            ("chat.history", "Full alternating history (Raw)"),
-            ("chat.history_simplified", "History with AI JSON parsed and tags removed")
+            ("json.anchor", "Concise trailing JSON anchor instructions"),
+            ("chat.history", "Dialogue history (per settings)"),
+            ("chat.history_simplified", "Condensed dialogue history"),
+            ("chat.history_raw", "Raw JSON dialogue history")
         };
 
         // 5. Mod-added variables from the API

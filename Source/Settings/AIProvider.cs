@@ -148,4 +148,9 @@ public static class AIProviderRegistry
     {
         return Defs.TryGetValue(p, out var def) ? def.ListModelsUrl : null;
     }
+
+    public static Dictionary<string, string> GetExtraHeaders(this AIProvider p)
+    {
+        return Defs.TryGetValue(p, out var def) ? def.ExtraHeaders : null;
+    }
 }

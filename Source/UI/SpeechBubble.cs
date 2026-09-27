@@ -22,14 +22,12 @@ public class SpeechBubble
     public float TotalDurationSec;
     public float ElapsedRealSec;
     public bool IsUrgent;
-    public bool IsInPain;
     public bool IsAnnouncement;
     public bool IsAggressive;
     public bool IsDowned;
     public int ConversationId = -1;
+    public bool HasDirective;
     public bool Active;
-    public int LastTypewriterLength = -1;
-    public string CachedTypewriterText;
     public int LastUpdateFrame = -1;
 
     public void Init(Pawn pawn, string text, int conversationId = -1, InteractionType interactionType = InteractionType.None, TalkType talkType = TalkType.Other)
@@ -45,6 +43,7 @@ public class SpeechBubble
         ElapsedRealSec = 0f;
         Active = true;
         ConversationId = conversationId;
+        HasDirective = false;
 
         // Determine special contextual states
         IsDowned = pawn?.Downed ?? false;
@@ -53,7 +52,6 @@ public class SpeechBubble
         
         // The bubble shakes violently only when in acute physical danger (fire, combat, fleeing)
         IsUrgent = !IsDowned && interactionType == InteractionType.None && pawn != null && pawn.IsInCombatOrFire();
-        IsInPain = false;
 
         var settings = Settings.Get();
 
@@ -237,15 +235,13 @@ public class SpeechBubble
         Text = null;
         WrappedText = null;
         IsUrgent = false;
-        IsInPain = false;
         IsAnnouncement = false;
         IsAggressive = false;
         IsDowned = false;
         ConversationId = -1;
+        HasDirective = false;
         TotalDurationSec = 0f;
         ElapsedRealSec = 0f;
-        LastTypewriterLength = -1;
-        CachedTypewriterText = null;
         LastUpdateFrame = -1;
     }
 }
