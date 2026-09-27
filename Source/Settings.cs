@@ -14,7 +14,7 @@ namespace RimTalk;
 
 public partial class Settings : Mod
 {
-    internal const string Version = "1.2.15";
+    internal const string Version = "1.3.0";
 
     private Vector2 _mainScrollPosition = Vector2.zero;
     private Vector2 _aiInstructionScrollPos = Vector2.zero;
