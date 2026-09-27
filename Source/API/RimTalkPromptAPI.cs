@@ -152,6 +152,7 @@ public static class RimTalkPromptAPI
     }
 
     private static readonly List<ModEntryRegistration> _registeredModEntries = new();
+    private static readonly Dictionary<string, HashSet<string>> _registeredDisabledBuiltIns = new(StringComparer.OrdinalIgnoreCase);
     private static readonly object _registrationLock = new();
 
     private static void RecordModEntry(
@@ -195,13 +196,84 @@ public static class RimTalkPromptAPI
     }
 
     /// <summary>
-    /// Checks if any mods have registered default prompt entries.
+    /// Sets whether a built-in prompt entry (e.g. BuiltInPromptIds.ChatHistory, "chat-history", "recent-events")
+    /// is enabled on behalf of a mod.
+    /// Disabling an entry registers it under the mod ID so it remains disabled even after resetting to mod defaults.
+    /// Enabling an entry removes it from the mod's disabled registry.
+    /// </summary>
+    /// <param name="modId">The mod's package ID</param>
+    /// <param name="targetIdOrName">The canonical built-in prompt ID or display name</param>
+    /// <param name="enabled">True to enable, false to disable</param>
+    /// <returns>True if the target entry was found and updated in the active preset</returns>
+    public static bool SetBuiltInEntryEnabled(string modId, string targetIdOrName, bool enabled)
+    {
+        if (string.IsNullOrEmpty(modId) || string.IsNullOrEmpty(targetIdOrName)) return false;
+
+        string sanitizedModId = SanitizeModId(modId);
+        lock (_registrationLock)
+        {
+            if (!enabled)
+            {
+                if (!_registeredDisabledBuiltIns.TryGetValue(sanitizedModId, out var set))
+                {
+                    set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                    _registeredDisabledBuiltIns[sanitizedModId] = set;
+                }
+                set.Add(targetIdOrName);
+            }
+            else
+            {
+                if (_registeredDisabledBuiltIns.TryGetValue(sanitizedModId, out var set))
+                {
+                    set.Remove(targetIdOrName);
+                    if (set.Count == 0)
+                    {
+                        _registeredDisabledBuiltIns.Remove(sanitizedModId);
+                    }
+                }
+            }
+        }
+
+        var preset = PromptManager.Instance?.GetActivePreset();
+        if (preset?.Entries != null)
+        {
+            var target = preset.Entries.FirstOrDefault(e => MatchesEntry(e, targetIdOrName));
+            if (target != null)
+            {
+                target.Enabled = enabled;
+                Logger.Debug($"Mod '{modId}' set built-in prompt entry '{target.Name}' ({target.Id}) enabled: {enabled}");
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool MatchesEntry(PromptEntry entry, string idOrName)
+    {
+        if (entry == null || string.IsNullOrEmpty(idOrName)) return false;
+        if (string.Equals(entry.Id, idOrName, StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(entry.Name, idOrName, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (string.Equals(idOrName, BuiltInPromptIds.ChatHistory, StringComparison.OrdinalIgnoreCase) && entry.IsChatHistory) return true;
+        if (string.Equals(idOrName, BuiltInPromptIds.RecentEvents, StringComparison.OrdinalIgnoreCase) && entry.IsRecentEvents) return true;
+        if (string.Equals(idOrName, BuiltInPromptIds.Context, StringComparison.OrdinalIgnoreCase) && entry.IsContext) return true;
+        if (string.Equals(idOrName, BuiltInPromptIds.BaseInstruction, StringComparison.OrdinalIgnoreCase) && entry.IsBaseInstruction) return true;
+        if (string.Equals(idOrName, BuiltInPromptIds.JsonFormat, StringComparison.OrdinalIgnoreCase) && entry.IsJsonFormat) return true;
+        if (string.Equals(idOrName, BuiltInPromptIds.DialoguePrompt, StringComparison.OrdinalIgnoreCase) && entry.IsDialoguePrompt) return true;
+
+        return false;
+    }
+
+    /// <summary>
+    /// Checks if any mods have registered default prompt entries or disabled built-ins.
     /// </summary>
     public static bool HasRegisteredModDefaults()
     {
         lock (_registrationLock)
         {
-            return _registeredModEntries.Count > 0;
+            return _registeredModEntries.Count > 0 || _registeredDisabledBuiltIns.Count > 0;
         }
     }
 
@@ -214,9 +286,11 @@ public static class RimTalkPromptAPI
         if (targetPreset == null) return;
 
         List<ModEntryRegistration> registrations;
+        Dictionary<string, HashSet<string>> disabledBuiltInsCopy;
         lock (_registrationLock)
         {
             registrations = _registeredModEntries.ToList();
+            disabledBuiltInsCopy = _registeredDisabledBuiltIns.ToDictionary(kvp => kvp.Key, kvp => new HashSet<string>(kvp.Value, StringComparer.OrdinalIgnoreCase));
         }
 
         bool hasCustomChatHistory = false;
@@ -254,6 +328,19 @@ public static class RimTalkPromptAPI
                   entryClone.Content.IndexOf("ctx.history", StringComparison.OrdinalIgnoreCase) >= 0)))
             {
                 hasCustomChatHistory = true;
+            }
+        }
+
+        // Apply explicitly disabled built-ins registered by mods
+        foreach (var (_, disabledIds) in disabledBuiltInsCopy)
+        {
+            foreach (var idOrName in disabledIds)
+            {
+                var target = targetPreset.Entries.FirstOrDefault(e => MatchesEntry(e, idOrName));
+                if (target != null)
+                {
+                    target.Enabled = false;
+                }
             }
         }
 
@@ -455,6 +542,7 @@ public static class RimTalkPromptAPI
         lock (_registrationLock)
         {
             _registeredModEntries.RemoveAll(r => r.SourceModId == modId);
+            _registeredDisabledBuiltIns.Remove(SanitizeModId(modId));
         }
 
         var preset = PromptManager.Instance.GetActivePreset();
