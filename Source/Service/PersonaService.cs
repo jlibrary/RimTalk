@@ -18,8 +18,21 @@ public static class PersonaService
             }
             return "";
         }
-        return Hediff_Persona.GetOrAddNew(pawn).Personality;
+        var hediff = Hediff_Persona.GetOrAddNew(pawn);
+        if (hediff == null) return "";
+
+        if (pawn != null && pawn.RaceProps.Humanlike && !pawn.IsBaby() && IsBabyPersona(hediff.Personality))
+        {
+            var adultData = Constant.Personalities.RandomElement();
+            hediff.Personality = adultData.Persona;
+            hediff.TalkInitiationWeight = adultData.Chattiness;
+        }
+
+        return hediff.Personality;
     }
+
+    public static bool IsBabyPersona(string persona) =>
+        !string.IsNullOrEmpty(persona) && persona == Constant.PersonaBaby.Persona;
 
     public static void SetPersonality(Pawn pawn, string personality)
     {

@@ -198,4 +198,7 @@ public static class Constant
 
     private static PersonalityData _personaNonHuman;
     public static PersonalityData PersonaNonHuman => _personaNonHuman ??= new("RimTalk.Persona.NonHuman".Translate(), 0.2f);
+
+    private static PersonalityData _personaBaby;
+    public static PersonalityData PersonaBaby => _personaBaby ??= new("RimTalk.Persona.Baby".Translate(), 0.15f);
 }

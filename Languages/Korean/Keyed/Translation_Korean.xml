@@ -66,6 +66,7 @@
     <RimTalk.Persona.Animal>동물: 단순하고 감정적이며 본능 우선. 짧고 감각적인 문장 사용.</RimTalk.Persona.Animal>
     <RimTalk.Persona.Mech>로봇: 간결한 진단, 효율적 반응. 차분하고 데이터 중심적인 어조.</RimTalk.Persona.Mech>
     <RimTalk.Persona.NonHuman>비인간: 신비롭고 은유적이며 현실을 왜곡. 환상, 메아리, 기이한 이미지로 말함.</RimTalk.Persona.NonHuman>
+    <RimTalk.Persona.Baby>아기: 단순하고 감정적이며 감각적임. 옹알이, 웃음, 울음으로 반응하고 배고픔, 안락함, 친숙한 얼굴에 반응함.</RimTalk.Persona.Baby>
 
     <!-- RimTalk_Toggle.cs -->
     <RimTalk.Toggle.Tooltip>오버레이 창 켜기/끄기\n\nShift+클릭: 모드 설정\nCtrl+클릭: 디버그 창</RimTalk.Toggle.Tooltip>

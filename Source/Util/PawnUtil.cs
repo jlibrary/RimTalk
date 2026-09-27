@@ -15,6 +15,10 @@ namespace RimTalk.Util;
 
 public static class PawnUtil
 {
+    private const float SeverePainThreshold = 0.4f;
+    private const float DangerBleedRateThreshold = 0.3f;
+    private const float DangerLethalSeverityThreshold = 0.8f;
+
     public static bool IsTalkEligible(this Pawn pawn)
     {
         if (pawn == null) return false;
@@ -54,13 +58,12 @@ public static class PawnUtil
     {
         if (pawn == null || pawn.IsPlayer()) return false;
         if (pawn.Dead) return true;
-        if (pawn.Downed) return true;
-        // Being unable to walk is a condition, not a danger - genuine danger to an immobile
-        // pawn is already covered by the hostile/bleeding/pain/burning/hediff checks below.
+        // Immobility or being downed is a condition, not acute danger - genuine danger (threats, bleeding, pain shock, lethal illness)
+        // is evaluated directly by the criteria below.
         if (pawn.InMentalState && includeMentalState) return true;
         if (pawn.IsBurning()) return true;
         if (pawn.health.hediffSet.PainTotal >= pawn.GetStatValue(StatDefOf.PainShockThreshold)) return true;
-        if (pawn.health.hediffSet.BleedRateTotal > 0.3f) return true;
+        if (pawn.health.hediffSet.BleedRateTotal > DangerBleedRateThreshold) return true;
         if (pawn.CurJobDef == JobDefOf.Flee || pawn.CurJobDef == JobDefOf.FleeAndCower) return true;
         if (pawn.IsInCombat()) return true;
         if (IsLiveThreat(pawn, pawn.mindState?.meleeThreat)) return true;
@@ -69,35 +72,23 @@ public static class PawnUtil
         foreach (var h in pawn.health.hediffSet.hediffs)
         {
             if (h.Visible && (h.CurStage?.lifeThreatening == true ||
-                              h.def.lethalSeverity > 0 && h.Severity > h.def.lethalSeverity * 0.8f))
+                              h.def.lethalSeverity > 0 && h.Severity > h.def.lethalSeverity * DangerLethalSeverityThreshold))
                 return true;
         }
 
         return false;
+    }
+
+    public static bool IsDownedInPain(this Pawn pawn)
+    {
+        if (pawn == null || !pawn.Downed) return false;
+        return pawn.health?.InPainShock == true || (pawn.health?.hediffSet != null && pawn.health.hediffSet.PainTotal >= SeverePainThreshold);
     }
 
     public static bool IsInCombatOrFire(this Pawn pawn)
     {
         if (pawn == null || pawn.Dead || pawn.Downed || pawn.IsPlayer()) return false;
         return pawn.IsBurning() || pawn.IsInCombat() || pawn.CurJobDef == JobDefOf.Flee || pawn.CurJobDef == JobDefOf.FleeAndCower;
-    }
-
-    public static bool IsInPainOrSick(this Pawn pawn)
-    {
-        if (pawn == null || pawn.Dead || pawn.Downed || pawn.IsPlayer()) return false;
-        if (pawn.health?.hediffSet == null) return false;
-
-        if (pawn.health.hediffSet.BleedRateTotal > 0.5f) return true;
-        if (pawn.health.hediffSet.PainTotal >= 0.4f) return true;
-
-        foreach (var h in pawn.health.hediffSet.hediffs)
-        {
-            if (h.Visible && (h.CurStage?.lifeThreatening == true ||
-                              h.def.lethalSeverity > 0 && h.Severity > h.def.lethalSeverity * 0.7f))
-                return true;
-        }
-
-        return false;
     }
 
     public static bool IsInCombat(this Pawn pawn)
@@ -552,9 +543,8 @@ public static class PawnUtil
         // Longer names first to avoid partial matches
         replacements.Sort((a, b) => b.Key.Length.CompareTo(a.Key.Length));
 
-        for (int i = 0; i < replacements.Count; i++)
+        foreach (var kv in replacements)
         {
-            var kv = replacements[i];
             if (text.Contains(kv.Key))
             {
                 text = text.Replace(kv.Key, kv.Value);

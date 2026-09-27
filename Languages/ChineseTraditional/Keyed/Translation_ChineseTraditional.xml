@@ -65,6 +65,7 @@
     <RimTalk.Persona.Animal>動物: 單純且情緒化，本能優先。使用簡短直觀的感官語句。</RimTalk.Persona.Animal>
     <RimTalk.Persona.Mech>機器人: 診斷精簡，響應高效。沉穩且注重數據的語調。</RimTalk.Persona.Mech>
     <RimTalk.Persona.NonHuman>非人類: 神秘隱晦且扭曲現實。使用幻象、回聲與怪誕意象說話。</RimTalk.Persona.NonHuman>
+    <RimTalk.Persona.Baby>嬰兒: 單純且感知優先。透過咿呀學語、笑鬧與哭泣反應，關注飢餓、舒適與熟悉面孔。</RimTalk.Persona.Baby>
 
     <!-- RimTalk_Toggle.cs -->
     <RimTalk.Toggle.Tooltip>切換懸浮窗\n\nShift+點擊打開模組設定\nCtrl+點擊打開除錯視窗</RimTalk.Toggle.Tooltip>

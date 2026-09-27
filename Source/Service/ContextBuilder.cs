@@ -283,7 +283,7 @@ public static class ContextBuilder
         var m = pawn.needs?.mood;
         if (m?.MoodString != null)
         {
-            string mood = pawn.Downed && !pawn.IsBaby()
+            string mood = pawn.IsDownedInPain()
                 ? "Critical: Downed (in pain/distress)"
                 : pawn.InMentalState
                     ? $"Mood: {pawn.MentalState?.InspectLine} (in mental break)"
@@ -538,7 +538,7 @@ public static class ContextBuilder
                     mentalBreakDirective = baseDirective;
                 }
             }
-            else if (mainPawn.Downed && !mainPawn.IsBaby())
+            else if (mainPawn.IsDownedInPain())
             {
                 topicSb.Append("(downed in pain. Short, strained dialogue)");
             }

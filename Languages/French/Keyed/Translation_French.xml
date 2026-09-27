@@ -65,6 +65,7 @@
     <RimTalk.Persona.Animal>Animal: Simple, émotif et guidé par l'instinct. Phrases courtes et sensorielles.</RimTalk.Persona.Animal>
     <RimTalk.Persona.Mech>Robot: Diagnostic concis, réponse efficace. Ton calme et axé sur les données.</RimTalk.Persona.Mech>
     <RimTalk.Persona.NonHuman>Non-humain: Cryptique, métaphorique et déformant la réalité. S'exprime par visions, échos et images étranges.</RimTalk.Persona.NonHuman>
+    <RimTalk.Persona.Baby>Bébé: Simple, émotif et sensoriel. Gazouille, rit et pleure ; réagit à la faim, au réconfort et aux visages familiers.</RimTalk.Persona.Baby>
 
     <!-- RimTalk_Toggle.cs -->
     <RimTalk.Toggle.Tooltip>Basculer la fenêtre de superposition\n\nMaj+clic pour les paramètres du mod\nCtrl+clic pour la fenêtre de débogage</RimTalk.Toggle.Tooltip>
