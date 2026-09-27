@@ -2,7 +2,6 @@ using System.Reflection;
 using HarmonyLib;
 using RimTalk.Data;
 using RimTalk.Patches;
-using RimTalk.Service;
 using RimTalk.Source.Data;
 using RimTalk.UI;
 using RimTalk.Util;
@@ -18,20 +17,27 @@ public static class InteractionLogPatch
     private static readonly FieldInfo InitiatorField = AccessTools.Field(typeof(PlayLogEntry_Interaction), "initiator");
     private static readonly FieldInfo RecipientField = AccessTools.Field(typeof(PlayLogEntry_Interaction), "recipient");
 
+    private static readonly FieldInfo SingleIntDefField = AccessTools.Field(typeof(PlayLogEntry_InteractionSinglePawn), "intDef");
+    private static readonly FieldInfo SingleInitiatorField = AccessTools.Field(typeof(PlayLogEntry_InteractionSinglePawn), "initiator");
+
     public static void Postfix(LogEntry entry)
     {
         // 1. Fast-path: Skip combat logs and non-interaction entries immediately (< 1ns)
-        if (entry is not PlayLogEntry_Interaction interaction) return;
+        if (entry is not PlayLogEntry_Interaction &&
+            entry is not PlayLogEntry_InteractionSinglePawn)
+        {
+            return;
+        }
 
         RimTalkSettings settings = Settings.Get();
         if (settings == null) return;
 
         // 2. Check if this is a RimTalk interaction
-        if (IsRimTalkInteraction(interaction))
+        if (IsRimTalkInteraction(entry))
         {
             if (settings.BubbleMode == RimTalkSettings.BubbleDisplayMode.Native)
             {
-                SpeechBubbleDrawer.AddBubble(interaction);
+                SpeechBubbleDrawer.AddBubble(entry);
             }
             return;
         }
@@ -42,7 +48,7 @@ public static class InteractionLogPatch
             return;
         }
 
-        InteractionDef interactionDef = GetInteractionDef(interaction);
+        InteractionDef interactionDef = GetInteractionDef(entry);
         if (interactionDef == null) return;
 
         bool isFastTrack = settings.IsFastTrackInteraction(interactionDef.defName);
@@ -51,15 +57,25 @@ public static class InteractionLogPatch
         if (!isFastTrack && (interactionDef == InteractionDefOf.Chitchat || interactionDef == InteractionDefOf.DeepTalk))
             return;
 
-        Pawn initiator = InitiatorField?.GetValue(interaction) as Pawn;
+        Pawn initiator;
+        Pawn recipient = null;
+
+        if (entry is PlayLogEntry_Interaction)
+        {
+            initiator = InitiatorField?.GetValue(entry) as Pawn;
+            recipient = RecipientField?.GetValue(entry) as Pawn;
+        }
+        else
+        {
+            initiator = SingleInitiatorField?.GetValue(entry) as Pawn;
+        }
+
         if (initiator == null || initiator.Map != Find.CurrentMap) return;
 
         // Fast-path: Skip immediately if initiator is not cached/eligible or already has queued requests
         var pawnState = Cache.Get(initiator);
         if (pawnState == null || (!isFastTrack && pawnState.TalkRequests.Count > 0))
             return;
-
-        Pawn recipient = RecipientField?.GetValue(interaction) as Pawn;
 
         // If in danger then stop non-fast-track interactions
         if (!isFastTrack
@@ -83,7 +99,8 @@ public static class InteractionLogPatch
             }
         }
 
-        string prompt = interaction.ToGameStringFromPOV(initiator).StripTags();
+        string prompt = entry.ToGameStringFromPOV(initiator)?.StripTags();
+        if (string.IsNullOrWhiteSpace(prompt)) return;
         prompt = $"{prompt} ({interactionDef.label})";
         pawnState.AddTalkRequest(prompt, recipient, isFastTrack ? TalkType.Interaction : TalkType.Chitchat);
     }
@@ -108,14 +125,17 @@ public static class InteractionLogPatch
     public static bool IsRimTalkInteraction(LogEntry entry)
     {
         return entry is PlayLogEntry_RimTalkInteraction ||
-               (entry is PlayLogEntry_Interaction interaction &&
-                InteractionTextPatch.IsRimTalkInteraction(interaction));
+               (entry is PlayLogEntry_Interaction or PlayLogEntry_InteractionSinglePawn &&
+                InteractionTextPatch.IsRimTalkInteraction(entry));
     }
 
     public static InteractionDef GetInteractionDef(LogEntry entry)
     {
-        return entry is PlayLogEntry_Interaction
-            ? IntDefField?.GetValue(entry) as InteractionDef
-            : null;
+        return entry switch
+        {
+            PlayLogEntry_Interaction => IntDefField?.GetValue(entry) as InteractionDef,
+            PlayLogEntry_InteractionSinglePawn => SingleIntDefField?.GetValue(entry) as InteractionDef,
+            _ => null
+        };
     }
 }
