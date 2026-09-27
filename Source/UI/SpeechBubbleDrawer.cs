@@ -237,7 +237,7 @@ public static class SpeechBubbleDrawer
                 if (pawn.Map.fogGrid.IsFogged(pawn.Position)) continue;
                 if (!currentViewRect.Contains(pawn.Position)) continue;
 
-                // Fade calculation in real seconds: Aggressive interactions pop in instantly; Downed & Pain bubbles fade in/out slowly; others standard
+                // Fade calculation in real seconds: Aggressive interactions pop in instantly; Downed bubbles fade in/out slowly; others standard
                 float elapsed = bubble.ElapsedRealSec;
                 float remaining = bubble.TotalDurationSec - elapsed;
 

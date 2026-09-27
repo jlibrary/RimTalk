@@ -65,6 +65,7 @@
     <RimTalk.Persona.Animal>Животное: Простое, эмоциональное, инстинкты на первом месте. Короткие чувственные фразы.</RimTalk.Persona.Animal>
     <RimTalk.Persona.Mech>Робот: Краткая диагностика, эффективный ответ. Спокойный, ориентированный на данные тон.</RimTalk.Persona.Mech>
     <RimTalk.Persona.NonHuman>Нелюдь: Загадочный, метафоричный, искажающий реальность. Говорит видениями, эхом и жуткими образами.</RimTalk.Persona.NonHuman>
+    <RimTalk.Persona.Baby>Младенец: Простой, эмоциональный и чувственный. Лепечет, смеется и плачет; реагирует на голод, комфорт и знакомые лица.</RimTalk.Persona.Baby>
     
     <!-- RimTalk_Toggle.cs -->
     <RimTalk.Toggle.Tooltip>Переключить окно наложения\n\nShift+клик для настроек мода\nCtrl+клик для окна отладки</RimTalk.Toggle.Tooltip>

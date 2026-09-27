@@ -64,6 +64,7 @@
     <RimTalk.Persona.Animal>動物: 単純で感情的、本能優先。短く感覚的な文を使用。</RimTalk.Persona.Animal>
     <RimTalk.Persona.Mech>ロボット: 簡潔な診断、効率的な応答。冷静でデータ重視の口調。</RimTalk.Persona.Mech>
     <RimTalk.Persona.NonHuman>非人間: 神秘的で比喩的、現実を歪める。幻視、木霊、奇怪なイメージで語る。</RimTalk.Persona.NonHuman>
+    <RimTalk.Persona.Baby>赤ちゃん: 単純で感覚優先。喃語、笑い声、泣き声で反応し、空腹や心地よさ、見慣れた顔に反応する。</RimTalk.Persona.Baby>
 
     <!-- RimTalk_Toggle.cs -->
     <RimTalk.Toggle.Tooltip>オーバーレイウィンドウの切り替え\n\nShift+クリックでMod設定\nCtrl+クリックでデバッグウィンドウ</RimTalk.Toggle.Tooltip>

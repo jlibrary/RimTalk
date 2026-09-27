@@ -66,6 +66,7 @@
     <RimTalk.Persona.Animal>Animal: Simple, emotional, instinct-first. Uses short sensory sentences.</RimTalk.Persona.Animal>
     <RimTalk.Persona.Mech>Robot: Concise diagnostics, efficient response. Calm and data-driven tone.</RimTalk.Persona.Mech>
     <RimTalk.Persona.NonHuman>Non-human: Cryptic, metaphorical, reality-bending. Speaks in visions, echoes, and uncanny images.</RimTalk.Persona.NonHuman>
+    <RimTalk.Persona.Baby>Baby: Simple, emotional, sensory. Babbles, coos, laughs, and cries; reacts to hunger, comfort, and familiar faces.</RimTalk.Persona.Baby>
 
     <!-- RimTalk_Toggle.cs -->
     <RimTalk.Toggle.Tooltip>Toggle overlay window\nShift+click for mod settings\nCtrl+click for debug window</RimTalk.Toggle.Tooltip>

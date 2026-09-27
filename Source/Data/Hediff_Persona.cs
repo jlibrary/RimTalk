@@ -57,7 +57,7 @@ public class Hediff_Persona : Hediff
             // Assign a random personality on creation
             PersonalityData randomPersonalityData =
                 pawn.IsMutant ? Constant.PersonaNonHuman
-                : pawn.RaceProps.Humanlike ? Constant.Personalities.RandomElement()
+                : pawn.RaceProps.Humanlike ? (pawn.IsBaby() ? Constant.PersonaBaby : Constant.Personalities.RandomElement())
                 : pawn.RaceProps.Animal ? Constant.PersonaAnimal
                 : pawn.RaceProps.IsMechanoid ? Constant.PersonaMech
                 : Constant.PersonaNonHuman;
@@ -73,6 +73,13 @@ public class Hediff_Persona : Hediff
             }
         
             pawn.health.AddHediff(hediff);
+        }
+        else if (pawn.RaceProps.Humanlike && !pawn.IsBaby() && PersonaService.IsBabyPersona(hediff.Personality))
+        {
+            // Transition from baby persona to an adult persona when growing up
+            PersonalityData adultData = Constant.Personalities.RandomElement();
+            hediff.Personality = adultData.Persona;
+            hediff.TalkInitiationWeight = adultData.Chattiness;
         }
     
         // Ensure dictionary is initialized (for both new and existing hediffs)
