@@ -29,7 +29,7 @@ public static class Constant
          Visitor: polite, curious, deferential; treat other visitors in the same group as companions
          Enemy: hostile, aggressive; terse commands/threats
 
-         Monologue = 1 turn. Conversation = 4-8 short turns
+         Monologue = 1 turn. Conversation = 4-8 short turns (combat: 1-2 turns)
          """;
 
     public const string ChatHistoryHeader = PromptPresetAssembler.ChatHistoryHeader;

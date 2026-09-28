@@ -451,7 +451,7 @@ public static class ContextBuilder
         {
             bool inCombat = mainPawn.IsInCombat() || mainPawn.GetMapRole() == MapRole.Invading;
             bool hasActiveHostiles = inCombat && mainPawn.HasActiveHostiles();
-            Pawn partner = pawns.Count > 1 ? (pawns[0] == mainPawn ? pawns[1] : pawns[0]) : null;
+            Pawn partner = pawns.Count > 1 ? pawns[0] == mainPawn ? pawns[1] : pawns[0] : null;
             bool isStrangerEncounter = partner != null && IsStrangerEncounter(mainPawn, partner, pawns);
 
             if (inCombat)
@@ -474,11 +474,18 @@ public static class ContextBuilder
                 {
                     intentSb.Append($"{shortName} dialogue short, confident/victorious tone (destroying remnants/mopping up)");
                 }
+                else if (mainPawn.IsSlave || mainPawn.IsPrisoner)
+                {
+                    intentSb.Append($"{shortName} dialogue short (worry)");
+                }
+                else if (TryBuildCombatSides(mainPawn, pawns, out var combatSides))
+                {
+                    intentSb.Append($"{shortName} dialogue short, urgent combat tone\n{combatSides}");
+                    intentSb.Append("\n(Combat shouting: tactical orders within own side only; brief hostile taunts or surrender demands across enemy lines)");
+                }
                 else
                 {
-                    intentSb.Append(mainPawn.IsSlave || mainPawn.IsPrisoner
-                        ? $"{shortName} dialogue short (worry)"
-                        : $"{shortName} dialogue short, urgent tone ({mainPawn.GetMapRole().ToString().ToLower()}/command)");
+                    intentSb.Append($"{shortName} dialogue short, urgent tone ({mainPawn.GetMapRole().ToString().ToLower()}/command)");
                 }
             }
             else if (pawns.Count == 1)
@@ -711,5 +718,40 @@ public static class ContextBuilder
         {
             return false;
         }
+    }
+
+    private static bool TryBuildCombatSides(Pawn mainPawn, List<Pawn> pawns, out string combatSidesText)
+    {
+        combatSidesText = null;
+        if (pawns is not { Count: > 1 }) return false;
+
+        bool hasEnemies = false;
+        foreach (var p in pawns)
+        {
+            if (p != null && p != mainPawn && p.HostileTo(mainPawn))
+            {
+                hasEnemies = true;
+                break;
+            }
+        }
+
+        if (!hasEnemies) return false;
+
+        var allies = new List<string>();
+        var enemies = new List<string>();
+        foreach (var p in pawns)
+        {
+            if (p == null) continue;
+            string pName = PromptService.GetUniqueName(p, pawns);
+            if (p == mainPawn || !p.HostileTo(mainPawn))
+                allies.Add(pName);
+            else
+                enemies.Add(pName);
+        }
+
+        string allySideLabel = mainPawn.IsFreeColonist ? "Colonists" : "Allies";
+        string enemySideLabel = "Hostile Enemies";
+        combatSidesText = $"[Combat Sides]\n- {allySideLabel}: {string.Join(", ", allies)}\n- {enemySideLabel}: {string.Join(", ", enemies)}";
+        return true;
     }
 }
