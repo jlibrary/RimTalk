@@ -1,6 +1,6 @@
 using System;
 
-namespace RimTalk.Memory;
+namespace RimTalk.PawnMemory;
 
 /// <summary>
 /// Represents an event log entry tracking a memory or directive modification.

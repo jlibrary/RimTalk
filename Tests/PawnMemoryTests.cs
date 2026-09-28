@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using RimTalk.Memory;
+using RimTalk.PawnMemory;
 using Xunit;
 
 namespace RimTalk.Tests;

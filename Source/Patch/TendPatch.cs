@@ -1,5 +1,5 @@
 using HarmonyLib;
-using RimTalk.Memory;
+using RimTalk.PawnMemory;
 using RimWorld;
 using Verse;
 

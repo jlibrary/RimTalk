@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace RimTalk.Memory;
+namespace RimTalk.PawnMemory;
 
 /// <summary>
 /// Thread-safe in-memory history buffer storing recent memory and directive transitions for debugging.

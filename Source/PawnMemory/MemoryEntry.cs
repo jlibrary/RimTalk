@@ -1,7 +1,7 @@
 using UnityEngine;
 using Verse;
 
-namespace RimTalk.Memory;
+namespace RimTalk.PawnMemory;
 
 /// <summary>
 /// Represents a single persistent episodic memory or impression held by a pawn.

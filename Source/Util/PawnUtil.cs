@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using RimTalk.Data;
-using RimTalk.Memory;
+using RimTalk.PawnMemory;
 using RimTalk.Source.Data;
 using RimTalk.Service;
 using RimWorld;

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace RimTalk.Memory;
+namespace RimTalk.PawnMemory;
 
 /// <summary>
 /// Formats retrieved memories into token-minimal, attitude-focused prompt directives

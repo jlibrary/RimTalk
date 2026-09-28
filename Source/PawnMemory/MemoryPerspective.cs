@@ -1,4 +1,4 @@
-namespace RimTalk.Memory;
+namespace RimTalk.PawnMemory;
 
 /// <summary>
 /// Defines the relational perspective of an episodic memory entry.

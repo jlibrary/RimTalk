@@ -1,5 +1,5 @@
 using HarmonyLib;
-using RimTalk.Memory;
+using RimTalk.PawnMemory;
 using Verse;
 
 namespace RimTalk.Patch;

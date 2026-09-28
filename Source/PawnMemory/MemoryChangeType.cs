@@ -1,4 +1,4 @@
-namespace RimTalk.Memory;
+namespace RimTalk.PawnMemory;
 
 /// <summary>
 /// Categorizes the lifecycle transitions and modifications of pawn memories and player directives.

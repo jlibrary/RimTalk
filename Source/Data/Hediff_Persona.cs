@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using RimTalk.Memory;
+using RimTalk.PawnMemory;
 using RimTalk.Service;
 using RimTalk.Util;
 using RimWorld;

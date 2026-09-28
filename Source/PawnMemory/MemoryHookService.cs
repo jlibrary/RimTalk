@@ -8,7 +8,7 @@ using UnityEngine;
 using Verse;
 using Cache = RimTalk.Data.Cache;
 
-namespace RimTalk.Memory;
+namespace RimTalk.PawnMemory;
 
 /// <summary>
 /// Intercepts and transforms game events (social thoughts, heroic/tragic tales)

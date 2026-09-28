@@ -58,13 +58,13 @@
         <Compile Include="../Source/Util/ErrorUtil.cs" Link="Linked/ErrorUtil.cs" />
         <Compile Include="../Source/Client/OpenAI/OpenAIDto.cs" Link="Linked/OpenAIDto.cs" />
         <Compile Include="../Source/Data/TopicKeywordPool.cs" Link="Linked/TopicKeywordPool.cs" />
-        <Compile Include="../Source/Memory/MemoryPerspective.cs" Link="Linked/MemoryPerspective.cs" />
-        <Compile Include="../Source/Memory/MemoryEntry.cs" Link="Linked/MemoryEntry.cs" />
-        <Compile Include="../Source/Memory/MemoryChangeType.cs" Link="Linked/MemoryChangeType.cs" />
-        <Compile Include="../Source/Memory/MemoryLogEntry.cs" Link="Linked/MemoryLogEntry.cs" />
-        <Compile Include="../Source/Memory/MemoryHistory.cs" Link="Linked/MemoryHistory.cs" />
-        <Compile Include="../Source/Memory/PawnMemoryTracker.cs" Link="Linked/PawnMemoryTracker.cs" />
-        <Compile Include="../Source/Memory/MemoryFormatter.cs" Link="Linked/MemoryFormatter.cs" />
+        <Compile Include="../Source/PawnMemory/MemoryPerspective.cs" Link="Linked/MemoryPerspective.cs" />
+        <Compile Include="../Source/PawnMemory/MemoryEntry.cs" Link="Linked/MemoryEntry.cs" />
+        <Compile Include="../Source/PawnMemory/MemoryChangeType.cs" Link="Linked/MemoryChangeType.cs" />
+        <Compile Include="../Source/PawnMemory/MemoryLogEntry.cs" Link="Linked/MemoryLogEntry.cs" />
+        <Compile Include="../Source/PawnMemory/MemoryHistory.cs" Link="Linked/MemoryHistory.cs" />
+        <Compile Include="../Source/PawnMemory/PawnMemoryTracker.cs" Link="Linked/PawnMemoryTracker.cs" />
+        <Compile Include="../Source/PawnMemory/MemoryFormatter.cs" Link="Linked/MemoryFormatter.cs" />
         <Compile Include="../Source/Compatibility/PresetMigrator.cs" Link="Linked/PresetMigrator.cs" />
     </ItemGroup>
 

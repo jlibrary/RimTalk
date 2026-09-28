@@ -1,4 +1,4 @@
-using RimTalk.Memory;
+using RimTalk.PawnMemory;
 using RimTalk.Service;
 using Verse;
 

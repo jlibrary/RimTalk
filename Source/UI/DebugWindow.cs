@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using RimTalk.Data;
-using RimTalk.Memory;
+using RimTalk.PawnMemory;
 using RimTalk.Prompt;
 using RimTalk.Service;
 using RimTalk.Source.Data;
