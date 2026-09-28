@@ -69,7 +69,7 @@ public static class EventService
             foreach (var letter in letterStack.LettersListForReading)
             {
                 if (letter == null || !seenLetters.Add(letter)) continue;
-                if (!IsLetterMapRelevant(letter, map)) continue;
+                if (!IsLetterMapRelevant(letter, map) || IsInspirationLetter(letter)) continue;
 
                 var label = letter.Label.ToString().Trim().StripTags();
                 if (string.IsNullOrEmpty(label)) continue;
@@ -104,7 +104,7 @@ public static class EventService
             foreach (var archivable in archive.ArchivablesListForReading)
             {
                 if (archivable is not Letter letter || !seenLetters.Add(letter)) continue;
-                if (!IsLetterMapRelevant(letter, map)) continue;
+                if (!IsLetterMapRelevant(letter, map) || IsInspirationLetter(letter)) continue;
 
                 var label = letter.Label.ToString().Trim().StripTags();
                 if (string.IsNullOrEmpty(label)) continue;
@@ -257,6 +257,31 @@ public static class EventService
         if (baseScore >= 1000) return 48f; // Critical: 2 days (48 hours)
         if (baseScore >= 500) return 24f;  // Major: 1 day (24 hours)
         return 12f; // Minor: 12 hours
+    }
+
+    private static bool IsInspirationLetter(Letter letter)
+    {
+        if (letter?.def != LetterDefOf.PositiveEvent) return false;
+
+        string label = letter?.Label.ToString();
+        if (string.IsNullOrEmpty(label)) return false;
+
+        var defs = DefDatabase<InspirationDef>.AllDefsListForReading;
+        if (defs == null) return false;
+
+        foreach (var def in defs)
+        {
+            if (def == null) continue;
+
+            string prefix = !def.beginLetterLabel.NullOrEmpty()
+                ? def.beginLetterLabel.CapitalizeFirst()
+                : def.LabelCap.Resolve().CapitalizeFirst();
+
+            if (!string.IsNullOrEmpty(prefix) && label.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                return true;
+        }
+
+        return false;   
     }
 
     public static string FormatElapsedTime(int elapsedTicks)
