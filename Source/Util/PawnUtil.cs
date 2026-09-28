@@ -840,27 +840,17 @@ public static class PawnUtil
 
         float opinion = pawn.relations?.OpinionOf(target) ?? 0f;
 
-        // Prisoners or slaves cause friction unless there is positive affinity (e.g. spouse, friends)
-        if ((target.IsPrisoner || target.IsSlave) && opinion <= 20f)
-        {
-            isSevere = true;
-            return true;
-        }
-
-        if (opinion <= -20f)
+        if (opinion <= -40f)
             isSevere = true;
 
         MemoryHookService.SyncActiveSocialThoughts(pawn, target);
 
-        if (isSevere)
-            return true;
-
         var hediff = Hediff_Persona.GetOrAddNew(pawn);
+        bool hasFrictionFromMemory = false;
         if (hediff?.Memories != null)
         {
             int currentTick = Current.ProgramState == ProgramState.Playing ? GenTicks.TicksGame : 0;
             const float halfLife = PawnMemoryTracker.DefaultHalfLifeDays;
-            bool hasFrictionFromMemory = false;
 
             for (int i = 0; i < hediff.Memories.Count; i++)
             {
@@ -879,14 +869,12 @@ public static class PawnUtil
                     }
                 }
             }
-
-            if (hasFrictionFromMemory)
-            {
-                return true;
-            }
         }
 
-        return opinion < 0 || isSevere;
+        if (isSevere)
+            return true;
+
+        return opinion <= -20f || hasFrictionFromMemory;
     }
 
     internal static string GetActivity(this Pawn pawn)

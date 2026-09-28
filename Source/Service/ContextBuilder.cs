@@ -497,7 +497,7 @@ public static class ContextBuilder
             if (!inCombat && mainPawn.IsCaringOrCustodialJob(out var careTarget) && mainPawn.HasRelationalFriction(careTarget))
             {
                 string targetName = PromptService.GetUniqueName(careTarget, pawns);
-                intentSb.Append($"\nTone toward {targetName}: Stern, reluctant, or coldly professional. Performing care/duty out of colony necessity or survival—NOT out of affection, forgiveness, or tearful worry.");
+                intentSb.Append($"\nTone toward {targetName}: Reluctant or strictly professional. Administering care out of duty or necessity despite personal friction.");
             }
             else if (!inCombat && partner != null)
             {
@@ -506,11 +506,11 @@ public static class ContextBuilder
                     string partnerName = PromptService.GetUniqueName(partner, pawns);
                     if (isSevere)
                     {
-                        intentSb.Append($"\nTone toward {partnerName}: Bitter, resentful, or coldly hostile. Harboring intense grief or bitter grudges—do NOT act warm, friendly, or comforting.");
+                        intentSb.Append($"\nTone toward {partnerName}: Bitter, resentful, or hostile due to deep animosity or grudges. Express tension naturally according to personality.");
                     }
                     else
                     {
-                        intentSb.Append($"\nTone toward {partnerName}: Curt, guarded, or distant. Annoyed or reluctant—do NOT act warm, playful, or affectionate.");
+                        intentSb.Append($"\nTone toward {partnerName}: Guarded, curt, or distant due to underlying friction. Reserved without being openly aggressive.");
                     }
                 }
                 else if (isStrangerEncounter)
