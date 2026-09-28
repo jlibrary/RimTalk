@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using RimTalk.Data;
+using RimTalk.Patch;
 using RimTalk.Source.Data;
 using RimTalk.Util;
 using RimWorld;
@@ -30,6 +31,10 @@ public static class MemoryHookService
         if (Current.ProgramState != ProgramState.Playing || thought?.pawn == null)
             return;
 
+        // Suppress thoughts generated during social interactions (e.g. insults, slighted, kind words)
+        if (PatchPawnInteractionsTrackerTryInteractWith.InInteraction)
+            return;
+
         var observer = thought.pawn;
 
         // 1. Resolve target pawn for interpersonal context and grief/trauma evaluation
@@ -52,7 +57,7 @@ public static class MemoryHookService
         if (IsIgnoredThought(thoughtDefName) || IsCoveredByAuthoritativeTale(thoughtDefName))
             return;
 
-        // Calculate emotional weight from social opinion offset and mood offset
+        // Calculate emotional weight from social opinion offset
         float weight = 0f;
         if (thought is Thought_MemorySocial st)
         {
@@ -64,15 +69,6 @@ public static class MemoryHookService
             {
                 weight = 0f;
             }
-        }
-
-        try
-        {
-            weight += thought.MoodOffset() * 4f;
-        }
-        catch
-        {
-            // Ignore any third-party thought calculation errors
         }
 
         weight = Mathf.Clamp(weight, -100f, 100f);
@@ -90,14 +86,6 @@ public static class MemoryHookService
         if (thoughtDefName.Equals("HarmedMe", StringComparison.OrdinalIgnoreCase))
         {
             note = "RimTalk.Memory.AttackedBy".Translate(otherPawn.LabelShort);
-        }
-        else if (thoughtDefName.Equals("Insulted", StringComparison.OrdinalIgnoreCase))
-        {
-            note = "RimTalk.Memory.InsultedBy".Translate(otherPawn.LabelShort);
-        }
-        else if (thoughtDefName.Equals("Slighted", StringComparison.OrdinalIgnoreCase))
-        {
-            note = "RimTalk.Memory.SlightedBy".Translate(otherPawn.LabelShort);
         }
         else
         {
@@ -144,16 +132,6 @@ public static class MemoryHookService
         {
             string note = "RimTalk.Memory.IBotchedSurgery".Translate(targetPawn.LabelShort);
             actorHediff.RecordMemory(targetPawn.thingIDNumber, targetPawn.LabelShort, "IBotchedSurgery", -20f, note, MemoryPerspective.Actor);
-        }
-        else if (thoughtDefName.Equals("RecruitedMe", StringComparison.OrdinalIgnoreCase))
-        {
-            string note = "RimTalk.Memory.IRecruited".Translate(targetPawn.LabelShort);
-            actorHediff.RecordMemory(targetPawn.thingIDNumber, targetPawn.LabelShort, "IRecruited", 20f, note, MemoryPerspective.Actor);
-        }
-        else if (thoughtDefName.Equals("Insulted", StringComparison.OrdinalIgnoreCase))
-        {
-            string note = "RimTalk.Memory.IInsulted".Translate(targetPawn.LabelShort);
-            actorHediff.RecordMemory(targetPawn.thingIDNumber, targetPawn.LabelShort, "IInsulted", -15f, note, MemoryPerspective.Actor);
         }
         else if (thoughtDefName.Equals("TendedMe", StringComparison.OrdinalIgnoreCase))
         {
@@ -557,10 +535,8 @@ public static class MemoryHookService
     }
 
     /// <summary>
-    /// Synchronizes active social thoughts bidirectionally between observer and targetPawn into episodic memories.
-    /// 1) Observer -> Target: what Target did to Observer (e.g. harmed me, rescued me, insulted me).
-    /// 2) Target -> Observer: what Observer did to Target (e.g. I harmed them, I rescued them, I botched surgery on them).
-    /// Leverages vanilla's live relationship thoughts with zero-allocation debouncing through AddOrUpdateMemory.
+    /// Validates active relational milestones between observer and targetPawn,
+    /// invalidating broken milestones upon divorce or romantic breakup.
     /// </summary>
     public static void SyncActiveSocialThoughts(Pawn observer, Pawn targetPawn)
     {
@@ -576,50 +552,7 @@ public static class MemoryHookService
 
         var existingMemories = observerHediff.Memories;
 
-        // 1. Direct Perspective: Observer's thoughts toward targetPawn (Observer as recipient/victim)
-        var myMemories = observer.needs?.mood?.thoughts?.memories?.Memories;
-        if (myMemories != null && myMemories.Count > 0)
-        {
-            for (int i = 0; i < myMemories.Count; i++)
-            {
-                var thought = myMemories[i];
-                if (thought is Thought_MemorySocial socialThought && socialThought.otherPawn == targetPawn)
-                {
-                    string defName = thought.def?.defName ?? string.Empty;
-                    if (string.IsNullOrEmpty(defName) || IsIgnoredThought(defName)) continue;
-
-                    // Skip if already tracked in episodic memories to prevent runaway debounce loops
-                    if (!HasMemoryWithKey(existingMemories, targetPawn.thingIDNumber, defName))
-                    {
-                        TryRecordThought(socialThought, targetPawn);
-                    }
-                }
-            }
-        }
-
-        // 2. Inverse Perspective: Target's thoughts where observer was the originator/actor
-        // Allows the actor (e.g. attacker, rescuer) to remember their own action toward the target!
-        var targetMemories = targetPawn.needs?.mood?.thoughts?.memories?.Memories;
-        if (targetMemories != null && targetMemories.Count > 0)
-        {
-            for (int i = 0; i < targetMemories.Count; i++)
-            {
-                var thought = targetMemories[i];
-                if (thought is Thought_MemorySocial socialThought && socialThought.otherPawn == observer)
-                {
-                    string defName = thought.def?.defName ?? string.Empty;
-                    if (string.IsNullOrEmpty(defName)) continue;
-
-                    string origKey = GetOriginatorEventKey(defName);
-                    if (!string.IsNullOrEmpty(origKey) && !HasMemoryWithKey(existingMemories, targetPawn.thingIDNumber, origKey))
-                    {
-                        RecordOriginatorMemory(observer, targetPawn, defName);
-                    }
-                }
-            }
-        }
-
-        // 3. Invalidate broken relational milestones upon divorce or romantic breakup
+        // Invalidate broken relational milestones upon divorce or romantic breakup
         if (existingMemories != null && existingMemories.Count > 0)
         {
             for (int i = existingMemories.Count - 1; i >= 0; i--)
@@ -687,8 +620,6 @@ public static class MemoryHookService
         if (thoughtDefName.Equals("HarmedMe", StringComparison.OrdinalIgnoreCase)) return "IHarmed";
         if (thoughtDefName.Equals("RescuedMe", StringComparison.OrdinalIgnoreCase) || thoughtDefName.Equals("RescuedMeByOfferingHelp", StringComparison.OrdinalIgnoreCase)) return "IRescued";
         if (thoughtDefName.Equals("BotchedMySurgery", StringComparison.OrdinalIgnoreCase)) return "IBotchedSurgery";
-        if (thoughtDefName.Equals("RecruitedMe", StringComparison.OrdinalIgnoreCase)) return "IRecruited";
-        if (thoughtDefName.Equals("Insulted", StringComparison.OrdinalIgnoreCase)) return "IInsulted";
         if (thoughtDefName.Equals("TendedMe", StringComparison.OrdinalIgnoreCase)) return "TendedPatient";
         if (thoughtDefName.Equals("CapturedMe", StringComparison.OrdinalIgnoreCase)) return "ICaptured";
         return string.Empty;

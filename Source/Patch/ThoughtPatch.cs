@@ -74,6 +74,29 @@ public static class ThoughtTracker
     }
 }
 
+// Track active social interactions to suppress transient interaction thoughts from episodic memories
+[HarmonyPatch(typeof(Pawn_InteractionsTracker), nameof(Pawn_InteractionsTracker.TryInteractWith))]
+public static class PatchPawnInteractionsTrackerTryInteractWith
+{
+    [ThreadStatic]
+    private static int _depth;
+
+    public static bool InInteraction => _depth > 0;
+
+    public static void Prefix()
+    {
+        _depth++;
+    }
+
+    public static void Finalizer()
+    {
+        if (_depth > 0)
+        {
+            _depth--;
+        }
+    }
+}
+
 // Track memory thoughts when added
 [HarmonyPatch(typeof(MemoryThoughtHandler), nameof(MemoryThoughtHandler.TryGainMemory))]
 [HarmonyPatch([typeof(Thought_Memory), typeof(Pawn)])]
