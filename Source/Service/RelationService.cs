@@ -287,8 +287,13 @@ public static class RelationsService
     {
         if (pawn == null || otherPawn == null) return false;
         if (pawn.IsVisitor() || otherPawn.IsVisitor()) return true;
-        if (!pawn.IsColonist || !otherPawn.IsColonist) return true;
+        if (pawn.Faction == null || otherPawn.Faction == null) return true;
         if (pawn.Faction != otherPawn.Faction) return true;
+
+        bool isPawnColonyMember = pawn.IsColonist || (pawn.Faction.IsPlayer && !pawn.IsPrisoner);
+        bool isOtherColonyMember = otherPawn.IsColonist || (otherPawn.Faction.IsPlayer && !otherPawn.IsPrisoner);
+        if (!isPawnColonyMember || !isOtherColonyMember) return true;
+
         return false;
     }
 }
