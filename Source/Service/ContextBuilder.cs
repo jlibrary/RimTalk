@@ -20,9 +20,6 @@ public static class ContextBuilder
     private static readonly MethodInfo VisibleHediffsMethod =
         AccessTools.Method(typeof(HealthCardUtility), "VisibleHediffs");
 
-    private static readonly Func<Pawn, bool, IEnumerable<Hediff>> VisibleHediffsFunc =
-        VisibleHediffsMethod != null ? AccessTools.MethodDelegate<Func<Pawn, bool, IEnumerable<Hediff>>>(VisibleHediffsMethod) : null;
-
     public static string GetRaceContext(Pawn pawn, PromptService.InfoLevel infoLevel)
     {
         var contextSettings = Settings.Get().Context;
@@ -212,9 +209,7 @@ public static class ContextBuilder
         if (!contextSettings.IncludeHealth)
             return null;
 
-        var hediffs = VisibleHediffsFunc != null
-            ? VisibleHediffsFunc(pawn, false)
-            : (IEnumerable<Hediff>)VisibleHediffsMethod?.Invoke(null, [pawn, false]);
+        var hediffs = (IEnumerable<Hediff>)VisibleHediffsMethod?.Invoke(null, [pawn, false]);
         if (hediffs == null) return null;
 
         // For Short level, only show top 3 most recent/severe hediffs

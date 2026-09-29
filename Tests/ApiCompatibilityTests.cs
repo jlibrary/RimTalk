@@ -251,4 +251,68 @@ public class ApiCompatibilityTests
         var paramTypes = string.Join(", ", m.Parameters.Select(p => p.ParameterType.Name));
         return $"{m.ReturnType.Name} {m.Name}({paramTypes})";
     }
+
+    [Fact]
+    public void VerifyHarmonyReferencesCompatibility_ForRimWorld15()
+    {
+        string repoRoot = FindRepoRoot();
+        var candidates15 = new[]
+        {
+            Path.Combine(repoRoot, "1.5", "Assemblies", "RimTalk.dll"),
+            Path.Combine(repoRoot, "Release_Mod", "1.5", "Assemblies", "RimTalk.dll"),
+        };
+        string? rimTalk15Path = candidates15.FirstOrDefault(File.Exists);
+        if (rimTalk15Path == null)
+            return; // 1.5 build not present, skip
+
+        var harmonyCandidates = new[]
+        {
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".nuget", "packages", "lib.harmony.ref", "2.3.3", "ref", "netstandard2.0", "0Harmony.dll"),
+            "/Users/chris/Library/Application Support/Steam/steamapps/common/RimWorld_1.5/RimWorldMac.app/Mods/2009463077/1.5/Assemblies/0Harmony.dll"
+        };
+        string? harmony15Path = harmonyCandidates.FirstOrDefault(File.Exists);
+        if (harmony15Path == null)
+            return; // Harmony 2.3.3 reference not available locally, skip
+
+        using var rimTalkAsm = AssemblyDefinition.ReadAssembly(rimTalk15Path);
+        using var harmonyAsm = AssemblyDefinition.ReadAssembly(harmony15Path);
+
+        var missingRefs = new List<string>();
+
+        foreach (var mr in rimTalkAsm.MainModule.GetMemberReferences())
+        {
+            if (mr.DeclaringType.Scope.Name == "0Harmony")
+            {
+                string typeName = mr.DeclaringType.FullName;
+                var t = harmonyAsm.MainModule.GetType(typeName);
+                if (t == null)
+                {
+                    missingRefs.Add($"Missing Type in Harmony 2.3.3: {typeName}");
+                    continue;
+                }
+
+                if (mr is MethodReference mref)
+                {
+                    bool found = t.Methods.Any(m => m.Name == mref.Name && m.Parameters.Count == mref.Parameters.Count);
+                    if (!found)
+                    {
+                        missingRefs.Add($"Missing Method in Harmony 2.3.3: {typeName}::{mref.Name} with {mref.Parameters.Count} parameters");
+                    }
+                }
+                else if (mr is FieldReference fref)
+                {
+                    bool found = t.Fields.Any(f => f.Name == fref.Name);
+                    if (!found)
+                    {
+                        missingRefs.Add($"Missing Field in Harmony 2.3.3: {typeName}::{fref.Name}");
+                    }
+                }
+            }
+        }
+
+        Assert.True(missingRefs.Count == 0,
+            $"Found {missingRefs.Count} unresolved Harmony 2.3.3 references in RimWorld 1.5 build:\n" +
+            string.Join("\n", missingRefs));
+    }
 }
+
