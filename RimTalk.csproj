@@ -30,8 +30,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Lib.Harmony.Ref" Version="2.*" PrivateAssets="All"/>
-        <PackageReference Include="IndexRange" Version="1.0.3" />
+        <PackageReference Include="Lib.Harmony.Ref" Version="2.*" PrivateAssets="all"/>
+        <PackageReference Include="PolySharp" Version="1.16.0" PrivateAssets="all" />
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
             <_Parameter1>RimTalk.Tests</_Parameter1>
         </AssemblyAttribute>
@@ -40,7 +40,7 @@
     <!-- Use reference assemblies by default (for other users and CI) -->
     <ItemGroup Condition=" '$(UseLocalDlls)' != 'true' ">
         <!-- Core RimWorld & UnityEngine libraries -->
-        <PackageReference Include="Krafs.Rimworld.Ref" Version="$(GameVersion).*-*" PrivateAssets="All" />
+        <PackageReference Include="Krafs.Rimworld.Ref" Version="$(GameVersion).*-*" PrivateAssets="all" />
     </ItemGroup>
 
     <!-- Reference actual game assemblies when UseLocalDlls is enabled -->
