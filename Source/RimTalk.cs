@@ -20,6 +20,7 @@ public class RimTalk : GameComponent
     {
         base.StartedNewGame();
         Reset();
+        EncounterTracker.Reset();
         PostLoadInit();
     }
 

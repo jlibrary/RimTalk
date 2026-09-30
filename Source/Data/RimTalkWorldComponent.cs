@@ -37,6 +37,8 @@ public class RimTalkWorldComponent(World world) : WorldComponent(world)
 
         Scribe_Collections.Look(ref keyOrderList, "rimtalkKeyOrder");
 
+        Service.EncounterTracker.ExposeData();
+
         if (Scribe.mode != LoadSaveMode.PostLoadInit) return;
         RimTalkInteractionTexts ??= new Dictionary<string, string>();
             

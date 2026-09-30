@@ -318,6 +318,8 @@ public static class TalkService
                 TalkHistory.AddMessageHistory(pawn, historyPrompt, serializedResponses);
             }
         }
+
+        EncounterTracker.Notify_DialogueFinished(talkRequest);
     }
 
     /// <summary>
