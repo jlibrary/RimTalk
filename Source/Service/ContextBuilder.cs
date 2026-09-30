@@ -544,12 +544,12 @@ public static class ContextBuilder
             {
                 topicSb.Append("(downed in pain. Short, strained dialogue)");
             }
-            else if (talkRequest != null && talkRequest.Prompt != null)
+            else if (talkRequest.Prompt != null)
             {
                 topicSb.Append(talkRequest.Prompt);
             }
 
-            bool isMonologue = pawns.Count <= 1 || (talkRequest != null && talkRequest.IsMonologue);
+            bool isMonologue = pawns.Count <= 1 || (talkRequest.IsMonologue);
             string promptTopicDirective = null;
             string generalTopicKeywords = TopicService.ResolveTopicForRequest(talkRequest, mainPawn, isStrangerEncounter, isMonologue);
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using RimTalk.Data;
+using RimTalk.Error;
 using RimTalk.Prompt;
 using RimTalk.Source.Data;
 using RimTalk.UI;
@@ -22,22 +23,6 @@ public static class TalkService
     private static readonly List<TalkType> PriorityTalkTypes = [TalkType.Urgent, TalkType.User, TalkType.Announcement];
     private static InteractionDef _cachedInteractionDef;
     private static InteractionDef RimTalkInteractionDef => _cachedInteractionDef ??= DefDatabase<InteractionDef>.GetNamedSilentFail("RimTalkInteraction");
-
-
-    public static int PendingTalksCount
-    {
-        get
-        {
-            int count = 0;
-            foreach (Pawn pawn in Cache.Keys)
-            {
-                var ps = Cache.Get(pawn);
-                if (ps != null)
-                    count += ps.TalkResponses.Count + ps.IncomingCount;
-            }
-            return count;
-        }
-    }
 
     /// <summary>
     /// Initiates the process of generating a conversation. It performs initial checks and then
@@ -136,7 +121,9 @@ public static class TalkService
 
         // Delegate prompt assembly to PromptManager (Handles Simple/Advanced modes and fallbacks)
         talkRequest.PromptMessages = PromptManager.Instance.BuildMessages(talkRequest, pawns, promptStatus);
-        
+        if (AIErrorHandler.TryHandlePromptFailure(talkRequest, pawn1))
+            return true;
+
         // Update prompt with the actual rendered Dialogue Prompt content (excluding trailing reminders)
         var dpSegment = talkRequest.PromptMessageSegments?.FirstOrDefault(s =>
             s.EntryId == BuiltInPromptIds.DialoguePrompt ||
@@ -410,6 +397,21 @@ public static class TalkService
     public static void GenerateTalkDebug(TalkRequest talkRequest)
     {
         Task.Run(() => GenerateAndProcessTalkAsync(talkRequest));
+    }
+    
+    public static int PendingTalksCount
+    {
+        get
+        {
+            int count = 0;
+            foreach (Pawn pawn in Cache.Keys)
+            {
+                var ps = Cache.Get(pawn);
+                if (ps != null)
+                    count += ps.TalkResponses.Count + ps.IncomingCount;
+            }
+            return count;
+        }
     }
 
     /// <summary>

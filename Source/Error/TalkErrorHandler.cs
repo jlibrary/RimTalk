@@ -159,7 +159,31 @@ public static class AIErrorHandler
         // The stack trace alone cannot tell a connection timeout from a read timeout,
         // because only the message says which one it was.
         Logger.Warning($"{ex.GetType().Name}: {ex.Message}\n{ex.StackTrace}");
+        ReportGenerationFailure(ex.Message);
+    }
 
+    public static bool TryHandlePromptFailure(Data.TalkRequest talkRequest, Data.PawnState pawnState)
+    {
+        string lastError = Prompt.ScribanParser.LastError;
+        if (talkRequest?.PromptMessages is { Count: > 0 })
+        {
+            if (!string.IsNullOrEmpty(lastError))
+                ReportGenerationFailure(lastError);
+            return false;
+        }
+
+        string errorMsg = lastError ?? "Prompt rendering produced no valid messages.";
+        var apiLog = Data.ApiHistory.AddRequest(talkRequest, Source.Data.Channel.Stream);
+        apiLog.IsError = true;
+        apiLog.Response = errorMsg;
+        apiLog.Payload = new Client.Payload("Unknown", Settings.Get()?.GetCurrentModel() ?? "Unknown", "", null, 0, errorMsg);
+        ReportGenerationFailure(errorMsg);
+        pawnState?.MarkRequestSpoken(talkRequest);
+        return true;
+    }
+
+    private static void ReportGenerationFailure(string errorMessage)
+    {
         // One message per drain, however many failed. PendingMessages is only drained
         // from the TickManager postfix, so a long pause holds every failure and then
         // releases them together the moment the game ticks again. Every failure is
@@ -169,7 +193,7 @@ public static class AIErrorHandler
         PendingMessages.Enqueue(() =>
         {
             int failures = Interlocked.Exchange(ref _pendingGenerationFailures, 0);
-            string message = $"{"RimTalk.TalkService.GenerationFailed".Translate()}: {ex.Message}";
+            string message = $"{"RimTalk.TalkService.GenerationFailed".Translate()}: {errorMessage}";
             if (failures > 1) message = $"{message} (x{failures})";
             Messages.Message(message, MessageTypeDefOf.NeutralEvent, false);
         });

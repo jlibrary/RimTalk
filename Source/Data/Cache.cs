@@ -134,7 +134,7 @@ public static class Cache
     public static Pawn GetRandomWeightedPawn(IEnumerable<Pawn> pawns)
     {
         var pawnList = pawns as IList<Pawn> ?? pawns.ToList();
-        if (pawnList == null || pawnList.Count == 0)
+        if (pawnList.Count == 0)
         {
             return null;
         }
