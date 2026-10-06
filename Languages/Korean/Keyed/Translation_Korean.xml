@@ -736,4 +736,9 @@ Scriban 매직 (동적 콘텐츠)
 
     <!-- Context / Pawn Status -->
     <RimTalk.PawnUtil.Self>자신</RimTalk.PawnUtil.Self>
+
+    <!-- OpenCode gateway session headers (Settings_Api.cs) -->
+    <RimTalk.Settings.OpenCodeHeaders>OpenCode 세션 헤더</RimTalk.Settings.OpenCodeHeaders>
+    <RimTalk.Settings.OpenCodeHeadersDesc>opencode.ai 로 보내는 요청에 OpenCode 세션 헤더(x-opencode-session, x-session-affinity, x-client-request-id, x-session-id)를 추가합니다. OpenCode GO 게이트웨이는 x-opencode-session 이 없는 요청을 HTTP 400 MissingSessionID 로 거부합니다. 다른 공급자의 요청에는 영향을 주지 않습니다.</RimTalk.Settings.OpenCodeHeadersDesc>
+    <RimTalk.Settings.OpenCodeSessionToken>세션 토큰: {0}</RimTalk.Settings.OpenCodeSessionToken>
 </LanguageData>

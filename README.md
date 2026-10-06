@@ -45,7 +45,7 @@ Active raids, psychic phenomena, environmental threats (solar flares, toxic fall
 2. Pick a connection mode:
    * **Google Gemini**: Paste a free API key from Google AI Studio.
    * **Player2**: Launch the Player2 desktop app for auto-connect, or paste your key.
-   * **Custom**: Point to OpenAI, Claude, DeepSeek, Grok, OpenRouter, or a local server (Ollama at `localhost:11434`, LM Studio at `localhost:1234`).
+   * **Custom**: Point to OpenAI, Claude, DeepSeek, Grok, OpenRouter, OpenCode Zen/GO, or a local server (Ollama at `localhost:11434`, LM Studio at `localhost:1234`).
 3. Click **Verify / Fetch Models**, pick a model from the dropdown.
 
 Any endpoint that supports the OpenAI chat completion format (`POST /v1/chat/completions`) will work.
@@ -64,6 +64,7 @@ All settings are in **Mod Settings > RimTalk**. Most are self-explanatory. These
 * **Condensed Dialogue History** (`UseCompactHistory`): Packs past conversation turns into a single text block to save tokens. Better for cloud models. Local models sometimes echo the `prompt:` markers, so switch to multi-turn format (`chat.history_raw`) for those. Details in [dialogue-history-architecture.md](Docs/dialogue-history-architecture.md).
 * **Context Compression** (`EnableContextOptimization`): Truncates pawn profiles to fit smaller context windows. Useful for local models.
 * **Version Rollback** (`VersionSwitcher`): Copies assemblies from `LastVersion/` into a local mod folder to recover from bad Steam updates.
+* **OpenCode Session Headers** (`OpenCodeSessionHeaders`): On by default. Adds `x-opencode-session` (plus `x-session-affinity`, `x-client-request-id`, `x-session-id`) to requests going to `opencode.ai`, which the OpenCode GO gateway requires; requests to every other host are untouched. Details in [opencode-session-headers.md](Docs/opencode-session-headers.md).
 
 ## Diagnostics
 

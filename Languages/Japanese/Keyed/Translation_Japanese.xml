@@ -748,4 +748,9 @@ Scribanマジック (動的コンテンツ)
 
     <!-- Context / Pawn Status -->
     <RimTalk.PawnUtil.Self>自身</RimTalk.PawnUtil.Self>
+
+    <!-- OpenCode gateway session headers (Settings_Api.cs) -->
+    <RimTalk.Settings.OpenCodeHeaders>OpenCode セッションヘッダー</RimTalk.Settings.OpenCodeHeaders>
+    <RimTalk.Settings.OpenCodeHeadersDesc>opencode.ai へのリクエストに OpenCode のセッションヘッダー（x-opencode-session、x-session-affinity、x-client-request-id、x-session-id）を付与します。OpenCode GO ゲートウェイは x-opencode-session が無いリクエストを HTTP 400 MissingSessionID で拒否します。他のプロバイダーのリクエストには影響しません。</RimTalk.Settings.OpenCodeHeadersDesc>
+    <RimTalk.Settings.OpenCodeSessionToken>セッショントークン: {0}</RimTalk.Settings.OpenCodeSessionToken>
 </LanguageData>

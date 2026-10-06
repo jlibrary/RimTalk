@@ -18,7 +18,9 @@ public enum AIProvider
     Custom,
     None,
     Claude,
-    Moonshot
+    Moonshot,
+    OpenCodeZen,
+    OpenCodeGo
 }
 
 public struct ProviderDef
@@ -126,6 +128,22 @@ public static class AIProviderRegistry
             {
                 EndpointUrl = "https://api.moonshot.ai/v1/chat/completions",
                 ListModelsUrl = "https://api.moonshot.ai/v1/models"
+            }
+        },
+        {
+            AIProvider.OpenCodeZen, new ProviderDef
+            {
+                Label = "OpenCode Zen",
+                EndpointUrl = "https://opencode.ai/zen/v1/chat/completions",
+                ListModelsUrl = "https://opencode.ai/zen/v1/models"
+            }
+        },
+        {
+            AIProvider.OpenCodeGo, new ProviderDef
+            {
+                Label = "OpenCode GO",
+                EndpointUrl = "https://opencode.ai/zen/go/v1/chat/completions",
+                ListModelsUrl = "https://opencode.ai/zen/go/v1/models"
             }
         }
     };

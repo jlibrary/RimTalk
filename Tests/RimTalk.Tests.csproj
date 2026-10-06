@@ -66,6 +66,8 @@
         <Compile Include="../Source/PawnMemory/PawnMemoryTracker.cs" Link="Linked/PawnMemoryTracker.cs" />
         <Compile Include="../Source/PawnMemory/MemoryFormatter.cs" Link="Linked/MemoryFormatter.cs" />
         <Compile Include="../Source/Compatibility/PresetMigrator.cs" Link="Linked/PresetMigrator.cs" />
+        <Compile Include="../Source/Client/OpenCodeSession.cs" Link="Linked/OpenCodeSession.cs" />
+        <Compile Include="../Source/Settings/AIProvider.cs" Link="Linked/AIProvider.cs" />
     </ItemGroup>
 
 </Project>

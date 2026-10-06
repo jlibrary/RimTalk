@@ -314,6 +314,10 @@ public class OpenAIClient(
                 webRequest.SetRequestHeader(header.Key, header.Value);
         }
 
+        // OpenCode gateway (opencode / opencode-go): add the session headers it requires.
+        // Only request headers are touched; disabled or non-OpenCode endpoints are untouched.
+        OpenCodeSessionInjector.Apply(webRequest, _endpointUrl);
+
         var asyncOp = webRequest.SendWebRequest();
 
         // Determine if target is local
@@ -422,6 +426,9 @@ public class OpenAIClient(
                 webRequest.SetRequestHeader(kv.Key, kv.Value);
             }
         }
+
+        // The OpenCode gateway gates its model list behind the same session header.
+        OpenCodeSessionInjector.Apply(webRequest, url);
 
         var asyncOp = webRequest.SendWebRequest();
         while (!asyncOp.isDone) await Task.Delay(100);

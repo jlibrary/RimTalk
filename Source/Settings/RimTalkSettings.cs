@@ -19,6 +19,15 @@ public class RimTalkSettings : ModSettings
     public string SimpleApiKey = "";
     public string SimplePlayer2ApiKey = "";
     public bool IsUsingFallbackModel = false;
+
+    /// <summary>
+    /// Send the OpenCode session headers (x-opencode-session, x-session-affinity,
+    /// x-client-request-id, x-session-id) on requests to opencode.ai. On by default because the
+    /// OpenCode GO gateway rejects requests without x-opencode-session; requests to any other
+    /// host are never touched, so it can be left enabled for every other provider.
+    /// </summary>
+    public bool OpenCodeSessionHeaders = true;
+
     public bool IsEnabled = true;
     public int TalkInterval = 10;
     public int ReplyInterval = 4;
@@ -249,6 +258,7 @@ public class RimTalkSettings : ModSettings
         Scribe_Values.Look(ref SimpleProvider, "simpleProvider", AIProvider.Google);
         Scribe_Values.Look(ref SimpleApiKey, "simpleApiKey", "");
         Scribe_Values.Look(ref SimplePlayer2ApiKey, "simplePlayer2ApiKey", "");
+        Scribe_Values.Look(ref OpenCodeSessionHeaders, "openCodeSessionHeaders", true);
         Scribe_Values.Look(ref IsEnabled, "isEnabled", true);
         Scribe_Values.Look(ref TalkInterval, "talkInterval", 10);
         Scribe_Values.Look(ref ReplyInterval, "replyInterval", 4);
