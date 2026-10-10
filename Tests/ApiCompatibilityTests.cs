@@ -232,6 +232,90 @@ public class ApiCompatibilityTests
             string.Join("\n", breakingChanges));
     }
 
+    // Addons Harmony-patch and reflect on private and UI members too, so every member shipped in a release is frozen.
+    // After each release, regenerate the snapshot: RIMTALK_UPDATE_ABI_BASELINE=1 dotnet test --filter VerifyAllMembersPreserved
+    [Theory]
+    [InlineData("1.5")]
+    [InlineData("1.6")]
+    public void VerifyAllMembersPreserved_SinceLastRelease(string gameVersion)
+    {
+        string repoRoot = FindRepoRoot();
+        string currentPath = Path.Combine(repoRoot, gameVersion, "Assemblies", "RimTalk.dll");
+        Assert.True(File.Exists(currentPath), $"{currentPath} not found. Build RimWorld {gameVersion} before running ABI tests.");
+        string baselinePath = Path.Combine(repoRoot, "Tests", "AbiBaseline", $"members-{gameVersion}.txt");
+
+        using var assembly = AssemblyDefinition.ReadAssembly(currentPath);
+        var current = GetMemberSignatures(assembly.MainModule);
+
+        if (Environment.GetEnvironmentVariable("RIMTALK_UPDATE_ABI_BASELINE") == "1")
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(baselinePath)!);
+            File.WriteAllLines(baselinePath, current);
+            return;
+        }
+
+        Assert.True(File.Exists(baselinePath), $"ABI snapshot not found: {baselinePath}");
+        var baseline = File.ReadAllLines(baselinePath);
+        var currentSet = new HashSet<string>(current, StringComparer.Ordinal);
+        var breakingChanges = baseline
+            .Where(line => !currentSet.Contains(line))
+            .Select(line => $"Removed or changed: {line}")
+            .ToList();
+
+        // Name-only Harmony patches throw AmbiguousMatchException when a unique method gains an overload
+        var baseCounts = CountMethodsByName(baseline);
+        var currCounts = CountMethodsByName(current);
+        foreach (var (key, count) in baseCounts)
+        {
+            if (count == 1 && currCounts.TryGetValue(key, out int currCount) && currCount > 1 && !AllowedOverloads.Contains(key))
+                breakingChanges.Add($"Ambiguous Harmony Overload: '{key}' was unique but now has {currCount} overloads.");
+        }
+
+        Assert.True(breakingChanges.Count == 0,
+            $"Found {breakingChanges.Count} breaking changes for RimWorld {gameVersion} compared to the last release snapshot:\n" +
+            string.Join("\n", breakingChanges));
+    }
+
+    private static List<string> GetMemberSignatures(ModuleDefinition module)
+    {
+        var lines = new List<string>();
+        var pending = new Stack<TypeDefinition>(module.Types.Where(t => t.FullName.StartsWith("RimTalk")));
+        while (pending.Count > 0)
+        {
+            var type = pending.Pop();
+            if (IsCompilerGenerated(type.Name)) continue;
+
+            lines.Add($"T {type.FullName}");
+            foreach (var method in type.Methods)
+                if (!IsCompilerGenerated(method.Name)) lines.Add($"M {method.FullName}");
+            // Only enum values are contract; other constants (e.g. prompt text) may change freely
+            foreach (var field in type.Fields)
+                if (!IsCompilerGenerated(field.Name)) lines.Add(type.IsEnum && field.HasConstant ? $"F {field.FullName} = {field.Constant}" : $"F {field.FullName}");
+            foreach (var nested in type.NestedTypes)
+                pending.Push(nested);
+        }
+        lines.Sort(StringComparer.Ordinal);
+        return lines;
+    }
+
+    // Lambdas, closures, iterators, backing fields, and local functions have unstable names like "<Method>b__0_0"
+    private static bool IsCompilerGenerated(string name) => name.Contains('<');
+
+    // Keys match AllowedOverloads format: "Namespace.Type.Method"
+    private static Dictionary<string, int> CountMethodsByName(IEnumerable<string> lines)
+    {
+        var counts = new Dictionary<string, int>(StringComparer.Ordinal);
+        foreach (var line in lines)
+        {
+            if (!line.StartsWith("M ")) continue;
+            string signature = line.Substring(line.IndexOf(' ', 2) + 1);
+            string key = signature.Substring(0, signature.IndexOf('(')).Replace("::", ".");
+            if (key.EndsWith(".ctor") || key.EndsWith(".cctor")) continue;
+            counts[key] = counts.TryGetValue(key, out int n) ? n + 1 : 1;
+        }
+        return counts;
+    }
+
     private static bool SignaturesMatch(MethodDefinition a, MethodDefinition b)
     {
         if (a.ReturnType.FullName != b.ReturnType.FullName) return false;
