@@ -214,13 +214,14 @@ public class RimTalkSettings : ModSettings
             if (config.IsValid())
             {
                 CurrentCloudConfigIndex = nextIndex;
-                Write(); // Save the updated index
+                // Called from the AI request thread; Scribe is global, so save from the main-thread tick queue
+                Error.AIErrorHandler.EnqueueMessage(Write); // Save the updated index
                 return;
             }
         }
         // If no other valid config is found, we stay at the current index or revert to original if it was valid
         // For now, we'll just stay at the current index.
-        Write(); // Save in case the original was invalid and we couldn't find a new one.
+        Error.AIErrorHandler.EnqueueMessage(Write); // Save in case the original was invalid and we couldn't find a new one.
     }
 
     /// <summary>

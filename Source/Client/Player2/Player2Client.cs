@@ -382,7 +382,7 @@ public class Player2Client : IAIClient
 
     private static void ShowNotification(string messageKey, MessageTypeDef type)
     {
-        LongEventHandler.ExecuteWhenFinished(() =>
+        AIErrorHandler.EnqueueMessage(() =>
         {
             try
             {

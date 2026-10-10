@@ -184,9 +184,8 @@ public static class AIErrorHandler
 
     private static void ReportGenerationFailure(string errorMessage)
     {
-        // One message per drain, however many failed. PendingMessages is only drained
-        // from the TickManager postfix, so a long pause holds every failure and then
-        // releases them together the moment the game ticks again. Every failure is
+        // One message per drain, however many failed. PendingMessages is drained once per
+        // frame, so failures that land between drains are shown together. Every failure is
         // still logged above; this only collapses what the player sees.
         if (Interlocked.Increment(ref _pendingGenerationFailures) > 1) return;
 

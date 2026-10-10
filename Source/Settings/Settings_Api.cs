@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using RimTalk.Client.OpenAI;
 using RimTalk.Client.Player2;
 using RimTalk.Data;
+using RimTalk.Error;
 using RimTalk.UI;
 using RimWorld;
 using UnityEngine;
@@ -937,7 +938,7 @@ public partial class Settings
                     })
                     .ToList();
 
-                LongEventHandler.ExecuteWhenFinished(() =>
+                AIErrorHandler.EnqueueMessage(() =>
                 {
                     isScanningLocal = false;
                     if (activeServers.Count == 0)
@@ -955,7 +956,7 @@ public partial class Settings
             catch (Exception ex)
             {
                 Logger.Error($"Error scanning local endpoints: {ex.Message}");
-                LongEventHandler.ExecuteWhenFinished(() =>
+                AIErrorHandler.EnqueueMessage(() =>
                 {
                     isScanningLocal = false;
                     Messages.Message("RimTalk.Settings.LocalNotFound".Translate(), MessageTypeDefOf.RejectInput, false);

@@ -154,7 +154,7 @@ public class OpenAIClient(
             }
             catch (AIRequestException ex) when (ex.Payload?.StatusCode == 400)
             {
-                LongEventHandler.ExecuteWhenFinished(() =>
+                AIErrorHandler.EnqueueMessage(() =>
                 {
                     var s = Settings.Get();
                     if (s?.DetectedThinkingLevels != null && s.DetectedThinkingLevels.Remove(cacheKey))
@@ -172,7 +172,7 @@ public class OpenAIClient(
             try
             {
                 var payload = await requestFunc(level);
-                LongEventHandler.ExecuteWhenFinished(() =>
+                AIErrorHandler.EnqueueMessage(() =>
                 {
                     var s = Settings.Get();
                     if (s != null)

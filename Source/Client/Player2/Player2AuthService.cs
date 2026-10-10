@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using RimTalk.Error;
 using RimTalk.Util;
 using RimWorld;
 using UnityEngine;
@@ -80,7 +81,7 @@ public static class Player2AuthService
             catch (Exception ex)
             {
                 Logger.Error($"[Player2] Device authorization failed: {ex.Message}");
-                LongEventHandler.ExecuteWhenFinished(() =>
+                AIErrorHandler.EnqueueMessage(() =>
                 {
                     Messages.Message("RimTalk.Settings.Player2AuthFailed".Translate(ex.Message), MessageTypeDefOf.RejectInput, false);
                 });
@@ -132,7 +133,7 @@ public static class Player2AuthService
 
         ApprovalUrl = deviceCodeResp.VerificationUriComplete;
 
-        LongEventHandler.ExecuteWhenFinished(() =>
+        AIErrorHandler.EnqueueMessage(() =>
         {
             Application.OpenURL(ApprovalUrl);
             Messages.Message("RimTalk.Settings.Player2AuthWaitingNotice".Translate(), MessageTypeDefOf.NeutralEvent, false);
@@ -160,7 +161,7 @@ public static class Player2AuthService
                 {
                     string key = tokenResp.P2Key;
                     Logger.Message("[Player2] ✓ API key successfully obtained");
-                    LongEventHandler.ExecuteWhenFinished(() =>
+                    AIErrorHandler.EnqueueMessage(() =>
                     {
                         if (onKeyReceived != null)
                         {
