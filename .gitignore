@@ -17,5 +17,4 @@ Directory.Build.props
 
 Release_Mod/*
 Docs/*
-AGENTS.md
-CLAUDE.md
+*.local.md
