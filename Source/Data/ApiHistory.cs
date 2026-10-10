@@ -10,29 +10,44 @@ public static class ApiHistory
 {
     private static readonly Dictionary<Guid, ApiLog> History = new();
     private static readonly List<Guid> HistoryOrder = new();
+    // Written from the AI request thread while UI reads on the main thread
+    private static readonly object HistoryLock = new();
+    private static ApiLog[] _snapshot; // rebuilt on demand after a change; never mutated once published
     private static int _conversationIdIndex = 0;
     
     public static int MaxHistoryCount { get; set; } = 500;
     
     public static int NextConversationId() => _conversationIdIndex++;
 
-    public static ApiLog GetApiLog(Guid id) => History.TryGetValue(id, out var apiLog) ? apiLog : null;
+    public static ApiLog GetApiLog(Guid id)
+    {
+        lock (HistoryLock)
+            return History.TryGetValue(id, out var apiLog) ? apiLog : null;
+    }
 
     private static void RegisterLog(ApiLog log)
     {
         if (log == null) return;
-        History[log.Id] = log;
-        HistoryOrder.Add(log.Id);
-        TrimHistory();
+        lock (HistoryLock)
+        {
+            History[log.Id] = log;
+            HistoryOrder.Add(log.Id);
+            _snapshot = null;
+            TrimHistory();
+        }
     }
 
     public static void TrimHistory()
     {
-        while (HistoryOrder.Count > MaxHistoryCount && HistoryOrder.Count > 0)
+        lock (HistoryLock)
         {
-            var oldId = HistoryOrder[0];
-            HistoryOrder.RemoveAt(0);
-            History.Remove(oldId);
+            while (HistoryOrder.Count > MaxHistoryCount && HistoryOrder.Count > 0)
+            {
+                var oldId = HistoryOrder[0];
+                HistoryOrder.RemoveAt(0);
+                History.Remove(oldId);
+                _snapshot = null;
+            }
         }
     }
 
@@ -68,7 +83,8 @@ public static class ApiHistory
 
     public static void UpdatePayload(Guid id, Payload payload)
     {
-        if (History.TryGetValue(id, out var log))
+        var log = GetApiLog(id);
+        if (log != null)
         {
             log.Payload = payload;
         }
@@ -80,11 +96,14 @@ public static class ApiHistory
         if (log.Payload != null) return log.Payload;
         if (log.ConversationId >= 0)
         {
-            for (int i = HistoryOrder.Count - 1; i >= 0; i--)
+            lock (HistoryLock)
             {
-                if (History.TryGetValue(HistoryOrder[i], out var item) &&
-                    item.ConversationId == log.ConversationId && item.Payload != null)
-                    return item.Payload;
+                for (int i = HistoryOrder.Count - 1; i >= 0; i--)
+                {
+                    if (History.TryGetValue(HistoryOrder[i], out var item) &&
+                        item.ConversationId == log.ConversationId && item.Payload != null)
+                        return item.Payload;
+                }
             }
         }
         return null;
@@ -98,7 +117,8 @@ public static class ApiHistory
     public static ApiLog AddResponse(Guid id, string response, string name, string interactionType, Payload payload,
         int elapsedMs, string targetName)
     {
-        if (!History.TryGetValue(id, out var originalLog)) return null;
+        var originalLog = GetApiLog(id);
+        if (originalLog == null) return null;
 
         // first message
         if (originalLog.Response == null)
@@ -153,18 +173,29 @@ public static class ApiHistory
         return log;
     }
 
+    // Returns a snapshot so callers can enumerate while the request thread adds entries
     public static IEnumerable<ApiLog> GetAll()
     {
-        foreach (var id in HistoryOrder)
+        lock (HistoryLock)
         {
-            if (History.TryGetValue(id, out var log))
-                yield return log;
+            if (_snapshot != null) return _snapshot;
+            var logs = new List<ApiLog>(HistoryOrder.Count);
+            foreach (var id in HistoryOrder)
+            {
+                if (History.TryGetValue(id, out var log))
+                    logs.Add(log);
+            }
+            return _snapshot = logs.ToArray();
         }
     }
 
     public static void Clear()
     {
-        History.Clear();
-        HistoryOrder.Clear();
+        lock (HistoryLock)
+        {
+            History.Clear();
+            HistoryOrder.Clear();
+            _snapshot = null;
+        }
     }
 }
