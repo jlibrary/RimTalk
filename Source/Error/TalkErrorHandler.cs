@@ -91,6 +91,10 @@ public static class AIErrorHandler
             {
                 return await operation();
             }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
             catch (Exception retryEx)
             {
                 Logger.Warning($"Retry failed: {retryEx.Message}");
