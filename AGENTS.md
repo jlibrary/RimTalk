@@ -1,6 +1,6 @@
 # RimTalk Agent Guidelines
 
-RimWorld mod (C#, Harmony) that generates AI pawn dialogue. Targets RimWorld 1.5 and 1.6 from one codebase (`#if V1_5` for version splits).
+RimWorld mod (C#, Harmony) that generates AI pawn dialogue. Targets RimWorld 1.6 and 1.7 (1.7 loads the 1.6 build).
 
 If `AGENTS.local.md` exists, read it and follow it; it holds personal local rules (not committed) and overrides this file.
 
@@ -11,9 +11,8 @@ If `AGENTS.local.md` exists, read it and follow it; it holds personal local rule
 - **Verify**: define a success check (build, test, repro) and loop until it passes.
 
 ## Build & Test
-No game install needed; the project references `Krafs.Rimworld.Ref` by default. Verify both versions and tests before finishing:
+No game install needed; the project references `Krafs.Rimworld.Ref` by default. Verify the build and tests before finishing:
 ```
-dotnet build RimTalk.csproj -c Release -p:GameVersion=1.5
 dotnet build RimTalk.csproj -c Release -p:GameVersion=1.6
 dotnet test Tests/RimTalk.Tests.csproj -c Release
 ```
