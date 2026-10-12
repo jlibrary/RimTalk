@@ -215,6 +215,22 @@ public static class AIService
 
     public static bool IsCancellationRequested() => _currentCts != null && _currentCts.IsCancellationRequested;
 
+    // _currentCts is disposed on the request thread, so reading its token can race.
+    public static System.Threading.CancellationToken CurrentCancellationToken
+    {
+        get
+        {
+            try
+            {
+                return _currentCts?.Token ?? System.Threading.CancellationToken.None;
+            }
+            catch (ObjectDisposedException)
+            {
+                return System.Threading.CancellationToken.None;
+            }
+        }
+    }
+
     public static bool CanCancelCurrent() => _busy && _currentRequest != null && !_currentRequest.TalkType.IsFromUser();
 
     public static bool CanCancelFor(TalkRequest incomingRequest)

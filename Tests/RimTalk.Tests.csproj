@@ -34,6 +34,7 @@
     <ItemGroup>
         <Compile Include="../Source/Util/JsonStreamParser.cs" Link="Linked/JsonStreamParser.cs" />
         <Compile Include="../Source/Util/JsonUtil.cs" Link="Linked/JsonUtil.cs" />
+        <Compile Include="../Source/Util/LocalHost.cs" Link="Linked/LocalHost.cs" />
         <Compile Include="../Source/API/ContextCategory.cs" Link="Linked/ContextCategory.cs" />
         <Compile Include="../Source/API/ContextCategories.cs" Link="Linked/ContextCategories.cs" />
         <Compile Include="../Source/API/ContextHookRegistry.cs" Link="Linked/ContextHookRegistry.cs" />
