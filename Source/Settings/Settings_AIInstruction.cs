@@ -133,7 +133,7 @@ public partial class Settings
             if (te != null && te.cursorIndex != _lastTextAreaCursorPos)
             {
                 _lastTextAreaCursorPos = te.cursorIndex;
-                float cursorY = te.graphicalCursorPos.y;
+                float cursorY = GetCursorLineTop(te, innerWidth);
                 if (cursorY < _aiInstructionScrollPos.y)
                     _aiInstructionScrollPos.y = cursorY;
                 else if (cursorY + 25f > _aiInstructionScrollPos.y + textAreaHeight)
@@ -193,5 +193,12 @@ public partial class Settings
         };
         preset.Entries.Insert(0, entry);
         return entry;
+    }
+
+    // TextEditor.graphicalCursorPos is missing in RimWorld 1.7, so derive the cursor line from the text before it.
+    private static float GetCursorLineTop(TextEditor te, float width)
+    {
+        string beforeCursor = te.text.Substring(0, Mathf.Clamp(te.cursorIndex, 0, te.text.Length));
+        return Mathf.Max(0f, Text.CalcHeight(beforeCursor, width) - Text.LineHeight);
     }
 }

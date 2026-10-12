@@ -42,8 +42,10 @@ public partial class Settings
             }
 
             float labelX = rect.x + 10f;
-            Widgets.Label(new Rect(labelX, y, 80f, 24f), "RimTalk.Settings.PromptPreset.PresetName".Translate());
-            p.Name = Widgets.TextField(new Rect(labelX + 85f, y, 180f, 24f), p.Name);
+            string presetNameLabel = "RimTalk.Settings.PromptPreset.PresetName".Translate();
+            float presetNameLabelW = Mathf.Max(80f, Text.CalcSize(presetNameLabel).x + 4f);
+            Widgets.Label(new Rect(labelX, y, presetNameLabelW, 24f), presetNameLabel);
+            p.Name = Widgets.TextField(new Rect(labelX + presetNameLabelW + 5f, y, 180f, 24f), p.Name);
 
             Text.Anchor = TextAnchor.MiddleCenter;
             GUI.color = Color.gray;
@@ -78,12 +80,13 @@ public partial class Settings
 
         // -- Grid Columns Setup --
         float col1LabelX = rect.x + 10f;
-        float col1LabelW = 80f;
+        // Size labels to their text so longer translations don't wrap and get cut
+        float col1LabelW = Mathf.Max(80f, Text.CalcSize("RimTalk.Settings.PromptPreset.PresetName".Translate()).x + 4f);
         float col1InputX = col1LabelX + col1LabelW + 6f;
         float col1InputW = 140f;
 
         float col2LabelX = col1InputX + col1InputW + 18f;
-        float col2LabelW = 70f;
+        float col2LabelW = Mathf.Max(70f, Text.CalcSize("RimTalk.Settings.PromptPreset.EntryName".Translate()).x + 4f);
         float col2InputX = col2LabelX + col2LabelW + 6f;
         float col2InputW = 140f;
 
@@ -367,7 +370,7 @@ public partial class Settings
             if (te != null && te.cursorIndex != _lastPromptEditorCursorPos)
             {
                 _lastPromptEditorCursorPos = te.cursorIndex;
-                float cursorY = te.graphicalCursorPos.y;
+                float cursorY = GetCursorLineTop(te, editorInnerWidth);
                 if (cursorY < _promptContentScrollPos.y)
                     _promptContentScrollPos.y = cursorY;
                 else if (cursorY + 25f > _promptContentScrollPos.y + editorRect.height)

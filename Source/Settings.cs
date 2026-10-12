@@ -254,7 +254,8 @@ public partial class Settings : Mod
 
     private static void DrawRollbackLink(float x, float y, float height)
     {
-        bool hasLastDll = VersionSwitcher.IsPreviousDllAvailable();
+        if (!VersionSwitcher.IsPreviousDllAvailable()) return;
+
         var availVersions = VersionSwitcher.GetAvailableVersions();
         string rollbackText = availVersions.Count == 1
             ? $"{"RimTalk.VersionSwitcher.RollbackLabel".Translate()} ({availVersions[0]})"
@@ -271,20 +272,12 @@ public partial class Settings : Mod
         Rect linkRect = new Rect(x, linkY, textSize.x + 4f, textSize.y);
         bool isHovered = Mouse.IsOver(linkRect);
 
-        if (hasLastDll)
-        {
-            GUI.color = isHovered ? Color.white : new Color(0.72f, 0.72f, 0.72f, 0.9f);
-            Widgets.Label(linkRect, rollbackText);
+        GUI.color = isHovered ? Color.white : new Color(0.72f, 0.72f, 0.72f, 0.9f);
+        Widgets.Label(linkRect, rollbackText);
 
-            if (Widgets.ButtonInvisible(linkRect))
-            {
-                VersionSwitcher.OpenRollbackMenu();
-            }
-        }
-        else
+        if (Widgets.ButtonInvisible(linkRect))
         {
-            GUI.color = new Color(0.5f, 0.5f, 0.5f, 0.6f);
-            Widgets.Label(linkRect, rollbackText);
+            VersionSwitcher.OpenRollbackMenu();
         }
 
         Text.Font = origFont;
