@@ -101,7 +101,9 @@ public static partial class PawnUtil
         var target = pawn.mindState?.enemyTarget;
         if (IsLiveThreat(pawn, target)) return true;
 
-        if (pawn.stances?.curStance is Stance_Busy busy && busy.verb != null)
+        // Hunting and ability casts also put a verb in Stance_Busy; only firing at something hostile is combat.
+        if (pawn.stances?.curStance is Stance_Busy busy && busy.verb != null &&
+            busy.focusTarg.Thing is { } focus && focus.HostileTo(pawn))
             return true;
 
         if (pawn.IsBrawlingWithAlly(out _))
@@ -117,6 +119,8 @@ public static partial class PawnUtil
         if (target == null || target.Destroyed || !target.Spawned) return false;
         if (target.Map != pawn.Map) return false;
         if (target is Pawn tp && (tp.Dead || tp.Downed)) return false;
+        // A captured raider, tamed animal or recovered berserker stays a remembered target but is no longer hostile.
+        if (!target.HostileTo(pawn)) return false;
         return pawn.Position.DistanceToSquared(target.Position) <= 900f;
     }
 
