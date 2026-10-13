@@ -28,7 +28,21 @@ public static class HttpUtil
                 errors == SslPolicyErrors.None || LocalHost.IsLocal(msg.RequestUri?.DnsSafeHost)
         };
         // Timeouts are enforced per request through CancellationTokenSource.
-        return new HttpClient(handler) { Timeout = Timeout.InfiniteTimeSpan };
+        return new HttpClient(new LoopbackHandler(handler)) { Timeout = Timeout.InfiniteTimeSpan };
+    }
+
+    // Mono fails to resolve "localhost" (NameResolutionFailure) on non-ASCII computer names; an IP literal skips DNS.
+    private sealed class LoopbackHandler : DelegatingHandler
+    {
+        public LoopbackHandler(HttpMessageHandler inner) : base(inner) { }
+
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
+        {
+            var uri = request.RequestUri;
+            if (uri != null && uri.IsAbsoluteUri && uri.Host.Equals("localhost", StringComparison.OrdinalIgnoreCase))
+                request.RequestUri = new UriBuilder(uri) { Host = "127.0.0.1" }.Uri;
+            return base.SendAsync(request, ct);
+        }
     }
 
     /// <summary>
