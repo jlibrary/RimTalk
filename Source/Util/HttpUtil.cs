@@ -20,6 +20,9 @@ public static class HttpUtil
     {
         var handler = new HttpClientHandler
         {
+            // Mono's CookieContainer reads the machine domain name, which throws "Illegal byte sequence"
+            // on non-ASCII computer names. API calls don't need cookies.
+            UseCookies = false,
             // Self-signed certificates are accepted only for local and LAN hosts.
             ServerCertificateCustomValidationCallback = (msg, cert, chain, errors) =>
                 errors == SslPolicyErrors.None || LocalHost.IsLocal(msg.RequestUri?.DnsSafeHost)
