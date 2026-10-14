@@ -18,7 +18,9 @@ public enum AIProvider
     Custom,
     None,
     Claude,
-    Moonshot
+    Moonshot,
+    OpenCodeZen,
+    OpenCodeGo
 }
 
 public struct ProviderDef
@@ -127,6 +129,22 @@ public static class AIProviderRegistry
                 EndpointUrl = "https://api.moonshot.ai/v1/chat/completions",
                 ListModelsUrl = "https://api.moonshot.ai/v1/models"
             }
+        },
+        {
+            AIProvider.OpenCodeZen, new ProviderDef
+            {
+                Label = "OpenCode Zen",
+                EndpointUrl = "https://opencode.ai/zen/v1/chat/completions",
+                ListModelsUrl = "https://opencode.ai/zen/v1/models"
+            }
+        },
+        {
+            AIProvider.OpenCodeGo, new ProviderDef
+            {
+                Label = "OpenCode GO",
+                EndpointUrl = "https://opencode.ai/zen/go/v1/chat/completions",
+                ListModelsUrl = "https://opencode.ai/zen/go/v1/models"
+            }
         }
     };
     
@@ -151,6 +169,9 @@ public static class AIProviderRegistry
 
     public static Dictionary<string, string> GetExtraHeaders(this AIProvider p)
     {
+        // Value comes from settings, so it can't live in the static Defs table.
+        if (p == AIProvider.OpenCodeZen || p == AIProvider.OpenCodeGo)
+            return new Dictionary<string, string> { { "x-opencode-session", Settings.Get().OpenCodeSessionId } };
         return Defs.TryGetValue(p, out var def) ? def.ExtraHeaders : null;
     }
 }

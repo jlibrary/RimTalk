@@ -625,6 +625,8 @@ public partial class Settings
         AIProvider.AlibabaIntl,
         AIProvider.AlibabaCN,
         AIProvider.Moonshot,
+        AIProvider.OpenCodeZen,
+        AIProvider.OpenCodeGo,
         AIProvider.Google,
         AIProvider.Player2,
         AIProvider.Custom

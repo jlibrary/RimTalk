@@ -45,7 +45,7 @@ Active raids, psychic phenomena, environmental threats (solar flares, toxic fall
 2. Pick a connection mode:
    * **Google Gemini**: Paste a free API key from Google AI Studio.
    * **Player2**: Launch the Player2 desktop app for auto-connect, or paste your key.
-   * **Custom**: Point to OpenAI, Claude, DeepSeek, Grok, OpenRouter, or a local server (Ollama at `localhost:11434`, LM Studio at `localhost:1234`).
+   * **Custom**: Point to OpenAI, Claude, DeepSeek, Grok, OpenRouter, OpenCode Zen/GO, or a local server (Ollama at `localhost:11434`, LM Studio at `localhost:1234`).
 3. Click **Verify / Fetch Models**, pick a model from the dropdown.
 
 Any endpoint that supports the OpenAI chat completion format (`POST /v1/chat/completions`) will work.

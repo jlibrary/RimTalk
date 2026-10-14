@@ -18,6 +18,8 @@ public class RimTalkSettings : ModSettings
     public AIProvider SimpleProvider = AIProvider.Google;
     public string SimpleApiKey = "";
     public string SimplePlayer2ApiKey = "";
+    // Stable per-install id for the OpenCode gateway's x-opencode-session header.
+    public string OpenCodeSessionId = "";
     public bool IsUsingFallbackModel = false;
     public bool IsEnabled = true;
     public int TalkInterval = 10;
@@ -250,6 +252,10 @@ public class RimTalkSettings : ModSettings
         Scribe_Values.Look(ref SimpleProvider, "simpleProvider", AIProvider.Google);
         Scribe_Values.Look(ref SimpleApiKey, "simpleApiKey", "");
         Scribe_Values.Look(ref SimplePlayer2ApiKey, "simplePlayer2ApiKey", "");
+        Scribe_Values.Look(ref OpenCodeSessionId, "openCodeSessionId", "");
+        // Look resets a missing key to "", so generate here once; it is saved when settings are next written.
+        if (string.IsNullOrEmpty(OpenCodeSessionId))
+            OpenCodeSessionId = Guid.NewGuid().ToString("N").Substring(0, 8);
         Scribe_Values.Look(ref IsEnabled, "isEnabled", true);
         Scribe_Values.Look(ref TalkInterval, "talkInterval", 10);
         Scribe_Values.Look(ref ReplyInterval, "replyInterval", 4);
