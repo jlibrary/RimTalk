@@ -64,7 +64,6 @@ All settings are in **Mod Settings > RimTalk**. Most are self-explanatory. These
 * **Condensed Dialogue History** (`UseCompactHistory`): Packs past conversation turns into a single text block to save tokens. Better for cloud models. Local models sometimes echo the `prompt:` markers, so switch to multi-turn format (`chat.history_raw`) for those. Details in [dialogue-history-architecture.md](Docs/dialogue-history-architecture.md).
 * **Context Compression** (`EnableContextOptimization`): Truncates pawn profiles to fit smaller context windows. Useful for local models.
 * **Version Rollback** (`VersionSwitcher`): Copies assemblies from `LastVersion/` into a local mod folder to recover from bad Steam updates.
-* **OpenCode Session Headers** (`OpenCodeSessionHeaders`): On by default. Adds `x-opencode-session` (plus `x-session-affinity`, `x-client-request-id`, `x-session-id`) to requests going to `opencode.ai`, which the OpenCode GO gateway requires; requests to every other host are untouched. Details in [opencode-session-headers.md](Docs/opencode-session-headers.md).
 
 ## Diagnostics
 

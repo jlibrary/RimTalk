@@ -842,9 +842,8 @@ public class PersonaEditorWindow : Window
     public override void WindowUpdate()
     {
         base.WindowUpdate();
-        if (_isGenerating)
+        if (_isGenerating || Current.ProgramState != ProgramState.Playing)
         {
-            // This will cause the window to repaint continuously while generating
             return;
         }
 

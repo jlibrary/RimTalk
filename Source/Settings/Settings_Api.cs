@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using RimTalk.Client;
 using RimTalk.Client.OpenAI;
 using RimTalk.Client.Player2;
 using RimTalk.Data;
+using RimTalk.Error;
 using RimTalk.UI;
 using RimWorld;
 using UnityEngine;
@@ -381,43 +381,6 @@ public partial class Settings
         {
             DrawLocalProviderSection(listingStandard, settings);
         }
-
-        DrawOpenCodeSessionRow(listingStandard);
-    }
-
-    /// <summary>
-    /// Opt-out switch for the OpenCode gateway session headers (see
-    /// <see cref="Client.OpenCodeSession"/>). Shown next to the provider table because it only
-    /// ever affects requests to opencode.ai.
-    /// </summary>
-    private void DrawOpenCodeSessionRow(Listing_Standard listingStandard)
-    {
-        RimTalkSettings settings = Get();
-
-        listingStandard.Gap(6f);
-        Rect rowRect = listingStandard.GetRect(24f);
-
-        const float toggleSize = 20f;
-        Rect toggleRect = new Rect(rowRect.x, rowRect.y + 2f, toggleSize, toggleSize);
-        Widgets.Checkbox(new Vector2(toggleRect.x, toggleRect.y), ref settings.OpenCodeSessionHeaders, toggleSize);
-
-        Text.Font = GameFont.Tiny;
-        Rect labelRect = new Rect(toggleRect.xMax + 6f, rowRect.y + 3f, 240f, 20f);
-        Widgets.Label(labelRect, "RimTalk.Settings.OpenCodeHeaders".Translate());
-
-        string token = OpenCodeSessionInjector.CurrentToken;
-        if (settings.OpenCodeSessionHeaders && !string.IsNullOrEmpty(token))
-        {
-            // Show the exact token that goes on the wire, so a gateway-side log can be matched.
-            Rect tokenRect = new Rect(labelRect.xMax, rowRect.y + 3f, Mathf.Max(0f, rowRect.xMax - labelRect.xMax), 20f);
-            Color previousColor = GUI.color;
-            GUI.color = new Color(0.55f, 0.80f, 0.55f);
-            Widgets.Label(tokenRect, "RimTalk.Settings.OpenCodeSessionToken".Translate(token));
-            GUI.color = previousColor;
-        }
-
-        Text.Font = GameFont.Small;
-        TooltipHandler.TipRegion(rowRect, "RimTalk.Settings.OpenCodeHeadersDesc".Translate());
     }
     
     private void DrawCloudProvidersSection(Listing_Standard listingStandard, RimTalkSettings settings)
@@ -799,6 +762,7 @@ public partial class Settings
                 11434 => "Ollama",
                 1234 => "LM Studio",
                 8080 => "llama.cpp",
+                9931 => "llama.cpp",
                 8000 => "vLLM",
                 5000 => "TextGen",
                 5001 => "KoboldCpp",
@@ -942,6 +906,7 @@ public partial class Settings
                     "http://localhost:11434",
                     "http://localhost:1234",
                     "http://localhost:8080",
+                    "http://localhost:9931",
                     "http://localhost:8000",
                     "http://localhost:5000",
                     "http://localhost:5001",
@@ -977,7 +942,7 @@ public partial class Settings
                     })
                     .ToList();
 
-                LongEventHandler.ExecuteWhenFinished(() =>
+                AIErrorHandler.EnqueueMessage(() =>
                 {
                     isScanningLocal = false;
                     if (activeServers.Count == 0)
@@ -995,7 +960,7 @@ public partial class Settings
             catch (Exception ex)
             {
                 Logger.Error($"Error scanning local endpoints: {ex.Message}");
-                LongEventHandler.ExecuteWhenFinished(() =>
+                AIErrorHandler.EnqueueMessage(() =>
                 {
                     isScanningLocal = false;
                     Messages.Message("RimTalk.Settings.LocalNotFound".Translate(), MessageTypeDefOf.RejectInput, false);

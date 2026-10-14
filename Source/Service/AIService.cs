@@ -35,6 +35,7 @@ public static class AIService
         var prefixMessages = request.PromptMessages ?? [];
         var apiLog = ApiHistory.AddRequest(request, Channel.Stream);
         var lastApiLog = apiLog;
+        bool delivered = false;
 
         Action<TalkResponse> onResponse = response =>
         {
@@ -55,15 +56,29 @@ public static class AIService
             response.Id = newLog.Id;
             lastApiLog = newLog;
 
+            delivered = true;
             onPlayerResponseReceived?.Invoke(response);
         };
 
         var payload = await ExecuteWithRetry(apiLog, async client =>
         {
             // All prompt messages are already in prefixMessages, pass empty list for messages
-            var result = await client.GetStreamingChatCompletionAsync<TalkResponse>(prefixMessages, [],
-                request.ImageBase64, onResponse,
-                prep => ApiHistory.UpdatePayload(apiLog.Id, prep));
+            Payload result;
+            try
+            {
+                result = await client.GetStreamingChatCompletionAsync<TalkResponse>(prefixMessages, [],
+                    request.ImageBase64, onResponse,
+                    prep => ApiHistory.UpdatePayload(apiLog.Id, prep));
+            }
+            catch (Exception ex) when (delivered && ex is not OperationCanceledException)
+            {
+                // Lines are already queued for display; a retry would start a different conversation on top of them
+                Logger.Warning($"Stream failed after partial response, not retrying: {ex.Message}");
+                if (ex is AIRequestException { Payload: not null } rex) return rex.Payload;
+                var partial = apiLog.Payload ?? new Payload("Unknown", "Unknown", "", null, 0);
+                partial.ErrorMessage = ex.Message;
+                return partial;
+            }
 
             // Only adjust graph points when API returns real token counts (e.g. OpenAI)
             if (result?.TokenCount > 0)
@@ -199,6 +214,22 @@ public static class AIService
     }
 
     public static bool IsCancellationRequested() => _currentCts != null && _currentCts.IsCancellationRequested;
+
+    // _currentCts is disposed on the request thread, so reading its token can race.
+    public static System.Threading.CancellationToken CurrentCancellationToken
+    {
+        get
+        {
+            try
+            {
+                return _currentCts?.Token ?? System.Threading.CancellationToken.None;
+            }
+            catch (ObjectDisposedException)
+            {
+                return System.Threading.CancellationToken.None;
+            }
+        }
+    }
 
     public static bool CanCancelCurrent() => _busy && _currentRequest != null && !_currentRequest.TalkType.IsFromUser();
 

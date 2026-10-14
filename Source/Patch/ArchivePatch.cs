@@ -92,10 +92,6 @@ public static class ArchivePatch
         {
             if (enabledTypes.TryGetValue(letter.def.defName, out var isDefEnabled))
             {
-                if (!isDefEnabled && IsSharedMessageDef(letter.def.defName))
-                {
-                    return isEnabled;
-                }
                 return isDefEnabled;
             }
         }

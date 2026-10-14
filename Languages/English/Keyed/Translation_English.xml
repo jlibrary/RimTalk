@@ -730,9 +730,4 @@ Crucial Tips:
 
     <!-- Context / Pawn Status -->
     <RimTalk.PawnUtil.Self>oneself</RimTalk.PawnUtil.Self>
-
-    <!-- OpenCode gateway session headers (Settings_Api.cs) -->
-    <RimTalk.Settings.OpenCodeHeaders>OpenCode session headers</RimTalk.Settings.OpenCodeHeaders>
-    <RimTalk.Settings.OpenCodeHeadersDesc>Send the OpenCode session headers (x-opencode-session, x-session-affinity, x-client-request-id, x-session-id) on requests to opencode.ai. The OpenCode GO gateway rejects requests without x-opencode-session (HTTP 400 MissingSessionID). Other providers are never affected.</RimTalk.Settings.OpenCodeHeadersDesc>
-    <RimTalk.Settings.OpenCodeSessionToken>Session token: {0}</RimTalk.Settings.OpenCodeSessionToken>
 </LanguageData>

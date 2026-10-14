@@ -169,6 +169,9 @@ public static class AIProviderRegistry
 
     public static Dictionary<string, string> GetExtraHeaders(this AIProvider p)
     {
+        // Value comes from settings, so it can't live in the static Defs table.
+        if (p == AIProvider.OpenCodeZen || p == AIProvider.OpenCodeGo)
+            return new Dictionary<string, string> { { "x-opencode-session", Settings.Get().OpenCodeSessionId } };
         return Defs.TryGetValue(p, out var def) ? def.ExtraHeaders : null;
     }
 }

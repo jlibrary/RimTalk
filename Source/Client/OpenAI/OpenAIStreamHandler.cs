@@ -1,14 +1,13 @@
 using System;
 using System.Text;
 using RimTalk.Util;
-using UnityEngine.Networking;
 
 namespace RimTalk.Client.OpenAI;
 
 /// <summary>
 /// A custom download handler that processes Server-Sent Events (SSE) streams for OpenAI.
 /// </summary>
-public class OpenAIStreamHandler(Action<string> onContentReceived) : DownloadHandlerScript
+public class OpenAIStreamHandler(Action<string> onContentReceived)
 {
     private readonly Decoder _decoder = Encoding.UTF8.GetDecoder();
     private readonly StringBuilder _buffer = new();
@@ -23,7 +22,10 @@ public class OpenAIStreamHandler(Action<string> onContentReceived) : DownloadHan
 
     public string DetectedError { get; private set; }
 
-    protected override bool ReceiveData(byte[] data, int dataLength)
+    // Called by the HTTP stream reader. Kept as ReceiveData so existing addon patches still apply.
+    public bool FeedBytes(byte[] data, int dataLength) => ReceiveData(data, dataLength);
+
+    protected bool ReceiveData(byte[] data, int dataLength)
     {
         if (data == null || dataLength == 0) return false;
 

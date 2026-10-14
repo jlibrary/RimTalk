@@ -750,9 +750,4 @@ Scriban 魔法 (動態內容)
 
     <!-- Context / Pawn Status -->
     <RimTalk.PawnUtil.Self>自己</RimTalk.PawnUtil.Self>
-
-    <!-- OpenCode gateway session headers (Settings_Api.cs) -->
-    <RimTalk.Settings.OpenCodeHeaders>OpenCode 工作階段請求標頭</RimTalk.Settings.OpenCodeHeaders>
-    <RimTalk.Settings.OpenCodeHeadersDesc>對 opencode.ai 的請求附加 OpenCode 工作階段請求標頭（x-opencode-session、x-session-affinity、x-client-request-id、x-session-id）。OpenCode GO 閘道要求 x-opencode-session，缺少時會以 HTTP 400 MissingSessionID 拒絕請求。其他服務商的請求不受影響。</RimTalk.Settings.OpenCodeHeadersDesc>
-    <RimTalk.Settings.OpenCodeSessionToken>工作階段權杖：{0}</RimTalk.Settings.OpenCodeSessionToken>
 </LanguageData>

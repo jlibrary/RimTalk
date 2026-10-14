@@ -22,7 +22,13 @@ namespace RimTalk.Prompt;
 
 public static class ScribanParser
 {
-	public static void ResetSessionVariables() => SessionVariableStore.Reset();
+    internal static string LastError { get; private set; }
+
+	public static void ResetSessionVariables()
+	{
+	    LastError = null;
+	    SessionVariableStore.Reset();
+	}
 	public static void SetSessionVar(string key, object value) => SessionVariableStore.SetVar(key, value);
 	public static object GetSessionVar(string key) => SessionVariableStore.GetVar(key);
     public static string Render(string templateText, PromptContext context, bool logErrors = true)
@@ -34,8 +40,11 @@ public static class ScribanParser
             var template = Template.Parse(templateText);
             if (template.HasErrors)
             {
-                if (logErrors) Logger.Error($"Scriban Parse Errors: {string.Join("\n", template.Messages)}");
-                return templateText;
+                var parseErrors = string.Join("\n", template.Messages);
+                if (!logErrors) throw new InvalidOperationException(parseErrors);
+                LastError = $"Scriban Parse Error: {parseErrors}";
+                Logger.Error($"Scriban Parse Errors: {parseErrors}");
+                return string.Empty;
             }
 
             var scriptObject = new ScriptObject();
@@ -274,8 +283,10 @@ public static class ScribanParser
         }
         catch (Exception ex)
         {
-            if (logErrors) Logger.Error($"Scriban Render Error: {ex.Message}");
-            return templateText;
+            if (!logErrors) throw;
+            LastError = $"Scriban Render Error: {ex.Message}";
+            Logger.Error($"Scriban Render Error: {ex}");
+            return string.Empty;
         }
     }
 

@@ -34,6 +34,7 @@
     <ItemGroup>
         <Compile Include="../Source/Util/JsonStreamParser.cs" Link="Linked/JsonStreamParser.cs" />
         <Compile Include="../Source/Util/JsonUtil.cs" Link="Linked/JsonUtil.cs" />
+        <Compile Include="../Source/Util/LocalHost.cs" Link="Linked/LocalHost.cs" />
         <Compile Include="../Source/API/ContextCategory.cs" Link="Linked/ContextCategory.cs" />
         <Compile Include="../Source/API/ContextCategories.cs" Link="Linked/ContextCategories.cs" />
         <Compile Include="../Source/API/ContextHookRegistry.cs" Link="Linked/ContextHookRegistry.cs" />
@@ -66,8 +67,6 @@
         <Compile Include="../Source/PawnMemory/PawnMemoryTracker.cs" Link="Linked/PawnMemoryTracker.cs" />
         <Compile Include="../Source/PawnMemory/MemoryFormatter.cs" Link="Linked/MemoryFormatter.cs" />
         <Compile Include="../Source/Compatibility/PresetMigrator.cs" Link="Linked/PresetMigrator.cs" />
-        <Compile Include="../Source/Client/OpenCodeSession.cs" Link="Linked/OpenCodeSession.cs" />
-        <Compile Include="../Source/Settings/AIProvider.cs" Link="Linked/AIProvider.cs" />
     </ItemGroup>
 
 </Project>

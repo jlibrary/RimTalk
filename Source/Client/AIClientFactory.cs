@@ -64,7 +64,7 @@ public static class AIClientFactory
         // 2. Handle Standard Clients via Registry
         if (AIProviderRegistry.Defs.TryGetValue(config.Provider, out var def))
         {
-            return new OpenAIClient(def.EndpointUrl, model, config.ApiKey, def.ExtraHeaders, config.CustomRequestJson, config.Provider);
+            return new OpenAIClient(def.EndpointUrl, model, config.ApiKey, config.Provider.GetExtraHeaders(), config.CustomRequestJson, config.Provider);
         }
 
         return null;

@@ -380,12 +380,12 @@ public partial class Settings
                 {
                     settings.EnabledArchivableTypes[newKey] = oldVal;
                     modified = true;
-                }
 
-                if (DefDatabase<LetterDef>.GetNamedSilentFail(oldKey) != null && !oldVal)
-                {
-                    settings.EnabledArchivableTypes[oldKey] = true;
-                    modified = true;
+                    // Only on first migration: afterwards the bare key is the letter's own setting
+                    if (DefDatabase<LetterDef>.GetNamedSilentFail(oldKey) != null && !oldVal)
+                    {
+                        settings.EnabledArchivableTypes[oldKey] = true;
+                    }
                 }
             }
         }

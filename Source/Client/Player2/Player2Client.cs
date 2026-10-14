@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using RimTalk.Data;
 using RimTalk.Error;
@@ -126,20 +128,16 @@ public class Player2Client : IAIClient
         string jsonContent = BuildRequestJson(prefixMessages, messages, stream: true, imageBase64: imageBase64);
         onRequestPrepared?.Invoke(new Payload(CurrentApiUrl, CurrentModelName, jsonContent, null, 0));
         var jsonParser = new JsonStreamParser<T>();
-        Player2StreamHandler streamHandler = null;
-
-        await SendRequestAsync($"{CurrentApiUrl}/v1/chat/completions", jsonContent, () =>
+        var streamHandler = new Player2StreamHandler(chunk =>
         {
-            streamHandler = new Player2StreamHandler(chunk =>
-            {
-                foreach (var item in jsonParser.Parse(chunk))
-                    onResponseParsed?.Invoke(item);
-            });
-            return streamHandler;
+            foreach (var item in jsonParser.Parse(chunk))
+                onResponseParsed?.Invoke(item);
         });
 
-        return new Payload(CurrentApiUrl, CurrentModelName, jsonContent, streamHandler?.GetFullText(),
-            streamHandler?.GetTotalTokens() ?? 0)
+        await SendHttpAsync($"{CurrentApiUrl}/v1/chat/completions", jsonContent, streamHandler);
+
+        return new Payload(CurrentApiUrl, CurrentModelName, jsonContent, streamHandler.GetFullText(),
+            streamHandler.GetTotalTokens())
         {
             StatusCode = 200
         };
@@ -205,7 +203,11 @@ public class Player2Client : IAIClient
         };
     }
 
-    private async Task<string> SendRequestAsync(string url, string jsonContent, Func<DownloadHandler> handlerFactory)
+    // handlerFactory is unused; the parameter stays so addon patches on this signature keep working.
+    private Task<string> SendRequestAsync(string url, string jsonContent, Func<DownloadHandler> handlerFactory) =>
+        SendHttpAsync(url, jsonContent, null);
+
+    private async Task<string> SendHttpAsync(string url, string jsonContent, Player2StreamHandler streamHandler)
     {
         if (!_isLocalConnection && (DateTime.Now - _lastLocalProbe).TotalSeconds > 2)
         {
@@ -221,102 +223,83 @@ public class Player2Client : IAIClient
 
         Logger.Debug($"Player2 Request ({(_isLocalConnection ? "local" : "remote")}): {url}\n{jsonContent}");
 
-        using var downloadHandler = handlerFactory();
-        using var webRequest = new UnityWebRequest(url, "POST");
-        webRequest.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(jsonContent));
-        webRequest.downloadHandler = downloadHandler;
-        webRequest.SetRequestHeader("Content-Type", "application/json");
-        webRequest.SetRequestHeader("Authorization", $"Bearer {CurrentApiKey}");
-        webRequest.SetRequestHeader("player2-game-key", GameClientId);
+        using var request = new HttpRequestMessage(HttpMethod.Post, url);
+        request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+        request.Headers.TryAddWithoutValidation("Authorization", $"Bearer {CurrentApiKey}");
+        request.Headers.TryAddWithoutValidation("player2-game-key", GameClientId);
 
-        var asyncOp = webRequest.SendWebRequest();
-
-        DateTime lastActiveTime = DateTime.UtcNow;
-        ulong lastBytes = 0;
         const float connectTimeout = 60f;
         const float readTimeout = 60f;
 
-        while (!asyncOp.isDone)
+        using var timeoutCts = new CancellationTokenSource();
+        HttpResponseMessage response;
+        try
         {
-            if (Current.Game == null) return null;
-            if (AIService.IsCancellationRequested())
-            {
-                webRequest.Abort();
-                throw new OperationCanceledException("Request canceled by fast-track request.");
-            }
-            await Task.Delay(100);
-
-            ulong currentBytes = webRequest.downloadedBytes;
-            bool hasStartedReceiving = currentBytes > 0;
-
-            if (currentBytes > lastBytes)
-            {
-                lastActiveTime = DateTime.UtcNow;
-                lastBytes = currentBytes;
-            }
-
-            float inactiveSeconds = (float)(DateTime.UtcNow - lastActiveTime).TotalSeconds;
-
-            if (!hasStartedReceiving && inactiveSeconds > connectTimeout)
-            {
-                webRequest.Abort();
-                throw new TimeoutException($"Connection timed out ({connectTimeout}s)");
-            }
-
-            if (hasStartedReceiving && inactiveSeconds > readTimeout)
-            {
-                webRequest.Abort();
-                throw new TimeoutException($"Read timed out ({readTimeout}s)");
-            }
+            response = await HttpUtil.SendWithTimeoutAsync(request, connectTimeout, timeoutCts,
+                streamHandler != null ? HttpCompletionOption.ResponseHeadersRead : HttpCompletionOption.ResponseContentRead);
+        }
+        catch (HttpRequestException) when (_isLocalConnection && !string.IsNullOrEmpty(_fallbackApiKey))
+        {
+            return await FallbackToRemoteAsync(jsonContent, streamHandler);
+        }
+        catch (HttpRequestException) when (_isLocalConnection)
+        {
+            const string errorMsg = "Player2 desktop app is not running.";
+            throw new AIRequestException(errorMsg,
+                new Payload(url, CurrentModelName, jsonContent, null, 0, errorMsg));
         }
 
-        if (downloadHandler is Player2StreamHandler sHandler)
+        if (response == null) return null;
+        using (response)
         {
-            sHandler.Flush();
-
-            if (!string.IsNullOrEmpty(sHandler.DetectedError))
+            int statusCode = (int)response.StatusCode;
+            if (!response.IsSuccessStatusCode)
             {
-                string errorMsg = sHandler.DetectedError;
-                string allText = sHandler.GetAllReceivedText();
-
-                if (errorMsg.Contains("ResourceExhausted") || errorMsg.Contains("Insufficient"))
-                {
-                    throw new QuotaExceededException("Player2 quota exceeded",
-                        new Payload(url, CurrentModelName, jsonContent, allText, 0, errorMsg) { StatusCode = (int)webRequest.responseCode });
-                }
-
-                throw new AIRequestException(errorMsg, new Payload(url, CurrentModelName, jsonContent, allText, 0, errorMsg) { StatusCode = (int)webRequest.responseCode });
+                string errorText = await response.Content.ReadAsStringAsync();
+                string errorMsg = ErrorUtil.ExtractErrorMessage(errorText) ?? response.ReasonPhrase;
+                Logger.Warning($"Player2 failed: {statusCode} - {errorMsg}");
+                throw new AIRequestException(errorMsg,
+                    new Payload(url, CurrentModelName, jsonContent, errorText, 0, errorMsg) { StatusCode = statusCode });
             }
+
+            if (streamHandler == null)
+            {
+                string responseText = await response.Content.ReadAsStringAsync();
+                Logger.Debug($"Player2 Response: \n{responseText}");
+                return responseText;
+            }
+
+            using var stream = await response.Content.ReadAsStreamAsync();
+            await HttpUtil.ReadStreamWithTimeoutAsync(stream, readTimeout, timeoutCts, (buf, len) =>
+            {
+                streamHandler.FeedBytes(buf, len);
+                ThrowIfStreamError(streamHandler, url, jsonContent, statusCode);
+            });
+
+            streamHandler.Flush();
+            ThrowIfStreamError(streamHandler, url, jsonContent, statusCode);
+            Logger.Debug($"Player2 Streaming complete. Tokens: {streamHandler.GetTotalTokens()}");
+            return streamHandler.GetFullText();
         }
+    }
 
-        string responseText = downloadHandler.text;
+    private Task<string> FallbackToRemoteAsync(string jsonContent, Player2StreamHandler streamHandler)
+    {
+        Logger.Message("[Player2] Local app disconnected. Falling back to Web API.");
+        _isLocalConnection = false;
+        _localApiKey = null;
+        return SendHttpAsync($"{RemoteUrl}/v1/chat/completions", jsonContent, streamHandler);
+    }
 
-        if (webRequest.isNetworkError || webRequest.isHttpError)
-        {
-            if (_isLocalConnection && !string.IsNullOrEmpty(_fallbackApiKey) && (webRequest.isNetworkError || webRequest.responseCode == 0))
-            {
-                Logger.Message("[Player2] Local app disconnected. Falling back to Web API.");
-                _isLocalConnection = false;
-                _localApiKey = null;
-                return await SendRequestAsync($"{RemoteUrl}/v1/chat/completions", jsonContent, handlerFactory);
-            }
+    private void ThrowIfStreamError(Player2StreamHandler streamHandler, string url, string jsonContent, int statusCode)
+    {
+        if (string.IsNullOrEmpty(streamHandler.DetectedError)) return;
 
-            string errorMsg = ErrorUtil.ExtractErrorMessage(responseText) ?? webRequest.error;
-            if (_isLocalConnection && (webRequest.isNetworkError || webRequest.responseCode == 0))
-            {
-                errorMsg = "Player2 desktop app is not running.";
-            }
-
-            Logger.Warning($"Player2 failed: {webRequest.responseCode} - {errorMsg}");
-            throw new AIRequestException(errorMsg, new Payload(url, CurrentModelName, jsonContent, responseText, 0, errorMsg) { StatusCode = (int)webRequest.responseCode });
-        }
-
-        if (downloadHandler is DownloadHandlerBuffer)
-            Logger.Debug($"Player2 Response: \n{responseText}");
-        else if (downloadHandler is Player2StreamHandler sh)
-            Logger.Debug($"Player2 Streaming complete. Tokens: {sh.GetTotalTokens()}");
-
-        return responseText;
+        string errorMsg = streamHandler.DetectedError;
+        var payload = new Payload(url, CurrentModelName, jsonContent, streamHandler.GetAllReceivedText(), 0, errorMsg) { StatusCode = statusCode };
+        if (errorMsg.Contains("ResourceExhausted") || errorMsg.Contains("Insufficient"))
+            throw new QuotaExceededException("Player2 quota exceeded", payload);
+        throw new AIRequestException(errorMsg, payload);
     }
 
     // --- Static / Connection Helpers ---
@@ -326,45 +309,37 @@ public class Player2Client : IAIClient
         try
         {
             Logger.Debug("Checking for local Player2 app...");
-            // Health check
-            using (var healthRequest = UnityWebRequest.Get($"{LocalUrl}/v1/health"))
+            using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2)))
+            using (var health = await HttpUtil.Client.GetAsync($"{LocalUrl}/v1/health", cts.Token))
             {
-                healthRequest.timeout = 2;
-                await SendWebRequestAsync(healthRequest);
-                if (healthRequest.isNetworkError || healthRequest.isHttpError)
+                if (!health.IsSuccessStatusCode)
                 {
-                    Logger.Debug($"Player2 local app health check failed: {healthRequest.error}");
+                    Logger.Debug($"Player2 local app health check failed: {(int)health.StatusCode}");
                     return null;
                 }
 
                 Logger.Debug("Player2 local app health check passed");
             }
 
-            // Login
-            using (var loginRequest = new UnityWebRequest($"{LocalUrl}/v1/login/web/{GameClientId}", "POST"))
+            using var loginRequest = new HttpRequestMessage(HttpMethod.Post, $"{LocalUrl}/v1/login/web/{GameClientId}");
+            loginRequest.Content = new StringContent("{}", Encoding.UTF8, "application/json");
+            using var loginCts = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+            using var login = await HttpUtil.Client.SendAsync(loginRequest, loginCts.Token);
+            if (!login.IsSuccessStatusCode)
             {
-                loginRequest.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes("{}"));
-                loginRequest.downloadHandler = new DownloadHandlerBuffer();
-                loginRequest.SetRequestHeader("Content-Type", "application/json");
-                loginRequest.timeout = 3;
-
-                await SendWebRequestAsync(loginRequest);
-                if (loginRequest.isNetworkError || loginRequest.isHttpError)
-                {
-                    Logger.Debug($"Player2 local login failed: {loginRequest.responseCode} - {loginRequest.error}");
-                    return null;
-                }
-
-                var response = JsonUtil.DeserializeFromJson<LocalPlayer2Response>(loginRequest.downloadHandler.text);
-                if (!string.IsNullOrEmpty(response?.P2Key))
-                {
-                    Logger.Message("[Player2] ✓ Local app authenticated successfully");
-                    return response.P2Key;
-                }
-
-                Logger.Warning("Player2 local app responded but no API key in response");
+                Logger.Debug($"Player2 local login failed: {(int)login.StatusCode} - {login.ReasonPhrase}");
                 return null;
             }
+
+            var response = JsonUtil.DeserializeFromJson<LocalPlayer2Response>(await login.Content.ReadAsStringAsync());
+            if (!string.IsNullOrEmpty(response?.P2Key))
+            {
+                Logger.Message("[Player2] ✓ Local app authenticated successfully");
+                return response.P2Key;
+            }
+
+            Logger.Warning("Player2 local app responded but no API key in response");
+            return null;
         }
         catch (Exception ex)
         {
@@ -382,7 +357,7 @@ public class Player2Client : IAIClient
 
     private static void ShowNotification(string messageKey, MessageTypeDef type)
     {
-        LongEventHandler.ExecuteWhenFinished(() =>
+        AIErrorHandler.EnqueueMessage(() =>
         {
             try
             {
@@ -425,20 +400,18 @@ public class Player2Client : IAIClient
     {
         try
         {
-            using var webRequest = UnityWebRequest.Get($"{CurrentApiUrl}/v1/health");
-            webRequest.timeout = 5;
-            webRequest.SetRequestHeader("player2-game-key", GameClientId);
+            using var request = new HttpRequestMessage(HttpMethod.Get, $"{CurrentApiUrl}/v1/health");
+            request.Headers.TryAddWithoutValidation("player2-game-key", GameClientId);
             if (!string.IsNullOrEmpty(CurrentApiKey))
-            {
-                webRequest.SetRequestHeader("Authorization", $"Bearer {CurrentApiKey}");
-            }
+                request.Headers.TryAddWithoutValidation("Authorization", $"Bearer {CurrentApiKey}");
 
-            await SendWebRequestAsync(webRequest);
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            using var response = await HttpUtil.Client.SendAsync(request, cts.Token);
 
-            if (webRequest.responseCode == 200)
+            if (response.IsSuccessStatusCode)
                 Logger.Debug("Player2 health check successful");
             else
-                Logger.Warning($"Player2 health check failed: {webRequest.responseCode} - {webRequest.error}");
+                Logger.Warning($"Player2 health check failed: {(int)response.StatusCode} - {response.ReasonPhrase}");
         }
         catch (Exception ex)
         {
@@ -482,10 +455,9 @@ public class Player2Client : IAIClient
     {
         try
         {
-            using var webRequest = UnityWebRequest.Get($"{LocalUrl}/v1/health");
-            webRequest.timeout = 2;
-            await SendWebRequestAsync(webRequest);
-            return webRequest.responseCode == 200;
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+            using var response = await HttpUtil.Client.GetAsync($"{LocalUrl}/v1/health", cts.Token);
+            return response.IsSuccessStatusCode;
         }
         catch
         {

@@ -30,6 +30,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Reference Include="System.Net.Http" />
         <PackageReference Include="Lib.Harmony.Ref" Version="2.*" PrivateAssets="all"/>
         <PackageReference Include="PolySharp" Version="1.16.0" PrivateAssets="all" />
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">

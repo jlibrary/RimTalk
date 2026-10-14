@@ -748,9 +748,4 @@
 
     <!-- Context / Pawn Status -->
     <RimTalk.PawnUtil.Self>себя</RimTalk.PawnUtil.Self>
-
-    <!-- OpenCode gateway session headers (Settings_Api.cs) -->
-    <RimTalk.Settings.OpenCodeHeaders>Заголовки сессии OpenCode</RimTalk.Settings.OpenCodeHeaders>
-    <RimTalk.Settings.OpenCodeHeadersDesc>Добавляет заголовки сессии OpenCode (x-opencode-session, x-session-affinity, x-client-request-id, x-session-id) к запросам на opencode.ai. Шлюз OpenCode GO отклоняет запросы без x-opencode-session (HTTP 400 MissingSessionID). На других провайдеров это не влияет.</RimTalk.Settings.OpenCodeHeadersDesc>
-    <RimTalk.Settings.OpenCodeSessionToken>Токен сессии: {0}</RimTalk.Settings.OpenCodeSessionToken>
 </LanguageData>

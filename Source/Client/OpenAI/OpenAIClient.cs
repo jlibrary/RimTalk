@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using RimTalk.Data;
 using RimTalk.Error;
@@ -120,7 +123,7 @@ public class OpenAIClient(
             onRequestPrepared?.Invoke(new Payload(_endpointUrl, effectiveModel, jsonContent, null, 0));
 
             var streamHandler = new OpenAIStreamHandler(onChunk);
-            await SendRequestAsync(jsonContent, streamHandler);
+            await SendHttpAsync(jsonContent, streamHandler);
 
             return new Payload(_endpointUrl, effectiveModel, jsonContent, streamHandler.GetFullText(),
                 streamHandler.GetTotalTokens())
@@ -154,7 +157,7 @@ public class OpenAIClient(
             }
             catch (AIRequestException ex) when (ex.Payload?.StatusCode == 400)
             {
-                LongEventHandler.ExecuteWhenFinished(() =>
+                AIErrorHandler.EnqueueMessage(() =>
                 {
                     var s = Settings.Get();
                     if (s?.DetectedThinkingLevels != null && s.DetectedThinkingLevels.Remove(cacheKey))
@@ -172,7 +175,7 @@ public class OpenAIClient(
             try
             {
                 var payload = await requestFunc(level);
-                LongEventHandler.ExecuteWhenFinished(() =>
+                AIErrorHandler.EnqueueMessage(() =>
                 {
                     var s = Settings.Get();
                     if (s != null)
@@ -287,7 +290,11 @@ public class OpenAIClient(
         };
     }
 
-    private async Task<string> SendRequestAsync(string jsonContent, DownloadHandler downloadHandler)
+    // downloadHandler is unused; the parameter stays so addon patches on this signature keep working.
+    private Task<string> SendRequestAsync(string jsonContent, DownloadHandler downloadHandler) =>
+        SendHttpAsync(jsonContent, null);
+
+    private async Task<string> SendHttpAsync(string jsonContent, OpenAIStreamHandler streamHandler)
     {
         if (string.IsNullOrEmpty(_endpointUrl))
         {
@@ -297,114 +304,76 @@ public class OpenAIClient(
 
         Logger.Debug($"API request: {_endpointUrl}\n{jsonContent}");
 
-        using var webRequest = new UnityWebRequest(_endpointUrl, "POST");
-        webRequest.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(jsonContent));
-        webRequest.downloadHandler = downloadHandler;
-        webRequest.SetRequestHeader("Content-Type", "application/json");
+        using var request = new HttpRequestMessage(HttpMethod.Post, _endpointUrl);
+        request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+        AddAuthHeaders(request, apiKey, extraHeaders);
 
-        if (!string.IsNullOrEmpty(apiKey))
-        {
-            webRequest.SetRequestHeader("Authorization", $"Bearer {apiKey}");
-            webRequest.SetRequestHeader("x-api-key", apiKey);
-        }
-
-        if (extraHeaders != null)
-        {
-            foreach (var header in extraHeaders)
-                webRequest.SetRequestHeader(header.Key, header.Value);
-        }
-
-        // OpenCode gateway (opencode / opencode-go): add the session headers it requires.
-        // Only request headers are touched; disabled or non-OpenCode endpoints are untouched.
-        OpenCodeSessionInjector.Apply(webRequest, _endpointUrl);
-
-        var asyncOp = webRequest.SendWebRequest();
-
-        // Determine if target is local
-        bool isLocal = _endpointUrl.Contains("localhost") || _endpointUrl.Contains("127.0.0.1") ||
-                       _endpointUrl.Contains("192.168.") || _endpointUrl.Contains("10.");
-
-        DateTime lastActiveTime = DateTime.UtcNow;
-        ulong lastBytes = 0;
+        bool isLocal = LocalHost.IsLocal(new Uri(_endpointUrl).DnsSafeHost);
         float connectTimeout = isLocal ? 300f : 60f;
-        float readTimeout = 60f;
+        const float readTimeout = 60f;
 
-        while (!asyncOp.isDone)
+        using var timeoutCts = new CancellationTokenSource();
+        using var response = await HttpUtil.SendWithTimeoutAsync(request, connectTimeout, timeoutCts,
+            streamHandler != null ? HttpCompletionOption.ResponseHeadersRead : HttpCompletionOption.ResponseContentRead);
+        if (response == null) return null;
+
+        int statusCode = (int)response.StatusCode;
+        if (!response.IsSuccessStatusCode)
         {
-            if (Current.Game == null) return null;
-            if (AIService.IsCancellationRequested())
+            string errorText = await response.Content.ReadAsStringAsync();
+            if (response.StatusCode == (HttpStatusCode)429)
             {
-                webRequest.Abort();
-                throw new OperationCanceledException("Request canceled by fast-track request.");
-            }
-            await Task.Delay(100);
-
-            ulong currentBytes = webRequest.downloadedBytes;
-            bool hasStartedReceiving = currentBytes > 0;
-
-            if (currentBytes > lastBytes)
-            {
-                lastActiveTime = DateTime.UtcNow;
-                lastBytes = currentBytes;
+                string quotaMsg = ErrorUtil.ExtractErrorMessage(errorText) ?? "Quota exceeded";
+                throw new QuotaExceededException(quotaMsg,
+                    new Payload(_endpointUrl, model, jsonContent, errorText, 0, quotaMsg) { StatusCode = statusCode });
             }
 
-            float inactiveSeconds = (float)(DateTime.UtcNow - lastActiveTime).TotalSeconds;
-
-            if (!hasStartedReceiving && inactiveSeconds > connectTimeout)
-            {
-                webRequest.Abort();
-                throw new TimeoutException($"Connection timed out (Waited {connectTimeout}s for first token)");
-            }
-
-            if (hasStartedReceiving && inactiveSeconds > readTimeout)
-            {
-                webRequest.Abort();
-                throw new TimeoutException($"Read timed out (Stalled for {readTimeout}s during generation)");
-            }
-        }
-
-        string responseText = downloadHandler.text;
-
-        // Recover text for streaming errors
-        if (downloadHandler is OpenAIStreamHandler sHandler)
-        {
-            sHandler.Flush();
-            if (!string.IsNullOrEmpty(sHandler.DetectedError))
-            {
-                string errorMsg = sHandler.DetectedError;
-                string allText = sHandler.GetAllReceivedText();
-                throw new AIRequestException(errorMsg,
-                    new Payload(_endpointUrl, model, jsonContent, allText, 0, errorMsg) { StatusCode = (int)webRequest.responseCode });
-            }
-
-            if (webRequest.responseCode >= 400 || webRequest.isNetworkError || webRequest.isHttpError)
-            {
-                responseText = sHandler.GetAllReceivedText();
-                if (string.IsNullOrEmpty(responseText)) responseText = sHandler.GetRawJson();
-            }
-        }
-
-        if (webRequest.responseCode == 429)
-        {
-            string errorMsg = ErrorUtil.ExtractErrorMessage(responseText) ?? "Quota exceeded";
-            throw new QuotaExceededException(errorMsg,
-                new Payload(_endpointUrl, model, jsonContent, responseText, 0, errorMsg) { StatusCode = (int)webRequest.responseCode });
-        }
-
-        if (webRequest.isNetworkError || webRequest.isHttpError)
-        {
-            string errorMsg = ErrorUtil.ExtractErrorMessage(responseText) ?? webRequest.error;
-            Logger.Warning($"Request failed: {webRequest.responseCode} - {errorMsg}");
+            string errorMsg = ErrorUtil.ExtractErrorMessage(errorText) ?? response.ReasonPhrase;
+            Logger.Warning($"Request failed: {statusCode} - {errorMsg}");
             throw new AIRequestException(errorMsg,
-                new Payload(_endpointUrl, model, jsonContent, responseText, 0, errorMsg) { StatusCode = (int)webRequest.responseCode });
+                new Payload(_endpointUrl, model, jsonContent, errorText, 0, errorMsg) { StatusCode = statusCode });
         }
 
-        if (downloadHandler is DownloadHandlerBuffer)
+        if (streamHandler == null)
+        {
+            string responseText = await response.Content.ReadAsStringAsync();
             Logger.Debug($"API response: \n{responseText}");
-        else if (downloadHandler is OpenAIStreamHandler sh)
-            Logger.Debug($"API response: \n{sh.GetRawJson()}");
+            return responseText;
+        }
 
-        return responseText;
+        using var stream = await response.Content.ReadAsStreamAsync();
+        await HttpUtil.ReadStreamWithTimeoutAsync(stream, readTimeout, timeoutCts, (buf, len) =>
+        {
+            streamHandler.FeedBytes(buf, len);
+            ThrowIfStreamError(streamHandler, jsonContent, statusCode);
+        });
+
+        streamHandler.Flush();
+        ThrowIfStreamError(streamHandler, jsonContent, statusCode);
+        Logger.Debug($"API response: \n{streamHandler.GetRawJson()}");
+        return streamHandler.GetFullText();
+    }
+
+    private void ThrowIfStreamError(OpenAIStreamHandler streamHandler, string jsonContent, int statusCode)
+    {
+        if (string.IsNullOrEmpty(streamHandler.DetectedError)) return;
+
+        string errorMsg = streamHandler.DetectedError;
+        throw new AIRequestException(errorMsg,
+            new Payload(_endpointUrl, model, jsonContent, streamHandler.GetAllReceivedText(), 0, errorMsg) { StatusCode = statusCode });
+    }
+
+    private static void AddAuthHeaders(HttpRequestMessage request, string key, Dictionary<string, string> headers)
+    {
+        if (!string.IsNullOrEmpty(key))
+        {
+            request.Headers.TryAddWithoutValidation("Authorization", $"Bearer {key}");
+            request.Headers.TryAddWithoutValidation("x-api-key", key);
+        }
+
+        if (headers == null) return;
+        foreach (var header in headers)
+            request.Headers.TryAddWithoutValidation(header.Key, header.Value);
     }
 
     public static Task<List<string>> FetchModelsAsync(string apiKey, string url) =>
@@ -412,34 +381,26 @@ public class OpenAIClient(
 
     internal static async Task<List<string>> FetchModelsAsync(string apiKey, string url, Dictionary<string, string> extraHeaders)
     {
-        using var webRequest = UnityWebRequest.Get(url);
-        if (!string.IsNullOrEmpty(apiKey))
+        try
         {
-            webRequest.SetRequestHeader("Authorization", "Bearer " + apiKey);
-            webRequest.SetRequestHeader("x-api-key", apiKey);
-        }
+            using var request = new HttpRequestMessage(HttpMethod.Get, url);
+            AddAuthHeaders(request, apiKey, extraHeaders);
 
-        if (extraHeaders != null)
-        {
-            foreach (var kv in extraHeaders)
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            using var response = await HttpUtil.Client.SendAsync(request, cts.Token);
+            if (!response.IsSuccessStatusCode)
             {
-                webRequest.SetRequestHeader(kv.Key, kv.Value);
+                Logger.Warning($"Failed to fetch models: {(int)response.StatusCode} {response.ReasonPhrase}");
+                return [];
             }
+
+            var models = JsonUtil.DeserializeFromJson<OpenAIModelsResponse>(await response.Content.ReadAsStringAsync());
+            return models?.Data?.Select(m => m.Id).ToList() ?? [];
         }
-
-        // The OpenCode gateway gates its model list behind the same session header.
-        OpenCodeSessionInjector.Apply(webRequest, url);
-
-        var asyncOp = webRequest.SendWebRequest();
-        while (!asyncOp.isDone) await Task.Delay(100);
-
-        if (webRequest.isNetworkError || webRequest.isHttpError)
+        catch (Exception ex)
         {
-            Logger.Warning($"Failed to fetch models: {webRequest.error}");
+            Logger.Warning($"Failed to fetch models: {ex.Message}");
             return [];
         }
-
-        var response = JsonUtil.DeserializeFromJson<OpenAIModelsResponse>(webRequest.downloadHandler.text);
-        return response?.Data?.Select(m => m.Id).ToList() ?? [];
     }
 }

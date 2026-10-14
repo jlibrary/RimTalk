@@ -18,16 +18,9 @@ public class RimTalkSettings : ModSettings
     public AIProvider SimpleProvider = AIProvider.Google;
     public string SimpleApiKey = "";
     public string SimplePlayer2ApiKey = "";
+    // Stable per-install id for the OpenCode gateway's x-opencode-session header.
+    public string OpenCodeSessionId = "";
     public bool IsUsingFallbackModel = false;
-
-    /// <summary>
-    /// Send the OpenCode session headers (x-opencode-session, x-session-affinity,
-    /// x-client-request-id, x-session-id) on requests to opencode.ai. On by default because the
-    /// OpenCode GO gateway rejects requests without x-opencode-session; requests to any other
-    /// host are never touched, so it can be left enabled for every other provider.
-    /// </summary>
-    public bool OpenCodeSessionHeaders = true;
-
     public bool IsEnabled = true;
     public int TalkInterval = 10;
     public int ReplyInterval = 4;
@@ -223,13 +216,14 @@ public class RimTalkSettings : ModSettings
             if (config.IsValid())
             {
                 CurrentCloudConfigIndex = nextIndex;
-                Write(); // Save the updated index
+                // Called from the AI request thread; Scribe is global, so save from the main-thread tick queue
+                Error.AIErrorHandler.EnqueueMessage(Write); // Save the updated index
                 return;
             }
         }
         // If no other valid config is found, we stay at the current index or revert to original if it was valid
         // For now, we'll just stay at the current index.
-        Write(); // Save in case the original was invalid and we couldn't find a new one.
+        Error.AIErrorHandler.EnqueueMessage(Write); // Save in case the original was invalid and we couldn't find a new one.
     }
 
     /// <summary>
@@ -258,7 +252,10 @@ public class RimTalkSettings : ModSettings
         Scribe_Values.Look(ref SimpleProvider, "simpleProvider", AIProvider.Google);
         Scribe_Values.Look(ref SimpleApiKey, "simpleApiKey", "");
         Scribe_Values.Look(ref SimplePlayer2ApiKey, "simplePlayer2ApiKey", "");
-        Scribe_Values.Look(ref OpenCodeSessionHeaders, "openCodeSessionHeaders", true);
+        Scribe_Values.Look(ref OpenCodeSessionId, "openCodeSessionId", "");
+        // Look resets a missing key to "", so generate here once; it is saved when settings are next written.
+        if (string.IsNullOrEmpty(OpenCodeSessionId))
+            OpenCodeSessionId = Guid.NewGuid().ToString("N").Substring(0, 8);
         Scribe_Values.Look(ref IsEnabled, "isEnabled", true);
         Scribe_Values.Look(ref TalkInterval, "talkInterval", 10);
         Scribe_Values.Look(ref ReplyInterval, "replyInterval", 4);

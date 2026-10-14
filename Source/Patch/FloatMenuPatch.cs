@@ -12,23 +12,12 @@ using Cache = RimTalk.Data.Cache;
 
 namespace RimTalk.Patch;
 
-#if V1_5
-[HarmonyPatch(typeof(FloatMenuMakerMap), nameof(FloatMenuMakerMap.ChoicesAtFor))]
-#else
 [HarmonyPatch(typeof(FloatMenuMakerMap), nameof(FloatMenuMakerMap.GetOptions))]
-#endif
 public static class FloatMenuPatch
 {
     private const float MaxClickDistance = 0.65f;
     private const float MaxClickDistanceSquared = MaxClickDistance * MaxClickDistance;
 
-#if V1_5
-    [HarmonyPostfix]
-    public static void Postfix(Vector3 clickPos, Pawn pawn, ref List<FloatMenuOption> __result)
-    {
-        TryAddTalkOption(__result, pawn, clickPos);
-    }
-#else
     [HarmonyPostfix]
     public static void Postfix(
         List<Pawn> selectedPawns,
@@ -39,7 +28,6 @@ public static class FloatMenuPatch
         Pawn pawn = (selectedPawns is { Count: 1 }) ? selectedPawns[0] : null;
         TryAddTalkOption(__result, pawn, clickPos);
     }
-#endif
 
     /// <summary>
     /// Decide whether add talk item to float menu.

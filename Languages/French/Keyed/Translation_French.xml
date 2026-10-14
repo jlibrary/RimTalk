@@ -749,9 +749,4 @@ Rappelle jusqu'à 2 événements historiques les plus marquants et 2 événement
 
     <!-- Context / Pawn Status -->
     <RimTalk.PawnUtil.Self>soi-même</RimTalk.PawnUtil.Self>
-
-    <!-- OpenCode gateway session headers (Settings_Api.cs) -->
-    <RimTalk.Settings.OpenCodeHeaders>En-têtes de session OpenCode</RimTalk.Settings.OpenCodeHeaders>
-    <RimTalk.Settings.OpenCodeHeadersDesc>Ajoute les en-têtes de session OpenCode (x-opencode-session, x-session-affinity, x-client-request-id, x-session-id) aux requêtes vers opencode.ai. La passerelle OpenCode GO refuse les requêtes sans x-opencode-session (HTTP 400 MissingSessionID). Les autres fournisseurs ne sont jamais concernés.</RimTalk.Settings.OpenCodeHeadersDesc>
-    <RimTalk.Settings.OpenCodeSessionToken>Jeton de session : {0}</RimTalk.Settings.OpenCodeSessionToken>
 </LanguageData>
