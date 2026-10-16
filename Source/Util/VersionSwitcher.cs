@@ -31,7 +31,7 @@ public static class VersionSwitcher
         foreach (string dir in Directory.GetDirectories(lastVerDir))
         {
             string dirName = Path.GetFileName(dir);
-            if (dirName == "1.6") continue;
+            if (dirName == "1.5" || dirName == "1.6") continue;
 
             string dllPath = Path.Combine(dir, gameVer, DllName);
             if (File.Exists(dllPath))
@@ -196,9 +196,9 @@ public static class VersionSwitcher
                 CopyDirectory(content.RootDir, localRimTalk);
             }
 
-            // 2. In the target mod folder, swap the 1.6 assembly with LastVersion/<prevVer> or LastVersion
+            // 2. In the target mod folder, swap 1.5 and 1.6 assemblies with LastVersion/<prevVer> or LastVersion
             string targetModDir = isAlreadyLocal ? content.RootDir : localRimTalk;
-            string[] versions = new[] { "1.6" };
+            string[] versions = new[] { "1.5", "1.6" };
             foreach (string ver in versions)
             {
                 string lastDll = Path.Combine(targetModDir, LastVersionFolder, prevVer, ver, DllName);

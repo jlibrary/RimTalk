@@ -18,6 +18,7 @@ Features:
 - Works with Gemini, Player2, OpenAI, DeepSeek, OpenRouter, and local models (Ollama, LM Studio)
 	</description>
 	<supportedVersions>
+		<li>1.5</li>
 		<li>1.6</li>
 		<li>1.7</li>
 	</supportedVersions>
