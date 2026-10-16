@@ -23,13 +23,31 @@ public static class HttpUtil
             // Mono's CookieContainer reads the machine domain name, which throws "Illegal byte sequence"
             // on non-ASCII computer names. API calls don't need cookies.
             UseCookies = false,
+#if !V1_5
             // Self-signed certificates are accepted only for local and LAN hosts.
             ServerCertificateCustomValidationCallback = (msg, cert, chain, errors) =>
                 errors == SslPolicyErrors.None || LocalHost.IsLocal(msg.RequestUri?.DnsSafeHost)
+#endif
         };
+#if V1_5
+        AcceptLocalCertificates();
+#endif
         // Timeouts are enforced per request through CancellationTokenSource.
         return new HttpClient(new LoopbackHandler(handler)) { Timeout = Timeout.InfiniteTimeSpan };
     }
+
+#if V1_5
+    // RimWorld 1.5's Mono throws NotImplementedException from HttpClientHandler.ServerCertificateCustomValidationCallback.
+    // Its handler goes through HttpWebRequest, which honors this global callback instead; chain to any existing one.
+    private static void AcceptLocalCertificates()
+    {
+        var previous = System.Net.ServicePointManager.ServerCertificateValidationCallback;
+        System.Net.ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, errors) =>
+            errors == SslPolicyErrors.None
+            || (sender is System.Net.HttpWebRequest req && LocalHost.IsLocal(req.RequestUri.DnsSafeHost))
+            || (previous != null && previous(sender, cert, chain, errors));
+    }
+#endif
 
     // Mono fails to resolve "localhost" (NameResolutionFailure) on non-ASCII computer names; an IP literal skips DNS.
     private sealed class LoopbackHandler : DelegatingHandler

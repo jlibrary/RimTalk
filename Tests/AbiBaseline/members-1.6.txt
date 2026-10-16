@@ -11,6 +11,8 @@ F RimTalk.AIProvider RimTalk.AIProvider::Local = 10
 F RimTalk.AIProvider RimTalk.AIProvider::Moonshot = 14
 F RimTalk.AIProvider RimTalk.AIProvider::None = 12
 F RimTalk.AIProvider RimTalk.AIProvider::OpenAI = 1
+F RimTalk.AIProvider RimTalk.AIProvider::OpenCodeGo = 16
+F RimTalk.AIProvider RimTalk.AIProvider::OpenCodeZen = 15
 F RimTalk.AIProvider RimTalk.AIProvider::OpenRouter = 8
 F RimTalk.AIProvider RimTalk.AIProvider::Player2 = 9
 F RimTalk.AIProvider RimTalk.ApiConfig::Provider
@@ -91,6 +93,7 @@ F RimTalk.Data.ApiLog/State RimTalk.Data.ApiLog/State::None = 0
 F RimTalk.Data.ApiLog/State RimTalk.Data.ApiLog/State::Pending = 1
 F RimTalk.Data.ApiLog/State RimTalk.Data.ApiLog/State::Spoken = 3
 F RimTalk.Data.ApiLog/State RimTalk.UI.DebugWindow::_stateFilter
+F RimTalk.Data.ApiLog[] RimTalk.Data.ApiHistory::_snapshot
 F RimTalk.Data.ContextSettings RimTalk.RimTalkSettings::Context
 F RimTalk.Data.ContextSettings RimTalk.Settings::_changeBuffer
 F RimTalk.Data.MapRole RimTalk.Data.MapRole::Defending = 2
@@ -387,6 +390,7 @@ F System.Collections.Generic.Dictionary`2<Verse.Pawn,RimTalk.Service.CustomDialo
 F System.Collections.Generic.Dictionary`2<Verse.Pawn,System.Collections.Generic.HashSet`1<System.String>> RimTalk.Patch.PatchThoughtHandlerGetDistinctMoodThoughtGroups::LastSituationalThoughts
 F System.Collections.Generic.HashSet`1<System.Int32> RimTalk.Service.SleepDialogueTracker::SleepingPawns
 F System.Collections.Generic.HashSet`1<System.Int32> RimTalk.UI.DebugWindow::_expandedPromptSegmentIndices
+F System.Collections.Generic.HashSet`1<System.Int64> RimTalk.Service.EncounterTracker::MetPairs
 F System.Collections.Generic.HashSet`1<System.String> RimTalk.Prompt.PromptPreset::DeletedModEntryIds
 F System.Collections.Generic.HashSet`1<System.String> RimTalk.Prompt.VariableDefinitions::StaticRoots
 F System.Collections.Generic.HashSet`1<System.String> RimTalk.Settings::_expandedParents
@@ -436,6 +440,7 @@ F System.Collections.Generic.List`1<System.ValueTuple`2<RimTalk.Data.Role,System
 F System.Collections.Generic.List`1<Verse.Pawn> RimTalk.Data.UserRequestPool::UserRequests
 F System.Collections.Generic.List`1<Verse.TabRecord> RimTalk.Settings::_tabs
 F System.Collections.Generic.List`1<Verse.TabRecord> RimTalk.UI.PersonaEditorWindow::_tabs
+F System.Collections.Generic.Queue`1<System.Int64> RimTalk.Service.EncounterTracker::MetOrder
 F System.Collections.Generic.Queue`1<System.String> RimTalk.Data.RimTalkWorldComponent::_keyInsertionOrder
 F System.Collections.Generic.Queue`1<System.String> RimTalk.Service.TopicService::_approachDeck
 F System.Collections.Generic.Queue`1<System.String> RimTalk.Service.TopicService::_subjectDeck
@@ -503,6 +508,7 @@ F System.Int32 RimTalk.RimTalkSettings::DisableAiAtSpeed
 F System.Int32 RimTalk.RimTalkSettings::ReplyInterval
 F System.Int32 RimTalk.RimTalkSettings::TalkInterval
 F System.Int32 RimTalk.Service.BusyGate::StuckAfterSeconds
+F System.Int32 RimTalk.Service.EncounterTracker::MaxMetPairs
 F System.Int32 RimTalk.Service.EventService::FatigueDurationTicks
 F System.Int32 RimTalk.Service.EventService::FatiguePenaltyScore
 F System.Int32 RimTalk.Service.PawnSelector/DetectionType::value__
@@ -555,15 +561,18 @@ F System.Int64 RimTalk.UI.DebugWindow::_totalCalls
 F System.Int64 RimTalk.UI.DebugWindow::_totalTokens
 F System.Lazy`1<System.Collections.Generic.IReadOnlyList`1<RimTalk.API.ContextCategory>> RimTalk.API.ContextCategories/Environment::_all
 F System.Lazy`1<System.Collections.Generic.IReadOnlyList`1<RimTalk.API.ContextCategory>> RimTalk.API.ContextCategories/Pawn::_all
+F System.Net.Http.HttpClient RimTalk.Util.HttpUtil::Client
 F System.Nullable`1<RimTalk.Data.RequestStatus> RimTalk.UI.DebugWindow::_activeRequestStatusFilter
 F System.Nullable`1<RimTalk.PawnMemory.MemoryChangeType> RimTalk.UI.DebugWindow::_memoryTypeFilter
 F System.Nullable`1<System.Boolean> RimTalk.Client.Player2.Player2Client::_lastLocalAppDetected
 F System.Nullable`1<System.Boolean> RimTalk.RimTalkSettings::ShowQuickSettings
 F System.Nullable`1<System.DateTime> RimTalk.Service.AIService::_busySince
 F System.Object RimTalk.API.RimTalkPromptAPI::_registrationLock
+F System.Object RimTalk.Data.ApiHistory::HistoryLock
 F System.Object RimTalk.PawnMemory.MemoryHistory::Lock
 F System.Object RimTalk.Prompt.SessionVariableStore::_sessionLock
 F System.Object RimTalk.Prompt.VariableStore::_lock
+F System.Object RimTalk.Service.EncounterTracker::MetLock
 F System.Object RimTalk.Service.TopicService::Lock
 F System.Random RimTalk.Client.OpenAI.OpenAIClient::_random
 F System.Random RimTalk.Data.Cache::Random
@@ -766,6 +775,7 @@ F System.String RimTalk.ProviderDef::ListModelsUrl
 F System.String RimTalk.RimTalkSettings::CustomInstruction
 F System.String RimTalk.RimTalkSettings::DebugSortColumn
 F System.String RimTalk.RimTalkSettings::LastLoadedLanguage
+F System.String RimTalk.RimTalkSettings::OpenCodeSessionId
 F System.String RimTalk.RimTalkSettings::PlayerName
 F System.String RimTalk.RimTalkSettings::PlayerPersona
 F System.String RimTalk.RimTalkSettings::SimpleApiKey
@@ -1086,8 +1096,10 @@ M System.Boolean RimTalk.API.RimTalkPromptAPI::SetBuiltInEntryEnabled(System.Str
 M System.Boolean RimTalk.ApiConfig::IsValid()
 M System.Boolean RimTalk.Client.ChatRequest::get_DisableThinking()
 M System.Boolean RimTalk.Client.ChatRequest::get_Stream()
+M System.Boolean RimTalk.Client.OpenAI.OpenAIStreamHandler::FeedBytes(System.Byte[],System.Int32)
 M System.Boolean RimTalk.Client.OpenAI.OpenAIStreamHandler::ReceiveData(System.Byte[],System.Int32)
 M System.Boolean RimTalk.Client.Player2.Player2AuthService::get_IsAuthenticating()
+M System.Boolean RimTalk.Client.Player2.Player2StreamHandler::FeedBytes(System.Byte[],System.Int32)
 M System.Boolean RimTalk.Client.Player2.Player2StreamHandler::ReceiveData(System.Byte[],System.Int32)
 M System.Boolean RimTalk.Compatibility.BubbleCompatibilityPatch::OnBubblerAddPrefix(Verse.LogEntry)
 M System.Boolean RimTalk.Compatibility.BubbleCompatibilityPatch::OnBubblerDrawPrefix()
@@ -1113,6 +1125,7 @@ M System.Boolean RimTalk.Data.TalkResponse::IsReply()
 M System.Boolean RimTalk.Data.TalkResponse::get_HasDirectiveModified()
 M System.Boolean RimTalk.Dialog_BubbleSettings::DrawSelectableButton(UnityEngine.Rect,System.String,System.Boolean)
 M System.Boolean RimTalk.Error.AIErrorHandler::CanRetryGeneration(RimTalk.RimTalkSettings)
+M System.Boolean RimTalk.Error.AIErrorHandler::TryHandlePromptFailure(RimTalk.Data.TalkRequest,RimTalk.Data.PawnState)
 M System.Boolean RimTalk.Patch.ArchivePatch::ContainsQuestReference(System.String,System.String)
 M System.Boolean RimTalk.Patch.ArchivePatch::IsSharedMessageDef(System.String)
 M System.Boolean RimTalk.Patch.ArchivePatch::ShouldProcessArchivable(RimWorld.IArchivable)
@@ -1184,6 +1197,8 @@ M System.Boolean RimTalk.Service.BusyGate::IsStuck(System.Boolean,System.Nullabl
 M System.Boolean RimTalk.Service.ContextBuilder::TryBuildCombatSides(Verse.Pawn,System.Collections.Generic.List`1<Verse.Pawn>,System.String&)
 M System.Boolean RimTalk.Service.CustomDialogueService::CanTalk(Verse.Pawn,Verse.Pawn)
 M System.Boolean RimTalk.Service.CustomDialogueService::InSameRoom(Verse.Pawn,Verse.Pawn)
+M System.Boolean RimTalk.Service.EncounterTracker::IsStrangerEncounter(Verse.Pawn,Verse.Pawn)
+M System.Boolean RimTalk.Service.EncounterTracker::IsVisitorOrStranger(Verse.Pawn)
 M System.Boolean RimTalk.Service.EventService/ColonyEventCandidate::get_IsActiveOnScreen()
 M System.Boolean RimTalk.Service.EventService::IsInspirationLetter(Verse.Letter)
 M System.Boolean RimTalk.Service.EventService::IsLetterMapRelevant(Verse.Letter,Verse.Map)
@@ -1229,6 +1244,7 @@ M System.Boolean RimTalk.Util.JsonUtil::IsJsonQuote(System.Char)
 M System.Boolean RimTalk.Util.JsonUtil::IsLikelyStringTerminator(System.String,System.Int32,System.Boolean)
 M System.Boolean RimTalk.Util.JsonUtil::IsValidJson(System.String,System.String&)
 M System.Boolean RimTalk.Util.JsonUtil::TryDeserializeFromJson(System.String,T&,System.Exception&)
+M System.Boolean RimTalk.Util.LocalHost::IsLocal(System.String)
 M System.Boolean RimTalk.Util.ModUtil::IsAnyModActive(System.String[])
 M System.Boolean RimTalk.Util.PawnUtil::HasActiveHostiles(Verse.Pawn)
 M System.Boolean RimTalk.Util.PawnUtil::HasRelationalFriction(Verse.Pawn,Verse.Pawn)
@@ -1425,6 +1441,8 @@ M System.Int64 RimTalk.Client.OpenAI.OpenAIStreamChunk::get_Created()
 M System.Int64 RimTalk.Data.Stats::GetHistoryMax()
 M System.Int64 RimTalk.Data.Stats::get_TotalCalls()
 M System.Int64 RimTalk.Data.Stats::get_TotalTokens()
+M System.Int64 RimTalk.Service.EncounterTracker::GetPairKey(Verse.Pawn,Verse.Pawn)
+M System.Net.Http.HttpClient RimTalk.Util.HttpUtil::CreateHttpClient()
 M System.Nullable`1<RimTalk.API.ContextCategory> RimTalk.API.ContextCategories::TryGetEnvironmentCategory(System.String)
 M System.Nullable`1<RimTalk.API.ContextCategory> RimTalk.API.ContextCategories::TryGetPawnCategory(System.String)
 M System.Nullable`1<System.Boolean> RimTalk.Client.OpenAI.OpenAIRequest::get_Stream()
@@ -1458,6 +1476,7 @@ M System.Single RimTalk.PawnMemory.MemoryLogEntry::get_OldWeight()
 M System.Single RimTalk.PawnMemory.PawnMemoryTracker::ResolveHalfLifeDays(RimTalk.PawnMemory.MemoryEntry,System.Single)
 M System.Single RimTalk.Service.EventService/ColonyEventCandidate::get_ElapsedHours()
 M System.Single RimTalk.Service.EventService::GetEventMaxRetentionHours(Verse.Letter,System.String)
+M System.Single RimTalk.Settings::GetCursorLineTop(UnityEngine.TextEditor,System.Single)
 M System.Single RimTalk.UI.DebugWindow::CalculateGroupedResponseColumnWidth(System.Single)
 M System.Single RimTalk.UI.DebugWindow::CalculateGroupedTableHeight(System.Single)
 M System.Single RimTalk.UI.DebugWindow::CalculatePromptSegmentsHeight(System.Collections.Generic.List`1<RimTalk.Data.PromptMessageSegment>,System.Single)
@@ -1667,6 +1686,7 @@ M System.String RimTalk.Prompt.ScribanParser::GetMemoryDirective(RimTalk.Prompt.
 M System.String RimTalk.Prompt.ScribanParser::GetMemoryDirectiveForPawn(Verse.Pawn,RimTalk.Prompt.PromptContext)
 M System.String RimTalk.Prompt.ScribanParser::NormalizePawnMember(System.String)
 M System.String RimTalk.Prompt.ScribanParser::Render(System.String,RimTalk.Prompt.PromptContext,System.Boolean)
+M System.String RimTalk.Prompt.ScribanParser::get_LastError()
 M System.String RimTalk.Prompt.VariableStore::GetVar(System.String)
 M System.String RimTalk.Prompt.VariableStore::GetVar(System.String,System.String)
 M System.String RimTalk.RimTalkSettings::GetCurrentModel()
@@ -1793,11 +1813,13 @@ M System.String RimTalk.Util.VersionSwitcher::GetPreviousVersionString()
 M System.String RimTalk.Util.VisionUtil::CaptureCurrentScreenBase64(System.Int32,System.Int32)
 M System.String[] RimTalk.Util.CommonUtil::SplitByLine(System.String)
 M System.String[] RimTalk.Util.CommonUtil::SplitByString(System.String,System.String)
+M System.Threading.CancellationToken RimTalk.Service.AIService::get_CurrentCancellationToken()
 M System.Threading.Tasks.Task RimTalk.Client.Player2.Player2AuthService::RunDeviceAuthFlowAsync(System.Threading.CancellationToken,System.Action`1<System.String>)
 M System.Threading.Tasks.Task RimTalk.Client.Player2.Player2Client::SendHealthCheckAsync()
 M System.Threading.Tasks.Task RimTalk.Client.Player2.Player2Client::SendWebRequestAsync(UnityEngine.Networking.UnityWebRequest)
 M System.Threading.Tasks.Task RimTalk.Service.AIService::ChatStreaming(RimTalk.Data.TalkRequest,System.Action`1<RimTalk.Data.TalkResponse>)
 M System.Threading.Tasks.Task RimTalk.Service.TalkService::GenerateAndProcessTalkAsync(RimTalk.Data.TalkRequest)
+M System.Threading.Tasks.Task RimTalk.Util.HttpUtil::ReadStreamWithTimeoutAsync(System.IO.Stream,System.Single,System.Threading.CancellationTokenSource,System.Action`2<System.Byte[],System.Int32>)
 M System.Threading.Tasks.Task`1<RimTalk.Client.IAIClient> RimTalk.Client.AIClientFactory::CreateServiceInstanceAsync(RimTalk.ApiConfig)
 M System.Threading.Tasks.Task`1<RimTalk.Client.IAIClient> RimTalk.Client.AIClientFactory::GetAIClientAsync()
 M System.Threading.Tasks.Task`1<RimTalk.Client.Payload> RimTalk.Client.IAIClient::GetChatCompletionAsync(System.Collections.Generic.List`1<System.ValueTuple`2<RimTalk.Data.Role,System.String>>,System.Collections.Generic.List`1<System.ValueTuple`2<RimTalk.Data.Role,System.String>>,System.Action`1<RimTalk.Client.Payload>)
@@ -1820,7 +1842,12 @@ M System.Threading.Tasks.Task`1<RimTalk.Data.PersonalityData> RimTalk.Data.Perso
 M System.Threading.Tasks.Task`1<System.Boolean> RimTalk.Client.Player2.Player2Client::IsPlayer2LocalAppAvailableAsync()
 M System.Threading.Tasks.Task`1<System.Collections.Generic.List`1<System.String>> RimTalk.Client.OpenAI.OpenAIClient::FetchModelsAsync(System.String,System.String)
 M System.Threading.Tasks.Task`1<System.Collections.Generic.List`1<System.String>> RimTalk.Client.OpenAI.OpenAIClient::FetchModelsAsync(System.String,System.String,System.Collections.Generic.Dictionary`2<System.String,System.String>)
+M System.Threading.Tasks.Task`1<System.Net.Http.HttpResponseMessage> RimTalk.Util.HttpUtil/LoopbackHandler::SendAsync(System.Net.Http.HttpRequestMessage,System.Threading.CancellationToken)
+M System.Threading.Tasks.Task`1<System.Net.Http.HttpResponseMessage> RimTalk.Util.HttpUtil::SendWithTimeoutAsync(System.Net.Http.HttpRequestMessage,System.Single,System.Threading.CancellationTokenSource,System.Net.Http.HttpCompletionOption)
+M System.Threading.Tasks.Task`1<System.String> RimTalk.Client.OpenAI.OpenAIClient::SendHttpAsync(System.String,RimTalk.Client.OpenAI.OpenAIStreamHandler)
 M System.Threading.Tasks.Task`1<System.String> RimTalk.Client.OpenAI.OpenAIClient::SendRequestAsync(System.String,UnityEngine.Networking.DownloadHandler)
+M System.Threading.Tasks.Task`1<System.String> RimTalk.Client.Player2.Player2Client::FallbackToRemoteAsync(System.String,RimTalk.Client.Player2.Player2StreamHandler)
+M System.Threading.Tasks.Task`1<System.String> RimTalk.Client.Player2.Player2Client::SendHttpAsync(System.String,System.String,RimTalk.Client.Player2.Player2StreamHandler)
 M System.Threading.Tasks.Task`1<System.String> RimTalk.Client.Player2.Player2Client::SendRequestAsync(System.String,System.String,System.Func`1<UnityEngine.Networking.DownloadHandler>)
 M System.Threading.Tasks.Task`1<System.String> RimTalk.Client.Player2.Player2Client::TryGetLocalPlayer2Key()
 M System.Threading.Tasks.Task`1<System.ValueTuple`2<System.Int64,System.String>> RimTalk.Client.Player2.Player2AuthService::SendPostAsync(System.String,System.String,System.Int32)
@@ -1912,6 +1939,8 @@ M System.Void RimTalk.Client.OpenAI.Model::set_Id(System.String)
 M System.Void RimTalk.Client.OpenAI.OpenAIClient::.cctor()
 M System.Void RimTalk.Client.OpenAI.OpenAIClient::.ctor(System.String,System.String,System.String,System.Collections.Generic.Dictionary`2<System.String,System.String>,System.String)
 M System.Void RimTalk.Client.OpenAI.OpenAIClient::.ctor(System.String,System.String,System.String,System.Collections.Generic.Dictionary`2<System.String,System.String>,System.String,RimTalk.AIProvider)
+M System.Void RimTalk.Client.OpenAI.OpenAIClient::AddAuthHeaders(System.Net.Http.HttpRequestMessage,System.String,System.Collections.Generic.Dictionary`2<System.String,System.String>)
+M System.Void RimTalk.Client.OpenAI.OpenAIClient::ThrowIfStreamError(RimTalk.Client.OpenAI.OpenAIStreamHandler,System.String,System.Int32)
 M System.Void RimTalk.Client.OpenAI.OpenAIModelsResponse::.ctor()
 M System.Void RimTalk.Client.OpenAI.OpenAIModelsResponse::set_Data(System.Collections.Generic.List`1<RimTalk.Client.OpenAI.Model>)
 M System.Void RimTalk.Client.OpenAI.OpenAIRequest::.ctor()
@@ -1986,6 +2015,7 @@ M System.Void RimTalk.Client.Player2.Player2Client::SetFallbackApiKey(System.Str
 M System.Void RimTalk.Client.Player2.Player2Client::ShowNotification(System.String,Verse.MessageTypeDef)
 M System.Void RimTalk.Client.Player2.Player2Client::StartHealthCheckLoop()
 M System.Void RimTalk.Client.Player2.Player2Client::StopHealthCheck()
+M System.Void RimTalk.Client.Player2.Player2Client::ThrowIfStreamError(RimTalk.Client.Player2.Player2StreamHandler,System.String,System.String,System.Int32)
 M System.Void RimTalk.Client.Player2.Player2DeviceCodeResponse::.ctor()
 M System.Void RimTalk.Client.Player2.Player2DeviceCodeResponse::set_DeviceCode(System.String)
 M System.Void RimTalk.Client.Player2.Player2DeviceCodeResponse::set_ExpiresIn(System.Int32)
@@ -2163,6 +2193,7 @@ M System.Void RimTalk.Error.AIErrorHandler::.cctor()
 M System.Void RimTalk.Error.AIErrorHandler::DrainPendingMessages()
 M System.Void RimTalk.Error.AIErrorHandler::EnqueueMessage(System.Action)
 M System.Void RimTalk.Error.AIErrorHandler::HandleFinalFailure(System.Exception)
+M System.Void RimTalk.Error.AIErrorHandler::ReportGenerationFailure(System.String)
 M System.Void RimTalk.Error.AIErrorHandler::ResetQuotaWarning()
 M System.Void RimTalk.Error.AIErrorHandler::ShowGenerationWarning(System.Exception)
 M System.Void RimTalk.Error.AIErrorHandler::ShowQuotaWarning(System.Exception)
@@ -2183,6 +2214,7 @@ M System.Void RimTalk.Patch.HediffPatch::Postfix(Verse.Pawn_HealthTracker,Verse.
 M System.Void RimTalk.Patch.InteractionLogPatch::.cctor()
 M System.Void RimTalk.Patch.InteractionLogPatch::Postfix(Verse.LogEntry)
 M System.Void RimTalk.Patch.MainTabsPatch::Postfix(RimWorld.MainButtonWorker,System.Boolean&)
+M System.Void RimTalk.Patch.MainThreadPumpPatch::Postfix()
 M System.Void RimTalk.Patch.MentalStatePatch::Postfix(Verse.Pawn,Verse.MentalStateDef,System.Boolean)
 M System.Void RimTalk.Patch.PatchMemoryThoughtHandlerTryGainMemory::Postfix(RimWorld.Thought_Memory,Verse.Pawn)
 M System.Void RimTalk.Patch.PatchPawnInteractionsTrackerTryInteractWith::Finalizer()
@@ -2320,6 +2352,7 @@ M System.Void RimTalk.Prompt.PromptPreset::ExposeData()
 M System.Void RimTalk.Prompt.PromptPreset::MoveEntry(System.String,System.Int32)
 M System.Void RimTalk.Prompt.ScribanParser::ResetSessionVariables()
 M System.Void RimTalk.Prompt.ScribanParser::SetSessionVar(System.String,System.Object)
+M System.Void RimTalk.Prompt.ScribanParser::set_LastError(System.String)
 M System.Void RimTalk.Prompt.SessionVariableStore::.cctor()
 M System.Void RimTalk.Prompt.SessionVariableStore::Reset()
 M System.Void RimTalk.Prompt.SessionVariableStore::SetVar(System.String,System.Object)
@@ -2366,6 +2399,10 @@ M System.Void RimTalk.Service.CustomDialogueService::DispatchDialogue(Verse.Pawn
 M System.Void RimTalk.Service.CustomDialogueService::ExecuteDialogue(Verse.Pawn,Verse.Pawn,System.String,System.Boolean)
 M System.Void RimTalk.Service.CustomDialogueService::ExecuteDialogue(Verse.Pawn,Verse.Pawn,System.String,System.Boolean,System.String)
 M System.Void RimTalk.Service.CustomDialogueService::Tick()
+M System.Void RimTalk.Service.EncounterTracker::.cctor()
+M System.Void RimTalk.Service.EncounterTracker::ExposeData()
+M System.Void RimTalk.Service.EncounterTracker::Notify_DialogueFinished(RimTalk.Data.TalkRequest)
+M System.Void RimTalk.Service.EncounterTracker::Reset()
 M System.Void RimTalk.Service.EventService/ColonyEventCandidate::.ctor()
 M System.Void RimTalk.Service.EventService/ColonyEventCandidate::set_ArrivalTick(System.Int32)
 M System.Void RimTalk.Service.EventService/ColonyEventCandidate::set_ElapsedHours(System.Single)
@@ -2596,6 +2633,8 @@ M System.Void RimTalk.UI.UIUtil::ExportLogs(System.Collections.Generic.List`1<Ri
 M System.Void RimTalk.Util.ContextHelper::AddAgg(System.Collections.Generic.Dictionary`2<System.String,RimTalk.Util.NearbyAgg>,Verse.Thing,RimTalk.Util.NearbyKind)
 M System.Void RimTalk.Util.CoroutineRunner::.ctor()
 M System.Void RimTalk.Util.Describer::.cctor()
+M System.Void RimTalk.Util.HttpUtil/LoopbackHandler::.ctor(System.Net.Http.HttpMessageHandler)
+M System.Void RimTalk.Util.HttpUtil::.cctor()
 M System.Void RimTalk.Util.JsonStreamParser`1::.ctor()
 M System.Void RimTalk.Util.JsonUtil/SimpleJsonParser::.ctor(System.String)
 M System.Void RimTalk.Util.JsonUtil/SimpleJsonParser::SkipWhitespace()
@@ -2776,6 +2815,7 @@ T RimTalk.Patch.HealthCardUtilityPatch
 T RimTalk.Patch.HediffPatch
 T RimTalk.Patch.InteractionLogPatch
 T RimTalk.Patch.MainTabsPatch
+T RimTalk.Patch.MainThreadPumpPatch
 T RimTalk.Patch.MentalStatePatch
 T RimTalk.Patch.PatchMemoryThoughtHandlerTryGainMemory
 T RimTalk.Patch.PatchPawnInteractionsTrackerTryInteractWith
@@ -2840,6 +2880,7 @@ T RimTalk.Service.BusyGate
 T RimTalk.Service.ContextBuilder
 T RimTalk.Service.CustomDialogueService
 T RimTalk.Service.CustomDialogueService/PendingDialogue
+T RimTalk.Service.EncounterTracker
 T RimTalk.Service.EventService
 T RimTalk.Service.EventService/ColonyEventCandidate
 T RimTalk.Service.PawnSelector
@@ -2890,9 +2931,12 @@ T RimTalk.Util.ContextHelper
 T RimTalk.Util.CoroutineRunner
 T RimTalk.Util.Describer
 T RimTalk.Util.ErrorUtil
+T RimTalk.Util.HttpUtil
+T RimTalk.Util.HttpUtil/LoopbackHandler
 T RimTalk.Util.JsonStreamParser`1
 T RimTalk.Util.JsonUtil
 T RimTalk.Util.JsonUtil/SimpleJsonParser
+T RimTalk.Util.LocalHost
 T RimTalk.Util.Logger
 T RimTalk.Util.ModUtil
 T RimTalk.Util.NearbyAgg
