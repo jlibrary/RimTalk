@@ -163,6 +163,7 @@ public static class AIErrorHandler
         // The stack trace alone cannot tell a connection timeout from a read timeout,
         // because only the message says which one it was.
         Logger.Warning($"{ex.GetType().Name}: {ex.Message}\n{ex.StackTrace}");
+        if (IsHiddenServerError(ex)) return;
         ReportGenerationFailure(ex.Message);
     }
 
@@ -202,8 +203,15 @@ public static class AIErrorHandler
         });
     }
 
+    private static bool IsHiddenServerError(Exception ex)
+    {
+        int? status = (ex as AIRequestException)?.Payload?.StatusCode;
+        return status >= 500 && Settings.Get()?.HideServerErrorNotifications == true;
+    }
+
     private static void ShowRetryMessage(Exception ex, string nextModel)
     {
+        if (IsHiddenServerError(ex)) return;
         PendingMessages.Enqueue(() =>
         {
             string messageKey = ex is QuotaExceededException ? "RimTalk.TalkService.QuotaReached" : "RimTalk.TalkService.APIError";

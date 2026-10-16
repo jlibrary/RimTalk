@@ -188,6 +188,12 @@ Scriban 魔法 (动态内容)
     <RimTalk.Settings.SelectAll>全选</RimTalk.Settings.SelectAll>
     <RimTalk.Settings.DeselectAll>全不选</RimTalk.Settings.DeselectAll>
     <RimTalk.Settings.AllowSimultaneousConversations>允许多组同时对话</RimTalk.Settings.AllowSimultaneousConversations>
+    <RimTalk.Settings.Group.Conversation>对话</RimTalk.Settings.Group.Conversation>
+    <RimTalk.Settings.Group.WhoCanTalk>可对话对象</RimTalk.Settings.Group.WhoCanTalk>
+    <RimTalk.Settings.Group.Sleep>睡眠</RimTalk.Settings.Group.Sleep>
+    <RimTalk.Settings.Group.Notifications>通知</RimTalk.Settings.Group.Notifications>
+    <RimTalk.Settings.HideServerErrorNotifications>隐藏服务器错误通知</RimTalk.Settings.HideServerErrorNotifications>
+    <RimTalk.Settings.HideServerErrorNotificationsTooltip>当 API 提供商返回服务器错误（HTTP 5xx，例如请求量过高）时，隐藏屏幕提示。其他错误仍会显示，所有错误都会保留在 API 日志中。</RimTalk.Settings.HideServerErrorNotificationsTooltip>
     <RimTalk.Settings.AllowSimultaneousConversationsTooltip>启用后，多个殖民者小组可以同时交谈。如果你希望一次只显示一段对话，或觉得对话太多，可以关闭此选项。</RimTalk.Settings.AllowSimultaneousConversationsTooltip>
     <RimTalk.Settings.DisplayTalkWhenDrafted>征召时显示对话</RimTalk.Settings.DisplayTalkWhenDrafted>
     <RimTalk.Settings.DisplayTalkWhenDraftedTooltip>即使角色被征召，也显示 RimTalk 气泡。这会在生成对话时临时覆盖气泡模组的设置。</RimTalk.Settings.DisplayTalkWhenDraftedTooltip>
@@ -200,17 +206,17 @@ Scriban 魔法 (动态内容)
 
     <RimTalk.Settings.AllowMonologue>允许独白</RimTalk.Settings.AllowMonologue>
     <RimTalk.Settings.AllowMonologueTooltip>启用后，即使没有其他角色在附近，角色也可能生成 AI 驱动的独白。</RimTalk.Settings.AllowMonologueTooltip>
-    <RimTalk.Settings.AllowSlavesToTalk>允许奴隶交谈</RimTalk.Settings.AllowSlavesToTalk>
+    <RimTalk.Settings.AllowSlavesToTalk>奴隶</RimTalk.Settings.AllowSlavesToTalk>
     <RimTalk.Settings.AllowSlavesToTalkTooltip>启用此项以允许奴隶进行 AI 生成的对话。</RimTalk.Settings.AllowSlavesToTalkTooltip>
-    <RimTalk.Settings.AllowPrisonersToTalk>允许囚犯交谈</RimTalk.Settings.AllowPrisonersToTalk>
+    <RimTalk.Settings.AllowPrisonersToTalk>囚犯</RimTalk.Settings.AllowPrisonersToTalk>
     <RimTalk.Settings.AllowPrisonersToTalkTooltip>启用此项以允许囚犯进行 AI 生成的对话。</RimTalk.Settings.AllowPrisonersToTalkTooltip>
-    <RimTalk.Settings.AllowOtherFactionsToTalk>允许其他派系交谈</RimTalk.Settings.AllowOtherFactionsToTalk>
+    <RimTalk.Settings.AllowOtherFactionsToTalk>其他派系</RimTalk.Settings.AllowOtherFactionsToTalk>
     <RimTalk.Settings.AllowOtherFactionsToTalkTooltip>启用此项以允许其他派系成员进行 AI 生成的对话。</RimTalk.Settings.AllowOtherFactionsToTalkTooltip>
-    <RimTalk.Settings.AllowEnemiesToTalk>允许敌人交谈</RimTalk.Settings.AllowEnemiesToTalk>
+    <RimTalk.Settings.AllowEnemiesToTalk>敌人</RimTalk.Settings.AllowEnemiesToTalk>
     <RimTalk.Settings.AllowEnemiesToTalkTooltip>启用此项以允许敌人进行 AI 生成的对话。</RimTalk.Settings.AllowEnemiesToTalkTooltip>
-    <RimTalk.Settings.AllowBabiesToTalk>允许婴幼儿交谈</RimTalk.Settings.AllowBabiesToTalk>
+    <RimTalk.Settings.AllowBabiesToTalk>婴幼儿</RimTalk.Settings.AllowBabiesToTalk>
     <RimTalk.Settings.AllowBabiesToTalkTooltip>启用此项以允许婴幼儿进行 AI 生成的对话。</RimTalk.Settings.AllowBabiesToTalkTooltip>
-    <RimTalk.Settings.AllowNonHumanToTalk>允许非人类说话</RimTalk.Settings.AllowNonHumanToTalk>
+    <RimTalk.Settings.AllowNonHumanToTalk>非人类</RimTalk.Settings.AllowNonHumanToTalk>
     <RimTalk.Settings.AllowNonHumanToTalkTooltip>启用非人类生物（动物、机械人或自定义种族）在获得商人提供的Vocal Link Catalyst后说话。</RimTalk.Settings.AllowNonHumanToTalkTooltip>
     <RimTalk.Settings.AllowAnnouncement>允许通告功能</RimTalk.Settings.AllowAnnouncement>
     <RimTalk.Settings.AllowAnnouncementTooltip>允许殖民者和角色向附近的成员广播通告。</RimTalk.Settings.AllowAnnouncementTooltip>

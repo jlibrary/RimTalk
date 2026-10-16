@@ -181,7 +181,7 @@ Crucial Tips:
     <RimTalk.Settings.AICooldownTooltip>The base cooldown time (in seconds) before attempting to generate a new AI dialogue.</RimTalk.Settings.AICooldownTooltip>
     <RimTalk.Settings.ReplyInterval>Reply Interval (Seconds)</RimTalk.Settings.ReplyInterval>
     <RimTalk.Settings.ReplyIntervalTooltip>The delay (in seconds) between consecutive replies within a conversation.</RimTalk.Settings.ReplyIntervalTooltip>
-    <RimTalk.Settings.OverrideInteractions>Override All Interactions with AI Dialogue</RimTalk.Settings.OverrideInteractions>
+    <RimTalk.Settings.OverrideInteractions>Use AI for All Interactions</RimTalk.Settings.OverrideInteractions>
     <RimTalk.Settings.OverrideInteractionsTooltip>Enable this to allow AI to override and regenerate dialogue for all interactions (including vanilla RimWorld and other mods). Note: AI dialogue has a cooldown period set above. To generate dialogue more frequently, lower the cooldown.</RimTalk.Settings.OverrideInteractionsTooltip>
     <RimTalk.Settings.SettingsButton>Settings</RimTalk.Settings.SettingsButton>
     <RimTalk.Settings.FastTrackInteractionsTitle>Fast-Track Interactions</RimTalk.Settings.FastTrackInteractionsTitle>
@@ -189,6 +189,12 @@ Crucial Tips:
     <RimTalk.Settings.SelectAll>Select All</RimTalk.Settings.SelectAll>
     <RimTalk.Settings.DeselectAll>Deselect All</RimTalk.Settings.DeselectAll>
     <RimTalk.Settings.AllowSimultaneousConversations>Allow Simultaneous Conversations</RimTalk.Settings.AllowSimultaneousConversations>
+    <RimTalk.Settings.Group.Conversation>Conversation</RimTalk.Settings.Group.Conversation>
+    <RimTalk.Settings.Group.WhoCanTalk>Who Can Talk</RimTalk.Settings.Group.WhoCanTalk>
+    <RimTalk.Settings.Group.Sleep>Sleep</RimTalk.Settings.Group.Sleep>
+    <RimTalk.Settings.Group.Notifications>Notifications</RimTalk.Settings.Group.Notifications>
+    <RimTalk.Settings.HideServerErrorNotifications>Hide Server Error Notifications</RimTalk.Settings.HideServerErrorNotifications>
+    <RimTalk.Settings.HideServerErrorNotificationsTooltip>Hides the on-screen message when the API provider returns a server error (HTTP 5xx, e.g. high demand). Other errors are still shown. All errors remain in the API log.</RimTalk.Settings.HideServerErrorNotificationsTooltip>
     <RimTalk.Settings.AllowSimultaneousConversationsTooltip>When enabled, multiple groups of pawns can talk at the same time. Turn this off if you prefer to see only one conversation at a time or if too many are happening at once.</RimTalk.Settings.AllowSimultaneousConversationsTooltip>
     <RimTalk.Settings.DisplayTalkWhenDrafted>Display Talk When Drafted</RimTalk.Settings.DisplayTalkWhenDrafted>
     <RimTalk.Settings.DisplayTalkWhenDraftedTooltip>Shows RimTalk bubbles even when pawns are drafted. This temporarily overrides bubble mod settings during talk generation.</RimTalk.Settings.DisplayTalkWhenDraftedTooltip>
@@ -201,17 +207,17 @@ Crucial Tips:
 
     <RimTalk.Settings.AllowMonologue>Allow Monologues</RimTalk.Settings.AllowMonologue>
     <RimTalk.Settings.AllowMonologueTooltip>When enabled, pawns may generate AI-driven monologues even when no other pawn is nearby.</RimTalk.Settings.AllowMonologueTooltip>
-    <RimTalk.Settings.AllowSlavesToTalk>Allow Slaves to Talk</RimTalk.Settings.AllowSlavesToTalk>
+    <RimTalk.Settings.AllowSlavesToTalk>Slaves</RimTalk.Settings.AllowSlavesToTalk>
     <RimTalk.Settings.AllowSlavesToTalkTooltip>Enable this to allow slaves to have AI-generated conversations.</RimTalk.Settings.AllowSlavesToTalkTooltip>
-    <RimTalk.Settings.AllowPrisonersToTalk>Allow Prisoners to Talk</RimTalk.Settings.AllowPrisonersToTalk>
+    <RimTalk.Settings.AllowPrisonersToTalk>Prisoners</RimTalk.Settings.AllowPrisonersToTalk>
     <RimTalk.Settings.AllowPrisonersToTalkTooltip>Enable this to allow prisoners to have AI-generated conversations.</RimTalk.Settings.AllowPrisonersToTalkTooltip>
-    <RimTalk.Settings.AllowOtherFactionsToTalk>Allow Other Factions to Talk</RimTalk.Settings.AllowOtherFactionsToTalk>
+    <RimTalk.Settings.AllowOtherFactionsToTalk>Other Factions</RimTalk.Settings.AllowOtherFactionsToTalk>
     <RimTalk.Settings.AllowOtherFactionsToTalkTooltip>Enable this to allow members of other factions to have AI-generated conversations.</RimTalk.Settings.AllowOtherFactionsToTalkTooltip>
-    <RimTalk.Settings.AllowEnemiesToTalk>Allow Enemies to Talk</RimTalk.Settings.AllowEnemiesToTalk>
+    <RimTalk.Settings.AllowEnemiesToTalk>Enemies</RimTalk.Settings.AllowEnemiesToTalk>
     <RimTalk.Settings.AllowEnemiesToTalkTooltip>Enable this to allow enemies to have AI-generated conversations.</RimTalk.Settings.AllowEnemiesToTalkTooltip>
-    <RimTalk.Settings.AllowBabiesToTalk>Allow infants and toddlers to talk</RimTalk.Settings.AllowBabiesToTalk>
+    <RimTalk.Settings.AllowBabiesToTalk>Infants &amp; Toddlers</RimTalk.Settings.AllowBabiesToTalk>
     <RimTalk.Settings.AllowBabiesToTalkTooltip>Enable this option to allow infants and toddlers to participate in AI-generated conversations.</RimTalk.Settings.AllowBabiesToTalkTooltip>
-    <RimTalk.Settings.AllowNonHumanToTalk>Allow Non-Humans to Talk</RimTalk.Settings.AllowNonHumanToTalk>
+    <RimTalk.Settings.AllowNonHumanToTalk>Non-Humans</RimTalk.Settings.AllowNonHumanToTalk>
     <RimTalk.Settings.AllowNonHumanToTalkTooltip>Enable non-human creatures (animals, mechanoids, or custom races) to talk if they have been given a Vocal Link Catalyst, which can be acquired from merchants.</RimTalk.Settings.AllowNonHumanToTalkTooltip>
     <RimTalk.Settings.AllowAnnouncement>Allow Announcements</RimTalk.Settings.AllowAnnouncement>
     <RimTalk.Settings.AllowAnnouncementTooltip>Allow colonists and pawns to make announcements to nearby pawns.</RimTalk.Settings.AllowAnnouncementTooltip>

@@ -183,7 +183,7 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Settings.AICooldownTooltip>新しいAI会話の生成を試みるまでの基本待機時間（秒）です。</RimTalk.Settings.AICooldownTooltip>
     <RimTalk.Settings.ReplyInterval>返答間隔（秒）</RimTalk.Settings.ReplyInterval>
     <RimTalk.Settings.ReplyIntervalTooltip>会話中の発言と次の返答の間の遅延時間（秒）です。</RimTalk.Settings.ReplyIntervalTooltip>
-    <RimTalk.Settings.OverrideInteractions>すべてのインタラクションをAIの対話で上書きする</RimTalk.Settings.OverrideInteractions>
+    <RimTalk.Settings.OverrideInteractions>AI会話ですべての交流を上書き</RimTalk.Settings.OverrideInteractions>
     <RimTalk.Settings.OverrideInteractionsTooltip>これを有効にすると、AIがすべてのインタラクション（バニラのRimWorldや他のMODを含む）の対話を上書きして再生成できるようになります。注意：AIの対話には上記で設定されたクールダウン期間があります。より頻繁に対話を生成するには、クールダウンを短くしてください。</RimTalk.Settings.OverrideInteractionsTooltip>
     <RimTalk.Settings.SettingsButton>設定</RimTalk.Settings.SettingsButton>
     <RimTalk.Settings.FastTrackInteractionsTitle>優先インタラクション</RimTalk.Settings.FastTrackInteractionsTitle>
@@ -191,6 +191,12 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Settings.SelectAll>すべて選択</RimTalk.Settings.SelectAll>
     <RimTalk.Settings.DeselectAll>すべて解除</RimTalk.Settings.DeselectAll>
     <RimTalk.Settings.AllowSimultaneousConversations>複数の同時会話を許可</RimTalk.Settings.AllowSimultaneousConversations>
+    <RimTalk.Settings.Group.Conversation>会話</RimTalk.Settings.Group.Conversation>
+    <RimTalk.Settings.Group.WhoCanTalk>会話可能な対象</RimTalk.Settings.Group.WhoCanTalk>
+    <RimTalk.Settings.Group.Sleep>睡眠</RimTalk.Settings.Group.Sleep>
+    <RimTalk.Settings.Group.Notifications>通知</RimTalk.Settings.Group.Notifications>
+    <RimTalk.Settings.HideServerErrorNotifications>サーバーエラー通知を非表示</RimTalk.Settings.HideServerErrorNotifications>
+    <RimTalk.Settings.HideServerErrorNotificationsTooltip>APIプロバイダーがサーバーエラー（HTTP 5xx、例：高負荷）を返した際の画面通知を隠します。他のエラーは引き続き表示され、すべてのエラーはAPIログに残ります。</RimTalk.Settings.HideServerErrorNotificationsTooltip>
     <RimTalk.Settings.AllowSimultaneousConversationsTooltip>有効にすると、複数の入植者グループが同時に会話できます。会話が多すぎる場合や、一度に一つの会話だけを見たい場合は無効にしてください。</RimTalk.Settings.AllowSimultaneousConversationsTooltip>
     <RimTalk.Settings.DisplayTalkWhenDrafted>徴兵中も会話を表示</RimTalk.Settings.DisplayTalkWhenDrafted>
     <RimTalk.Settings.DisplayTalkWhenDraftedTooltip>ポーンが徴兵されている時もRimTalkの吹き出しを表示します。これは会話生成中、一時的に吹き出しMODの設定を上書きします。</RimTalk.Settings.DisplayTalkWhenDraftedTooltip>
@@ -203,17 +209,17 @@ Scribanマジック (動的コンテンツ)
 
     <RimTalk.Settings.AllowMonologue>独り言を許可</RimTalk.Settings.AllowMonologue>
     <RimTalk.Settings.AllowMonologueTooltip>有効にすると、他のキャラクターが近くにいなくても、キャラクターがAI生成の独り言をする場合があります。</RimTalk.Settings.AllowMonologueTooltip>
-    <RimTalk.Settings.AllowSlavesToTalk>奴隷の会話を許可</RimTalk.Settings.AllowSlavesToTalk>
+    <RimTalk.Settings.AllowSlavesToTalk>奴隷</RimTalk.Settings.AllowSlavesToTalk>
     <RimTalk.Settings.AllowSlavesToTalkTooltip>これを有効にすると、奴隷がAI生成の会話を行えるようになります。</RimTalk.Settings.AllowSlavesToTalkTooltip>
-    <RimTalk.Settings.AllowPrisonersToTalk>囚人の会話を許可</RimTalk.Settings.AllowPrisonersToTalk>
+    <RimTalk.Settings.AllowPrisonersToTalk>囚人</RimTalk.Settings.AllowPrisonersToTalk>
     <RimTalk.Settings.AllowPrisonersToTalkTooltip>これを有効にすると、囚人がAI生成の会話を行えるようになります。</RimTalk.Settings.AllowPrisonersToTalkTooltip>
-    <RimTalk.Settings.AllowOtherFactionsToTalk>他派閥の会話を許可</RimTalk.Settings.AllowOtherFactionsToTalk>
+    <RimTalk.Settings.AllowOtherFactionsToTalk>他派閥</RimTalk.Settings.AllowOtherFactionsToTalk>
     <RimTalk.Settings.AllowOtherFactionsToTalkTooltip>これを有効にすると、他派閥のメンバーがAI生成の会話を行えるようになります。</RimTalk.Settings.AllowOtherFactionsToTalkTooltip>
-    <RimTalk.Settings.AllowEnemiesToTalk>敵の会話を許可</RimTalk.Settings.AllowEnemiesToTalk>
+    <RimTalk.Settings.AllowEnemiesToTalk>敵</RimTalk.Settings.AllowEnemiesToTalk>
     <RimTalk.Settings.AllowEnemiesToTalkTooltip>これを有効にすると、敵がAI生成の会話を行えるようになります。</RimTalk.Settings.AllowEnemiesToTalkTooltip>
-    <RimTalk.Settings.AllowBabiesToTalk>乳児と幼児の会話を許可</RimTalk.Settings.AllowBabiesToTalk>
+    <RimTalk.Settings.AllowBabiesToTalk>乳幼児</RimTalk.Settings.AllowBabiesToTalk>
     <RimTalk.Settings.AllowBabiesToTalkTooltip>これを有効にすると、乳児や幼児がAI生成の会話を行えるようになります。</RimTalk.Settings.AllowBabiesToTalkTooltip>
-    <RimTalk.Settings.AllowNonHumanToTalk>非人間が話すことを許可</RimTalk.Settings.AllowNonHumanToTalk>
+    <RimTalk.Settings.AllowNonHumanToTalk>人間以外</RimTalk.Settings.AllowNonHumanToTalk>
     <RimTalk.Settings.AllowNonHumanToTalkTooltip>動物、メカノイド、カスタム種族が、商人から聲音鏈接催化劑を入手した場合に話すことを許可します。</RimTalk.Settings.AllowNonHumanToTalkTooltip>
     <RimTalk.Settings.AllowAnnouncement>アナウンス機能を許可</RimTalk.Settings.AllowAnnouncement>
     <RimTalk.Settings.AllowAnnouncementTooltip>入植者やポーンが近くのポーンに向けてアナウンス（呼びかけ）できるようにします。</RimTalk.Settings.AllowAnnouncementTooltip>

@@ -26,6 +26,7 @@ public class RimTalkSettings : ModSettings
     public int ReplyInterval = 4;
     public bool ProcessNonRimTalkInteractions = true;
     public bool AllowSimultaneousConversations = false;
+    public bool HideServerErrorNotifications = false;
     public string SimpleModeInstruction = null;
     public string CustomInstruction = "";
     
@@ -261,6 +262,7 @@ public class RimTalkSettings : ModSettings
         Scribe_Values.Look(ref ReplyInterval, "replyInterval", 4);
         Scribe_Values.Look(ref ProcessNonRimTalkInteractions, "processNonRimTalkInteractions", true);
         Scribe_Values.Look(ref AllowSimultaneousConversations, "allowSimultaneousConversations", false);
+        Scribe_Values.Look(ref HideServerErrorNotifications, "hideServerErrorNotifications", false);
         BubbleDisplayMode? savedMode = BubbleMode;
         Scribe_Values.Look(ref savedMode, "bubbleMode", null, true);
         if (Scribe.mode == LoadSaveMode.LoadingVars)

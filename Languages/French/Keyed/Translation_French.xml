@@ -180,45 +180,51 @@ Conseils Cruciaux :
     <RimTalk.Settings.EventFilter>Filtre d'événements</RimTalk.Settings.EventFilter>
     <RimTalk.Settings.ApiKey>Clé API Cloud</RimTalk.Settings.ApiKey>
     <RimTalk.Settings.GetFreeApiKey>Obtenir une clé API gratuite</RimTalk.Settings.GetFreeApiKey>
-    <RimTalk.Settings.AICooldown>Temps de recharge de l'IA (s)</RimTalk.Settings.AICooldown>
+    <RimTalk.Settings.AICooldown>Recharge de l'IA (s)</RimTalk.Settings.AICooldown>
     <RimTalk.Settings.AICooldownTooltip>Temps de pause de base (en secondes) avant de générer un nouveau dialogue IA.</RimTalk.Settings.AICooldownTooltip>
     <RimTalk.Settings.ReplyInterval>Intervalle de réponse (s)</RimTalk.Settings.ReplyInterval>
     <RimTalk.Settings.ReplyIntervalTooltip>Délai (en secondes) entre les répliques consécutives d'une conversation.</RimTalk.Settings.ReplyIntervalTooltip>
-    <RimTalk.Settings.OverrideInteractions>Remplacer toutes les interactions par des dialogues de l'IA</RimTalk.Settings.OverrideInteractions>
+    <RimTalk.Settings.OverrideInteractions>L'IA remplace les interactions</RimTalk.Settings.OverrideInteractions>
     <RimTalk.Settings.OverrideInteractionsTooltip>Activez ceci pour permettre à l'IA de remplacer et de régénérer les dialogues pour toutes les interactions (y compris RimWorld vanilla et autres mods). Remarque : les dialogues de l'IA ont une période de recharge définie ci-dessus. Pour générer des dialogues plus fréquemment, diminuez le temps de recharge.</RimTalk.Settings.OverrideInteractionsTooltip>
     <RimTalk.Settings.SettingsButton>Réglages</RimTalk.Settings.SettingsButton>
     <RimTalk.Settings.FastTrackInteractionsTitle>Interactions prioritaires</RimTalk.Settings.FastTrackInteractionsTitle>
     <RimTalk.Settings.FastTrackInteractionsDesc>Sélectionnez les interactions qui doivent déclencher immédiatement un dialogue en ignorant le délai habituel. Les interactions non sélectionnées suivront l'intervalle normal.</RimTalk.Settings.FastTrackInteractionsDesc>
     <RimTalk.Settings.SelectAll>Tout sélectionner</RimTalk.Settings.SelectAll>
     <RimTalk.Settings.DeselectAll>Tout désélectionner</RimTalk.Settings.DeselectAll>
-    <RimTalk.Settings.AllowSimultaneousConversations>Autoriser les conversations simultanées</RimTalk.Settings.AllowSimultaneousConversations>
+    <RimTalk.Settings.AllowSimultaneousConversations>Conversations simultanées</RimTalk.Settings.AllowSimultaneousConversations>
+    <RimTalk.Settings.Group.Conversation>Conversation</RimTalk.Settings.Group.Conversation>
+    <RimTalk.Settings.Group.WhoCanTalk>Qui peut parler</RimTalk.Settings.Group.WhoCanTalk>
+    <RimTalk.Settings.Group.Sleep>Sommeil</RimTalk.Settings.Group.Sleep>
+    <RimTalk.Settings.Group.Notifications>Notifications</RimTalk.Settings.Group.Notifications>
+    <RimTalk.Settings.HideServerErrorNotifications>Masquer les erreurs serveur</RimTalk.Settings.HideServerErrorNotifications>
+    <RimTalk.Settings.HideServerErrorNotificationsTooltip>Masque le message à l'écran lorsque le fournisseur d'API renvoie une erreur serveur (HTTP 5xx, p. ex. forte demande). Les autres erreurs restent affichées. Toutes les erreurs restent dans le journal API.</RimTalk.Settings.HideServerErrorNotificationsTooltip>
     <RimTalk.Settings.AllowSimultaneousConversationsTooltip>Lorsqu’elle est activée, plusieurs groupes de colons peuvent discuter en même temps. Désactivez cette option si vous préférez qu’une seule conversation ait lieu à la fois ou si cela devient trop bruyant.</RimTalk.Settings.AllowSimultaneousConversationsTooltip>
-    <RimTalk.Settings.DisplayTalkWhenDrafted>Afficher les bulles de dialogue lorsque recruté</RimTalk.Settings.DisplayTalkWhenDrafted>
+    <RimTalk.Settings.DisplayTalkWhenDrafted>Afficher les dialogues si recruté</RimTalk.Settings.DisplayTalkWhenDrafted>
     <RimTalk.Settings.DisplayTalkWhenDraftedTooltip>Affiche les bulles RimTalk même lorsque les pions sont recrutés. Cela remplace temporairement les paramètres du mod de bulles lors de la génération de dialogue.</RimTalk.Settings.DisplayTalkWhenDraftedTooltip>
     <RimTalk.Settings.AllowCustomConversation>Autoriser les conversations créées par le joueur</RimTalk.Settings.AllowCustomConversation>
     <RimTalk.Settings.AllowCustomConversationTooltip>Permet de lancer des dialogues personnalisés entre personnages ou de parler directement à un personnage en écrivant vos propres répliques. Faites un clic droit sur un colon pour commencer une conversation.</RimTalk.Settings.AllowCustomConversationTooltip>
-    <RimTalk.Settings.ContinueDialogueWhileSleeping>Continuer le dialogue pendant le sommeil</RimTalk.Settings.ContinueDialogueWhileSleeping>
+    <RimTalk.Settings.ContinueDialogueWhileSleeping>Parler pendant le sommeil</RimTalk.Settings.ContinueDialogueWhileSleeping>
     <RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>Si activé, les pions continueront à prononcer toutes les répliques générées même s'ils s'endorment.</RimTalk.Settings.ContinueDialogueWhileSleepingTooltip>
     <RimTalk.Settings.EnableSleepDialogue>Dialogue de coucher et de réveil</RimTalk.Settings.EnableSleepDialogue>
     <RimTalk.Settings.EnableSleepDialogueTooltip>Si cette option est activée, les colons émettront occasionnellement de brèves remarques en se couchant ou en se réveillant.</RimTalk.Settings.EnableSleepDialogueTooltip>
 
     <RimTalk.Settings.AllowMonologue>Autoriser les monologues</RimTalk.Settings.AllowMonologue>
     <RimTalk.Settings.AllowMonologueTooltip>Lorsque activé, les personnages peuvent générer des monologues pilotés par l’IA même si aucun autre personnage n’est à proximité.</RimTalk.Settings.AllowMonologueTooltip>
-    <RimTalk.Settings.AllowSlavesToTalk>Autoriser les esclaves à parler</RimTalk.Settings.AllowSlavesToTalk>
+    <RimTalk.Settings.AllowSlavesToTalk>Esclaves</RimTalk.Settings.AllowSlavesToTalk>
     <RimTalk.Settings.AllowSlavesToTalkTooltip>Activez ceci pour permettre aux esclaves d'avoir des conversations générées par l'IA.</RimTalk.Settings.AllowSlavesToTalkTooltip>
-    <RimTalk.Settings.AllowPrisonersToTalk>Autoriser les prisonniers à parler</RimTalk.Settings.AllowPrisonersToTalk>
+    <RimTalk.Settings.AllowPrisonersToTalk>Prisonniers</RimTalk.Settings.AllowPrisonersToTalk>
     <RimTalk.Settings.AllowPrisonersToTalkTooltip>Activez ceci pour permettre aux prisonniers d'avoir des conversations générées par l'IA.</RimTalk.Settings.AllowPrisonersToTalkTooltip>
-    <RimTalk.Settings.AllowOtherFactionsToTalk>Autoriser les autres factions à parler</RimTalk.Settings.AllowOtherFactionsToTalk>
+    <RimTalk.Settings.AllowOtherFactionsToTalk>Autres factions</RimTalk.Settings.AllowOtherFactionsToTalk>
     <RimTalk.Settings.AllowOtherFactionsToTalkTooltip>Activez ceci pour permettre aux membres d'autres factions d'avoir des conversations générées par l'IA.</RimTalk.Settings.AllowOtherFactionsToTalkTooltip>
-    <RimTalk.Settings.AllowEnemiesToTalk>Autoriser les ennemis à parler</RimTalk.Settings.AllowEnemiesToTalk>
+    <RimTalk.Settings.AllowEnemiesToTalk>Ennemis</RimTalk.Settings.AllowEnemiesToTalk>
     <RimTalk.Settings.AllowEnemiesToTalkTooltip>Activez ceci pour permettre aux ennemis d'avoir des conversations générées par l'IA.</RimTalk.Settings.AllowEnemiesToTalkTooltip>
-    <RimTalk.Settings.AllowBabiesToTalk>Autoriser les nourrissons et les tout-petits à parler</RimTalk.Settings.AllowBabiesToTalk>
+    <RimTalk.Settings.AllowBabiesToTalk>Nourrissons et tout-petits</RimTalk.Settings.AllowBabiesToTalk>
     <RimTalk.Settings.AllowBabiesToTalkTooltip>Activez ceci pour permettre aux nourrissons et aux tout-petits des conversations générées par l'IA.</RimTalk.Settings.AllowBabiesToTalkTooltip>
-    <RimTalk.Settings.AllowNonHumanToTalk>Permettre aux non-humains de parler</RimTalk.Settings.AllowNonHumanToTalk>
+    <RimTalk.Settings.AllowNonHumanToTalk>Non-humains</RimTalk.Settings.AllowNonHumanToTalk>
     <RimTalk.Settings.AllowNonHumanToTalkTooltip>Permet aux animaux, mécanoïdes et races personnalisées de parler lorsqu'ils sont implantés avec un Catalyseur de lien vocal provenant des marchands.</RimTalk.Settings.AllowNonHumanToTalkTooltip>
     <RimTalk.Settings.AllowAnnouncement>Autoriser les annonces</RimTalk.Settings.AllowAnnouncement>
     <RimTalk.Settings.AllowAnnouncementTooltip>Permet aux colons et aux personnages de faire des annonces aux personnes à proximité.</RimTalk.Settings.AllowAnnouncementTooltip>
-    <RimTalk.Settings.ApplyMoodAndSocialEffects>Modifier l'humeur et les relations sociales</RimTalk.Settings.ApplyMoodAndSocialEffects>
+    <RimTalk.Settings.ApplyMoodAndSocialEffects>Affecter humeur et relations</RimTalk.Settings.ApplyMoodAndSocialEffects>
     <RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>Les dialogues peuvent affecter l'humeur et les relations des colons en fonction du ton de la conversation.</RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip>
 
     <RimTalk.Settings.PlayerDialogueMode.Manual>Réponses manuelles</RimTalk.Settings.PlayerDialogueMode.Manual>
