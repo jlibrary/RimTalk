@@ -76,6 +76,18 @@ public partial class Settings
         }
     }
 
+    private static void DrawGroupHeader(Listing_Standard listing, string key)
+    {
+        Rect rect = listing.GetRect(24f);
+        TextAnchor oldAnchor = Text.Anchor;
+        Color oldColor = GUI.color;
+        Text.Anchor = TextAnchor.MiddleLeft;
+        GUI.color = Color.gray;
+        Widgets.Label(rect, key.Translate().ToString());
+        GUI.color = oldColor;
+        Text.Anchor = oldAnchor;
+    }
+
     private void DrawBasicSettings(Listing_Standard listingStandard)
     {
         RimTalkSettings settings = Get();
@@ -94,22 +106,25 @@ public partial class Settings
             DrawSimpleApiSettings(listingStandard);
         }
 
-        listingStandard.Gap(42f);
+        listingStandard.Gap(28f);
 
-        // Define column layout
-        const float columnGap = 200f;
-        float columnWidth = (listingStandard.ColumnWidth - columnGap) / 2;
+        // Define column layout (3 columns; the height is fixed, so groups are spread across columns)
+        const float columnGap = 30f;
+        float columnWidth = (listingStandard.ColumnWidth - columnGap * 2) / 3;
         const float intervalFieldWidth = 60f;
 
-        // Get a rect for the entire two-column section.
+        // The column groups clip to this height, so it must fit the longest column.
         float estimatedHeight = 250f;
         Rect checkboxSectionRect = listingStandard.GetRect(estimatedHeight);
 
-        // --- Left Column ---
+        // --- Column 1: conversation ---
         Rect leftColumnRect = new Rect(checkboxSectionRect.x, checkboxSectionRect.y, columnWidth,
             checkboxSectionRect.height);
         Listing_Standard leftListing = new Listing_Standard();
         leftListing.Begin(leftColumnRect);
+
+        DrawGroupHeader(leftListing, "RimTalk.Settings.Group.Conversation");
+        leftListing.Gap(6f);
 
         // 1. AI Cooldown
         Rect cooldownRect = leftListing.GetRect(24f);
@@ -140,8 +155,6 @@ public partial class Settings
         TooltipHandler.TipRegion(replyRect, "RimTalk.Settings.ReplyIntervalTooltip".Translate().ToString());
 
         leftListing.Gap(6f);
-
-        // 3. Checkboxes in Left Column (Left-aligned checkmarks)
         CheckboxLeft(leftListing, "RimTalk.Settings.OverrideInteractions".Translate().ToString(),
             ref settings.ProcessNonRimTalkInteractions,
             "RimTalk.Settings.OverrideInteractionsTooltip".Translate().ToString(),
@@ -151,54 +164,77 @@ public partial class Settings
             ref settings.AllowSimultaneousConversations,
             "RimTalk.Settings.AllowSimultaneousConversationsTooltip".Translate().ToString());
         leftListing.Gap(6f);
+        CheckboxLeft(leftListing, "RimTalk.Settings.AllowMonologue".Translate().ToString(),
+            ref settings.AllowMonologue,
+            "RimTalk.Settings.AllowMonologueTooltip".Translate().ToString());
+        leftListing.Gap(6f);
         CheckboxLeft(leftListing, "RimTalk.Settings.DisplayTalkWhenDrafted".Translate().ToString(),
             ref settings.DisplayTalkWhenDrafted,
             "RimTalk.Settings.DisplayTalkWhenDraftedTooltip".Translate().ToString());
-        leftListing.Gap(6f);
-        CheckboxLeft(leftListing, "RimTalk.Settings.ContinueDialogueWhileSleeping".Translate().ToString(),
-            ref settings.ContinueDialogueWhileSleeping,
-            "RimTalk.Settings.ContinueDialogueWhileSleepingTooltip".Translate().ToString());
-        leftListing.Gap(6f);
-        CheckboxLeft(leftListing, "RimTalk.Settings.EnableSleepDialogue".Translate().ToString(),
-            ref settings.EnableSleepDialogue,
-            "RimTalk.Settings.EnableSleepDialogueTooltip".Translate().ToString());
         leftListing.Gap(6f);
         CheckboxLeft(leftListing, "RimTalk.Settings.ApplyMoodAndSocialEffects".Translate().ToString(),
             ref settings.ApplyMoodAndSocialEffects,
             "RimTalk.Settings.ApplyMoodAndSocialEffectsTooltip".Translate().ToString());
         leftListing.End();
 
-        // --- Right Column ---
-        Rect rightColumnRect = new Rect(leftColumnRect.xMax + columnGap, checkboxSectionRect.y, columnWidth,
+        // --- Column 2: who can talk ---
+        Rect midColumnRect = new Rect(leftColumnRect.xMax + columnGap, checkboxSectionRect.y, columnWidth,
+            checkboxSectionRect.height);
+        Listing_Standard midListing = new Listing_Standard();
+        midListing.Begin(midColumnRect);
+
+        DrawGroupHeader(midListing, "RimTalk.Settings.Group.WhoCanTalk");
+        midListing.Gap(6f);
+        CheckboxLeft(midListing, "RimTalk.Settings.AllowSlavesToTalk".Translate().ToString(),
+            ref settings.AllowSlavesToTalk,
+            "RimTalk.Settings.AllowSlavesToTalkTooltip".Translate().ToString());
+        midListing.Gap(6f);
+        CheckboxLeft(midListing, "RimTalk.Settings.AllowPrisonersToTalk".Translate().ToString(),
+            ref settings.AllowPrisonersToTalk,
+            "RimTalk.Settings.AllowPrisonersToTalkTooltip".Translate().ToString());
+        midListing.Gap(6f);
+        CheckboxLeft(midListing, "RimTalk.Settings.AllowOtherFactionsToTalk".Translate().ToString(),
+            ref settings.AllowOtherFactionsToTalk,
+            "RimTalk.Settings.AllowOtherFactionsToTalkTooltip".Translate().ToString());
+        midListing.Gap(6f);
+        CheckboxLeft(midListing, "RimTalk.Settings.AllowEnemiesToTalk".Translate().ToString(),
+            ref settings.AllowEnemiesToTalk,
+            "RimTalk.Settings.AllowEnemiesToTalkTooltip".Translate().ToString());
+        midListing.Gap(6f);
+        CheckboxLeft(midListing, "RimTalk.Settings.AllowBabiesToTalk".Translate().ToString(),
+            ref settings.AllowBabiesToTalk,
+            "RimTalk.Settings.AllowBabiesToTalkTooltip".Translate().ToString());
+        midListing.Gap(6f);
+        CheckboxLeft(midListing, "RimTalk.Settings.AllowNonHumanToTalk".Translate().ToString(),
+            ref settings.AllowNonHumanToTalk,
+            "RimTalk.Settings.AllowNonHumanToTalkTooltip".Translate().ToString());
+        midListing.End();
+
+        // --- Column 3: sleep + notifications ---
+        Rect rightColumnRect = new Rect(midColumnRect.xMax + columnGap, checkboxSectionRect.y, columnWidth,
             checkboxSectionRect.height);
         Listing_Standard rightListing = new Listing_Standard();
         rightListing.Begin(rightColumnRect);
 
-        CheckboxLeft(rightListing, "RimTalk.Settings.AllowMonologue".Translate().ToString(),
-            ref settings.AllowMonologue, "RimTalk.Settings.AllowMonologueTooltip".Translate().ToString());
+        DrawGroupHeader(rightListing, "RimTalk.Settings.Group.Sleep");
         rightListing.Gap(6f);
-        CheckboxLeft(rightListing, "RimTalk.Settings.AllowSlavesToTalk".Translate().ToString(),
-            ref settings.AllowSlavesToTalk, "RimTalk.Settings.AllowSlavesToTalkTooltip".Translate().ToString());
+        CheckboxLeft(rightListing, "RimTalk.Settings.ContinueDialogueWhileSleeping".Translate().ToString(),
+            ref settings.ContinueDialogueWhileSleeping,
+            "RimTalk.Settings.ContinueDialogueWhileSleepingTooltip".Translate().ToString());
         rightListing.Gap(6f);
-        CheckboxLeft(rightListing, "RimTalk.Settings.AllowPrisonersToTalk".Translate().ToString(),
-            ref settings.AllowPrisonersToTalk, "RimTalk.Settings.AllowPrisonersToTalkTooltip".Translate().ToString());
+        CheckboxLeft(rightListing, "RimTalk.Settings.EnableSleepDialogue".Translate().ToString(),
+            ref settings.EnableSleepDialogue,
+            "RimTalk.Settings.EnableSleepDialogueTooltip".Translate().ToString());
         rightListing.Gap(6f);
-        CheckboxLeft(rightListing, "RimTalk.Settings.AllowOtherFactionsToTalk".Translate().ToString(),
-            ref settings.AllowOtherFactionsToTalk,
-            "RimTalk.Settings.AllowOtherFactionsToTalkTooltip".Translate().ToString());
+        DrawGroupHeader(rightListing, "RimTalk.Settings.Group.Notifications");
         rightListing.Gap(6f);
-        CheckboxLeft(rightListing, "RimTalk.Settings.AllowEnemiesToTalk".Translate().ToString(),
-            ref settings.AllowEnemiesToTalk, "RimTalk.Settings.AllowEnemiesToTalkTooltip".Translate().ToString());
-        rightListing.Gap(6f);
-        CheckboxLeft(rightListing, "RimTalk.Settings.AllowBabiesToTalk".Translate().ToString(),
-            ref settings.AllowBabiesToTalk, "RimTalk.Settings.AllowBabiesToTalkTooltip".Translate().ToString());
-        rightListing.Gap(6f);
-        CheckboxLeft(rightListing, "RimTalk.Settings.AllowNonHumanToTalk".Translate().ToString(),
-            ref settings.AllowNonHumanToTalk, "RimTalk.Settings.AllowNonHumanToTalkTooltip".Translate().ToString());
+        CheckboxLeft(rightListing, "RimTalk.Settings.HideServerErrorNotifications".Translate().ToString(),
+            ref settings.HideServerErrorNotifications,
+            "RimTalk.Settings.HideServerErrorNotificationsTooltip".Translate().ToString());
         rightListing.End();
 
         // Advance the main listing standard's vertical position based on the taller of the two columns.
-        float tallerColumnHeight = Mathf.Max(leftListing.CurHeight, rightListing.CurHeight);
+        float tallerColumnHeight = Mathf.Max(leftListing.CurHeight, midListing.CurHeight, rightListing.CurHeight);
         listingStandard.Gap(tallerColumnHeight - estimatedHeight);
 
         // Comfortable spacing between checkboxes and bottom buttons
@@ -274,6 +310,7 @@ public partial class Settings
         _replyIntervalBuffer = "4";
         settings.ProcessNonRimTalkInteractions = true;
         settings.AllowSimultaneousConversations = false;
+        settings.HideServerErrorNotifications = false;
         settings.ResetBubbleSettings();
         SpeechBubbleDrawer.RecomputeAllBubbleDimensions();
         settings.DisplayTalkWhenDrafted = true;
