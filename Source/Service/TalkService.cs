@@ -39,9 +39,15 @@ public static class TalkService
         if (!SleepDialogueTracker.TryRefreshRequest(talkRequest)) return false;
 
         PawnState pawn1 = Cache.Get(talkRequest.Initiator);
-        if (!talkRequest.TalkType.IsFromUser() && (pawn1 == null || !pawn1.CanGenerateTalk())) return false;
+        bool isFromUser = talkRequest.TalkType.IsFromUser();
+        if (!isFromUser && (pawn1 == null || !pawn1.CanGenerateTalk())) return false;
         
-        if (!settings.AllowSimultaneousConversations && AnyPawnHasPendingResponses()) return false;
+        // User requests legitimately preempt the ongoing conversation (its leftover lines are already
+        // doomed), so the single-conversation gate applies to auto-generated talks only.
+        if (!settings.AllowSimultaneousConversations 
+            && !isFromUser
+            && AnyPawnHasPendingResponses()) 
+            return false;
 
         // Ensure the recipient is valid and capable of talking.
         PawnState pawn2 = talkRequest.Recipient != null ? Cache.Get(talkRequest.Recipient) : null;
