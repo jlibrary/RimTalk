@@ -13,6 +13,8 @@ public static class AIErrorHandler
 {
     private static bool _quotaWarningShown;
     private static int _pendingGenerationFailures;
+    // Never reset (not even on load): the rotation notice is shown once per game session.
+    private static int _retryMessageShown;
     private static readonly ConcurrentQueue<Action> PendingMessages = new();
 
     public static void EnqueueMessage(Action action)
@@ -212,11 +214,13 @@ public static class AIErrorHandler
     private static void ShowRetryMessage(Exception ex, string nextModel)
     {
         if (IsHiddenServerError(ex)) return;
+        // Quota errors are reported once by the final failure warning if every API fails.
+        if (ex is QuotaExceededException) return;
+        if (Interlocked.Exchange(ref _retryMessageShown, 1) == 1) return;
         PendingMessages.Enqueue(() =>
         {
-            string messageKey = ex is QuotaExceededException ? "RimTalk.TalkService.QuotaReached" : "RimTalk.TalkService.APIError";
-            string message = $"{messageKey.Translate()}. {"RimTalk.TalkService.TryingNextAPI".Translate(nextModel)}";
-            Messages.Message(message, MessageTypeDefOf.NeutralEvent, false);
+            string message = $"{"RimTalk.TalkService.APIError".Translate()}. {"RimTalk.TalkService.TryingNextAPI".Translate(nextModel)}";
+            Messages.Message(message, MessageTypeDefOf.SilentInput, false);
         });
     }
 

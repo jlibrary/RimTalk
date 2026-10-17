@@ -48,7 +48,6 @@ public class RimTalk : GameComponent
             settings.CurrentCloudConfigIndex = 0;
         }
 
-        AIErrorHandler.ResetQuotaWarning();
         TickManagerPatch.Reset();
         AIClientFactory.Clear();
         AIService.Clear();
