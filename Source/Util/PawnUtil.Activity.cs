@@ -182,4 +182,40 @@ public static partial class PawnUtil
         float percentage = (progress / project.baseCost) * 100f;
         return $"{activity} (Project: {project.label} - {Describer.Progress(percentage)})";
     }
+
+    private static readonly string[] MovementJobPatterns = ["Goto", "Flee", "Wait", "Wander"];
+
+    private const int MinTravelPathCells = 5;
+
+    internal static string GetTravelAwareJobReport(this Pawn pawn)
+    {
+        if (pawn?.CurJob is not { } curJob) return "";
+
+        string report = curJob.GetReport(pawn)?.TrimEnd('.') ?? pawn.CurJob.def?.reportString ?? "";
+
+        var pather = pawn.pather;
+        var path = pather?.curPath;
+        if (pather?.Moving == true
+            && path?.Found == true
+            && path.NodesLeftCount > MinTravelPathCells
+            && !IsMovementJob(curJob)
+            && report != string.Empty)
+        {
+            // Vanilla reports don't convey transit over a long route; surface it as a prefix
+            report = "traveling to " + report;
+        }
+
+        return report;
+    }
+
+    private static bool IsMovementJob(Job job)
+    {
+        if (job.def?.defName is not { } defName) return false;
+
+        for (int i = 0; i < MovementJobPatterns.Length; i++)
+        {
+            if (defName.IndexOf(MovementJobPatterns[i], StringComparison.OrdinalIgnoreCase) >= 0) return true;
+        }
+        return false;
+    }
 }
