@@ -170,7 +170,7 @@ public static partial class PawnUtil
             activity = AppendResearchProgress(activity);
         }
 
-        return activity;
+        return AddTravelPrefix(pawn, activity);
     }
 
     private static string AppendResearchProgress(string activity)
@@ -183,7 +183,9 @@ public static partial class PawnUtil
         return $"{activity} (Project: {project.label} - {Describer.Progress(percentage)})";
     }
 
-    private static readonly string[] MovementJobPatterns = ["Goto", "Flee", "Wait", "Wander"];
+    // Jobs where walking is the activity itself, so a transit prefix would misdescribe them
+    private static readonly string[] MovementJobPatterns =
+        ["Goto", "Flee", "Wander","Follow", "GoForWalk", "Escort", "Rope", "Caravan", "ExitMap"];
 
     private const int MinTravelPathCells = 5;
 
@@ -191,26 +193,31 @@ public static partial class PawnUtil
     {
         if (pawn?.CurJob is not { } curJob) return "";
 
-        string report = curJob.GetReport(pawn)?.TrimEnd('.') ?? pawn.CurJob.def?.reportString ?? "";
+        string report = curJob.GetReport(pawn)?.TrimEnd('.') ?? curJob.def?.reportString ?? "";
+        return AddTravelPrefix(pawn, report);
+    }
+
+    // Vanilla reports don't change while walking to the work spot, so a pawn far from the job reads as already doing it
+    private static string AddTravelPrefix(Pawn pawn, string activity)
+    {
+        if (string.IsNullOrEmpty(activity)) return activity;
 
         var pather = pawn.pather;
         var path = pather?.curPath;
-        if (pather?.Moving == true
-            && path?.Found == true
-            && path.NodesLeftCount > MinTravelPathCells
-            && !IsMovementJob(curJob)
-            && report != string.Empty)
-        {
-            // Vanilla reports don't convey transit over a long route; surface it as a prefix
-            report = "traveling to " + report;
-        }
+        if (pather?.Moving != true
+            || path?.Found != true
+            || path.NodesLeftCount <= MinTravelPathCells
+            || pawn.carryTracker?.CarriedThing != null // hauling, rescuing, carrying a pawn: walking is the work
+            || IsMovementJob(pawn.CurJob))
+            return activity;
 
-        return report;
+        // Suffix, not prefix: localized reports are complete progressive clauses that a prefix would contradict
+        return activity + " (heading there)";
     }
 
     private static bool IsMovementJob(Job job)
     {
-        if (job.def?.defName is not { } defName) return false;
+        if (job?.def?.defName is not { } defName) return false;
 
         for (int i = 0; i < MovementJobPatterns.Length; i++)
         {
