@@ -303,9 +303,7 @@ public static class ScribanParser
             "lifestage" => pawn.ageTracker?.CurLifeStage?.label ?? "",
             "faction" => pawn.Faction?.Name ?? "",
             "mental_state" => pawn.MentalState?.def?.label ?? "",
-            "job" => pawn.CurJob != null 
-                ? pawn.CurJob.GetReport(pawn)?.TrimEnd('.') ?? pawn.CurJob.def?.reportString ?? "" 
-                : "",
+            "job" => pawn.GetTravelAwareJobReport(),
             "race" => pawn.genes?.XenotypeLabel ?? pawn.def?.label ?? "",
             "role" => pawn.GetRole(false) ?? "",
             "mood" => pawn.needs?.mood?.MoodString ?? "",
