@@ -111,13 +111,23 @@ public class OpenAIStreamHandler(Action<string> onContentReceived)
         }
         catch (Exception ex)
         {
+            string error = ErrorUtil.ExtractErrorMessage(jsonData);
+            if (!string.IsNullOrEmpty(error))
+            {
+                DetectedError = error;
+                return;
+            }
             Logger.Warning($"Failed to parse stream chunk: {ex.Message}\nJSON: {jsonData}");
         }
     }
 
     public string GetFullText() => _fullText.ToString();
     
-    public int GetTotalTokens() => _usage?.TotalTokens ?? 0;
+    public int GetTotalTokens()
+    {
+        if (_usage == null) return 0;
+        return _usage.TotalTokens > 0 ? _usage.TotalTokens : _usage.PromptTokens + _usage.CompletionTokens;
+    }
     public string GetAllReceivedText() => _allReceivedData.ToString();
 
     public string GetRawJson()

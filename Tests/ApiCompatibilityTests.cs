@@ -67,6 +67,13 @@ public class ApiCompatibilityTests
         "RimTalk.Data.TalkHistory.GetMessageHistory",
     };
 
+    // Types removed with maintainer approval (no addon should patch them)
+    private static readonly HashSet<string> AllowedRemovedTypes = new(StringComparer.Ordinal)
+    {
+        "RimTalk.Client.Player2.Player2StreamHandler",
+        "RimTalk.Client.Player2.Player2StreamChunk",
+    };
+
     [Fact]
     public void VerifyPublicApiBackwardCompatibility_WithLastVersion()
     {
@@ -99,6 +106,7 @@ public class ApiCompatibilityTests
 
             if (!currentTypes.TryGetValue(typeName, out var currType))
             {
+                if (AllowedRemovedTypes.Contains(typeName)) continue;
                 breakingChanges.Add($"Missing Type: Public type '{typeName}' was removed or made non-public.");
                 continue;
             }

@@ -458,7 +458,6 @@ F System.Int32 RimTalk.API.ContextHookRegistry/HookOperation::value__
 F System.Int32 RimTalk.API.ContextHookRegistry/InjectPosition::value__
 F System.Int32 RimTalk.API.ContextType::value__
 F System.Int32 RimTalk.API.RimTalkPromptAPI/ModInsertionType::value__
-F System.Int32 RimTalk.Client.Player2.Player2StreamHandler::_totalTokens
 F System.Int32 RimTalk.ContextPreset::value__
 F System.Int32 RimTalk.Data.ApiHistory::_conversationIdIndex
 F System.Int32 RimTalk.Data.ApiLog/State::value__
@@ -699,8 +698,6 @@ F System.String RimTalk.Client.Player2.Player2Client::LocalUrl
 F System.String RimTalk.Client.Player2.Player2Client::_customRequestJson
 F System.String RimTalk.Client.Player2.Player2Client::_fallbackApiKey
 F System.String RimTalk.Client.Player2.Player2Client::_localApiKey
-F System.String RimTalk.Client.Player2.Player2StreamHandler::_finishReason
-F System.String RimTalk.Client.Player2.Player2StreamHandler::_id
 F System.String RimTalk.Compatibility.CharacterEditorCompatibilityPatch::PersonaMarker
 F System.String RimTalk.Compatibility.PresetMigrator::DirectiveSnippet
 F System.String RimTalk.Compatibility.PresetMigrator::LegacyJsonFormatInstruction
@@ -857,15 +854,11 @@ F System.String[] RimTalk.Data.TopicKeywordPool::ApproachKeywords
 F System.String[] RimTalk.Data.TopicKeywordPool::SubjectKeywords
 F System.String[] RimTalk.Service.EventService::KnownExternalEventModIds
 F System.Text.Decoder RimTalk.Client.OpenAI.OpenAIStreamHandler::_decoder
-F System.Text.Decoder RimTalk.Client.Player2.Player2StreamHandler::_decoder
 F System.Text.RegularExpressions.Regex RimTalk.Service.PromptService::EventsTemplateVariableRegex
 F System.Text.RegularExpressions.Regex RimTalk.Util.Describer::ConditionSuffixPattern
 F System.Text.StringBuilder RimTalk.Client.OpenAI.OpenAIStreamHandler::_allReceivedData
 F System.Text.StringBuilder RimTalk.Client.OpenAI.OpenAIStreamHandler::_buffer
 F System.Text.StringBuilder RimTalk.Client.OpenAI.OpenAIStreamHandler::_fullText
-F System.Text.StringBuilder RimTalk.Client.Player2.Player2StreamHandler::_allReceivedData
-F System.Text.StringBuilder RimTalk.Client.Player2.Player2StreamHandler::_buffer
-F System.Text.StringBuilder RimTalk.Client.Player2.Player2StreamHandler::_fullText
 F System.Text.StringBuilder RimTalk.Util.JsonStreamParser`1::_buffer
 F System.Threading.CancellationTokenSource RimTalk.Client.Player2.Player2AuthService::_authCts
 F System.Threading.CancellationTokenSource RimTalk.Service.AIService::_currentCts
@@ -984,7 +977,6 @@ M RimTalk.Client.Payload RimTalk.UI.Dialog_ApiLog::get_CurrentPayload()
 M RimTalk.Client.Player2.Delta RimTalk.Client.Player2.Choice::get_Delta()
 M RimTalk.Client.Player2.Message RimTalk.Client.Player2.Choice::get_Message()
 M RimTalk.Client.Player2.Usage RimTalk.Client.Player2.Player2Response::get_Usage()
-M RimTalk.Client.Player2.Usage RimTalk.Client.Player2.Player2StreamChunk::get_Usage()
 M RimTalk.CustomDialoguePreset RimTalk.CustomDialoguePreset::Clone()
 M RimTalk.Data.ApiLog RimTalk.Data.ApiHistory::AddRequest(RimTalk.Data.TalkRequest,RimTalk.Source.Data.Channel)
 M RimTalk.Data.ApiLog RimTalk.Data.ApiHistory::AddResponse(System.Guid,System.String,System.String,System.String,RimTalk.Client.Payload,System.Int32)
@@ -1094,7 +1086,6 @@ M System.Boolean RimTalk.Client.ChatRequest::get_DisableThinking()
 M System.Boolean RimTalk.Client.ChatRequest::get_Stream()
 M System.Boolean RimTalk.Client.OpenAI.OpenAIStreamHandler::ReceiveData(System.Byte[],System.Int32)
 M System.Boolean RimTalk.Client.Player2.Player2AuthService::get_IsAuthenticating()
-M System.Boolean RimTalk.Client.Player2.Player2StreamHandler::ReceiveData(System.Byte[],System.Int32)
 M System.Boolean RimTalk.Compatibility.BubbleCompatibilityPatch::OnBubblerAddPrefix(Verse.LogEntry)
 M System.Boolean RimTalk.Compatibility.BubbleCompatibilityPatch::OnBubblerDrawPrefix()
 M System.Boolean RimTalk.Compatibility.BubbleCompatibilityPatch::get_IsBubblesModLoaded()
@@ -1301,7 +1292,6 @@ M System.Collections.Generic.List`1<RimTalk.Client.OpenAI.Message> RimTalk.Clien
 M System.Collections.Generic.List`1<RimTalk.Client.OpenAI.Model> RimTalk.Client.OpenAI.OpenAIModelsResponse::get_Data()
 M System.Collections.Generic.List`1<RimTalk.Client.OpenAI.StreamChoice> RimTalk.Client.OpenAI.OpenAIStreamChunk::get_Choices()
 M System.Collections.Generic.List`1<RimTalk.Client.Player2.Choice> RimTalk.Client.Player2.Player2Response::get_Choices()
-M System.Collections.Generic.List`1<RimTalk.Client.Player2.Choice> RimTalk.Client.Player2.Player2StreamChunk::get_Choices()
 M System.Collections.Generic.List`1<RimTalk.Client.Player2.Message> RimTalk.Client.Player2.Player2Request::get_Messages()
 M System.Collections.Generic.List`1<RimTalk.CustomDialoguePreset> RimTalk.CustomDialoguePreset::CreateDefaultPresets()
 M System.Collections.Generic.List`1<RimTalk.Data.PromptMessageSegment> RimTalk.Data.TalkRequest::get_PromptMessageSegments()
@@ -1384,7 +1374,6 @@ M System.Int32 RimTalk.Client.OpenAI.Usage::get_TotalTokens()
 M System.Int32 RimTalk.Client.Payload::get_TokenCount()
 M System.Int32 RimTalk.Client.Player2.Player2DeviceCodeResponse::get_ExpiresIn()
 M System.Int32 RimTalk.Client.Player2.Player2DeviceCodeResponse::get_Interval()
-M System.Int32 RimTalk.Client.Player2.Player2StreamHandler::GetTotalTokens()
 M System.Int32 RimTalk.Client.Player2.Usage::get_TotalTokens()
 M System.Int32 RimTalk.Data.ApiHistory::NextConversationId()
 M System.Int32 RimTalk.Data.ApiHistory::get_MaxHistoryCount()
@@ -1553,12 +1542,6 @@ M System.String RimTalk.Client.Player2.Player2DeviceCodeResponse::get_UserCode()
 M System.String RimTalk.Client.Player2.Player2DeviceCodeResponse::get_VerificationUri()
 M System.String RimTalk.Client.Player2.Player2DeviceCodeResponse::get_VerificationUriComplete()
 M System.String RimTalk.Client.Player2.Player2Response::get_Id()
-M System.String RimTalk.Client.Player2.Player2StreamChunk::get_Error()
-M System.String RimTalk.Client.Player2.Player2StreamChunk::get_Id()
-M System.String RimTalk.Client.Player2.Player2StreamHandler::GetAllReceivedText()
-M System.String RimTalk.Client.Player2.Player2StreamHandler::GetFullText()
-M System.String RimTalk.Client.Player2.Player2StreamHandler::GetRawJson()
-M System.String RimTalk.Client.Player2.Player2StreamHandler::get_DetectedError()
 M System.String RimTalk.Client.Player2.Player2TokenResponse::get_P2Key()
 M System.String RimTalk.CustomDialoguePreset::SafeTranslate(System.String,System.String)
 M System.String RimTalk.Data.ApiLog::ToString()
@@ -2011,15 +1994,6 @@ M System.Void RimTalk.Client.Player2.Player2Response::.ctor()
 M System.Void RimTalk.Client.Player2.Player2Response::set_Choices(System.Collections.Generic.List`1<RimTalk.Client.Player2.Choice>)
 M System.Void RimTalk.Client.Player2.Player2Response::set_Id(System.String)
 M System.Void RimTalk.Client.Player2.Player2Response::set_Usage(RimTalk.Client.Player2.Usage)
-M System.Void RimTalk.Client.Player2.Player2StreamChunk::.ctor()
-M System.Void RimTalk.Client.Player2.Player2StreamChunk::set_Choices(System.Collections.Generic.List`1<RimTalk.Client.Player2.Choice>)
-M System.Void RimTalk.Client.Player2.Player2StreamChunk::set_Error(System.String)
-M System.Void RimTalk.Client.Player2.Player2StreamChunk::set_Id(System.String)
-M System.Void RimTalk.Client.Player2.Player2StreamChunk::set_Usage(RimTalk.Client.Player2.Usage)
-M System.Void RimTalk.Client.Player2.Player2StreamHandler::.ctor(System.Action`1<System.String>)
-M System.Void RimTalk.Client.Player2.Player2StreamHandler::Flush()
-M System.Void RimTalk.Client.Player2.Player2StreamHandler::ProcessLine(System.String)
-M System.Void RimTalk.Client.Player2.Player2StreamHandler::set_DetectedError(System.String)
 M System.Void RimTalk.Client.Player2.Player2TokenResponse::.ctor()
 M System.Void RimTalk.Client.Player2.Player2TokenResponse::set_P2Key(System.String)
 M System.Void RimTalk.Client.Player2.Usage::.ctor()
@@ -2743,8 +2717,6 @@ T RimTalk.Client.Player2.Player2Client
 T RimTalk.Client.Player2.Player2DeviceCodeResponse
 T RimTalk.Client.Player2.Player2Request
 T RimTalk.Client.Player2.Player2Response
-T RimTalk.Client.Player2.Player2StreamChunk
-T RimTalk.Client.Player2.Player2StreamHandler
 T RimTalk.Client.Player2.Player2TokenResponse
 T RimTalk.Client.Player2.Usage
 T RimTalk.Compatibility.BubbleCompatibilityPatch

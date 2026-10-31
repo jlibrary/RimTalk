@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using RimTalk.Data;
 using RimTalk.Error;
+using RimTalk.Client.OpenAI;
 using RimTalk.Service;
 using RimTalk.Util;
 using RimWorld;
@@ -104,6 +105,10 @@ public class Player2Client : IAIClient
         var response = JsonUtil.DeserializeFromJson<Player2Response>(responseText);
         var content = response?.Choices?[0]?.Message?.Content;
         var tokens = response?.Usage?.TotalTokens ?? 0;
+        if (tokens == 0 && response?.Usage != null)
+        {
+            tokens = response.Usage.PromptTokens + response.Usage.CompletionTokens;
+        }
 
         return new Payload(CurrentApiUrl, CurrentModelName, jsonContent, content, tokens)
         {
@@ -128,7 +133,7 @@ public class Player2Client : IAIClient
         string jsonContent = BuildRequestJson(prefixMessages, messages, stream: true, imageBase64: imageBase64);
         onRequestPrepared?.Invoke(new Payload(CurrentApiUrl, CurrentModelName, jsonContent, null, 0));
         var jsonParser = new JsonStreamParser<T>();
-        var streamHandler = new Player2StreamHandler(chunk =>
+        var streamHandler = new OpenAIStreamHandler(chunk =>
         {
             foreach (var item in jsonParser.Parse(chunk))
                 onResponseParsed?.Invoke(item);
@@ -207,7 +212,7 @@ public class Player2Client : IAIClient
     private Task<string> SendRequestAsync(string url, string jsonContent, Func<DownloadHandler> handlerFactory) =>
         SendHttpAsync(url, jsonContent, null);
 
-    private async Task<string> SendHttpAsync(string url, string jsonContent, Player2StreamHandler streamHandler)
+    private async Task<string> SendHttpAsync(string url, string jsonContent, OpenAIStreamHandler streamHandler)
     {
         if (!_isLocalConnection && (DateTime.Now - _lastLocalProbe).TotalSeconds > 2)
         {
@@ -283,7 +288,7 @@ public class Player2Client : IAIClient
         }
     }
 
-    private Task<string> FallbackToRemoteAsync(string jsonContent, Player2StreamHandler streamHandler)
+    private Task<string> FallbackToRemoteAsync(string jsonContent, OpenAIStreamHandler streamHandler)
     {
         Logger.Message("[Player2] Local app disconnected. Falling back to Web API.");
         _isLocalConnection = false;
@@ -291,7 +296,7 @@ public class Player2Client : IAIClient
         return SendHttpAsync($"{RemoteUrl}/v1/chat/completions", jsonContent, streamHandler);
     }
 
-    private void ThrowIfStreamError(Player2StreamHandler streamHandler, string url, string jsonContent, int statusCode)
+    private void ThrowIfStreamError(OpenAIStreamHandler streamHandler, string url, string jsonContent, int statusCode)
     {
         if (string.IsNullOrEmpty(streamHandler.DetectedError)) return;
 
