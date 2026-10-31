@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Net.Security;
 using System.Threading;
@@ -23,6 +24,10 @@ public static class HttpUtil
             // Mono's CookieContainer reads the machine domain name, which throws "Illegal byte sequence"
             // on non-ASCII computer names. API calls don't need cookies.
             UseCookies = false,
+            // RimWorld's Mono HttpClientHandler otherwise replaces the system proxy with a null proxy,
+            // which makes HttpWebRequest connect directly instead of using the Windows proxy settings.
+            UseProxy = true,
+            Proxy = WebRequest.GetSystemWebProxy(),
 #if !V1_5
             // Self-signed certificates are accepted only for local and LAN hosts.
             ServerCertificateCustomValidationCallback = (msg, cert, chain, errors) =>
