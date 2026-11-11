@@ -197,6 +197,30 @@ public class JsonStreamParserTests
     }
 
     [Fact]
+    public void JsonUtil_Deserialize_PreservesBracketSequencesInsideStrings()
+    {
+        // Preset import: Scriban templates stored as JSON string values must not be rewritten.
+        string template = "{{ pawn.name }}{{ pawn.job }} [a][b] }{ \\\" }}{{";
+        string json = JsonUtil.SerializeToJson(new TestDialogueItem { name = "Preset", text = template });
+
+        var result = JsonUtil.DeserializeFromJson<TestDialogueItem>(json);
+
+        Assert.Equal(template, result.text);
+    }
+
+    [Fact]
+    public void JsonUtil_Sanitize_JoinsConcatenatedArraysOutsideStrings()
+    {
+        string raw = "[{\"name\":\"A\",\"text\":\"x][y\"}][{\"name\":\"B\",\"text\":\"}{\"}]";
+
+        var result = JsonUtil.DeserializeFromJson<List<TestDialogueItem>>(raw);
+
+        Assert.Equal(2, result.Count);
+        Assert.Equal("x][y", result[0].text);
+        Assert.Equal("}{", result[1].text);
+    }
+
+    [Fact]
     public void JsonStreamParser_ParsesObjectWithStringArrayCorrectly()
     {
         var parser = new JsonStreamParser<TestDialogueItem>();

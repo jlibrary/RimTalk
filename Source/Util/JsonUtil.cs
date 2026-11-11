@@ -91,14 +91,7 @@ public static class JsonUtil
             @"""$1"":null$2"
         );
 
-        if (sanitized.Contains("]["))
-        {
-            sanitized = sanitized.Replace("][", ",");
-        }
-        if (sanitized.Contains("}{"))
-        {
-            sanitized = sanitized.Replace("}{", "},{");
-        }
+        sanitized = JoinConcatenatedJson(sanitized);
     
         if (sanitized.StartsWith("{") && sanitized.EndsWith("}"))
         {
@@ -118,6 +111,58 @@ public static class JsonUtil
         }
 
         return sanitized;
+    }
+
+    /// <summary>
+    /// Joins concatenated LLM output ("}{" -> "},{", "][" -> ",") outside string literals only,
+    /// so values like Scriban templates containing "}}{{" survive intact.
+    /// </summary>
+    private static string JoinConcatenatedJson(string text)
+    {
+        if (text.IndexOf("}{", StringComparison.Ordinal) < 0 && text.IndexOf("][", StringComparison.Ordinal) < 0)
+            return text;
+
+        var sb = new StringBuilder(text.Length + 8);
+        bool inString = false;
+        bool escaped = false;
+
+        for (int i = 0; i < text.Length; i++)
+        {
+            char c = text[i];
+
+            if (inString)
+            {
+                if (escaped) escaped = false;
+                else if (c == '\\') escaped = true;
+                else if (c == '"') inString = false;
+                sb.Append(c);
+                continue;
+            }
+
+            if (c == '"')
+            {
+                inString = true;
+                sb.Append(c);
+                continue;
+            }
+
+            char next = i + 1 < text.Length ? text[i + 1] : '\0';
+            if (c == '}' && next == '{')
+            {
+                sb.Append("},");
+                continue;
+            }
+            if (c == ']' && next == '[')
+            {
+                sb.Append(',');
+                i++;
+                continue;
+            }
+
+            sb.Append(c);
+        }
+
+        return sb.ToString();
     }
 
     internal static bool IsJsonQuote(char c)
