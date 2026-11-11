@@ -761,6 +761,7 @@ public partial class Settings
             {
                 11434 => "Ollama",
                 1234 => "LM Studio",
+                1235 => "LM Studio Bionic",
                 8080 => "llama.cpp",
                 9931 => "llama.cpp",
                 8000 => "vLLM",
@@ -905,6 +906,7 @@ public partial class Settings
                 [
                     "http://localhost:11434",
                     "http://localhost:1234",
+                    "http://localhost:1235",
                     "http://localhost:8080",
                     "http://localhost:9931",
                     "http://localhost:8000",
