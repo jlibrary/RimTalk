@@ -20,7 +20,8 @@ public enum AIProvider
     Claude,
     Moonshot,
     OpenCodeZen,
-    OpenCodeGo
+    OpenCodeGo,
+    AbliteratedLLM
 }
 
 public struct ProviderDef
@@ -144,6 +145,13 @@ public static class AIProviderRegistry
                 Label = "OpenCode GO",
                 EndpointUrl = "https://opencode.ai/zen/go/v1/chat/completions",
                 ListModelsUrl = "https://opencode.ai/zen/go/v1/models"
+            }
+        },
+        {
+            AIProvider.AbliteratedLLM, new ProviderDef
+            {
+                EndpointUrl = "https://api.abliteratedllm.dev/v1/chat/completions",
+                ListModelsUrl = "https://api.abliteratedllm.dev/v1/models"
             }
         }
     };
