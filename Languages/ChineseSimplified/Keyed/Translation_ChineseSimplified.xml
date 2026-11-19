@@ -180,6 +180,8 @@ Scriban 魔法 (动态内容)
     <RimTalk.Settings.AICooldownTooltip>尝试生成新 AI 对话前的基础等待时间（秒）。</RimTalk.Settings.AICooldownTooltip>
     <RimTalk.Settings.ReplyInterval>对话回复间隔（秒）</RimTalk.Settings.ReplyInterval>
     <RimTalk.Settings.ReplyIntervalTooltip>对话中上一句与下一句回复之间的延迟时间（秒）。</RimTalk.Settings.ReplyIntervalTooltip>
+    <RimTalk.Settings.RequestTimeout>AI Request Timeout (Seconds)</RimTalk.Settings.RequestTimeout>
+    <RimTalk.Settings.RequestTimeoutTooltip>How long (in seconds) to wait for an AI provider to respond before giving up. Leave this empty to use 60 seconds. Raise it for providers that take longer to answer.</RimTalk.Settings.RequestTimeoutTooltip>
     <RimTalk.Settings.OverrideInteractions>使用 AI 对话覆盖所有互动</RimTalk.Settings.OverrideInteractions>
     <RimTalk.Settings.OverrideInteractionsTooltip>启用此项以允许 AI 覆盖并为所有互动（包括原版 RimWorld 和其他模组）重新生成对话。注意：AI 对话有上述设置的冷却时间。要更频繁地生成对话，请降低冷却时间。</RimTalk.Settings.OverrideInteractionsTooltip>
     <RimTalk.Settings.SettingsButton>设置</RimTalk.Settings.SettingsButton>

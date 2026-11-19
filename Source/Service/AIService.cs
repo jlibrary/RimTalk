@@ -250,9 +250,11 @@ public static class AIService
     public static bool IsFirstInstruction() => _firstInstruction;
     public static bool IsBusy()
     {
-        if (!BusyGate.IsStuck(_busy, _busySince, DateTime.Now)) return _busy;
+        int timeout = Settings.Get()?.EffectiveRequestTimeout ?? 60;
+        int stuckAfter = BusyGate.StuckAfter(timeout);
+        if (!BusyGate.IsStuck(_busy, _busySince, DateTime.Now, stuckAfter)) return _busy;
 
-        Logger.Warning($"The AI slot has been held for over {BusyGate.StuckAfterSeconds}s. " +
+        Logger.Warning($"The AI slot has been held for over {stuckAfter}s. " +
                        "Releasing it - no request can legitimately take that long, and while it " +
                        "is held nobody in the colony can speak.");
         CancelCurrent();

@@ -184,6 +184,8 @@ Conseils Cruciaux :
     <RimTalk.Settings.AICooldownTooltip>Temps de pause de base (en secondes) avant de générer un nouveau dialogue IA.</RimTalk.Settings.AICooldownTooltip>
     <RimTalk.Settings.ReplyInterval>Intervalle de réponse (s)</RimTalk.Settings.ReplyInterval>
     <RimTalk.Settings.ReplyIntervalTooltip>Délai (en secondes) entre les répliques consécutives d'une conversation.</RimTalk.Settings.ReplyIntervalTooltip>
+    <RimTalk.Settings.RequestTimeout>AI Request Timeout (Seconds)</RimTalk.Settings.RequestTimeout>
+    <RimTalk.Settings.RequestTimeoutTooltip>How long (in seconds) to wait for an AI provider to respond before giving up. Leave this empty to use 60 seconds. Raise it for providers that take longer to answer.</RimTalk.Settings.RequestTimeoutTooltip>
     <RimTalk.Settings.OverrideInteractions>L'IA remplace les interactions</RimTalk.Settings.OverrideInteractions>
     <RimTalk.Settings.OverrideInteractionsTooltip>Activez ceci pour permettre à l'IA de remplacer et de régénérer les dialogues pour toutes les interactions (y compris RimWorld vanilla et autres mods). Remarque : les dialogues de l'IA ont une période de recharge définie ci-dessus. Pour générer des dialogues plus fréquemment, diminuez le temps de recharge.</RimTalk.Settings.OverrideInteractionsTooltip>
     <RimTalk.Settings.SettingsButton>Réglages</RimTalk.Settings.SettingsButton>

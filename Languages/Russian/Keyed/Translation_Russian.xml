@@ -183,6 +183,8 @@
     <RimTalk.Settings.AICooldownTooltip>Базовое время ожидания (в секундах) перед попыткой создания нового диалога ИИ.</RimTalk.Settings.AICooldownTooltip>
     <RimTalk.Settings.ReplyInterval>Интервал ответов (сек)</RimTalk.Settings.ReplyInterval>
     <RimTalk.Settings.ReplyIntervalTooltip>Задержка (в секундах) между репликами в диалоге.</RimTalk.Settings.ReplyIntervalTooltip>
+    <RimTalk.Settings.RequestTimeout>AI Request Timeout (Seconds)</RimTalk.Settings.RequestTimeout>
+    <RimTalk.Settings.RequestTimeoutTooltip>How long (in seconds) to wait for an AI provider to respond before giving up. Leave this empty to use 60 seconds. Raise it for providers that take longer to answer.</RimTalk.Settings.RequestTimeoutTooltip>
     <RimTalk.Settings.OverrideInteractions>ИИ вместо всех взаимодействий</RimTalk.Settings.OverrideInteractions>
     <RimTalk.Settings.OverrideInteractionsTooltip>Включите, чтобы позволить ИИ переопределять и регенерировать диалоги для всех взаимодействий (включая ванильный RimWorld и другие моды). Примечание: диалоги ИИ имеют период восстановления, установленный выше. Чтобы генерировать диалоги чаще, уменьшите время восстановления.</RimTalk.Settings.OverrideInteractionsTooltip>
     <RimTalk.Settings.SettingsButton>Настройки</RimTalk.Settings.SettingsButton>

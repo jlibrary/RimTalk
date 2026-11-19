@@ -24,6 +24,10 @@ public class RimTalkSettings : ModSettings
     public bool IsEnabled = true;
     public int TalkInterval = 10;
     public int ReplyInterval = 4;
+    // Seconds to wait for an AI provider. 0 means the field was left empty, which uses 60.
+    public int RequestTimeout = 60;
+
+    public int EffectiveRequestTimeout => RequestTimeout > 0 ? RequestTimeout : 60;
     public bool ProcessNonRimTalkInteractions = true;
     public bool AllowSimultaneousConversations = false;
     public bool HideServerErrorNotifications = false;
@@ -260,6 +264,7 @@ public class RimTalkSettings : ModSettings
         Scribe_Values.Look(ref IsEnabled, "isEnabled", true);
         Scribe_Values.Look(ref TalkInterval, "talkInterval", 10);
         Scribe_Values.Look(ref ReplyInterval, "replyInterval", 4);
+        Scribe_Values.Look(ref RequestTimeout, "requestTimeout", 60);
         Scribe_Values.Look(ref ProcessNonRimTalkInteractions, "processNonRimTalkInteractions", true);
         Scribe_Values.Look(ref AllowSimultaneousConversations, "allowSimultaneousConversations", false);
         Scribe_Values.Look(ref HideServerErrorNotifications, "hideServerErrorNotifications", false);

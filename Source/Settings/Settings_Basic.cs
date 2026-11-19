@@ -155,6 +155,23 @@ public partial class Settings
         TooltipHandler.TipRegion(replyRect, "RimTalk.Settings.ReplyIntervalTooltip".Translate().ToString());
 
         leftListing.Gap(6f);
+
+        // 3. AI request timeout. An empty box keeps the stored value at the 60s default.
+        Rect timeoutRect = leftListing.GetRect(24f);
+        float timeoutFieldX = timeoutRect.xMax - intervalFieldWidth - 2f;
+        Rect timeoutLabelRect = new Rect(timeoutRect.x, timeoutRect.y, timeoutFieldX - timeoutRect.x - 10f, timeoutRect.height);
+        Rect timeoutFieldRect = new Rect(timeoutFieldX, timeoutRect.y, intervalFieldWidth, 24f);
+
+        Text.Anchor = middleLeft;
+        Widgets.Label(timeoutLabelRect, "RimTalk.Settings.RequestTimeout".Translate().ToString());
+        Text.Anchor = originalAnchor;
+
+        Widgets.TextFieldNumeric(timeoutFieldRect, ref settings.RequestTimeout, ref _requestTimeoutBuffer, 1, 9999);
+        if (string.IsNullOrWhiteSpace(_requestTimeoutBuffer))
+            settings.RequestTimeout = 60;
+        TooltipHandler.TipRegion(timeoutRect, "RimTalk.Settings.RequestTimeoutTooltip".Translate().ToString());
+
+        leftListing.Gap(6f);
         CheckboxLeft(leftListing, "RimTalk.Settings.OverrideInteractions".Translate().ToString(),
             ref settings.ProcessNonRimTalkInteractions,
             "RimTalk.Settings.OverrideInteractionsTooltip".Translate().ToString(),
@@ -306,8 +323,10 @@ public partial class Settings
     {
         settings.TalkInterval = 10;
         settings.ReplyInterval = 4;
+        settings.RequestTimeout = 60;
         _talkIntervalBuffer = "10";
         _replyIntervalBuffer = "4";
+        _requestTimeoutBuffer = "60";
         settings.ProcessNonRimTalkInteractions = true;
         settings.AllowSimultaneousConversations = false;
         settings.HideServerErrorNotifications = false;

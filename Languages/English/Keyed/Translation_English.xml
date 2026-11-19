@@ -181,6 +181,8 @@ Crucial Tips:
     <RimTalk.Settings.AICooldownTooltip>The base cooldown time (in seconds) before attempting to generate a new AI dialogue.</RimTalk.Settings.AICooldownTooltip>
     <RimTalk.Settings.ReplyInterval>Reply Interval (Seconds)</RimTalk.Settings.ReplyInterval>
     <RimTalk.Settings.ReplyIntervalTooltip>The delay (in seconds) between consecutive replies within a conversation.</RimTalk.Settings.ReplyIntervalTooltip>
+    <RimTalk.Settings.RequestTimeout>AI Request Timeout (Seconds)</RimTalk.Settings.RequestTimeout>
+    <RimTalk.Settings.RequestTimeoutTooltip>How long (in seconds) to wait for an AI provider to respond before giving up. Leave this empty to use 60 seconds. Raise it for providers that take longer to answer.</RimTalk.Settings.RequestTimeoutTooltip>
     <RimTalk.Settings.OverrideInteractions>Use AI for All Interactions</RimTalk.Settings.OverrideInteractions>
     <RimTalk.Settings.OverrideInteractionsTooltip>Enable this to allow AI to override and regenerate dialogue for all interactions (including vanilla RimWorld and other mods). Note: AI dialogue has a cooldown period set above. To generate dialogue more frequently, lower the cooldown.</RimTalk.Settings.OverrideInteractionsTooltip>
     <RimTalk.Settings.SettingsButton>Settings</RimTalk.Settings.SettingsButton>

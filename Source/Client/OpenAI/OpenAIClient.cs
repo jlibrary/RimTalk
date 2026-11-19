@@ -309,8 +309,11 @@ public class OpenAIClient(
         AddAuthHeaders(request, apiKey, extraHeaders);
 
         bool isLocal = LocalHost.IsLocal(new Uri(_endpointUrl).DnsSafeHost);
-        float connectTimeout = isLocal ? 300f : 60f;
-        const float readTimeout = 60f;
+        float timeout = Settings.Get()?.EffectiveRequestTimeout ?? 60f;
+        // Local models can spend minutes loading before the first byte. Keep that floor
+        // unless the user asked to wait even longer.
+        float connectTimeout = isLocal ? Math.Max(300f, timeout) : timeout;
+        float readTimeout = timeout;
 
         using var timeoutCts = new CancellationTokenSource();
         using var response = await HttpUtil.SendWithTimeoutAsync(request, connectTimeout, timeoutCts,
