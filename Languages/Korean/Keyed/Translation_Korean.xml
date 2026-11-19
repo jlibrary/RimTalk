@@ -185,8 +185,8 @@ Scriban 매직 (동적 콘텐츠)
     <RimTalk.Settings.AICooldownTooltip>새로운 AI 대화 생성을 시도하기 전 대기하는 기본 시간(초)입니다.</RimTalk.Settings.AICooldownTooltip>
     <RimTalk.Settings.ReplyInterval>답변 간격 (초)</RimTalk.Settings.ReplyInterval>
     <RimTalk.Settings.ReplyIntervalTooltip>대화 중 이전 발언과 다음 답변 사이의 지연 시간(초)입니다.</RimTalk.Settings.ReplyIntervalTooltip>
-    <RimTalk.Settings.RequestTimeout>AI Request Timeout (Seconds)</RimTalk.Settings.RequestTimeout>
-    <RimTalk.Settings.RequestTimeoutTooltip>How long (in seconds) to wait for an AI provider to respond before giving up. Leave this empty to use 60 seconds. Raise it for providers that take longer to answer.</RimTalk.Settings.RequestTimeoutTooltip>
+    <RimTalk.Settings.RequestTimeout>AI 요청 제한 시간 (초)</RimTalk.Settings.RequestTimeout>
+    <RimTalk.Settings.RequestTimeoutTooltip>AI 제공자가 응답할 때까지 기다리는 시간(초)입니다. 비워 두면 60초가 사용됩니다. 응답이 느린 제공자는 이 값을 높이세요.</RimTalk.Settings.RequestTimeoutTooltip>
     <RimTalk.Settings.OverrideInteractions>모든 상호작용을 AI로 대체</RimTalk.Settings.OverrideInteractions>
     <RimTalk.Settings.OverrideInteractionsTooltip>이 옵션을 활성화하면 AI가 모든 상호작용(바닐라 림월드 및 다른 모드 포함)의 대화를 덮어쓰고 다시 생성할 수 있습니다. 참고: AI 대화에는 위에 설정된 재사용 대기시간이 있습니다. 대화를 더 자주 생성하려면 재사용 대기시간을 줄이세요.</RimTalk.Settings.OverrideInteractionsTooltip>
     <RimTalk.Settings.SettingsButton>설정</RimTalk.Settings.SettingsButton>

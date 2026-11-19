@@ -183,8 +183,8 @@ Scribanマジック (動的コンテンツ)
     <RimTalk.Settings.AICooldownTooltip>新しいAI会話の生成を試みるまでの基本待機時間（秒）です。</RimTalk.Settings.AICooldownTooltip>
     <RimTalk.Settings.ReplyInterval>返答間隔（秒）</RimTalk.Settings.ReplyInterval>
     <RimTalk.Settings.ReplyIntervalTooltip>会話中の発言と次の返答の間の遅延時間（秒）です。</RimTalk.Settings.ReplyIntervalTooltip>
-    <RimTalk.Settings.RequestTimeout>AI Request Timeout (Seconds)</RimTalk.Settings.RequestTimeout>
-    <RimTalk.Settings.RequestTimeoutTooltip>How long (in seconds) to wait for an AI provider to respond before giving up. Leave this empty to use 60 seconds. Raise it for providers that take longer to answer.</RimTalk.Settings.RequestTimeoutTooltip>
+    <RimTalk.Settings.RequestTimeout>AIリクエストのタイムアウト（秒）</RimTalk.Settings.RequestTimeout>
+    <RimTalk.Settings.RequestTimeoutTooltip>AIプロバイダーの応答を諦めるまでの待ち時間（秒）です。空欄にすると60秒になります。応答に時間がかかるプロバイダーでは、この値を上げてください。</RimTalk.Settings.RequestTimeoutTooltip>
     <RimTalk.Settings.OverrideInteractions>AI会話ですべての交流を上書き</RimTalk.Settings.OverrideInteractions>
     <RimTalk.Settings.OverrideInteractionsTooltip>これを有効にすると、AIがすべてのインタラクション（バニラのRimWorldや他のMODを含む）の対話を上書きして再生成できるようになります。注意：AIの対話には上記で設定されたクールダウン期間があります。より頻繁に対話を生成するには、クールダウンを短くしてください。</RimTalk.Settings.OverrideInteractionsTooltip>
     <RimTalk.Settings.SettingsButton>設定</RimTalk.Settings.SettingsButton>
