@@ -627,6 +627,7 @@ public partial class Settings
         AIProvider.Moonshot,
         AIProvider.OpenCodeZen,
         AIProvider.OpenCodeGo,
+        AIProvider.AbliteratedLLM,
         AIProvider.Google,
         AIProvider.Player2,
         AIProvider.Custom
