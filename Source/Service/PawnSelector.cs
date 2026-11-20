@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using RimTalk.Data;
 using RimTalk.Source.Data;
+using RimTalk.Util;
 using RimWorld;
 using Verse;
 
@@ -79,6 +80,23 @@ public class PawnSelector
     public static List<Pawn> GetAllNearByPawns(Pawn pawn1, Pawn pawn2 = null, bool isAnnouncement = false)
     {
         return GetNearbyPawnsInternal(pawn1, pawn2, DetectionType.Hearing, onlyTalkable: false, isAnnouncement: isAnnouncement);
+    }
+
+    /// <summary>
+    /// Player announcements have no physical source, so every colony pawn on the origin's map hears them.
+    /// Sorted by distance to the origin so the closest pawns are picked as responders first.
+    /// </summary>
+    public static List<Pawn> GetColonyAnnouncementAudience(Pawn origin)
+    {
+        if (origin == null || !origin.Spawned) return [];
+
+        var map = origin.Map;
+        var pos = origin.Position;
+        return Cache.Keys
+            .Where(p => p != origin && !p.IsPlayer() && p.Spawned && p.Map == map && p.Faction == Faction.OfPlayer)
+            .Where(p => (p.health?.capacities?.GetLevel(PawnCapacityDefOf.Hearing) ?? 0f) > 0f)
+            .OrderBy(p => pos.DistanceToSquared(p.Position))
+            .ToList();
     }
 
     public static Pawn SelectNextAvailablePawn()

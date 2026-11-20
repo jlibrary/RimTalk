@@ -48,6 +48,12 @@ public class TalkRequest(string prompt, Pawn initiator, Pawn recipient = null, T
     /// All pawns participating in the dialogue (filled in sync layer)
     /// </summary>
     public List<Pawn> Participants { get; set; }
+
+    /// <summary>
+    /// Everyone who heard the dialogue, a superset of Participants (e.g. colony-wide player announcements).
+    /// Null means the audience equals Participants.
+    /// </summary>
+    public List<Pawn> Audience { get; set; }
     
     /// <summary>
     /// Pre-built message list (built by PromptManager in sync layer)

@@ -61,7 +61,9 @@ public static class TalkService
         bool isPlayerAnnouncement = talkRequest.IsAnnouncement && talkRequest.Recipient?.IsPlayer() == true;
         Pawn mainPawn = isPlayerAnnouncement ? talkRequest.Recipient : talkRequest.Initiator;
 
-        List<Pawn> nearbyPawns = PawnSelector.GetAllNearByPawns(talkRequest.Initiator, isAnnouncement: talkRequest.IsAnnouncement);
+        List<Pawn> nearbyPawns = isPlayerAnnouncement
+            ? PawnSelector.GetColonyAnnouncementAudience(talkRequest.Initiator)
+            : PawnSelector.GetAllNearByPawns(talkRequest.Initiator, isAnnouncement: talkRequest.IsAnnouncement);
         if (isPlayerAnnouncement) nearbyPawns.Insert(0, talkRequest.Initiator);
         else if (talkRequest.Recipient != null && talkRequest.Recipient.IsPlayer()) nearbyPawns.Insert(0, talkRequest.Recipient);
 
@@ -108,6 +110,8 @@ public static class TalkService
 
         // Store dialogue participants for disambiguating duplicate pawn names during async streaming response processing
         talkRequest.Participants = pawns;
+        // Only a capped subset responds, but the whole colony heard a player announcement
+        if (isPlayerAnnouncement) talkRequest.Audience = pawns.Union(nearbyPawns).ToList();
 
         string promptStatus = status;
         if (talkRequest.IsMonologue)
@@ -233,7 +237,7 @@ public static class TalkService
                         directiveProcessed = true;
                         if (talkRequest.IsAnnouncement)
                         {
-                            var uniquePawns = talkRequest.Participants ?? [talkRequest.Initiator];
+                            var uniquePawns = talkRequest.Audience ?? talkRequest.Participants ?? [talkRequest.Initiator];
                             bool anyMod = false;
                             for (int p = 0; p < uniquePawns.Count; p++)
                             {
@@ -296,7 +300,7 @@ public static class TalkService
     {
         if (!responses.Any()) return;
         string serializedResponses = JsonUtil.SerializeToJson(responses);
-        var uniquePawns = talkRequest.Participants ?? [talkRequest.Initiator];
+        var uniquePawns = talkRequest.Audience ?? talkRequest.Participants ?? [talkRequest.Initiator];
 
         bool isUserSpeech = talkRequest.TalkType.IsFromUser() || talkRequest.IsAnnouncement;
         bool useCompact = Settings.Get()?.Context?.UseCompactHistory ?? true;

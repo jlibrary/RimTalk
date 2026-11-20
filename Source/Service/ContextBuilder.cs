@@ -404,7 +404,8 @@ public static class ContextBuilder
             var listeners = pawns.Where(p => p != speaker && !p.IsPlayer()).ToList();
             var listenerNames = string.Join(", ", listeners.Select(p => PromptService.GetUniqueName(p, pawns)));
 
-            topicSb.Append($"{speakerName} announced to everyone nearby: '{talkRequest.Prompt}'. ");
+            var audience = speaker.IsPlayer() ? "the whole colony" : "everyone nearby";
+            topicSb.Append($"{speakerName} announced to {audience}: '{talkRequest.Prompt}'. ");
             intentSb.Append(listeners.Count > 0
                 ? $"Generate brief reactions from listeners ({listenerNames}). Each person who heard should speak at least once. Do not repeat the initial announcement."
                 : "Generate brief reactions from nearby listeners. Do not repeat the initial announcement.");
