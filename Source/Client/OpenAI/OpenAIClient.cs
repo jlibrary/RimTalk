@@ -309,7 +309,7 @@ public class OpenAIClient(
         AddAuthHeaders(request, apiKey, extraHeaders);
 
         bool isLocal = LocalHost.IsLocal(new Uri(_endpointUrl).DnsSafeHost);
-        float timeout = Settings.Get()?.EffectiveRequestTimeout ?? 60f;
+        float timeout = Settings.Get()?.GetActiveConfig()?.EffectiveRequestTimeout ?? ApiConfig.DefaultRequestTimeout;
         // Local models can spend minutes loading before the first byte. Keep that floor
         // unless the user asked to wait even longer.
         float connectTimeout = isLocal ? Math.Max(300f, timeout) : timeout;

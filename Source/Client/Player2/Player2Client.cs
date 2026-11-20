@@ -233,7 +233,7 @@ public class Player2Client : IAIClient
         request.Headers.TryAddWithoutValidation("Authorization", $"Bearer {CurrentApiKey}");
         request.Headers.TryAddWithoutValidation("player2-game-key", GameClientId);
 
-        float timeout = Settings.Get()?.EffectiveRequestTimeout ?? 60f;
+        float timeout = Settings.Get()?.GetActiveConfig()?.EffectiveRequestTimeout ?? ApiConfig.DefaultRequestTimeout;
         float connectTimeout = timeout;
         float readTimeout = timeout;
 

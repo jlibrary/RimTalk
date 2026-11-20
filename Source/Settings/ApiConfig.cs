@@ -15,6 +15,15 @@ public class ApiConfig : IExposable
     public string CustomModelName = "";
     public string BaseUrl = "";
     public string CustomRequestJson = "";
+    // Seconds to wait for this provider. 0 means the field was left empty, which uses the default.
+    public int RequestTimeout = DefaultRequestTimeout;
+
+    public const int DefaultRequestTimeout = 60;
+    public int EffectiveRequestTimeout => RequestTimeout > 0 ? RequestTimeout : DefaultRequestTimeout;
+
+    // Drives the green gear icon: anything changed in the customize dialog.
+    public bool HasRequestOverrides =>
+        !string.IsNullOrWhiteSpace(CustomRequestJson) || EffectiveRequestTimeout != DefaultRequestTimeout;
 
     public void ExposeData()
     {
@@ -25,6 +34,7 @@ public class ApiConfig : IExposable
         Scribe_Values.Look(ref CustomModelName, "customModelName", "");
         Scribe_Values.Look(ref BaseUrl, "baseUrl", "");
         Scribe_Values.Look(ref CustomRequestJson, "customRequestJson", "");
+        Scribe_Values.Look(ref RequestTimeout, "requestTimeout", DefaultRequestTimeout);
 
         if (Scribe.mode == LoadSaveMode.PostLoadInit && !string.IsNullOrWhiteSpace(CustomRequestJson))
         {

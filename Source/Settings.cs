@@ -27,7 +27,6 @@ public partial class Settings : Mod
     private int _apiSettingsHash = 0;
     private string _talkIntervalBuffer;
     private string _replyIntervalBuffer;
-    private string _requestTimeoutBuffer;
     private string _maxPawnContextBuffer;
     private string _conversationHistoryBuffer;
     private string _maxEventsBuffer;

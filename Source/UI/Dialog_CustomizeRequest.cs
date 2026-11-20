@@ -12,6 +12,8 @@ public class Dialog_CustomizeRequest : Window
 {
     private readonly ApiConfig _config;
     private string _jsonText;
+    private int _requestTimeout;
+    private string _requestTimeoutBuffer;
     private Vector2 _scrollPos = Vector2.zero;
     private Vector2 _previewScrollPos = Vector2.zero;
     private GUIStyle _monoStyle;
@@ -22,6 +24,8 @@ public class Dialog_CustomizeRequest : Window
     {
         _config = config;
         _jsonText = config.CustomRequestJson ?? "";
+        _requestTimeout = config.EffectiveRequestTimeout;
+        _requestTimeoutBuffer = _requestTimeout.ToString();
 
         _samples = Dialog_CustomizeRequestHelp.GetSamples();
         _selectedSampleIndex = 0;
@@ -83,6 +87,10 @@ public class Dialog_CustomizeRequest : Window
         float reasoningBarH = 26f;
         DrawReasoningBar(new Rect(x, reasoningBarY, width, reasoningBarH));
 
+        // Request Timeout Bar
+        float timeoutBarY = reasoningBarY + reasoningBarH + 6f;
+        DrawRequestTimeoutBar(new Rect(x, timeoutBarY, width, reasoningBarH));
+
         // Status Indicator (above bottom limit)
         float statusHeight = 22f;
         float statusY = bottomLimitY - statusHeight - 4f;
@@ -90,7 +98,7 @@ public class Dialog_CustomizeRequest : Window
         DrawStatus(statusRect);
 
         // Text Editor Box
-        float editorY = reasoningBarY + reasoningBarH + 6f;
+        float editorY = timeoutBarY + reasoningBarH + 6f;
         float editorHeight = statusY - editorY - 4f;
 
         Rect editorBoxRect = new Rect(x, editorY, width, editorHeight);
@@ -262,6 +270,8 @@ public class Dialog_CustomizeRequest : Window
         if (UIUtil.ButtonText(new Rect(x, y, resetWidth, h), "RimTalk.Settings.ResetToDefault".Translate()))
         {
             _jsonText = "";
+            _requestTimeout = ApiConfig.DefaultRequestTimeout;
+            _requestTimeoutBuffer = _requestTimeout.ToString();
         }
         x += resetWidth + 6f;
 
@@ -284,6 +294,7 @@ public class Dialog_CustomizeRequest : Window
         if (UIUtil.ButtonText(new Rect(saveX, y, saveWidth, h), "RimTalk.Settings.CustomJsonSave".Translate(), active: isValid))
         {
             _config.CustomRequestJson = string.IsNullOrWhiteSpace(_jsonText) ? "" : _jsonText.Trim();
+            _config.RequestTimeout = _requestTimeout;
             AIClientFactory.Clear();
             Close();
         }
@@ -293,6 +304,38 @@ public class Dialog_CustomizeRequest : Window
         {
             Close();
         }
+    }
+
+    private void DrawRequestTimeoutBar(Rect rect)
+    {
+        // Same frame as the reasoning bar above it.
+        Widgets.DrawBoxSolid(rect, new Color(0.12f, 0.14f, 0.17f, 0.7f));
+        Color prevBorder = GUI.color;
+        GUI.color = new Color(1f, 1f, 1f, 0.08f);
+        Widgets.DrawBox(rect);
+        GUI.color = prevBorder;
+
+        // Field on the right, sized and placed like the reasoning bar's reset button
+        const float fieldWidth = 90f;
+        Rect fieldRect = new Rect(rect.xMax - fieldWidth - 3f, rect.y + 2f, fieldWidth, rect.height - 4f);
+        Widgets.TextFieldNumeric(fieldRect, ref _requestTimeout, ref _requestTimeoutBuffer, 1, 9999);
+        // An empty box means the default timeout.
+        if (string.IsNullOrWhiteSpace(_requestTimeoutBuffer))
+            _requestTimeout = ApiConfig.DefaultRequestTimeout;
+
+        // Label on the left
+        Rect labelRect = new Rect(rect.x + 8f, rect.y + 3f, fieldRect.x - rect.x - 12f, rect.height - 6f);
+        Text.Font = GameFont.Tiny;
+        Text.Anchor = TextAnchor.MiddleLeft;
+        GUI.color = _requestTimeout != ApiConfig.DefaultRequestTimeout
+            ? new Color(0.85f, 0.75f, 0.4f)
+            : new Color(0.65f, 0.65f, 0.65f);
+        Widgets.Label(labelRect, "RimTalk.Settings.RequestTimeout".Translate());
+        GUI.color = Color.white;
+        Text.Anchor = TextAnchor.UpperLeft;
+        Text.Font = GameFont.Small;
+
+        TooltipHandler.TipRegion(rect, "RimTalk.Settings.RequestTimeoutTooltip".Translate());
     }
 
     private void InitStyles()

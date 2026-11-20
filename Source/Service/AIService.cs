@@ -250,7 +250,10 @@ public static class AIService
     public static bool IsFirstInstruction() => _firstInstruction;
     public static bool IsBusy()
     {
-        int timeout = Settings.Get()?.EffectiveRequestTimeout ?? 60;
+        // Called every frame. StuckAfter never drops below the 300s floor, so skip the
+        // config lookup (which allocates in simple mode) until that floor has passed.
+        if (!BusyGate.IsStuck(_busy, _busySince, DateTime.Now)) return _busy;
+        int timeout = Settings.Get()?.GetActiveConfig()?.EffectiveRequestTimeout ?? ApiConfig.DefaultRequestTimeout;
         int stuckAfter = BusyGate.StuckAfter(timeout);
         if (!BusyGate.IsStuck(_busy, _busySince, DateTime.Now, stuckAfter)) return _busy;
 
