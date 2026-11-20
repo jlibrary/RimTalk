@@ -330,6 +330,11 @@ Environment Hazard: {{ fallout_level }}
 
         // Busy past 300s -> STUCK!
         Assert.True(RimTalk.Service.BusyGate.IsStuck(true, startTime, startTime.AddSeconds(301)));
+
+        // Default 60s timeout stays on the 300s backstop. A longer timeout has to outlast
+        // connect + one read stall, and one retry of the same, before the slot is freed.
+        Assert.Equal(300, RimTalk.Service.BusyGate.StuckAfter(60));
+        Assert.Equal(400, RimTalk.Service.BusyGate.StuckAfter(100));
     }
 
     [Fact]
